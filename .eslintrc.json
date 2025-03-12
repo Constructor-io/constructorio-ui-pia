@@ -79,4 +79,3 @@
     ],
     "ignorePatterns": ["*.config.js", "lib/**/*.js", "lib/**/*.d.ts", "docs/**/*.js"]
   }
-  
