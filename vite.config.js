@@ -3,7 +3,7 @@ import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 
 export default defineConfig({
   plugins: [cssInjectedByJsPlugin({
-    styleId: 'cio-asa-styles'
+    styleId: 'cio-asa-pdp-styles'
   })],
   build: {
     rollupOptions: {
