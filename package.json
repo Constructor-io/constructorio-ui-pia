@@ -1,0 +1,115 @@
+{
+  "name": "constructorio-ui-asa-pdp",
+  "version": "0.0.1",
+  "description": "Constructor.io AI Shopping Assistant PDP UI library for web applications",
+  "author": "constructor.io",
+  "license": "MIT",
+  "homepage": "https://github.com/Constructor-io/constructorio-ui-asa-pdp#readme",
+  "main": "lib/cjs/index.js",
+  "module": "lib/mjs/index.js",
+  "exports": {
+    "./styles.css": {
+      "import": "./lib/mjs/styles.css",
+      "require": "./lib/cjs/styles.css"
+    },
+    "./constructorio-ui-asa-bundled": {
+      "import": "./dist/constructorio-ui-asa-pdp-bundled.js",
+      "require": "./dist/constructorio-ui-asa-pdp-bundled.js"
+    },
+    ".": {
+      "import": "./lib/mjs/index.js",
+      "require": "./lib/cjs/index.js"
+    },
+    "./cjs": {
+      "import": "./lib/cjs/index.js",
+      "require": "./lib/cjs/index.js"
+    }
+  },
+  "files": [
+    "lib/**/*",
+    "dist/constructorio-ui-asa-pdp-bundled.js"
+  ],
+  "engines": {
+    "node": ">=14"
+  },
+  "scripts": {
+    "lint": "eslint src --ext js,ts,jsx,tsx",
+    "check-types": "npx tsc --noEmit",
+    "copy-styles": "rsync -am --include='*/' --include='*.css' --exclude='*' src/ lib/mjs/ && rsync -am --include='*/' --include='*.css' --exclude='*' src/ lib/cjs/",
+    "dev": "storybook dev -p 6006",
+    "test": "jest",
+    "storybook:ci": "storybook dev --ci --quiet -p 6006",
+    "test-storybook": "test-storybook",
+    "test-storybook:watch": "test-storybook --watch",
+    "test-storybook:ci": "start-server-and-test storybook:ci http://localhost:6006 test-storybook",
+    "build-storybook": "storybook build",
+    "storybook-docs-dev": "storybook dev --docs -p 6007",
+    "serve-built-storybook": "npx http-server docs",
+    "verify-node-version": "chmod +x ./scripts/verify-node-version.sh && ./scripts/verify-node-version.sh",
+    "version": "npm run verify-node-version && npm run build-storybook && git add -u ./docs && git add ./docs/* && npm run compile",
+    "compile": "node ./src/generateVersion.js && rm -rf lib && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && npm run copy-styles && vite build",
+    "check-license": "license-checker --production --onlyAllow 'Apache-2.0;BSD-3-Clause;MIT;0BSD;BSD-2-Clause' --excludePackages 'picocolors@1.0.0'",
+    "prepare": "husky",
+    "storybook": "storybook dev -p 6006"
+  },
+  "peerDependencies": {
+    "@constructor-io/constructorio-client-javascript": "^2.35.14",
+    "react": ">=16.12.0",
+    "react-dom": ">=16.12.0",
+    "tslib": "^2.4.0"
+  },
+  "devDependencies": {
+    "@axe-core/react": "^4.10.1",
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0",
+    "@babel/preset-react": "^7.23.3",
+    "@babel/preset-typescript": "^7.23.3",
+    "@chromatic-com/storybook": "^3.2.5",
+    "@cspell/eslint-plugin": "^8.17.5",
+    "@storybook/addon-a11y": "^8.6.4",
+    "@storybook/addon-actions": "^8.6.4",
+    "@storybook/addon-essentials": "^8.6.4",
+    "@storybook/addon-interactions": "^8.6.4",
+    "@storybook/addon-links": "^8.6.4",
+    "@storybook/addon-mdx-gfm": "^8.6.4",
+    "@storybook/addon-onboarding": "^8.6.4",
+    "@storybook/blocks": "^8.6.4",
+    "@storybook/react": "^8.6.4",
+    "@storybook/react-vite": "^8.6.4",
+    "@storybook/react-webpack5": "^8.6.4",
+    "@storybook/test": "^8.6.4",
+    "@storybook/test-runner": "^0.22.0",
+    "@storybook/testing-library": "^0.2.1",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.2.0",
+    "@types/jest": "^29.5.14",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "chromatic": "^11.27.0",
+    "eslint": "^8.57.1",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^18.0.0",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-prettier": "^5.2.3",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "eslint-plugin-storybook": "^0.11.4",
+    "globals": "^16.0.0",
+    "husky": "^9.1.7",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "license-checker": "^25.0.1",
+    "prop-types": "^15.8.1",
+    "start-server-and-test": "^2.0.10",
+    "storybook": "^8.6.4",
+    "typescript": "^4.9.4",
+    "typescript-eslint": "^8.26.1",
+    "vite": "^6.2.1",
+    "vite-plugin-css-injected-by-js": "^3.5.2",
+    "webpack": "^5.98.0"
+  }
+}
