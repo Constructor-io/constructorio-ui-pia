@@ -3,6 +3,7 @@ import MockConstructorIOClient, {
   MockConstructorClientOptions,
   Nullable,
 } from './mocks/mockConstructorIoClient';
+import version from '../version';
 
 /**
  * Uses MockConstructorIOClient for now, to be replaced with the actual Client JS object
@@ -27,7 +28,7 @@ const useCioClient: UseCioClient = ({ apiKey, cioClient, options } = {}) => {
       return new MockConstructorIOClient({
         apiKey,
         sendTrackingEvents: true,
-        version: `cio-ui-asa-pdp-0.0.0`,
+        version: `cio-ui-asa-pdp-${version}`,
         ...options,
       });
     }
