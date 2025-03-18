@@ -3,14 +3,14 @@ import useCioClient from '../../../src/hooks/useCioClient';
 import version from '../../../src/version';
 
 describe('Testing Hook: useCioClient', () => {
-  test('Should throw error if Api Key not provided', () => {
+  it('Should throw error if Api Key not provided', () => {
     const spy = jest.spyOn(console, 'error');
     spy.mockImplementation(() => {});
     expect(() => renderHook(() => useCioClient())).toThrow();
     spy.mockRestore();
   });
 
-  test('Should return client when custom client is provided', () => {
+  it('Should return client when custom client is provided', () => {
     const mockClient = { tracker: () => {} };
     const { result } = renderHook(({ cioClient }) => useCioClient({ cioClient }), {
       initialProps: { cioClient: mockClient },
@@ -19,7 +19,7 @@ describe('Testing Hook: useCioClient', () => {
     expect(result.current).toBe(mockClient);
   });
 
-  test('Should return a ConstructorIO Client Object', () => {
+  it('Should return a ConstructorIO Client Object', () => {
     const { result } = renderHook(({ apiKey }) => useCioClient({ apiKey }), {
       initialProps: { apiKey: 'xx' },
     });
@@ -33,7 +33,7 @@ describe('Testing Hook: useCioClient', () => {
     expect(client.search).not.toBeUndefined();
   });
 
-  test('Should return a client with options set', () => {
+  it('Should return a client with options set', () => {
     const key = 'xx';
     const clientOptions = {
       serviceUrl: 'https://special.cnstrc.com',
