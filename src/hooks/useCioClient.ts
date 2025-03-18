@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import MockConstructorIOClient, {
   MockConstructorClientOptions,
   Nullable,
-} from './mocks/mockConstructorIoClient';
+} from './mocks/MockConstructorIOClient';
 import version from '../version';
 
 /**

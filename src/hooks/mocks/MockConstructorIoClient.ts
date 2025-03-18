@@ -96,7 +96,7 @@ class MockConstructorIOClient {
     this.options = {
       version: options.version || 'cio-ui-asa-pdp-0.0.0',
       serviceUrl: options.serviceUrl || 'https://test.cnstrc.com',
-      quizzesServiceUrl: options.quizzesServiceUrl || 'https://quizzestest.cnstrc.com',
+      quizzesServiceUrl: options.quizzesServiceUrl || 'https://test.quizzies.cnstrc.com',
       sessionId: options.sessionId || 1,
       clientId: options.clientId || 'this-is-a-random-client-id',
       sendTrackingEvents:
