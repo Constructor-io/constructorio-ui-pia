@@ -31,6 +31,7 @@ export const WithMockClient: Story = {
       apiKey: DEMO_API_KEY,
       serviceUrl: 'https://test.mock.client.com',
       quizzesServiceUrl: 'https://test.mock.client.quiz.com',
+      assistantServiceUrl: 'https://test.mock.client.assistant.com',
       sendTrackingEvents: true,
       beaconMode: true,
     }),
