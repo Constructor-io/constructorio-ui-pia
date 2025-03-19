@@ -38,6 +38,7 @@ describe('Testing Hook: useCioClient', () => {
     const clientOptions = {
       serviceUrl: 'https://special.cnstrc.com',
       quizzesServiceUrl: 'https://quizzes.cnstrc.com',
+      assistantServiceUrl: 'https://test.assistant.cnstrc.com',
       sessionId: 1,
       clientId: 'id-1',
       userId: 'ui-1',

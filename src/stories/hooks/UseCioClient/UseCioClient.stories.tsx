@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import UseCioClientExample from './UseCioClientExample';
 import { DEMO_API_KEY } from '../../../constants';
-import MockConstructorIOClient from '../../../hooks/mocks/mockConstructorIoClient';
+import MockConstructorIOClient from '../../../hooks/mocks/MockConstructorIOClient';
 
 const meta = {
   title: 'Hooks/UseCioClient',

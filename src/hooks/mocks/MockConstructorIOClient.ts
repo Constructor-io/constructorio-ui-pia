@@ -1,25 +1,6 @@
 /* eslint-disable max-classes-per-file, @typescript-eslint/lines-between-class-members */
-export interface MockConstructorClientOptions {
-  apiKey: string;
-  version?: string;
-  serviceUrl?: string;
-  quizzesServiceUrl?: string;
-  sessionId?: string | number;
-  clientId?: string;
-  userId?: string;
-  segments?: string[];
-  testCells?: Record<string, string>;
-  idOptions?: any;
-  fetch?: any;
-  trackingSendDelay?: number;
-  sendTrackingEvents?: boolean;
-  sendReferrerWithTrackingEvents?: boolean;
-  eventDispatcher?: any;
-  beaconMode?: boolean;
-  networkParameters?: any;
-}
-
-export type Nullable<T> = T | null;
+import Assistant from './assistant';
+import { MockConstructorClientOptions } from './types';
 
 class EventDispatcher {
   events: any[] = [];
@@ -91,13 +72,15 @@ class MockConstructorIOClient {
   recommendations: Module;
   quizzes: Module;
   tracker: Tracker;
+  assistant: Assistant;
 
   constructor(options: MockConstructorClientOptions) {
     this.options = {
       version: options.version || 'cio-ui-asa-pdp-0.0.0',
       serviceUrl: options.serviceUrl || 'https://test.cnstrc.com',
       quizzesServiceUrl: options.quizzesServiceUrl || 'https://test.quizzies.cnstrc.com',
-      sessionId: options.sessionId || 1,
+      assistantServiceUrl: options.assistantServiceUrl || 'https://assistant.cnstrc.com',
+      sessionId: options.sessionId || 0,
       clientId: options.clientId || 'this-is-a-random-client-id',
       sendTrackingEvents:
         options.sendTrackingEvents !== undefined ? options.sendTrackingEvents : true,
@@ -112,13 +95,13 @@ class MockConstructorIOClient {
     this.recommendations = new Module(this.options);
     this.quizzes = new Module(this.options);
     this.tracker = new Tracker(this.options);
+    this.assistant = new Assistant(this.options);
 
     // Add methods to modules
-    this.addModuleMethods();
+    this.addMockModuleMethods();
   }
 
-  private addModuleMethods(): void {
-    // Search
+  private addMockModuleMethods(): void {
     this.search = Object.assign(this.search, {
       getSearchResults: async (query: string, params?: any) => ({
         request: { query, params },
@@ -126,7 +109,6 @@ class MockConstructorIOClient {
       }),
     });
 
-    // Browse
     this.browse = Object.assign(this.browse, {
       getBrowseResults: async (filterName: string, filterValue: string, params?: any) => ({
         request: { filterName, filterValue, params },
@@ -134,7 +116,6 @@ class MockConstructorIOClient {
       }),
     });
 
-    // Autocomplete
     this.autocomplete = Object.assign(this.autocomplete, {
       getAutocompleteResults: async (query: string, params?: any) => ({
         request: { query, params },
@@ -142,7 +123,6 @@ class MockConstructorIOClient {
       }),
     });
 
-    // Recommendations
     this.recommendations = Object.assign(this.recommendations, {
       getRecommendations: async (podId: string, params?: any) => ({
         request: { podId, params },
@@ -150,7 +130,6 @@ class MockConstructorIOClient {
       }),
     });
 
-    // Quizzes
     this.quizzes = Object.assign(this.quizzes, {
       getQuizResults: async (quizId: string, answers: any[], params?: any) => ({
         request: { quizId, answers, params },
@@ -172,6 +151,7 @@ class MockConstructorIOClient {
     this.quizzes.options = { ...this.options };
     this.tracker.options = { ...this.options };
     this.tracker.requests.options = { ...this.options };
+    this.assistant.options = { ...this.options };
   }
 }
 
