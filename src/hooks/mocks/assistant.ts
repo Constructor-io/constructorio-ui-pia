@@ -1,10 +1,10 @@
-import { MockConstructorClientOptions } from './types';
+import { ConstructorClientOptions } from '@constructor-io/constructorio-client-javascript';
 
 // Create URL from supplied intent (term) and parameters
 function createAssistantUrl(
   itemId: string,
   endpoint: string,
-  options: MockConstructorClientOptions,
+  options: ConstructorClientOptions,
   parameters: Record<string, string> = {},
 ) {
   const { apiKey, assistantServiceUrl } = options;
@@ -24,10 +24,10 @@ function createAssistantUrl(
   return url.toString();
 }
 
-class Assistant {
-  options: MockConstructorClientOptions;
+class MockAssistant {
+  options: ConstructorClientOptions;
 
-  constructor(options: MockConstructorClientOptions) {
+  constructor(options: ConstructorClientOptions) {
     this.options = options;
   }
 
@@ -61,4 +61,4 @@ class Assistant {
   }
 }
 
-export default Assistant;
+export default MockAssistant;

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import version from '../version';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
-import { MockConstructorClientOptions, Nullable } from './mocks/types';
+import { ConstructorClientOptions, Nullable } from '@constructor-io/constructorio-client-javascript';
 
 /**
  * Uses MockConstructorIOClient for now, to be replaced with the actual Client JS object
@@ -9,7 +9,7 @@ import { MockConstructorClientOptions, Nullable } from './mocks/types';
 export type UseCioClientProps = {
   apiKey?: string;
   cioClient?: Nullable<MockConstructorIOClient>;
-  options?: Omit<MockConstructorClientOptions, 'apiKey' | 'sendTrackingEvents' | 'version'>;
+  options?: Omit<ConstructorClientOptions, 'apiKey' | 'sendTrackingEvents' | 'version'>;
 };
 
 type UseCioClient = (props: UseCioClientProps) => Nullable<MockConstructorIOClient> | never;

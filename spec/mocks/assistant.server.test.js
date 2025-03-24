@@ -7,6 +7,8 @@ describe('Testing Mocks: Assistant', () => {
     beforeEach(() => {
         client = new MockConstructorIOClient({
             apiKey: DEMO_API_KEY,
+            sessionId: 123,
+            clientId: 'test-client-id',
         })
     })
 
