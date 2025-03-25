@@ -20,12 +20,20 @@ describe('Testing Hook: useCioClient', () => {
   });
 
   it('Should return a ConstructorIO Client Object', () => {
+    // Mock fetch to avoid calling default node fetch method
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        json: () => Promise.resolve({ request: { itemId: '0123', parameters: {} }, response: { questions: [] } }),
+      })
+    );
+
     const { result } = renderHook(({ apiKey }) => useCioClient({ apiKey }), {
       initialProps: { apiKey: 'xx' },
     });
+
     const client = result.current;
     expect(client).not.toBeUndefined();
-    expect(client.options).not.toBeUndefined();
+    expect(client.cioClient.options).not.toBeUndefined();
     expect(client.options.apiKey).toBe('xx');
     expect(client.options.sendTrackingEvents).toBe(true);
     expect(client.options.version).toBe(`cio-ui-asa-pdp-${version}`);

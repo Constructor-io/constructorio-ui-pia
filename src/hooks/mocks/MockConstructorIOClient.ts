@@ -13,6 +13,8 @@ import MockAssistant from './assistant';
 class MockConstructorIOClient {
   private cioClient: ConstructorioClient;
 
+  public options: ConstructorClientOptions;
+
   public search: Search;
 
   public browse: Browse;
@@ -27,6 +29,20 @@ class MockConstructorIOClient {
 
   constructor(options: ConstructorClientOptions) {
     this.cioClient = new ConstructorioClient(options);
+
+    this.options = {
+      version: options.version || 'cio-ui-asa-pdp-0.0.0',
+      serviceUrl: options.serviceUrl || 'https://ac.cnstrc.com',
+      quizzesServiceUrl: options.quizzesServiceUrl || 'https://quizzes.cnstrc.com',
+      assistantServiceUrl: options.assistantServiceUrl || 'https://assistant.cnstrc.com',
+      sessionId: options.sessionId || 1,
+      clientId: options.clientId || 'this-is-a-random-client-id',
+      sendTrackingEvents:
+        options.sendTrackingEvents !== undefined ? options.sendTrackingEvents : true,
+      beaconMode: options.beaconMode !== undefined ? options.beaconMode : true,
+      networkParameters: options.networkParameters || {},
+      ...options,
+    };
 
     this.search = this.cioClient.search;
     this.browse = this.cioClient.browse;
