@@ -3,4 +3,3 @@
 // Components
 
 // Types
-export * from './types';

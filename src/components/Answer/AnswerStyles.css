@@ -1,0 +1,43 @@
+.cio-asa-pdp-answer-container {
+	width: 300px;
+  padding: 10px;
+  font-family: 'Inter', sans-serif;
+}
+
+.cio-asa-pdp-answer-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-bar {
+  background-color: #e0e0e0;
+  height: 16px;
+  border-radius: 4px;
+  width: 100%;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.skeleton-short {
+  width: 80%;
+}
+
+.cio-asa-pdp-answer-text {
+	font-size: 14px;
+  font-style: normal;
+  font-weight: 300;
+	color: #14151A;
+}
+
+/* Animation for the loader */
+@keyframes pulse {
+  0% {
+    background-color: #e0e0e0;
+  }
+  50% {
+    background-color: #d0d0d0;
+  }
+  100% {
+    background-color: #e0e0e0;
+  }
+}
