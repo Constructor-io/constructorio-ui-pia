@@ -4,6 +4,6 @@
 @import './components/Answer/AnswerStyles.css';
 
 .cio-asa-pdp,
-.cio-asa-pdp * {
+* {
   font-family: 'Inter', sans-serif;
 }

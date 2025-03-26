@@ -1,7 +1,6 @@
 .cio-asa-pdp-answer-container {
-	width: 300px;
+	width: 430px;
   padding: 10px;
-  font-family: 'Inter', sans-serif;
 }
 
 .cio-asa-pdp-answer-loading {
@@ -11,11 +10,11 @@
 }
 
 .skeleton-bar {
-  background-color: #e0e0e0;
+  background-color: rgba(0, 0, 0, 0.05);
   height: 16px;
   border-radius: 4px;
   width: 100%;
-  animation: pulse 1.5s infinite ease-in-out;
+  animation: loading-animation 2s infinite ease-in-out;
 }
 
 .skeleton-short {
@@ -23,21 +22,21 @@
 }
 
 .cio-asa-pdp-answer-text {
-	font-size: 14px;
+	font-size: 13px;
   font-style: normal;
-  font-weight: 300;
+  font-weight: 400;
 	color: #14151A;
 }
 
 /* Animation for the loader */
-@keyframes pulse {
+@keyframes loading-animation {
   0% {
-    background-color: #e0e0e0;
+    background-color: rgba(0, 0, 0, 0.05);
   }
   50% {
-    background-color: #d0d0d0;
+    background-color: rgba(0, 0, 0, 0.10);
   }
   100% {
-    background-color: #e0e0e0;
+    background-color: rgba(0, 0, 0, 0.05);
   }
 }

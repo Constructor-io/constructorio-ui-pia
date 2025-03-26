@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
 import Answer from '../../../components/Answer/Answer';
 
 const meta = {
@@ -16,8 +15,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    answerText:
-      'This is an answer text that should be displayed in the Answer component.',
+    answerText: 'This is an answer text that should be displayed in the Answer component.',
     isLoading: false,
   },
 };

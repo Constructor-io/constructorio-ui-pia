@@ -1,30 +1,32 @@
 import React from 'react';
 
 interface AnswerProps {
-    answerText: string;
-    isLoading: boolean;
+  answerText: string;
+  isLoading: boolean;
 }
 
-function LoadingComponet() {
-    return (
-        <div className='cio-asa-pdp-answer-loading'>
-            <div className='skeleton-bar'></div>
-            <div className='skeleton-bar'></div>
-            <div className='skeleton-bar skeleton-short'></div>
-        </div>
-    );
-}
-
-function Answer({ answerText, isLoading }: AnswerProps) {
-    return (
-    <div className='cio-asa-pdp-answer-container'>
-        {isLoading ? (
-            <LoadingComponet />
-        ) : (
-            <div className='cio-asa-pdp-answer-text'>{answerText}</div>
-        )}
+function AnswerLoader() {
+  return (
+    <div className='cio-asa-pdp-answer-loading' data-testid='answer-loading'>
+      <div className='skeleton-bar' />
+      <div className='skeleton-bar' />
+      <div className='skeleton-bar skeleton-short' />
     </div>
-    );
-  }
-  
-  export default Answer;
+  );
+}
+
+function Answer({ answerText, isLoading = true }: AnswerProps) {
+  return (
+    <div className='cio-asa-pdp-answer-container' data-testid='answer-container'>
+      {isLoading ? (
+        <AnswerLoader />
+      ) : (
+        <div className='cio-asa-pdp-answer-text' data-testid='answer-text'>
+          {answerText}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default Answer;
