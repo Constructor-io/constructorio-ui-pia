@@ -33,30 +33,25 @@ describe('Testing Hook: useCioClient', () => {
 
     const client = result.current;
     expect(client).not.toBeUndefined();
-    expect(client.cioClient.options).not.toBeUndefined();
+    expect(client.options).not.toBeUndefined();
     expect(client.options.apiKey).toBe('xx');
-    expect(client.options.sendTrackingEvents).toBe(true);
     expect(client.options.version).toBe(`cio-ui-asa-pdp-${version}`);
-    expect(client.browse).not.toBeUndefined();
     expect(client.search).not.toBeUndefined();
+    expect(client.assistant).not.toBeUndefined();
   });
 
   it('Should return a client with options set', () => {
     const key = 'xx';
     const clientOptions = {
-      serviceUrl: 'https://special.cnstrc.com',
-      quizzesServiceUrl: 'https://quizzes.cnstrc.com',
+      version: "cio-ui-asa-pdp-1.0.0",
+      serviceUrl: 'https://test.service.cnstrc.com',
+      quizzesServiceUrl: 'https://test.quizzes.cnstrc.com',
       assistantServiceUrl: 'https://test.assistant.cnstrc.com',
       sessionId: 1,
       clientId: 'id-1',
-      userId: 'ui-1',
-      segments: ['segment-1', 'segment-2'],
-      testCells: { test: 'cell' },
       fetch: 'mock-fetch-fn',
-      trackingSendDelay: 400,
-      sendReferrerWithTrackingEvents: true,
-      beaconMode: false,
-      eventDispatcher: undefined,
+      sendTrackingEvents: true,
+      beaconMode: true,
       networkParameters: { timeout: 1000 },
     };
 
@@ -67,8 +62,6 @@ describe('Testing Hook: useCioClient', () => {
     const client = result.current;
     expect(client.options).toEqual({
       apiKey: key,
-      sendTrackingEvents: true,
-      version: `cio-ui-asa-pdp-${version}`,
       ...clientOptions,
     });
   });

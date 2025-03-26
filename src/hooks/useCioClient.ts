@@ -1,7 +1,10 @@
 import { useMemo } from 'react';
+import {
+  ConstructorClientOptions,
+  Nullable,
+} from '@constructor-io/constructorio-client-javascript';
 import version from '../version';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
-import { ConstructorClientOptions, Nullable } from '@constructor-io/constructorio-client-javascript';
 
 /**
  * Uses MockConstructorIOClient for now, to be replaced with the actual Client JS object

@@ -9,11 +9,10 @@ import {
   Quizzes,
 } from '@constructor-io/constructorio-client-javascript/lib/types/constructorio';
 import MockAssistant from './assistant';
+import version from '../../version';
 
 class MockConstructorIOClient {
-  private cioClient: ConstructorioClient;
-
-  public options: ConstructorClientOptions;
+  private options: ConstructorClientOptions;
 
   public search: Search;
 
@@ -28,14 +27,12 @@ class MockConstructorIOClient {
   public assistant: MockAssistant;
 
   constructor(options: ConstructorClientOptions) {
-    this.cioClient = new ConstructorioClient(options);
-
     this.options = {
-      version: options.version || 'cio-ui-asa-pdp-0.0.0',
+      version: options.version || `cio-ui-asa-pdp-${version}`,
       serviceUrl: options.serviceUrl || 'https://ac.cnstrc.com',
       quizzesServiceUrl: options.quizzesServiceUrl || 'https://quizzes.cnstrc.com',
       assistantServiceUrl: options.assistantServiceUrl || 'https://assistant.cnstrc.com',
-      sessionId: options.sessionId || 1,
+      sessionId: options.sessionId || 0,
       clientId: options.clientId || 'this-is-a-random-client-id',
       sendTrackingEvents:
         options.sendTrackingEvents !== undefined ? options.sendTrackingEvents : true,
@@ -44,16 +41,17 @@ class MockConstructorIOClient {
       ...options,
     };
 
-    this.search = this.cioClient.search;
-    this.browse = this.cioClient.browse;
-    this.recommendations = this.cioClient.recommendations;
-    this.tracker = this.cioClient.tracker;
-    this.quizzes = this.cioClient.quizzes;
+    const cioClient = new ConstructorioClient(this.options);
+
+    this.search = cioClient.search;
+    this.browse = cioClient.browse;
+    this.recommendations = cioClient.recommendations;
+    this.tracker = cioClient.tracker;
+    this.quizzes = cioClient.quizzes;
 
     // Use the mock assistant instead of the one from the client
-    this.assistant = new MockAssistant(this.cioClient.assistant.options);
+    this.assistant = new MockAssistant(this.options);
   }
 }
 
 export default MockConstructorIOClient;
-
