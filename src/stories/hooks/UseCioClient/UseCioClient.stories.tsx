@@ -25,13 +25,13 @@ export const Default: Story = {
   },
 };
 
-export const WithMockClient: Story = {
+export const WithCustomClient: Story = {
   args: {
     cioClient: new MockConstructorIOClient({
       apiKey: DEMO_API_KEY,
-      serviceUrl: 'https://test.mock.client.com',
-      quizzesServiceUrl: 'https://test.mock.client.quiz.com',
-      assistantServiceUrl: 'https://test.mock.client.assistant.com',
+      serviceUrl: 'https://custom.client.com',
+      quizzesServiceUrl: 'https://custom.client.quiz.com',
+      assistantServiceUrl: 'https://custom.client.assistant.com',
       sendTrackingEvents: true,
       beaconMode: true,
     }),
