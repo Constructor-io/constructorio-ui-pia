@@ -1,4 +1,4 @@
-import { ConstructorClientOptions } from '@constructor-io/constructorio-client-javascript';
+import { ConstructorClientOptions, SearchResponse } from '@constructor-io/constructorio-client-javascript';
 
 // Create URL from supplied intent (term) and parameters
 function createAssistantUrl(
@@ -31,7 +31,7 @@ class MockAssistant {
     this.options = options;
   }
 
-  async getSuggestedQuestions(itemId: string, parameters: Record<string, any> = {}) {
+  async getSuggestedQuestions(itemId: string, parameters: Record<string, any> = {}): Promise<SearchResponse> {
     if (!this.options.apiKey) {
       throw new Error('API key is required');
     }
@@ -50,12 +50,14 @@ class MockAssistant {
       return {
         request: { itemId, parameters },
         response: data,
+        result_id: 'mock-result-id',
       };
     } catch (error) {
       // Fallback
       return {
         request: { itemId, parameters },
         response: { questions: [] },
+        result_id: 'mock-result-id',
       };
     }
   }

@@ -25,6 +25,7 @@ describe('Testing Mocks: Assistant', () => {
             expect(result.response).toBeDefined();
             expect(result.response).toHaveProperty('questions');
             expect(Array.isArray(result.response.questions)).toBe(true);
+            expect(result.result_id).toBeDefined();
           });
     })
 })
