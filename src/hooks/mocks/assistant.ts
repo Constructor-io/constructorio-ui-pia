@@ -1,4 +1,8 @@
-import { ConstructorClientOptions, SearchResponse } from '@constructor-io/constructorio-client-javascript';
+import { ConstructorClientOptions } from '@constructor-io/constructorio-client-javascript';
+
+interface QuestionResponse {
+  questions: Array<string>;
+}
 
 // Create URL from supplied intent (term) and parameters
 function createAssistantUrl(
@@ -31,7 +35,7 @@ class MockAssistant {
     this.options = options;
   }
 
-  async getSuggestedQuestions(itemId: string, parameters: Record<string, any> = {}): Promise<SearchResponse> {
+  async getSuggestedQuestions(itemId: string, parameters: Record<string, any> = {}): Promise<QuestionResponse> {
     if (!this.options.apiKey) {
       throw new Error('API key is required');
     }
@@ -42,23 +46,14 @@ class MockAssistant {
       const response = await fetch(url);
 
       if (!response.ok) {
-        throw new Error(`API request failed with status: ${response.status}`);
+        throw new Error(`Get Suggested Questions failed with status: ${response.status}`);
       }
 
       const data = await response.json();
-
-      return {
-        request: { itemId, parameters },
-        response: data,
-        result_id: 'mock-result-id',
-      };
+      return data;
     } catch (error) {
-      // Fallback
-      return {
-        request: { itemId, parameters },
-        response: { questions: [] },
-        result_id: 'mock-result-id',
-      };
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      throw new Error(`Get Suggested Questions failed: ${errorMessage}`);
     }
   }
 }

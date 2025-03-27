@@ -14,18 +14,12 @@ describe('Testing Mocks: Assistant', () => {
 
     describe('getSuggestedQuestions', () => {
         it('Should fetch suggested questions given item_id', async () => {
-            const itemId = '11016';
+            const itemId = '22368';
             const result = await client.assistant.getSuggestedQuestions(itemId);
             
             expect(result).toBeDefined();
-            expect(result.request).toEqual({
-              itemId,
-              parameters: {},
-            });
-            expect(result.response).toBeDefined();
-            expect(result.response).toHaveProperty('questions');
-            expect(Array.isArray(result.response.questions)).toBe(true);
-            expect(result.result_id).toBeDefined();
+            expect(result.questions).toBeDefined();
+            expect(Array.isArray(result.questions)).toBe(true);
           });
     })
 })
