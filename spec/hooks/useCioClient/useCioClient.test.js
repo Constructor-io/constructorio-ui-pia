@@ -23,8 +23,8 @@ describe('Testing Hook: useCioClient', () => {
     // Mock fetch to avoid calling default node fetch method
     global.fetch = jest.fn(() =>
       Promise.resolve({
-        json: () => Promise.resolve({ request: { itemId: '0123', parameters: {} }, response: { questions: [] } }),
-      })
+        json: () => Promise.resolve({}),
+      }),
     );
 
     const { result } = renderHook(({ apiKey }) => useCioClient({ apiKey }), {
@@ -43,7 +43,7 @@ describe('Testing Hook: useCioClient', () => {
   it('Should return a client with options set', () => {
     const key = 'xx';
     const clientOptions = {
-      version: "cio-ui-asa-pdp-1.0.0",
+      version: 'cio-ui-asa-pdp-1.0.0',
       serviceUrl: 'https://test.service.cnstrc.com',
       quizzesServiceUrl: 'https://test.quizzes.cnstrc.com',
       assistantServiceUrl: 'https://test.assistant.cnstrc.com',
