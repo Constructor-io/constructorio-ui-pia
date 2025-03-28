@@ -20,15 +20,13 @@ describe('Testing Hook: useCioClient', () => {
   });
 
   it('Should return a ConstructorIO Client Object', () => {
-    // Mock fetch to avoid calling default node fetch method
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        json: () => Promise.resolve({}),
-      }),
-    );
-
-    const { result } = renderHook(({ apiKey }) => useCioClient({ apiKey }), {
-      initialProps: { apiKey: 'xx' },
+    const { result } = renderHook(({ apiKey, options }) => useCioClient({ apiKey, options }), {
+      initialProps: {
+        apiKey: 'xx',
+        options: {
+          fetch: () => {},
+        },
+      },
     });
 
     const client = result.current;
