@@ -10,6 +10,9 @@ export interface UseSuggestedQuestionsProps {
 
 interface UseSuggestedQuestionsResponse {
   questions: Array<string>;
+  isLoading: boolean;
+  error: Error | null;
+  refetch: () => void;
 }
 
 const fetchSuggestedQuestions = async (client: MockConstructorIOClient, itemId: string) => {
@@ -28,14 +31,37 @@ export default function useSuggestedQuestions(
   const { itemId } = props;
   const client = useCioClient({ apiKey: DEMO_API_KEY });
   const [questions, setQuestions] = useState<Array<string>>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
+  const fetchData = () => {
     if (!client) return;
 
-    fetchSuggestedQuestions(client, itemId).then((fetchedQuestions) => {
-      setQuestions(fetchedQuestions);
-    });
+    setIsLoading(true);
+    setError(null);
+
+    fetchSuggestedQuestions(client, itemId)
+      .then((fetchedQuestions) => {
+        setQuestions(fetchedQuestions);
+        setError(null);
+      })
+      .catch((err) => {
+        setError(err instanceof Error ? err : new Error('Error fetching suggested questions'));
+        console.error('Error fetching suggested questions:', err);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchData();
   }, [client, itemId]);
 
-  return { questions };
+  return {
+    questions,
+    isLoading,
+    error,
+    refetch: fetchData,
+  };
 }
