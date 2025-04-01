@@ -2,7 +2,7 @@ import { renderHook, waitFor, act } from '@testing-library/react';
 import useCioClient from '../../../src/hooks/useCioClient';
 import useSuggestedQuestions from '../../../src/hooks/useSuggestedQuestions';
 
-// Mock useCioClient to test useSuggestedQuestions in isolation
+// Mock useCioClient and its methods to test useSuggestedQuestions in isolation
 jest.mock('../../../src/hooks/useCioClient');
 
 const mockQuestions = ['Mock question 1', 'Mock question 2', 'Mock question 3'];
@@ -40,7 +40,6 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     expect(result.current.isLoading).toBe(false);
     expect(result.current.questions).toEqual(mockQuestions);
     expect(result.current.error).toBeNull();
-
     expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledWith('test-item-id');
   });
 
@@ -59,11 +58,10 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     expect(result.current.questions).toEqual([]);
     expect(result.current.error).toBeInstanceOf(Error);
     expect(result.current.error.message).toBe('Mock error');
-
     expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledWith('test-item-id');
   });
 
-  it('should refetch questions when refetch function is called', async () => {
+  it('Should refetch questions when refetch function is called', async () => {
     mockClientInstance.assistant.getSuggestedQuestions.mockResolvedValueOnce({
       questions: mockQuestions,
     });
@@ -73,6 +71,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
+
     mockClientInstance.assistant.getSuggestedQuestions.mockClear();
     mockClientInstance.assistant.getSuggestedQuestions.mockResolvedValueOnce({
       questions: ['New mock question 1', 'New mock question 2'],
@@ -83,11 +82,11 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       result.current.refetch();
     });
 
+    // Check state after refetch
     expect(result.current.isLoading).toBe(true);
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
-
     expect(result.current.questions).toEqual(['New mock question 1', 'New mock question 2']);
     expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledTimes(1);
   });
@@ -96,10 +95,10 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     useCioClient.mockReturnValue(null);
 
     const { result } = renderHook(() => useSuggestedQuestions({ itemId: 'test-item-id' }));
+
     expect(result.current.isLoading).toBe(false);
     expect(result.current.questions).toEqual([]);
     expect(result.current.error).toBeNull();
-
     expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledTimes(0);
   });
 

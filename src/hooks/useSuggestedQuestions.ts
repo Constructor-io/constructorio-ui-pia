@@ -54,7 +54,7 @@ export default function useSuggestedQuestions(
 
   useEffect(() => {
     fetchData();
-  }, [client, itemId]);
+  }, [itemId]);
 
   return {
     questions,
