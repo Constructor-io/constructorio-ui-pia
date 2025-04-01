@@ -4,7 +4,7 @@ import { DEMO_API_KEY } from '../constants';
 import { useEffect, useState } from 'react';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 
-interface UseSuggestedQuestionsProps {
+export interface UseSuggestedQuestionsProps {
   itemId: string;
 }
 
