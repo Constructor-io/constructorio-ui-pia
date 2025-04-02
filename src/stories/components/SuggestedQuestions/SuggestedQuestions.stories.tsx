@@ -1,6 +1,6 @@
+import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
-import SuggestedQuestionElement from '../../../components/SuggestedQuestions/SuggestedQuestionElement';
 import SuggestedQuestions from '../../../components/SuggestedQuestions/SuggestedQuestions';
 
 const meta = {
@@ -20,4 +20,5 @@ export const Default: Story = {
     itemId: 'test-item-id',
     onQuestionClick: fn(),
   },
+  decorators: [],
 };
