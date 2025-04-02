@@ -3,7 +3,7 @@ import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Input from '../../../src/components/Input/Input';
 
-describe('Input Component', () => {
+describe('Testing Component: Input', () => {
   const mockSubmit = jest.fn();
 
   beforeEach(() => {
