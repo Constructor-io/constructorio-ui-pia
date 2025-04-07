@@ -35,7 +35,10 @@ class MockAssistant {
     this.options = options;
   }
 
-  async getSuggestedQuestions(itemId: string, parameters: Record<string, any> = {}): Promise<QuestionResponse> {
+  async getSuggestedQuestions(
+    itemId: string,
+    parameters: Record<string, any> = {},
+  ): Promise<QuestionResponse> {
     if (!this.options.apiKey) {
       throw new Error('API key is required');
     }
