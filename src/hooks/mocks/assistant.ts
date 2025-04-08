@@ -1,26 +1,13 @@
 import { ConstructorClientOptions } from '@constructor-io/constructorio-client-javascript';
-
-export interface Question {
-  value: string;
-}
-
-export interface QuestionResponse {
-  questions: Array<Question>;
-}
-
-export interface AnswerResponse {
-  value: string;
-  alternative: string;
-  follow_up_questions: Array<string>;
-}
-
-interface AssistantUrlProps {
-  itemId: string;
-  question?: string;
-  isStreaming?: boolean;
-  options: ConstructorClientOptions;
-  parameters?: Record<string, string>;
-}
+import {
+  AnswerResponse,
+  AssistantUrlProps,
+  QuestionResponse,
+  StreamEndEvent,
+  StreamMessageEvent,
+  StreamStartEvent,
+  GetAnswerResponseStreamingProps,
+} from './types';
 
 // Create URL for ASA API
 function createAssistantUrl({
@@ -30,8 +17,6 @@ function createAssistantUrl({
   options,
   parameters = {},
 }: AssistantUrlProps): string {
-  if (!itemId) throw new Error('Item ID is required');
-  if (!options.apiKey) throw new Error('API key is required');
   if (!options.assistantServiceUrl) throw new Error('Assistant service URL is required');
 
   const { apiKey, assistantServiceUrl } = options;
@@ -64,9 +49,8 @@ class MockAssistant {
     itemId: string,
     parameters: Record<string, any> = {},
   ): Promise<QuestionResponse> {
-    if (!this.options.apiKey) {
-      throw new Error('API key is required');
-    }
+    if (!itemId) throw new Error('Item ID is required');
+    if (!this.options.apiKey) throw new Error('API key is required');
 
     const url = createAssistantUrl({
       itemId,
@@ -94,9 +78,9 @@ class MockAssistant {
     question: string,
     parameters: Record<string, any> = {},
   ): Promise<AnswerResponse> {
-    if (!this.options.apiKey) {
-      throw new Error('API key is required');
-    }
+    if (!itemId) throw new Error('Item ID is required');
+    if (!question) throw new Error('Question is required');
+    if (!this.options.apiKey) throw new Error('API key is required');
 
     const url = createAssistantUrl({
       itemId,
@@ -117,6 +101,55 @@ class MockAssistant {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       throw new Error(`Get Answer failed: ${errorMessage}`);
+    }
+  }
+
+  async getAnswerResponseStreaming({
+    itemId,
+    question,
+    parameters,
+    onStart,
+    onMessage,
+    onEnd,
+  }: GetAnswerResponseStreamingProps): Promise<void> {
+    if (!itemId) throw new Error('Item ID is required');
+    if (!question) throw new Error('Question is required');
+    if (!this.options.apiKey) throw new Error('API key is required');
+
+    const url = createAssistantUrl({
+      itemId,
+      question,
+      isStreaming: true,
+      options: this.options,
+      parameters,
+    });
+
+    try {
+      const eventSource = new EventSource(url);
+
+      eventSource.addEventListener('open', (event: MessageEvent) => {
+        const data = JSON.parse(event.data) as StreamStartEvent;
+        if (onStart) onStart(data);
+      });
+
+      eventSource.addEventListener('message', (event: MessageEvent) => {
+        const data = JSON.parse(event.data) as StreamMessageEvent;
+        if (onMessage) onMessage(data);
+      });
+
+      eventSource.addEventListener('end', (event: MessageEvent) => {
+        const data = JSON.parse(event.data) as StreamEndEvent;
+        if (onEnd) onEnd(data);
+        eventSource.close();
+      });
+
+      eventSource.onerror = () => {
+        eventSource.close();
+        throw new Error('Streaming response failed');
+      };
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      throw new Error(`Get Streaming Answer failed: ${errorMsg}`);
     }
   }
 }
