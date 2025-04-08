@@ -1,7 +1,11 @@
 import { ConstructorClientOptions } from '@constructor-io/constructorio-client-javascript';
 
+export interface Question {
+  value: string;
+}
+
 export interface QuestionResponse {
-  questions: Array<string>;
+  questions: Array<Question>;
 }
 
 export interface AnswerResponse {
@@ -10,16 +14,30 @@ export interface AnswerResponse {
   follow_up_questions: Array<string>;
 }
 
-// Create URL from supplied intent (term) and parameters
-function createAssistantUrl(
-  itemId: string,
-  question: string,
-  isStreaming: boolean,
-  options: ConstructorClientOptions,
-  parameters: Record<string, string> = {},
-) {
+interface AssistantUrlProps {
+  itemId: string;
+  question?: string;
+  isStreaming?: boolean;
+  options: ConstructorClientOptions;
+  parameters?: Record<string, string>;
+}
+
+// Create URL for ASA API
+function createAssistantUrl({
+  itemId,
+  question,
+  isStreaming = false,
+  options,
+  parameters = {},
+}: AssistantUrlProps): string {
+  if (!itemId) throw new Error('Item ID is required');
+  if (!options.apiKey) throw new Error('API key is required');
+  if (!options.assistantServiceUrl) throw new Error('Assistant service URL is required');
+
   const { apiKey, assistantServiceUrl } = options;
-  const baseUrl = `${assistantServiceUrl}/v1/item_questions${question ? `/${encodeURIComponent(question)}/answer` : ''}${isStreaming ? '/streaming' : ''}`;
+  const baseUrl = `${assistantServiceUrl}/v1/item_questions${
+    question ? `/${encodeURIComponent(question)}/answer` : ''
+  }${isStreaming ? '/streaming' : ''}`;
 
   const url = new URL(baseUrl);
   url.searchParams.append('item_id', itemId);
@@ -50,7 +68,11 @@ class MockAssistant {
       throw new Error('API key is required');
     }
 
-    const url = createAssistantUrl(itemId, '', false, this.options, parameters);
+    const url = createAssistantUrl({
+      itemId,
+      options: this.options,
+      parameters,
+    });
 
     try {
       const response = await fetch(url);
@@ -67,7 +89,7 @@ class MockAssistant {
     }
   }
 
-  async getAnswerWithQuestion(
+  async getAnswerResponse(
     itemId: string,
     question: string,
     parameters: Record<string, any> = {},
@@ -76,7 +98,12 @@ class MockAssistant {
       throw new Error('API key is required');
     }
 
-    const url = createAssistantUrl(itemId, question, false, this.options, parameters);
+    const url = createAssistantUrl({
+      itemId,
+      question,
+      options: this.options,
+      parameters,
+    });
 
     try {
       const response = await fetch(url);
