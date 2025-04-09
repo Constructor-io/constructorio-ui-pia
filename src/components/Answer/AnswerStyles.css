@@ -1,5 +1,5 @@
 .cio-asa-pdp-answer-container {
-	width: 430px;
+  width: 430px;
   padding: 10px;
 }
 
@@ -22,10 +22,10 @@
 }
 
 .cio-asa-pdp-answer-text {
-	font-size: 13px;
+  font-size: 13px;
   font-style: normal;
   font-weight: 400;
-	color: #14151A;
+  color: #14151a;
 }
 
 /* Animation for the loader */
@@ -34,7 +34,7 @@
     background-color: rgba(0, 0, 0, 0.05);
   }
   50% {
-    background-color: rgba(0, 0, 0, 0.10);
+    background-color: rgba(0, 0, 0, 0.1);
   }
   100% {
     background-color: rgba(0, 0, 0, 0.05);

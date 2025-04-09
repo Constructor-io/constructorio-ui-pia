@@ -15,14 +15,6 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    answerText: 'This is an answer text that should be displayed in the Answer component.',
-    isLoading: false,
-  },
-};
-
-export const Loading: Story = {
-  args: {
-    answerText: '',
-    isLoading: true,
+    text: 'This is an answer text that should be displayed in the Answer component.',
   },
 };
