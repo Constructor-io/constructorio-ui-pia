@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/prefer-default-export
 export const DEMO_API_KEY = 'key_INwEgKqTefVGVdjJ';
-
+export const DEMO_ITEM_ID = '22368';
 export const MOCK_QUESTIONS = [
   'Is this bunkie board suitable for a platform bed?',
   'What are the benefits of using a bunkie board with a platform bed?',
