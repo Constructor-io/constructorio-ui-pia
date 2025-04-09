@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import useCioClient from './useCioClient';
 import { QuestionResponse } from './mocks/assistant';
 import { DEMO_API_KEY } from '../constants';
@@ -16,12 +16,8 @@ interface UseSuggestedQuestionsResponse {
 }
 
 const fetchSuggestedQuestions = async (client: MockConstructorIOClient, itemId: string) => {
-  try {
-    const response: QuestionResponse = await client.assistant.getSuggestedQuestions(itemId);
-    return response.questions;
-  } catch (error) {
-    throw error;
-  }
+  const response: QuestionResponse = await client.assistant.getSuggestedQuestions(itemId);
+  return response.questions;
 };
 
 export default function useSuggestedQuestions(
@@ -33,7 +29,7 @@ export default function useSuggestedQuestions(
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const fetchData = () => {
+  const fetchData = useCallback(() => {
     if (!client) return;
 
     setIsLoading(true);
@@ -50,16 +46,16 @@ export default function useSuggestedQuestions(
       .finally(() => {
         setIsLoading(false);
       });
-  };
+  }, [client, itemId]);
 
   useEffect(() => {
     fetchData();
-  }, [itemId]);
+  }, [fetchData]);
 
   return {
     questions,
     isLoading,
     error,
-    refetch: () => fetchData(),
+    refetch: fetchData,
   };
 }

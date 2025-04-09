@@ -5,7 +5,7 @@ import useSuggestedQuestions from '../../../src/hooks/useSuggestedQuestions';
 // Mock useCioClient and its methods to test useSuggestedQuestions in isolation
 jest.mock('../../../src/hooks/useCioClient');
 
-const mockQuestions = ['Mock question 1', 'Mock question 2', 'Mock question 3'];
+const mockQuestions = [{ value: 'Mock question 1' }, { value: 'Mock question 2' }, { value: 'Mock question 3' }];
 
 describe('Testing Hook: useSuggestedQuestions', () => {
   const mockClientInstance = {
@@ -39,6 +39,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     // Check the returned data
     expect(result.current.isLoading).toBe(false);
     expect(result.current.questions).toEqual(mockQuestions);
+    expect(result.current.questions.length).toBe(mockQuestions.length);
     expect(result.current.error).toBeNull();
     expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledWith('test-item-id');
   });
