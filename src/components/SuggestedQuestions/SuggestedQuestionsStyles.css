@@ -65,28 +65,3 @@
   display: flex;
   padding: 4px;
 }
-
-.cio-asa-pdp-suggested-questions-error-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background-color: #fef8f4; /* light beige background */
-  border-radius: 8px;
-  padding: 16px;
-  border: 1px solid #f4e3db;
-}
-
-.cio-asa-pdp-suggested-questions-retry-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background-color: #121212;
-  color: #fff;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
-}

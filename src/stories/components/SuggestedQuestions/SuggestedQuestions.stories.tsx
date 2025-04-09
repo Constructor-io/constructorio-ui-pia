@@ -21,3 +21,11 @@ export const Default: Story = {
     onQuestionClick: fn(),
   },
 };
+
+export const ErrorDisplay: Story = {
+  args: {
+    itemId: DEMO_ITEM_ID,
+    onQuestionClick: fn(),
+    isError: true,
+  },
+};
