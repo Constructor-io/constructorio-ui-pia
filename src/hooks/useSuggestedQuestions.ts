@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import useCioClient from './useCioClient';
-import { QuestionResponse } from './mocks/assistant';
+import { Question, QuestionResponse } from './mocks/assistant';
 import { DEMO_API_KEY } from '../constants';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 
@@ -9,8 +9,7 @@ export interface UseSuggestedQuestionsProps {
 }
 
 interface UseSuggestedQuestionsResponse {
-  questions: Array<string>;
-  isLoading: boolean;
+  questions: Array<Question>;
   error: Error | null;
   refetch: () => void;
 }
@@ -25,14 +24,12 @@ export default function useSuggestedQuestions(
 ): UseSuggestedQuestionsResponse {
   const { itemId } = props;
   const client = useCioClient({ apiKey: DEMO_API_KEY });
-  const [questions, setQuestions] = useState<Array<string>>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [questions, setQuestions] = useState<Array<Question>>([]);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchData = useCallback(() => {
     if (!client) return;
 
-    setIsLoading(true);
     setError(null);
 
     fetchSuggestedQuestions(client, itemId)
@@ -42,9 +39,6 @@ export default function useSuggestedQuestions(
       })
       .catch((err) => {
         setError(err instanceof Error ? err : new Error('Error fetching suggested questions'));
-      })
-      .finally(() => {
-        setIsLoading(false);
       });
   }, [client, itemId]);
 
@@ -54,7 +48,6 @@ export default function useSuggestedQuestions(
 
   return {
     questions,
-    isLoading,
     error,
     refetch: fetchData,
   };
