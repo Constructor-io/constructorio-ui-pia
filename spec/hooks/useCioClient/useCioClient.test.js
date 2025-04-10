@@ -5,13 +5,13 @@ import version from '../../../src/version';
 describe('Testing Hook: useCioClient', () => {
   it('Should throw error if Api Key not provided', () => {
     const spy = jest.spyOn(console, 'error');
-    spy.mockImplementation(() => {});
+    spy.mockImplementation(() => { });
     expect(() => renderHook(() => useCioClient())).toThrow();
     spy.mockRestore();
   });
 
   it('Should return client when custom client is provided', () => {
-    const mockClient = { tracker: () => {} };
+    const mockClient = { tracker: () => { } };
     const { result } = renderHook(({ cioClient }) => useCioClient({ cioClient }), {
       initialProps: { cioClient: mockClient },
     });
@@ -24,7 +24,7 @@ describe('Testing Hook: useCioClient', () => {
       initialProps: {
         apiKey: 'xx',
         options: {
-          fetch: () => {},
+          fetch: () => { },
         },
       },
     });

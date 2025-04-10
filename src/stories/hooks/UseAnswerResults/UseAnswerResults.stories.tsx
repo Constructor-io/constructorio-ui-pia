@@ -25,13 +25,6 @@ export const Default: Story = {
   },
 };
 
-export const WithError: Story = {
-  args: {
-    itemId: DEMO_ITEM_ID,
-    question: '',
-  },
-};
-
 export const IrrelevantQuestions: Story = {
   args: {
     itemId: DEMO_ITEM_ID,

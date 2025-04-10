@@ -14,7 +14,7 @@ export interface UseAnswerResultsProps {
 export interface UseAnswerResultsResponse {
   data: Nullable<AnswerResponse>;
   isLoading: boolean;
-  error: string | null;
+  error: Error | null;
   refetch: () => void;
 }
 
@@ -30,7 +30,6 @@ const fetchAnswerResults = async (
     });
     return response;
   } catch (error) {
-    console.error('Error fetching answer results:', error);
     throw error;
   }
 };
@@ -43,7 +42,7 @@ export default function useAnswerResults({
   const client = useCioClient({ apiKey: DEMO_API_KEY });
   const [answerResults, setAnswerResults] = useState<AnswerResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<Error | null>(null);
 
   const fetchData = useCallback(() => {
     if (!client) return;
@@ -58,7 +57,7 @@ export default function useAnswerResults({
       })
       .catch((err) => {
         console.log('Caught in useAnswerResults catch block:', err);
-        setError(err instanceof Error ? err.message : 'Error fetching answer results');
+        setError(err instanceof Error ? err : new Error('Error fetching answer results'));
       })
       .finally(() => {
         setIsLoading(false);
