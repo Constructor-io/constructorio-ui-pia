@@ -48,7 +48,8 @@ class MockAssistant {
   async getSuggestedQuestions(
     itemId: string,
     parameters: Record<string, any> = {},
-  ): Promise<QuestionResponse> {
+  ): Promise<
+    > {
     if (!itemId) throw new Error('Item ID is required');
     if (!this.options.apiKey) throw new Error('API key is required');
 
