@@ -24,9 +24,9 @@ describe('Testing Mocks: Assistant', () => {
         });
     })
 
-    describe('getAnswerResponse', () => {
+    describe('getAnswerResults', () => {
         it('Should fetch answer given item_id and questions', async () => {
-            const result = await client.assistant.getAnswerResponse(DEMO_ITEM_ID, DEMO_QUESTION);
+            const result = await client.assistant.getAnswerResults({ itemId: DEMO_ITEM_ID, question: DEMO_QUESTION });
 
             expect(result).toBeDefined();
             expect(result.value).toBeDefined();

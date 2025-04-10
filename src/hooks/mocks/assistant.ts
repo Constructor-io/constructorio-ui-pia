@@ -6,7 +6,8 @@ import {
   StreamEndEvent,
   StreamMessageEvent,
   StreamStartEvent,
-  GetAnswerResponseStreamingProps,
+  GetAnswerResultsStreamProps,
+  GetAnswerResultsProps,
 } from './types';
 
 // Create URL for ASA API
@@ -48,8 +49,7 @@ class MockAssistant {
   async getSuggestedQuestions(
     itemId: string,
     parameters: Record<string, any> = {},
-  ): Promise<
-    > {
+  ): Promise<QuestionResponse> {
     if (!itemId) throw new Error('Item ID is required');
     if (!this.options.apiKey) throw new Error('API key is required');
 
@@ -74,11 +74,11 @@ class MockAssistant {
     }
   }
 
-  async getAnswerResponse(
-    itemId: string,
-    question: string,
-    parameters: Record<string, any> = {},
-  ): Promise<AnswerResponse> {
+  async getAnswerResults({
+    itemId,
+    question,
+    parameters,
+  }: GetAnswerResultsProps): Promise<AnswerResponse> {
     if (!itemId) throw new Error('Item ID is required');
     if (!question) throw new Error('Question is required');
     if (!this.options.apiKey) throw new Error('API key is required');
@@ -105,14 +105,14 @@ class MockAssistant {
     }
   }
 
-  async getAnswerResponseStreaming({
+  async getAnswerResultsStream({
     itemId,
     question,
     parameters,
     onStart,
     onMessage,
     onEnd,
-  }: GetAnswerResponseStreamingProps): Promise<void> {
+  }: GetAnswerResultsStreamProps): Promise<void> {
     if (!itemId) throw new Error('Item ID is required');
     if (!question) throw new Error('Question is required');
     if (!this.options.apiKey) throw new Error('API key is required');
