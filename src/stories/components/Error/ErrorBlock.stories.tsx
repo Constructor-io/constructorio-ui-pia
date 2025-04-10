@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
-import ErrorBlock from '../../../components/ErrorBlock/ErrorBlock';
+import ErrorBlock from '../../../components/Error/ErrorBlock';
 
 const withFixedWidth = (Story) => (
   <div style={{ width: '320px', maxWidth: '100%' }}>

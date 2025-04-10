@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface SuggestedQuestionElementProps {
+interface SuggestedQuestionProps {
   question: string;
   onClick?: () => void;
 }
@@ -27,7 +27,7 @@ function QuestionSvg() {
   );
 }
 
-function SuggestedQuestionElement({ question, onClick }: SuggestedQuestionElementProps) {
+function SuggestedQuestion({ question, onClick }: SuggestedQuestionProps) {
   return (
     <button type='button' className='cio-asa-pdp-suggested-question-element' onClick={onClick}>
       <QuestionSvg />
@@ -36,4 +36,4 @@ function SuggestedQuestionElement({ question, onClick }: SuggestedQuestionElemen
   );
 }
 
-export default SuggestedQuestionElement;
+export default SuggestedQuestion;

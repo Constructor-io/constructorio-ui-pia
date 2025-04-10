@@ -1,16 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
-import SuggestedQuestions from '../../../components/SuggestedQuestions/SuggestedQuestions';
+import SuggestedQuestionsContainer from '../../../components/SuggestedQuestion/SuggestedQuestionsContainer';
 import { DEMO_ITEM_ID } from '../../../constants';
 
 const meta = {
-  title: 'Components/SuggestedQuestions',
-  component: SuggestedQuestions,
+  title: 'Components/SuggestedQuestionsContainer',
+  component: SuggestedQuestionsContainer,
   parameters: {
     layout: 'centered',
   },
   tags: ['autodocs'],
-} satisfies Meta<typeof SuggestedQuestions>;
+} satisfies Meta<typeof SuggestedQuestionsContainer>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -22,7 +22,7 @@ export const Default: Story = {
   },
 };
 
-export const ErrorDisplay: Story = {
+export const Error: Story = {
   args: {
     itemId: DEMO_ITEM_ID,
     onQuestionClick: fn(),

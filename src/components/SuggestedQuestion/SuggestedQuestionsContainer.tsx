@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import SuggestedQuestionElement from './SuggestedQuestionElement';
+import SuggestedQuestionElement from './SuggestedQuestion';
 import useSuggestedQuestions from '../../hooks/useSuggestedQuestions';
 import { Question } from '../../hooks/mocks/assistant';
-import ErrorBlock from '../ErrorBlock/ErrorBlock';
+import ErrorBlock from '../Error/ErrorBlock';
 
-interface SuggestedQuestionsProps {
+interface SuggestedQuestionsContainerProps {
   itemId: string;
   onQuestionClick: (question: Question) => void;
   isError?: boolean; // For testing purposes
 }
 
-export default function SuggestedQuestions({
+export default function SuggestedQuestionsContainer({
   itemId,
   onQuestionClick,
   isError = false,
-}: SuggestedQuestionsProps) {
+}: SuggestedQuestionsContainerProps) {
   // Todo: Replace with useSuggestedQuestions hook
   const { questions, error, refetch } = useSuggestedQuestions({ itemId });
 

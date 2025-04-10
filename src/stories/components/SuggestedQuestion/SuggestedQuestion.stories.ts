@@ -1,16 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
-import SuggestedQuestionElement from '../../../components/SuggestedQuestions/SuggestedQuestionElement';
+import SuggestedQuestion from '../../../components/SuggestedQuestion/SuggestedQuestion';
 
 const meta = {
   title: 'Components/SuggestedQuestion',
-  component: SuggestedQuestionElement,
+  component: SuggestedQuestion,
   parameters: {
     layout: 'centered',
   },
   tags: ['autodocs'],
   args: { onClick: fn() },
-} satisfies Meta<typeof SuggestedQuestionElement>;
+} satisfies Meta<typeof SuggestedQuestion>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
