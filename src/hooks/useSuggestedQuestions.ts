@@ -6,12 +6,13 @@ import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 
 export interface UseSuggestedQuestionsProps {
   itemId: string;
+  paramter?: Record<string, any>;
 }
 
 interface UseSuggestedQuestionsResponse {
   questions: Array<Question>;
   isLoading: boolean;
-  error: Error | null;
+  error: string | null;
   refetch: () => void;
 }
 
@@ -20,14 +21,13 @@ const fetchSuggestedQuestions = async (client: MockConstructorIOClient, itemId: 
   return response.questions;
 };
 
-export default function useSuggestedQuestions(
-  props: UseSuggestedQuestionsProps,
-): UseSuggestedQuestionsResponse {
-  const { itemId } = props;
+export default function useSuggestedQuestions({
+  itemId,
+}: UseSuggestedQuestionsProps): UseSuggestedQuestionsResponse {
   const client = useCioClient({ apiKey: DEMO_API_KEY });
   const [questions, setQuestions] = useState<Array<Question>>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchData = useCallback(() => {
     if (!client) return;
@@ -41,7 +41,7 @@ export default function useSuggestedQuestions(
         setError(null);
       })
       .catch((err) => {
-        setError(err instanceof Error ? err : new Error('Error fetching suggested questions'));
+        setError(err instanceof Error ? err.message : 'Error fetching suggested questions');
       })
       .finally(() => {
         setIsLoading(false);

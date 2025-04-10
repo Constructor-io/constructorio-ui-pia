@@ -77,7 +77,7 @@ class MockAssistant {
   async getAnswerResults({
     itemId,
     question,
-    parameters,
+    parameters = {},
   }: GetAnswerResultsProps): Promise<AnswerResponse> {
     if (!itemId) throw new Error('Item ID is required');
     if (!question) throw new Error('Question is required');
