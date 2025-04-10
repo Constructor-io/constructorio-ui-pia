@@ -11,4 +11,10 @@ describe('Answer Component', () => {
     expect(getByTestId('answer-text')).toBeInTheDocument();
     expect(getByText('This is an example answer text')).toBeInTheDocument();
   });
+
+  it('renders loading state when isLoading prop is true', () => {
+    const { getByTestId, queryByTestId } = render(<Answer text='' isLoading={true} />);
+    expect(getByTestId('answer-loading')).toBeInTheDocument();
+    expect(queryByTestId('answer-text')).not.toBeInTheDocument();
+  });
 });
