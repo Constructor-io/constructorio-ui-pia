@@ -2,12 +2,11 @@ import React, { useEffect, useState } from 'react';
 import SuggestedQuestionElement from './SuggestedQuestion';
 import useSuggestedQuestions from '../../hooks/useSuggestedQuestions';
 import { Question } from '../../hooks/mocks/assistant';
-import ErrorBlock from '../Error/ErrorBlock';
 
 interface SuggestedQuestionsContainerProps {
   itemId: string;
   onQuestionClick: (question: Question) => void;
-  isError?: boolean; // For testing purposes
+  isError?: boolean;
 }
 
 export default function SuggestedQuestionsContainer({
@@ -38,7 +37,7 @@ export default function SuggestedQuestionsContainer({
   // Handle error state
   if (isError || error) {
     const errorMessage = error?.message ?? 'Error fetching suggested questions';
-    return <ErrorBlock message={errorMessage} onRetry={refetch} />;
+    return <div>To be replaced with ErrorBlock componet: {errorMessage}</div>;
   }
 
   const displayQuestions = isDesktop ? questions.slice(0, 6) : questions;
