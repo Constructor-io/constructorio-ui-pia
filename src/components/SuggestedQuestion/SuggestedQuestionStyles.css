@@ -1,27 +1,14 @@
-.cio-asa-pdp-suggested-questions-container {
-  width: 100%;
-  display: flex;
-  overflow: hidden;
-  justify-content: start;
-}
-
 .cio-asa-pdp-suggested-questions-mobile-scroll {
   display: flex;
   flex-wrap: nowrap;
   overflow-x: auto;
-  overflow-y: hidden;
   gap: 8px;
+  padding: 4px;
   width: 100%;
-  margin: 4px 0px;
+  max-width: 85vw;
 
   scroll-behavior: smooth;
   scrollbar-width: none;
-  -ms-overflow-style: none;
-  -webkit-overflow-scrolling: touch;
-}
-
-.cio-asa-pdp-suggested-questions-mobile-scroll::-webkit-scrollbar {
-  display: none;
 }
 
 .cio-asa-pdp-suggested-questions-desktop-grid {

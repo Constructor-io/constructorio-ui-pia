@@ -46,18 +46,16 @@ export default function SuggestedQuestionsContainer({
   }
 
   return (
-    <div className='cio-asa-pdp-suggested-questions-container'>
-      <div
-        className={`${isDesktop ? 'cio-asa-pdp-suggested-questions-desktop-grid' : 'cio-asa-pdp-suggested-questions-mobile-scroll'}`}
-        data-testid='suggested-questions-list'>
-        {displayQuestions.map((question, index) => (
-          <SuggestedQuestionElement
-            key={index}
-            question={question.value}
-            onClick={() => onQuestionClick(question)}
-          />
-        ))}
-      </div>
+    <div
+      className={`${isDesktop ? 'cio-asa-pdp-suggested-questions-desktop-grid' : 'cio-asa-pdp-suggested-questions-mobile-scroll'}`}
+      data-testid='suggested-questions-list'>
+      {displayQuestions.map((question, index) => (
+        <SuggestedQuestionElement
+          key={index}
+          question={question.value}
+          onClick={() => onQuestionClick(question)}
+        />
+      ))}
     </div>
   );
 }
