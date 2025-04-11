@@ -1,18 +1,29 @@
 import { ConstructorClientOptions } from '@constructor-io/constructorio-client-javascript';
+import {
+  AnswerResponse,
+  AssistantUrlProps,
+  QuestionResponse,
+  StreamEndEvent,
+  StreamMessageEvent,
+  StreamStartEvent,
+  GetAnswerResultsStreamProps,
+  GetAnswerResultsProps,
+} from './types';
 
-export interface QuestionResponse {
-  questions: Array<string>;
-}
+// Create URL for ASA API
+function createAssistantUrl({
+  itemId,
+  question,
+  isStreaming = false,
+  options,
+  parameters = {},
+}: AssistantUrlProps): string {
+  if (!options.assistantServiceUrl) throw new Error('Assistant service URL is required');
 
-// Create URL from supplied intent (term) and parameters
-function createAssistantUrl(
-  itemId: string,
-  endpoint: string,
-  options: ConstructorClientOptions,
-  parameters: Record<string, string> = {},
-) {
   const { apiKey, assistantServiceUrl } = options;
-  const baseUrl = `${assistantServiceUrl}/v1/${endpoint}`;
+  const baseUrl = `${assistantServiceUrl}/v1/item_questions${
+    question ? `/${encodeURIComponent(question)}/answer` : ''
+  }${isStreaming ? '/streaming' : ''}`;
 
   const url = new URL(baseUrl);
   url.searchParams.append('item_id', itemId);
@@ -39,11 +50,14 @@ class MockAssistant {
     itemId: string,
     parameters: Record<string, any> = {},
   ): Promise<QuestionResponse> {
-    if (!this.options.apiKey) {
-      throw new Error('API key is required');
-    }
+    if (!itemId) throw new Error('Item ID is required');
+    if (!this.options.apiKey) throw new Error('API key is required');
 
-    const url = createAssistantUrl(itemId, 'item_questions', this.options, parameters);
+    const url = createAssistantUrl({
+      itemId,
+      options: this.options,
+      parameters,
+    });
 
     try {
       const response = await fetch(url);
@@ -57,6 +71,86 @@ class MockAssistant {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       throw new Error(`Get Suggested Questions failed: ${errorMessage}`);
+    }
+  }
+
+  async getAnswerResults({
+    itemId,
+    question,
+    parameters = {},
+  }: GetAnswerResultsProps): Promise<AnswerResponse> {
+    if (!itemId) throw new Error('Item ID is required');
+    if (!question) throw new Error('Question is required');
+    if (!this.options.apiKey) throw new Error('API key is required');
+
+    const url = createAssistantUrl({
+      itemId,
+      question,
+      options: this.options,
+      parameters,
+    });
+
+    try {
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`Get Answer failed with status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      throw new Error(`Get Answer failed: ${errorMessage}`);
+    }
+  }
+
+  async getAnswerResultsStream({
+    itemId,
+    question,
+    parameters,
+    onStart,
+    onMessage,
+    onEnd,
+  }: GetAnswerResultsStreamProps): Promise<void> {
+    if (!itemId) throw new Error('Item ID is required');
+    if (!question) throw new Error('Question is required');
+    if (!this.options.apiKey) throw new Error('API key is required');
+
+    const url = createAssistantUrl({
+      itemId,
+      question,
+      isStreaming: true,
+      options: this.options,
+      parameters,
+    });
+
+    try {
+      const eventSource = new EventSource(url);
+
+      eventSource.addEventListener('open', (event: MessageEvent) => {
+        const data = JSON.parse(event.data) as StreamStartEvent;
+        if (onStart) onStart(data);
+      });
+
+      eventSource.addEventListener('message', (event: MessageEvent) => {
+        const data = JSON.parse(event.data) as StreamMessageEvent;
+        if (onMessage) onMessage(data);
+      });
+
+      eventSource.addEventListener('end', (event: MessageEvent) => {
+        const data = JSON.parse(event.data) as StreamEndEvent;
+        if (onEnd) onEnd(data);
+        eventSource.close();
+      });
+
+      eventSource.onerror = () => {
+        eventSource.close();
+        throw new Error('Streaming response failed');
+      };
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      throw new Error(`Get Streaming Answer failed: ${errorMsg}`);
     }
   }
 }
