@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
 
+enum FeedbackType {
+  UP = 'up',
+  DOWN = 'down',
+}
+
 function ThumbsUpIcon({ isSelected }: { isSelected: boolean }) {
   return (
     <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -42,9 +47,9 @@ function ThumbsDownIcon({ isSelected }: { isSelected: boolean }) {
 
 export default function Feedback() {
   const feedbackText = 'Is this answer useful?';
-  const [feedback, setFeedback] = useState<'up' | 'down' | null>(null);
+  const [feedback, setFeedback] = useState<FeedbackType | null>(null);
 
-  const handleFeedback = (type: 'up' | 'down') => {
+  const handleFeedback = (type: FeedbackType) => {
     setFeedback(type);
   };
 
@@ -55,15 +60,15 @@ export default function Feedback() {
         type='button'
         className='cio-asa-pdp-feedback-button'
         aria-label='thumbs up'
-        onClick={() => handleFeedback('up')}>
-        <ThumbsUpIcon isSelected={feedback === 'up'} />
+        onClick={() => handleFeedback(FeedbackType.UP)}>
+        <ThumbsUpIcon isSelected={feedback === FeedbackType.UP} />
       </button>
       <button
         type='button'
         className='cio-asa-pdp-feedback-button'
         aria-label='thumbs down'
-        onClick={() => handleFeedback('down')}>
-        <ThumbsDownIcon isSelected={feedback === 'down'} />
+        onClick={() => handleFeedback(FeedbackType.DOWN)}>
+        <ThumbsDownIcon isSelected={feedback === FeedbackType.DOWN} />
       </button>
     </div>
   );
