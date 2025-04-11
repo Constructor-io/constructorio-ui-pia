@@ -23,16 +23,4 @@ describe('Testing Mocks: Assistant', () => {
             expect(typeof result.questions[0].value).toBe('string');
         });
     })
-
-    describe('getAnswerResults', () => {
-        it('Should fetch answer given item_id and questions', async () => {
-            const result = await client.assistant.getAnswerResults({ itemId: DEMO_ITEM_ID, question: DEMO_QUESTION });
-
-            expect(result).toBeDefined();
-            expect(result.value).toBeDefined();
-            expect(typeof result.value).toBe('string');
-            expect(result.alternatives).toBeNull();
-            expect(result.follow_up_questions).toBeNull();
-        });
-    })
 })

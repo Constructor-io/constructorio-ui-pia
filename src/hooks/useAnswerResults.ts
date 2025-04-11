@@ -24,6 +24,7 @@ const fetchAnswerResults = async (
   question: string,
 ) => {
   try {
+    // BLOCK BY https://github.com/Constructor-io/constructorio-ui-asa-pdp/pull/13
     const response: AnswerResponse = await client.assistant.getAnswerResults({
       itemId,
       question,
