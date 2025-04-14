@@ -20,6 +20,10 @@ export default function SuggestedQuestionsContainer({
   // Considering that we are prioritizing the mobile view, we will build the component for mobile first
   const [isDesktop, setIsDesktop] = useState(false);
 
+  if (!questions || questions.length === 0) {
+    return null;
+  }
+
   useEffect(() => {
     const checkIsDesktop = () => {
       setIsDesktop(window.innerWidth >= 768);
@@ -37,19 +41,18 @@ export default function SuggestedQuestionsContainer({
   // Handle error state
   if (isError || error) {
     const errorMessage = error?.message ?? 'Error fetching suggested questions';
-    return <div>To be replaced with ErrorBlock componet: {errorMessage}</div>;
-  }
-
-  const displayQuestions = isDesktop ? questions.slice(0, 6) : questions;
-  if (displayQuestions.length === 0) {
-    return null;
+    return (
+      <div data-testid='suggested-questions-container-error-block'>
+        To be replaced with ErrorBlock componet: {errorMessage}
+      </div>
+    );
   }
 
   return (
     <div
       className={`${isDesktop ? 'cio-asa-pdp-suggested-questions-desktop-grid' : 'cio-asa-pdp-suggested-questions-mobile-scroll'}`}
       data-testid='suggested-questions-list'>
-      {displayQuestions.map((question, index) => (
+      {questions.map((question, index) => (
         <SuggestedQuestionElement
           key={index}
           question={question.value}

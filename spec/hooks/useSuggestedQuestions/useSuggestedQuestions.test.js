@@ -1,4 +1,4 @@
-import { renderHook, waitFor, act } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import useCioClient from '../../../src/hooks/useCioClient';
 import useSuggestedQuestions from '../../../src/hooks/useSuggestedQuestions';
 
