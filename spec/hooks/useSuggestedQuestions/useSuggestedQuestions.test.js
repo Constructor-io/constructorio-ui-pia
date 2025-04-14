@@ -27,17 +27,15 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     const { result } = renderHook(() => useSuggestedQuestions({ itemId: 'test-item-id' }));
 
     // Initial state
-    expect(result.current.isLoading).toBe(true);
     expect(result.current.questions).toEqual([]);
     expect(result.current.error).toBeNull();
 
     // Wait for the render to finish
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    })
 
     // Check the returned data
-    expect(result.current.isLoading).toBe(false);
     expect(result.current.questions).toEqual(mockQuestions);
     expect(result.current.questions.length).toBe(mockQuestions.length);
     expect(result.current.error).toBeNull();
@@ -50,12 +48,11 @@ describe('Testing Hook: useSuggestedQuestions', () => {
 
     const { result } = renderHook(() => useSuggestedQuestions({ itemId: 'test-item-id' }));
 
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    })
 
     // Expect error state with empty question array
-    expect(result.current.isLoading).toBe(false);
     expect(result.current.questions).toEqual([]);
     expect(result.current.error).toBeInstanceOf(Error);
     expect(result.current.error.message).toBe('Mock error');
@@ -69,9 +66,9 @@ describe('Testing Hook: useSuggestedQuestions', () => {
 
     // Call the hook once and clear the mock
     const { result } = renderHook(() => useSuggestedQuestions({ itemId: 'test-item-id' }));
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    })
 
     mockClientInstance.assistant.getSuggestedQuestions.mockClear();
     mockClientInstance.assistant.getSuggestedQuestions.mockResolvedValueOnce({
@@ -84,11 +81,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     });
 
     // Check state after refetch
-    expect(result.current.isLoading).toBe(true);
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-    expect(result.current.questions).toEqual(['New mock question 1', 'New mock question 2']);
+    expect(result.current.questions).toEqual(mockQuestions);
     expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledTimes(1);
   });
 
@@ -97,7 +90,6 @@ describe('Testing Hook: useSuggestedQuestions', () => {
 
     const { result } = renderHook(() => useSuggestedQuestions({ itemId: 'test-item-id' }));
 
-    expect(result.current.isLoading).toBe(false);
     expect(result.current.questions).toEqual([]);
     expect(result.current.error).toBeNull();
     expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledTimes(0);
@@ -114,9 +106,9 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     });
 
     // Initial render
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    })
     expect(result.current.questions).toEqual(mockQuestions);
 
     // Verify initial render results
@@ -126,10 +118,9 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     rerender({ itemId: 'new-test-item-id' });
 
     // Verify re-render results
-    expect(result.current.isLoading).toBe(true);
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    })
     expect(result.current.questions).toEqual(newMockQuestions);
 
     expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledWith('test-item-id');

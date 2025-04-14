@@ -1,28 +1,30 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import SuggestedQuestionElement from '../../../src/components/SuggestedQuestions/SuggestedQuestionElement';
+import SuggestedQuestion from '../../../src/components/SuggestedQuestion/SuggestedQuestion';
 
-describe('Testing Component: SuggestedQuestionElement', () => {
+const testSuggestedQuestion = 'Test question?';
+
+describe('Testing Component: SuggestedQuestion', () => {
   const defaultProps = {
-    question: 'Test question?',
+    question: testSuggestedQuestion,
     onClick: jest.fn(),
   };
 
   it('renders the question text', () => {
-    const { getByText } = render(<SuggestedQuestionElement {...defaultProps} />);
-    expect(getByText('Test question?')).toBeInTheDocument();
+    const { getByText } = render(<SuggestedQuestion {...defaultProps} />);
+    expect(getByText(testSuggestedQuestion)).toBeInTheDocument();
   });
 
   it('renders the question icon', () => {
-    const { queryByRole } = render(<SuggestedQuestionElement {...defaultProps} />);
+    const { queryByRole } = render(<SuggestedQuestion {...defaultProps} />);
     expect(queryByRole('button')).toContainElement(
       document.querySelector('.cio-asa-pdp-suggested-question-icon'),
     );
   });
 
   it('calls onClick when clicked', () => {
-    const { queryByRole } = render(<SuggestedQuestionElement {...defaultProps} />);
+    const { queryByRole } = render(<SuggestedQuestion {...defaultProps} />);
     fireEvent.click(queryByRole('button'));
     expect(defaultProps.onClick).toHaveBeenCalledTimes(1);
   });
