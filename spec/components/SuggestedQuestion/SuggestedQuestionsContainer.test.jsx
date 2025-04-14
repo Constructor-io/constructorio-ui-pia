@@ -8,7 +8,7 @@ import useSuggestedQuestions from '../../../src/hooks/useSuggestedQuestions';
 // Mock useSuggestedQuestions hook
 jest.mock('../../../src/hooks/useSuggestedQuestions', () => jest.fn());
 
-describe('Testing Component: SuggestedQuestionsContainer', () => {
+describe('SuggestedQuestionsContainer Component', () => {
   const defaultProps = {
     itemId: 'test-item-id',
     onQuestionClick: jest.fn(),
@@ -24,7 +24,7 @@ describe('Testing Component: SuggestedQuestionsContainer', () => {
     defaultProps.onQuestionClick.mockClear();
   });
 
-  it('Should render the component with questions', () => {
+  it('renders the component with questions', () => {
     render(<SuggestedQuestionsContainer {...defaultProps} />);
 
     expect(useSuggestedQuestions).toHaveBeenCalledWith({ itemId: defaultProps.itemId });
@@ -35,7 +35,7 @@ describe('Testing Component: SuggestedQuestionsContainer', () => {
     });
   });
 
-  it('Should not render any questions when none are returned', async () => {
+  it('not render any questions when none are returned', async () => {
     // Mock fetch to return empty questions array
     useSuggestedQuestions.mockReturnValueOnce({
       questions: [],
@@ -53,7 +53,7 @@ describe('Testing Component: SuggestedQuestionsContainer', () => {
     });
   });
 
-  it('Should call onQuestionClick when a question is clicked', async () => {
+  it('calls onQuestionClick when a question is clicked', async () => {
     const { getByText } = render(<SuggestedQuestionsContainer {...defaultProps} />);
 
     await waitFor(() => {
@@ -64,7 +64,7 @@ describe('Testing Component: SuggestedQuestionsContainer', () => {
     expect(defaultProps.onQuestionClick).toHaveBeenCalledWith(MOCK_QUESTIONS[0]);
   });
 
-  it('Should handle fetch errors gracefully', async () => {
+  it('handle fetch errors gracefully', async () => {
     const { container, getByTestId } = render(
       <SuggestedQuestionsContainer {...defaultProps} isError={true} />,
     );

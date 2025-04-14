@@ -5,7 +5,7 @@ import SuggestedQuestion from '../../../src/components/SuggestedQuestion/Suggest
 
 const testSuggestedQuestion = 'Test question?';
 
-describe('Testing Component: SuggestedQuestion', () => {
+describe('SuggestedQuestion Component', () => {
   const defaultProps = {
     question: testSuggestedQuestion,
     onClick: jest.fn(),
