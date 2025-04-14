@@ -58,14 +58,14 @@ export default function Feedback() {
       <p className='cio-asa-pdp-feedback-text'>{feedbackText}</p>
       <button
         type='button'
-        className='cio-asa-pdp-feedback-button'
+        className='cio-asa-pdp-feedback-button cio-asa-pdp-feedback-button-up'
         aria-label='thumbs up'
         onClick={() => handleFeedback(FeedbackType.UP)}>
         <ThumbsUpIcon isSelected={feedback === FeedbackType.UP} />
       </button>
       <button
         type='button'
-        className='cio-asa-pdp-feedback-button'
+        className='cio-asa-pdp-feedback-button cio-asa-pdp-feedback-button-down'
         aria-label='thumbs down'
         onClick={() => handleFeedback(FeedbackType.DOWN)}>
         <ThumbsDownIcon isSelected={feedback === FeedbackType.DOWN} />
