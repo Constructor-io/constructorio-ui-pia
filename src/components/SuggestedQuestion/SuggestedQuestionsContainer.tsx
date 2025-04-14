@@ -20,10 +20,6 @@ export default function SuggestedQuestionsContainer({
   // Considering that we are prioritizing the mobile view, we will build the component for mobile first
   const [isDesktop, setIsDesktop] = useState(false);
 
-  if (!questions || questions.length === 0) {
-    return null;
-  }
-
   useEffect(() => {
     const checkIsDesktop = () => {
       setIsDesktop(window.innerWidth >= 768);
@@ -38,7 +34,10 @@ export default function SuggestedQuestionsContainer({
     return () => window.removeEventListener('resize', checkIsDesktop);
   });
 
-  // Handle error state
+  if (!questions || questions.length === 0) {
+    return null;
+  }
+
   if (isError || error) {
     const errorMessage = error?.message ?? 'Error fetching suggested questions';
     return (
