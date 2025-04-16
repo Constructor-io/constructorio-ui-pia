@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import SuggestedQuestionElement from './SuggestedQuestion';
+import SuggestedQuestion from '../SuggestedQuestion/SuggestedQuestion';
 import useSuggestedQuestions from '../../hooks/useSuggestedQuestions';
 import { Question } from '../../hooks/mocks/assistant';
 
@@ -42,7 +42,7 @@ export default function SuggestedQuestionsContainer({
     const errorMessage = error?.message ?? 'Error fetching suggested questions';
     return (
       <div data-testid='suggested-questions-container-error-block'>
-        To be replaced with ErrorBlock componet: {errorMessage}
+        To be replaced with ErrorBlock component: {errorMessage}
       </div>
     );
   }
@@ -52,7 +52,7 @@ export default function SuggestedQuestionsContainer({
       className={`${isDesktop ? 'cio-asa-pdp-suggested-questions-desktop-grid' : 'cio-asa-pdp-suggested-questions-mobile-scroll'}`}
       data-testid='suggested-questions-list'>
       {questions.map((question, index) => (
-        <SuggestedQuestionElement
+        <SuggestedQuestion
           key={index}
           question={question.value}
           onClick={() => onQuestionClick(question)}

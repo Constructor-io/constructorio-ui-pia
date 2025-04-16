@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent, waitFor, screen, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import SuggestedQuestionsContainer from '../../../src/components/SuggestedQuestion/SuggestedQuestionsContainer';
+import SuggestedQuestionsContainer from '../../../src/components/SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import { MOCK_QUESTIONS } from '../../../src/constants';
 import useSuggestedQuestions from '../../../src/hooks/useSuggestedQuestions';
 

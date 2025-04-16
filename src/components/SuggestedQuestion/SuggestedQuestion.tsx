@@ -29,7 +29,7 @@ function QuestionSvg() {
 
 function SuggestedQuestion({ question, onClick }: SuggestedQuestionProps) {
   return (
-    <button type='button' className='cio-asa-pdp-suggested-question-element' onClick={onClick}>
+    <button type='button' className='cio-asa-pdp-suggested-question' onClick={onClick}>
       <QuestionSvg />
       {question}
     </button>

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
-import SuggestedQuestionsContainer from '../../../components/SuggestedQuestion/SuggestedQuestionsContainer';
+import SuggestedQuestionsContainer from '../../../components/SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import { DEMO_ITEM_ID } from '../../../constants';
 
 const meta = {
