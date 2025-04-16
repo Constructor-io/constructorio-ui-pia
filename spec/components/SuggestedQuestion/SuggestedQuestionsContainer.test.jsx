@@ -35,7 +35,7 @@ describe('SuggestedQuestionsContainer Component', () => {
     });
   });
 
-  it('not render any questions when none are returned', async () => {
+  it('does not render any questions when none are returned', async () => {
     // Mock fetch to return empty questions array
     useSuggestedQuestions.mockReturnValue({
       questions: [],
