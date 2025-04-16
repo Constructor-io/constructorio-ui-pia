@@ -15,7 +15,7 @@ export default function SuggestedQuestionsContainer({
   isError = false,
 }: SuggestedQuestionsContainerProps) {
   // Todo: Replace with useSuggestedQuestions hook
-  const { questions, isLoading, error, refetch } = useSuggestedQuestions({ itemId });
+  const { questions, error } = useSuggestedQuestions({ itemId });
 
   if (!questions || questions.length === 0) {
     return null;
