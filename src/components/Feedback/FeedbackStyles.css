@@ -1,0 +1,32 @@
+.cio-asa-pdp-feedback-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  padding: 8px 16px;
+  gap: 8px;
+}
+
+.cio-asa-pdp-feedback-text {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: -0.5%;
+  color: rgba(15, 19, 36, 0.7);
+}
+
+.cio-asa-pdp-feedback-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  background: none;
+  border: 0px;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.2s ease;
+  position: relative;
+}
+
+.cio-asa-pdp-feedback-button:hover {
+  opacity: 0.8;
+}
