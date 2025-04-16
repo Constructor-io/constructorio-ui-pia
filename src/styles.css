@@ -3,6 +3,7 @@
 @import './components/Input/InputStyles.css';
 @import './components/Feedback/FeedbackStyles.css';
 @import './components/Answer/AnswerStyles.css';
+@import './components/Error/ErrorStyles.css';
 
 .cio-asa-pdp,
 * {
