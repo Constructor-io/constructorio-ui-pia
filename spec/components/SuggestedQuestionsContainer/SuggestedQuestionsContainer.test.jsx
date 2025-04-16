@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, waitFor, screen, act } from '@testing-library/react';
+import { render, fireEvent, waitFor, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import SuggestedQuestionsContainer from '../../../src/components/SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import { MOCK_QUESTIONS } from '../../../src/constants';
@@ -66,7 +66,7 @@ describe('SuggestedQuestionsContainer Component', () => {
 
   it('handle fetch errors gracefully', async () => {
     const { container, getByTestId } = render(
-      <SuggestedQuestionsContainer {...defaultProps} isError={true} />,
+      <SuggestedQuestionsContainer {...defaultProps} isError />,
     );
 
     // Component should still render without crashing

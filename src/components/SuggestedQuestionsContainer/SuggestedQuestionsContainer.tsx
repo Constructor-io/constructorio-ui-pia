@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import SuggestedQuestion from '../SuggestedQuestion/SuggestedQuestion';
 import useSuggestedQuestions from '../../hooks/useSuggestedQuestions';
 import { Question } from '../../hooks/mocks/assistant';

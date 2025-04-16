@@ -111,22 +111,13 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       initialProps: { itemId: 'test-item-id' },
     });
 
-    // Initial render
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0));
-    });
-    expect(result.current.questions).toEqual(mockQuestions);
-
-    // Verify initial render results
+    await act(async () => {});
     expect(result.current.questions).toEqual(mockQuestions);
 
     // Rerender with a different itemId
     rerender({ itemId: 'new-test-item-id' });
 
-    // Verify re-render results
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0));
-    });
+    await act(async () => {});
     expect(result.current.questions).toEqual(newMockQuestions);
 
     expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledWith('test-item-id');

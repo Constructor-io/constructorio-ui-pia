@@ -13,7 +13,7 @@ describe('Answer Component', () => {
   });
 
   it('renders loading state when isLoading prop is true', () => {
-    const { getByTestId, queryByTestId } = render(<Answer text='' isLoading={true} />);
+    const { getByTestId, queryByTestId } = render(<Answer text='' isLoading />);
     expect(getByTestId('answer-loading')).toBeInTheDocument();
     expect(queryByTestId('answer-text')).not.toBeInTheDocument();
   });
