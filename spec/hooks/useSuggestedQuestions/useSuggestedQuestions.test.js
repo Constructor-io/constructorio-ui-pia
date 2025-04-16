@@ -5,7 +5,11 @@ import useSuggestedQuestions from '../../../src/hooks/useSuggestedQuestions';
 // Mock useCioClient and its methods to test useSuggestedQuestions in isolation
 jest.mock('../../../src/hooks/useCioClient');
 
-const mockQuestions = [{ value: 'Mock question 1' }, { value: 'Mock question 2' }, { value: 'Mock question 3' }];
+const mockQuestions = [
+  { value: 'Mock question 1' },
+  { value: 'Mock question 2' },
+  { value: 'Mock question 3' },
+];
 const newMockQuestions = [
   { value: 'New mock question 1' },
   { value: 'New mock question 2' },
@@ -71,7 +75,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
 
     mockClientInstance.assistant.getSuggestedQuestions.mockClear();
     mockClientInstance.assistant.getSuggestedQuestions.mockResolvedValueOnce({
-      questions: newMockQuestions
+      questions: newMockQuestions,
     });
 
     // Call the refetch function
@@ -99,7 +103,6 @@ describe('Testing Hook: useSuggestedQuestions', () => {
   });
 
   it('Should refetch when itemId changes', async () => {
-    const newMockQuestions = ['New mock question 1', 'New mock question 2'];
     mockClientInstance.assistant.getSuggestedQuestions
       .mockResolvedValueOnce({ questions: mockQuestions })
       .mockResolvedValueOnce({ questions: newMockQuestions });
@@ -110,8 +113,8 @@ describe('Testing Hook: useSuggestedQuestions', () => {
 
     // Initial render
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
-    })
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
     expect(result.current.questions).toEqual(mockQuestions);
 
     // Verify initial render results
@@ -122,8 +125,8 @@ describe('Testing Hook: useSuggestedQuestions', () => {
 
     // Verify re-render results
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
-    })
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
     expect(result.current.questions).toEqual(newMockQuestions);
 
     expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledWith('test-item-id');
