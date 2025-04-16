@@ -17,23 +17,6 @@ export default function SuggestedQuestionsContainer({
   // Todo: Replace with useSuggestedQuestions hook
   const { questions, error, refetch } = useSuggestedQuestions({ itemId });
 
-  // Considering that we are prioritizing the mobile view, we will build the component for mobile first
-  const [isDesktop, setIsDesktop] = useState(false);
-
-  useEffect(() => {
-    const checkIsDesktop = () => {
-      setIsDesktop(window.innerWidth >= 768);
-    };
-
-    checkIsDesktop();
-
-    window.addEventListener('resize', () => {
-      checkIsDesktop();
-    });
-
-    return () => window.removeEventListener('resize', checkIsDesktop);
-  });
-
   if (!questions || questions.length === 0) {
     return null;
   }
@@ -49,11 +32,11 @@ export default function SuggestedQuestionsContainer({
 
   return (
     <div
-      className={`${isDesktop ? 'cio-asa-pdp-suggested-questions-desktop-grid' : 'cio-asa-pdp-suggested-questions-mobile-scroll'}`}
+      className='cio-asa-pdp-suggested-questions-container'
       data-testid='suggested-questions-list'>
-      {questions.map((question, index) => (
+      {questions.map((question) => (
         <SuggestedQuestion
-          key={index}
+          key={question.value}
           question={question.value}
           onClick={() => onQuestionClick(question)}
         />
