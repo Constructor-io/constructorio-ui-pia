@@ -9,7 +9,7 @@ export interface AsaPdpContextValue {
   cioClient: Nullable<MockConstructorIOClient>;
   cioClientOptions: CioClientOptions;
   setCioClientOptions: React.Dispatch<CioClientOptions>;
-  itemId: string | undefined;
+  itemId?: string;
 }
 
 export type CioClientOptions = Omit<ConstructorClientOptions, 'apiKey' | 'sendTrackingEvents'>;
