@@ -2,6 +2,7 @@
 @import './components/SuggestedQuestion/SuggestedQuestionStyles.css';
 @import './components/Input/InputStyles.css';
 @import './components/Feedback/FeedbackStyles.css';
+@import './components/Answer/AnswerStyles.css';
 
 .cio-asa-pdp,
 * {

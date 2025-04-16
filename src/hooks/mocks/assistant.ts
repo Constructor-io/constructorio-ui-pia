@@ -1,6 +1,6 @@
 import { ConstructorClientOptions } from '@constructor-io/constructorio-client-javascript';
 
-interface QuestionResponse {
+export interface QuestionResponse {
   questions: Array<string>;
 }
 
