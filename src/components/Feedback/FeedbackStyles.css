@@ -30,11 +30,3 @@
 .cio-asa-pdp-feedback-button:hover {
   opacity: 0.8;
 }
-
-.cio-asa-pdp-feedback-button-up:active {
-  transform: scale(0.9) translateY(-3px);
-}
-
-.cio-asa-pdp-feedback-button-down:active {
-  transform: scale(0.9) translateY(3px);
-}
