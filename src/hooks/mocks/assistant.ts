@@ -1,7 +1,11 @@
 import { ConstructorClientOptions } from '@constructor-io/constructorio-client-javascript';
 
+export interface Question {
+  value: string;
+}
+
 export interface QuestionResponse {
-  questions: Array<string>;
+  questions: Array<Question>;
 }
 
 // Create URL from supplied intent (term) and parameters
