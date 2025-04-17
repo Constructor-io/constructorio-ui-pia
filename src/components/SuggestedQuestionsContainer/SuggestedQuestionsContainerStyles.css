@@ -1,0 +1,22 @@
+.cio-asa-pdp-suggested-questions-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  width: 100%;
+  margin-top: 16px;
+}
+
+@media (max-width: 768px) {
+  .cio-asa-pdp-suggested-questions-container {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 8px;
+    padding: 4px;
+    width: 100%;
+    max-width: 85vw;
+
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+  }
+}
