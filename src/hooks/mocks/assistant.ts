@@ -10,6 +10,14 @@ import {
   GetAnswerResultsProps,
 } from './types';
 
+export interface Question {
+  value: string;
+}
+
+export interface QuestionResponse {
+  questions: Array<Question>;
+}
+
 // Create URL for ASA API
 function createAssistantUrl({
   itemId,
