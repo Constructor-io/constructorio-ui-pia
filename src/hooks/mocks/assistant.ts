@@ -21,7 +21,7 @@ function createAssistantUrl({
   if (!options.assistantServiceUrl) throw new Error('Assistant service URL is required');
 
   const { apiKey, assistantServiceUrl } = options;
-  
+
   let baseUrl = `${assistantServiceUrl}/v1/item_questions`;
   if (question) {
     baseUrl += `/${encodeURIComponent(question)}/answer`;

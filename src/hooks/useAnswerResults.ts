@@ -33,7 +33,6 @@ const fetchAnswerResults = async (
 export default function useAnswerResults({
   itemId,
   question,
-  parameters = {},
 }: UseAnswerResultsProps): UseAnswerResultsResponse {
   const client = useCioClient({ apiKey: DEMO_API_KEY });
   const [answerResults, setAnswerResults] = useState<AnswerResponse | null>(null);
