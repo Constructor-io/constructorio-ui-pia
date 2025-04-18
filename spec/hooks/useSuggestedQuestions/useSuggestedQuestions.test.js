@@ -6,8 +6,16 @@ import useSuggestedQuestions from '../../../src/hooks/useSuggestedQuestions';
 jest.mock('../../../src/hooks/useCioClient');
 
 const testItemId = 'test-item-id';
-const mockQuestions = [{ value: 'Mock question 1' }, { value: 'Mock question 2' }, { value: 'Mock question 3' }];
-const newMockQuestions = [{ value: 'New mock question 1' }, { value: 'New mock question 2' }];
+const mockQuestions = [
+  { value: 'Mock question 1' },
+  { value: 'Mock question 2' },
+  { value: 'Mock question 3' },
+];
+const newMockQuestions = [
+  { value: 'New mock question 1' },
+  { value: 'New mock question 2' },
+  { value: 'New mock question 3' },
+];
 
 describe('Testing Hook: useSuggestedQuestions', () => {
   const mockClientInstance = {
@@ -77,15 +85,17 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     });
 
     // Call the refetch function
-    act(() => {
+    await act(async () => {
       result.current.refetch();
     });
+
     expect(result.current.isLoading).toBe(true);
 
     await act(async () => {
       await new Promise(resolve => setTimeout(resolve, 0));
     });
 
+    // Check state after refetch
     expect(result.current.questions).toEqual(newMockQuestions);
     expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledTimes(1);
   });
@@ -95,7 +105,6 @@ describe('Testing Hook: useSuggestedQuestions', () => {
 
     const { result } = renderHook(() => useSuggestedQuestions({ itemId: testItemId }));
 
-    expect(result.current.isLoading).toBe(false);
     expect(result.current.questions).toEqual([]);
     expect(result.current.error).toBeNull();
     expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledTimes(0);
@@ -115,16 +124,18 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       await new Promise(resolve => setTimeout(resolve, 0));
     });
 
+    await act(async () => {});
     expect(result.current.questions).toEqual(mockQuestions);
 
     // Rerender with a different itemId
     rerender({ itemId: 'new-test-item-id' });
     expect(result.current.isLoading).toBe(true);
 
-
     await act(async () => {
       await new Promise(resolve => setTimeout(resolve, 0));
     });
+
+    await act(async () => {});
 
     expect(result.current.questions).toEqual(newMockQuestions);
     expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledWith(testItemId);

@@ -3,15 +3,17 @@ import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import SuggestedQuestion from '../../../src/components/SuggestedQuestion/SuggestedQuestion';
 
-describe('SuggestedQuestion', () => {
+const testSuggestedQuestion = 'Test question?';
+
+describe('SuggestedQuestion Component', () => {
   const defaultProps = {
-    question: 'Test question?',
+    question: testSuggestedQuestion,
     onClick: jest.fn(),
   };
 
   it('renders the question text', () => {
     const { getByText } = render(<SuggestedQuestion {...defaultProps} />);
-    expect(getByText('Test question?')).toBeInTheDocument();
+    expect(getByText(testSuggestedQuestion)).toBeInTheDocument();
   });
 
   it('renders the question icon', () => {
