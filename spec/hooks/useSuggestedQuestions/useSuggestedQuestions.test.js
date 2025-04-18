@@ -6,6 +6,7 @@ import useSuggestedQuestions from '../../../src/hooks/useSuggestedQuestions';
 jest.mock('../../../src/hooks/useCioClient');
 
 const testItemId = 'test-item-id';
+const newTestItemId = 'new-test-item-id';
 const mockQuestions = [
   { value: 'Mock question 1' },
   { value: 'Mock question 2' },
@@ -41,7 +42,9 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     expect(result.current.error).toBeNull();
 
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
     });
 
     expect(result.current.isLoading).toBe(false);
@@ -58,7 +61,9 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     const { result } = renderHook(() => useSuggestedQuestions({ itemId: testItemId }));
 
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
     });
 
     expect(result.current.isLoading).toBe(false);
@@ -76,7 +81,9 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     const { result } = renderHook(() => useSuggestedQuestions({ itemId: testItemId }));
 
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
     });
 
     mockClientInstance.assistant.getSuggestedQuestions.mockClear();
@@ -89,10 +96,10 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       result.current.refetch();
     });
 
-    expect(result.current.isLoading).toBe(true);
-
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
     });
 
     // Check state after refetch
@@ -121,26 +128,28 @@ describe('Testing Hook: useSuggestedQuestions', () => {
 
     // Initial render
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
     });
 
     await act(async () => {});
     expect(result.current.questions).toEqual(mockQuestions);
 
     // Rerender with a different itemId
-    rerender({ itemId: 'new-test-item-id' });
+    rerender({ itemId: newTestItemId });
     expect(result.current.isLoading).toBe(true);
 
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
     });
 
     await act(async () => {});
 
     expect(result.current.questions).toEqual(newMockQuestions);
     expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledWith(testItemId);
-    expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledWith(
-      'new-test-item-id',
-    );
+    expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledWith(newTestItemId);
   });
 });

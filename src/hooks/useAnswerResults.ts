@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Nullable } from '@constructor-io/constructorio-client-javascript';
 import { DEMO_API_KEY } from '../constants';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 import { AnswerResponse } from './mocks/types';
 import useCioClient from './useCioClient';
-import { Nullable } from '@constructor-io/constructorio-client-javascript';
 
 export interface UseAnswerResultsProps {
   itemId: string;
@@ -23,16 +23,11 @@ const fetchAnswerResults = async (
   itemId: string,
   question: string,
 ) => {
-  try {
-    // BLOCK BY https://github.com/Constructor-io/constructorio-ui-asa-pdp/pull/13
-    const response: AnswerResponse = await client.assistant.getAnswerResults({
-      itemId,
-      question,
-    });
-    return response;
-  } catch (error) {
-    throw error;
-  }
+  const response: AnswerResponse = await client.assistant.getAnswerResults({
+    itemId,
+    question,
+  });
+  return response;
 };
 
 export default function useAnswerResults({
@@ -57,7 +52,6 @@ export default function useAnswerResults({
         setError(null);
       })
       .catch((err) => {
-        console.log('Caught in useAnswerResults catch block:', err);
         setError(err instanceof Error ? err : new Error('Error fetching answer results'));
       })
       .finally(() => {

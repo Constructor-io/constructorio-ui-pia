@@ -6,7 +6,7 @@ import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 
 export interface UseSuggestedQuestionsProps {
   itemId: string;
-  paramter?: Record<string, any>;
+  parameter?: Record<string, any>;
 }
 
 interface UseSuggestedQuestionsResponse {

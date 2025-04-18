@@ -35,20 +35,16 @@ const streamAnswerResults = async (
   client: MockConstructorIOClient,
   props: UseAnswerResultsStreamProps,
 ) => {
-  try {
-    const { itemId, question, parameters, onStart, onMessage, onEnd } = props;
+  const { itemId, question, parameters, onStart, onMessage, onEnd } = props;
 
-    await client.assistant.getAnswerResultsStream({
-      itemId,
-      question,
-      parameters,
-      onStart,
-      onMessage,
-      onEnd,
-    });
-  } catch (error) {
-    throw error;
-  }
+  await client.assistant.getAnswerResultsStream({
+    itemId,
+    question,
+    parameters,
+    onStart,
+    onMessage,
+    onEnd,
+  });
 };
 
 export default function useAnswerResultStream({
@@ -89,8 +85,8 @@ export default function useAnswerResultStream({
       onStart: customOnStart,
       onMessage: customOnMessage,
       onEnd: customOnEnd,
-    }).catch((error) => {
-      setError(error instanceof Error ? error : new Error('Error streaming answer results'));
+    }).catch((err) => {
+      setError(err instanceof Error ? err : new Error('Error streaming answer results'));
       setIsStreaming(false);
     });
   }, [client, itemId, question, parameters, onStart, onMessage, onEnd]);
