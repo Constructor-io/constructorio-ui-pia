@@ -10,14 +10,6 @@ import {
   GetAnswerResultsProps,
 } from './types';
 
-export interface Question {
-  value: string;
-}
-
-export interface QuestionResponse {
-  questions: Array<Question>;
-}
-
 // Create URL for ASA API
 function createAssistantUrl({
   itemId,
@@ -29,9 +21,13 @@ function createAssistantUrl({
   if (!options.assistantServiceUrl) throw new Error('Assistant service URL is required');
 
   const { apiKey, assistantServiceUrl } = options;
-  const baseUrl = `${assistantServiceUrl}/v1/item_questions${
-    question ? `/${encodeURIComponent(question)}/answer` : ''
-  }${isStreaming ? '/streaming' : ''}`;
+  let baseUrl = `${assistantServiceUrl}/v1/item_questions`;
+  if (question) {
+    baseUrl += `/${encodeURIComponent(question)}/answer`;
+  }
+  if (isStreaming) {
+    baseUrl += '/streaming';
+  }
 
   const url = new URL(baseUrl);
   url.searchParams.append('item_id', itemId);
