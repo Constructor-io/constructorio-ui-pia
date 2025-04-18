@@ -1,7 +1,7 @@
 import React from 'react';
 import SuggestedQuestion from '../SuggestedQuestion/SuggestedQuestion';
 import useSuggestedQuestions from '../../hooks/useSuggestedQuestions';
-import { Question } from '../../hooks/mocks/assistant';
+import { Question } from '../../hooks/mocks/types';
 
 interface SuggestedQuestionsContainerProps {
   itemId: string;

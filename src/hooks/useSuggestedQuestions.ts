@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import useCioClient from './useCioClient';
-import { Question, QuestionResponse } from './mocks/assistant';
+import { Question, QuestionResponse } from './mocks/types';
 import { DEMO_API_KEY } from '../constants';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 
