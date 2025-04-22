@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import useCioClient from './useCioClient';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 import { StreamEndEvent, StreamMessageEvent, StreamStartEvent } from './mocks/types';

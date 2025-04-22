@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import useAnswerResultsStream, {
   UseAnswerResultsStreamProps,
 } from '../../../hooks/useAnswerResultsStream';
-import { StreamStartEvent, StreamMessageEvent, StreamEndEvent } from '../../../hooks/mocks/types';
+import { StreamStartEvent, StreamMessageEvent } from '../../../hooks/mocks/types';
 
 // Omit for testing purposes
 type UseAnswerResultsStreamExampleProps = Omit<
@@ -26,7 +26,7 @@ export default function UseAnswerResultsStreamExample(props: UseAnswerResultsStr
     setMessage(data.text);
   };
 
-  const handleEnd = (data: StreamEndEvent) => {
+  const handleEnd = () => {
     setAnswerReceived(true);
   };
 
