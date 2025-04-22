@@ -4,4 +4,5 @@ export const STREAM_EVENTS = {
   MESSAGE: 'message',
   FOLLOW_UP_QUESTIONS: 'follow_up_questions',
   END: 'end',
+  ABORT: 'abort',
 };

@@ -28,7 +28,7 @@ const streamAnswerResults = async (
   client: MockConstructorIOClient,
   props: StreamAnswerResultsProps,
 ) => {
-  const { itemId, question, parameters, onStart, onMessage, onEnd } = props;
+  const { itemId, question, parameters, onStart, onMessage, onEnd, signal } = props;
 
   await client.assistant.getAnswerResultsStream({
     itemId,
@@ -37,6 +37,7 @@ const streamAnswerResults = async (
     onStart,
     onMessage,
     onEnd,
+    signal,
   });
 };
 

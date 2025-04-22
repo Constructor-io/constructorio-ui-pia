@@ -136,7 +136,7 @@ class MockAssistant {
       const eventSource = new EventSource(url);
 
       if (signal) {
-        signal.addEventListener('abort', () => {
+        signal.addEventListener(STREAM_EVENTS.ABORT, () => {
           eventSource.close();
         });
 
