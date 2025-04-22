@@ -9,6 +9,7 @@ import {
   GetAnswerResultsStreamProps,
   GetAnswerResultsProps,
 } from './types';
+import { STREAM_EVENTS } from './constant';
 
 // Create URL for ASA API
 function createAssistantUrl({
@@ -133,17 +134,17 @@ class MockAssistant {
     try {
       const eventSource = new EventSource(url);
 
-      eventSource.addEventListener('open', (event: MessageEvent) => {
+      eventSource.addEventListener(STREAM_EVENTS.START, (event: MessageEvent) => {
         const data = JSON.parse(event.data) as StreamStartEvent;
         if (onStart) onStart(data);
       });
 
-      eventSource.addEventListener('message', (event: MessageEvent) => {
+      eventSource.addEventListener(STREAM_EVENTS.MESSAGE, (event: MessageEvent) => {
         const data = JSON.parse(event.data) as StreamMessageEvent;
         if (onMessage) onMessage(data);
       });
 
-      eventSource.addEventListener('end', (event: MessageEvent) => {
+      eventSource.addEventListener(STREAM_EVENTS.END, (event: MessageEvent) => {
         const data = JSON.parse(event.data) as StreamEndEvent;
         if (onEnd) onEnd(data);
         eventSource.close();
