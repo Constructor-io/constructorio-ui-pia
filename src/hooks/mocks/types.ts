@@ -18,6 +18,7 @@ export type GetAnswerResultsStreamProps = GetAnswerResultsProps & {
   onStart?: (event: StreamStartEvent) => void;
   onMessage?: (event: StreamMessageEvent) => void;
   onEnd?: (event: StreamEndEvent) => void;
+  signal?: AbortSignal;
 };
 
 export interface Question {

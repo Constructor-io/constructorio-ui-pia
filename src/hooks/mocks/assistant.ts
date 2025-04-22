@@ -118,6 +118,7 @@ class MockAssistant {
     onStart,
     onMessage,
     onEnd,
+    signal,
   }: GetAnswerResultsStreamProps): Promise<void> {
     if (!itemId) throw new Error('Item ID is required');
     if (!question) throw new Error('Question is required');
@@ -133,6 +134,17 @@ class MockAssistant {
 
     try {
       const eventSource = new EventSource(url);
+
+      if (signal) {
+        signal.addEventListener('abort', () => {
+          eventSource.close();
+        });
+
+        if (signal.aborted) {
+          eventSource.close();
+          return;
+        }
+      }
 
       eventSource.addEventListener(STREAM_EVENTS.START, (event: MessageEvent) => {
         const data = JSON.parse(event.data) as StreamStartEvent;
