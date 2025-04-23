@@ -9,7 +9,6 @@ import {
   GetAnswerResultsStreamProps,
   GetAnswerResultsProps,
 } from './types';
-import { STREAM_EVENTS } from './constant';
 
 // Create URL for ASA API
 function createAssistantUrl({
@@ -22,7 +21,6 @@ function createAssistantUrl({
   if (!options.assistantServiceUrl) throw new Error('Assistant service URL is required');
 
   const { apiKey, assistantServiceUrl } = options;
-
   let baseUrl = `${assistantServiceUrl}/v1/item_questions`;
   if (question) {
     baseUrl += `/${encodeURIComponent(question)}/answer`;
@@ -118,7 +116,6 @@ class MockAssistant {
     onStart,
     onMessage,
     onEnd,
-    signal,
   }: GetAnswerResultsStreamProps): Promise<void> {
     if (!itemId) throw new Error('Item ID is required');
     if (!question) throw new Error('Question is required');
@@ -135,28 +132,17 @@ class MockAssistant {
     try {
       const eventSource = new EventSource(url);
 
-      if (signal) {
-        signal.addEventListener(STREAM_EVENTS.ABORT, () => {
-          eventSource.close();
-        });
-
-        if (signal.aborted) {
-          eventSource.close();
-          return;
-        }
-      }
-
-      eventSource.addEventListener(STREAM_EVENTS.START, (event: MessageEvent) => {
+      eventSource.addEventListener('open', (event: MessageEvent) => {
         const data = JSON.parse(event.data) as StreamStartEvent;
         if (onStart) onStart(data);
       });
 
-      eventSource.addEventListener(STREAM_EVENTS.MESSAGE, (event: MessageEvent) => {
+      eventSource.addEventListener('message', (event: MessageEvent) => {
         const data = JSON.parse(event.data) as StreamMessageEvent;
         if (onMessage) onMessage(data);
       });
 
-      eventSource.addEventListener(STREAM_EVENTS.END, (event: MessageEvent) => {
+      eventSource.addEventListener('end', (event: MessageEvent) => {
         const data = JSON.parse(event.data) as StreamEndEvent;
         if (onEnd) onEnd(data);
         eventSource.close();
