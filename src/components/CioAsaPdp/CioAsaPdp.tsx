@@ -7,22 +7,22 @@ import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/Suggeste
 import Answer from '../Answer/Answer';
 import { MOCK_ANSWER, DEMO_ITEM_ID } from '../../constants';
 import Feedback from '../Feedback/Feedback';
+import { Question } from '../../hooks/mocks/types';
 
 export type CioAsaPdpProps = CioAsaPdpProviderProps;
 
 function AsaPdpContent() {
   const [currentQuestion, setCurrentQuestion] = useState('');
   const [currentAnswer, setCurrentAnswer] = useState('');
-  const [followUpQuestion, setFollowUpQuestion] = useState('');
   const [error, setError] = useState('');
 
   const { questions } = useCioAsaPdp();
 
-  const handleQuestionClick = (question) => {
+  const handleQuestionClick = (question: Question) => {
     setCurrentQuestion(question.value);
   };
 
-  const handleSubmit = (question) => {
+  const handleSubmit = (question: string) => {
     setCurrentQuestion(question);
     if (questions.error) {
       setError(questions.error.message);
@@ -32,12 +32,12 @@ function AsaPdpContent() {
   return (
     <div className='cio-asa-pdp'>
       <p className='cio-asa-pdp-title'>Any questions about this product?</p>
-      <Input onSubmit={handleSubmit} />
+      <Input onSubmit={handleSubmit} value={currentQuestion} />
       {currentAnswer ? (
-        <>
+        <div className='cio-asa-pdp-answer-container'>
           <Answer text={MOCK_ANSWER} />
           <Feedback />
-        </>
+        </div>
       ) : (
         /** TODO: To be replaced with useAsaPdpContext */
         <SuggestedQuestionsContainer
