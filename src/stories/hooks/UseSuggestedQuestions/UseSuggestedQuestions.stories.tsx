@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import UseSuggestedQuestionsExample from './UseSuggestedQuestionsExample';
+import useSuggestedQuestionsExample from './UseSuggestedQuestionsExample';
 import { DEMO_ITEM_ID } from '../../../constants';
 
 const meta = {
   title: 'Hooks/UseSuggestedQuestions',
-  component: UseSuggestedQuestionsExample,
+  component: useSuggestedQuestionsExample,
   parameters: {
     layout: 'centered',
     docs: {
@@ -13,7 +13,7 @@ const meta = {
       },
     },
   },
-} satisfies Meta<typeof UseSuggestedQuestionsExample>;
+} satisfies Meta<typeof useSuggestedQuestionsExample>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

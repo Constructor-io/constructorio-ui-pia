@@ -18,6 +18,7 @@ function useCioClientExample(props: UseCioClientProps) {
 
   return (
     <div>
+      <p>My Custom Cio Client Component</p>
       <pre>{JSON.stringify(client, null, 2)}</pre>
     </div>
   );

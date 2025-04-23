@@ -38,7 +38,7 @@ function ErrorBlock({ message, onRetry = undefined }: ErrorBlockProps) {
       <div className='cio-asa-pdp-error-block-text-container'>
         <p className='cio-asa-pdp-error-block-text'>{message}</p>
         {onRetry && (
-          <button onClick={onRetry} className='cio-asa-pdp-error-block-retry-button' type='button'>
+          <button onClick={onRetry} className='cio-asa-pdp-error-block-retry-button'>
             <RetryIcon />
             Retry
           </button>

@@ -5,11 +5,12 @@ import useSuggestedQuestions, {
 
 export default function UseSuggestedQuestionsExample(props: UseSuggestedQuestionsProps) {
   const { itemId } = props;
-  const response = useSuggestedQuestions({ itemId });
+  const { questions } = useSuggestedQuestions({ itemId });
 
   return (
     <div>
-      <pre>{JSON.stringify(response, null, 2)}</pre>
+      <p>Get Suggested Questions</p>
+      <pre>{JSON.stringify(questions, null, 2)}</pre>
     </div>
   );
 }
