@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import useCioClient from './useCioClient';
-import { Question, QuestionResponse } from './mocks/assistant';
+import { Question, QuestionResponse } from './mocks/types';
 import { DEMO_API_KEY } from '../constants';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 
 export interface UseSuggestedQuestionsProps {
   itemId: string;
+  parameter?: Record<string, any>;
 }
 
 interface UseSuggestedQuestionsResponse {
@@ -20,10 +21,9 @@ const fetchSuggestedQuestions = async (client: MockConstructorIOClient, itemId: 
   return response.questions;
 };
 
-export default function useSuggestedQuestions(
-  props: UseSuggestedQuestionsProps,
-): UseSuggestedQuestionsResponse {
-  const { itemId } = props;
+export default function useSuggestedQuestions({
+  itemId,
+}: UseSuggestedQuestionsProps): UseSuggestedQuestionsResponse {
   const client = useCioClient({ apiKey: DEMO_API_KEY });
   const [questions, setQuestions] = useState<Array<Question>>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);

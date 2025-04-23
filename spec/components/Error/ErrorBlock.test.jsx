@@ -1,6 +1,6 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import ErrorBlock from '../../../src/components/Error/ErrorBlock';
 
 const testErrorMessage = 'Test error message';
