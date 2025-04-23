@@ -5,6 +5,8 @@ import useSuggestedQuestions from '../../../src/hooks/useSuggestedQuestions';
 // Mock useCioClient and its methods to test useSuggestedQuestions in isolation
 jest.mock('../../../src/hooks/useCioClient');
 
+const testItemId = 'test-item-id';
+const newTestItemId = 'new-test-item-id';
 const mockQuestions = [
   { value: 'Mock question 1' },
   { value: 'Mock question 2' },
@@ -33,33 +35,42 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       questions: mockQuestions,
     });
 
-    let result;
+    const { result } = renderHook(() => useSuggestedQuestions({ itemId: testItemId }));
+
+    expect(result.current.isLoading).toBe(true);
+    expect(result.current.questions).toEqual([]);
+    expect(result.current.error).toBeNull();
+
     await act(async () => {
-      const hook = renderHook(() => useSuggestedQuestions({ itemId: 'test-item-id' }));
-      result = hook.result;
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
     });
 
+    expect(result.current.isLoading).toBe(false);
     expect(result.current.questions).toEqual(mockQuestions);
     expect(result.current.questions.length).toBe(mockQuestions.length);
     expect(result.current.error).toBeNull();
-    expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledWith('test-item-id');
+    expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledWith(testItemId);
   });
 
   it('Should handle errors when fetching questions fails', async () => {
     const mockError = new Error('Mock error');
     mockClientInstance.assistant.getSuggestedQuestions.mockRejectedValueOnce(mockError);
 
-    let result;
+    const { result } = renderHook(() => useSuggestedQuestions({ itemId: testItemId }));
+
     await act(async () => {
-      const hook = renderHook(() => useSuggestedQuestions({ itemId: 'test-item-id' }));
-      result = hook.result;
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
     });
 
-    // Expect error state with empty question array
+    expect(result.current.isLoading).toBe(false);
     expect(result.current.questions).toEqual([]);
     expect(result.current.error).toBeInstanceOf(Error);
     expect(result.current.error.message).toBe('Mock error');
-    expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledWith('test-item-id');
+    expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledWith(testItemId);
   });
 
   it('Should refetch questions when refetch function is called', async () => {
@@ -67,10 +78,12 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       questions: mockQuestions,
     });
 
-    let result;
+    const { result } = renderHook(() => useSuggestedQuestions({ itemId: testItemId }));
+
     await act(async () => {
-      const hook = renderHook(() => useSuggestedQuestions({ itemId: 'test-item-id' }));
-      result = hook.result;
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
     });
 
     mockClientInstance.assistant.getSuggestedQuestions.mockClear();
@@ -83,6 +96,12 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       result.current.refetch();
     });
 
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
     // Check state after refetch
     expect(result.current.questions).toEqual(newMockQuestions);
     expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledTimes(1);
@@ -91,11 +110,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
   it('Should not fetch if no client', async () => {
     useCioClient.mockReturnValue(null);
 
-    let result;
-    await act(async () => {
-      const hook = renderHook(() => useSuggestedQuestions({ itemId: 'test-item-id' }));
-      result = hook.result;
-    });
+    const { result } = renderHook(() => useSuggestedQuestions({ itemId: testItemId }));
 
     expect(result.current.questions).toEqual([]);
     expect(result.current.error).toBeNull();
@@ -108,21 +123,33 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       .mockResolvedValueOnce({ questions: newMockQuestions });
 
     const { result, rerender } = renderHook((props) => useSuggestedQuestions(props), {
-      initialProps: { itemId: 'test-item-id' },
+      initialProps: { itemId: testItemId },
+    });
+
+    // Initial render
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
     });
 
     await act(async () => {});
     expect(result.current.questions).toEqual(mockQuestions);
 
     // Rerender with a different itemId
-    rerender({ itemId: 'new-test-item-id' });
+    rerender({ itemId: newTestItemId });
+    expect(result.current.isLoading).toBe(true);
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
 
     await act(async () => {});
-    expect(result.current.questions).toEqual(newMockQuestions);
 
-    expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledWith('test-item-id');
-    expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledWith(
-      'new-test-item-id',
-    );
+    expect(result.current.questions).toEqual(newMockQuestions);
+    expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledWith(testItemId);
+    expect(mockClientInstance.assistant.getSuggestedQuestions).toHaveBeenCalledWith(newTestItemId);
   });
 });
