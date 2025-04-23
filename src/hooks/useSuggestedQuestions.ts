@@ -9,7 +9,7 @@ export interface UseSuggestedQuestionsProps {
   parameter?: Record<string, any>;
 }
 
-interface UseSuggestedQuestionsResponse {
+export interface UseSuggestedQuestionsResponse {
   questions: Array<Question>;
   isLoading: boolean;
   error: Error | null;
