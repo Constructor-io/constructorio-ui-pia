@@ -12,9 +12,13 @@ import { Question } from '../../hooks/mocks/types';
 export type CioAsaPdpProps = CioAsaPdpProviderProps;
 
 function AsaPdpContent() {
-  const [currentQuestion, setCurrentQuestion] = useState('');
-  const [currentAnswer, setCurrentAnswer] = useState('');
-  const [error, setError] = useState('');
+  const [currentQuestion, setCurrentQuestion] = useState<string>('');
+  const [currentAnswer, setCurrentAnswer] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  const disclaimerText =
+    'AI-generated answers aim to help, but they may occasionally miss details or be inaccurate. Double-check important information before purchasing.';
 
   const { questions } = useCioAsaPdp();
 
@@ -25,18 +29,21 @@ function AsaPdpContent() {
   const handleSubmit = (question: string) => {
     setCurrentQuestion(question);
     if (questions.error) {
-      setError(questions.error.message);
+      setError(questions.error);
     }
   };
 
   return (
-    <div className='cio-asa-pdp'>
+    <div className='cio-asa-pdp-container'>
       <p className='cio-asa-pdp-title'>Any questions about this product?</p>
       <Input onSubmit={handleSubmit} value={currentQuestion} />
       {currentAnswer ? (
         <div className='cio-asa-pdp-answer-container'>
           <Answer text={MOCK_ANSWER} />
           <Feedback />
+          <span className='cio-asa-pdp-disclaimer'>
+            {disclaimerText} <u>Learn More.</u>
+          </span>
         </div>
       ) : (
         /** TODO: To be replaced with useAsaPdpContext */

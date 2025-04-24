@@ -1,9 +1,10 @@
-.cio-asa-pdp-answer-container {
-  width: 430px;
-  padding: 10px;
+.cio-asa-pdp-answer {
+  width: 100%;
 }
 
 .cio-asa-pdp-answer-loading {
+  min-width: 430px;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -22,9 +23,9 @@
 }
 
 .cio-asa-pdp-answer-text {
-  font-size: 13px;
+  font-size: 14px;
   font-style: normal;
-  font-weight: 400;
+  font-weight: 500;
   color: #14151a;
 }
 

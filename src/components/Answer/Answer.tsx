@@ -19,7 +19,7 @@ function Answer({ text, isLoading = false }: AnswerProps) {
   // TODO: Insert useAnswer hook
 
   return (
-    <div className='cio-asa-pdp-answer-container' data-testid='answer-container'>
+    <div className='cio-asa-pdp-answer' data-testid='answer-container'>
       {isLoading ? (
         <AnswerSkeleton />
       ) : (

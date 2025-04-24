@@ -5,6 +5,7 @@
 @import './components/Feedback/FeedbackStyles.css';
 @import './components/Answer/AnswerStyles.css';
 @import './components/Error/ErrorStyles.css';
+@import './components//CioAsaPdp/CioAsaPdpStyles.css';
 
 .cio-asa-pdp,
 * {

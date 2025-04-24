@@ -1,0 +1,23 @@
+.cio-asa-pdp-container {
+  width: 100%;
+}
+
+.cio-asa-pdp-title {
+  font-size: 18px;
+  font-weight: 400;
+  text-align: start;
+}
+
+.cio-asa-pdp-answer-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+}
+
+.cio-asa-pdp-disclaimer {
+  font-size: 12px;
+  font-weight: 400;
+  text-align: start;
+  color: rgba(15, 19, 36, 0.7);
+}
