@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { CioAsaPdpProviderProps } from '../../types';
 import CioAsaPdpProvider from './CioAsaPdpProvider';
-import useCioAsaPdp from '../../hooks/useCioAsaPdp';
 import Input from '../Input/Input';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import Answer from '../Answer/Answer';
@@ -14,13 +13,10 @@ export type CioAsaPdpProps = CioAsaPdpProviderProps;
 function AsaPdpContent() {
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
   const [currentAnswer, setCurrentAnswer] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
   const disclaimerText =
     'AI-generated answers aim to help, but they may occasionally miss details or be inaccurate. Double-check important information before purchasing.';
-
-  const { questions } = useCioAsaPdp();
 
   const handleQuestionClick = (question: Question) => {
     setCurrentQuestion(question.value);
@@ -28,9 +24,6 @@ function AsaPdpContent() {
 
   const handleSubmit = (question: string) => {
     setCurrentQuestion(question);
-    if (questions.error) {
-      setError(questions.error);
-    }
   };
 
   return (
@@ -42,16 +35,14 @@ function AsaPdpContent() {
           <Answer text={MOCK_ANSWER} />
           <Feedback />
           <span className='cio-asa-pdp-disclaimer'>
-            {disclaimerText} <u>Learn More.</u>
+            {disclaimerText}{' '}
+            <a href='https://example.com/learn-more' className='cio-asa-pdp-learn-more'>
+              <u>Learn More.</u>
+            </a>
           </span>
         </div>
       ) : (
-        /** TODO: To be replaced with useAsaPdpContext */
-        <SuggestedQuestionsContainer
-          itemId={DEMO_ITEM_ID}
-          onQuestionClick={handleQuestionClick}
-          isError={!!questions.error}
-        />
+        <SuggestedQuestionsContainer itemId={DEMO_ITEM_ID} onQuestionClick={handleQuestionClick} />
       )}
     </div>
   );

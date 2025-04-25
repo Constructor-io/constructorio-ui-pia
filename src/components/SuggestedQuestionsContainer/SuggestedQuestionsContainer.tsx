@@ -10,11 +10,11 @@ interface SuggestedQuestionsContainerProps {
 }
 
 export default function SuggestedQuestionsContainer({
-  itemId,
+  itemId, // Todo: Fetch itemId from context instead of passing it as a prop
   onQuestionClick,
   isError = false,
 }: SuggestedQuestionsContainerProps) {
-  // Todo: Replace with useSuggestedQuestions hook
+  // Todo: Replace with context hook
   const { questions, error } = useSuggestedQuestions({ itemId });
 
   if (!questions || questions.length === 0) {
