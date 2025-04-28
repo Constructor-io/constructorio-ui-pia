@@ -4,9 +4,10 @@ import CioAsaPdpProvider from './CioAsaPdpProvider';
 import Input from '../Input/Input';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import Answer from '../Answer/Answer';
-import { MOCK_ANSWER, DEMO_ITEM_ID } from '../../constants';
+import { MOCK_ANSWER, DEMO_ITEM_ID, DISCLAIMER_TEXT } from '../../constants';
 import Feedback from '../Feedback/Feedback';
 import { Question } from '../../hooks/mocks/types';
+import useCioAsaPdp from '../../hooks/useCioAsaPdp';
 
 export type CioAsaPdpProps = CioAsaPdpProviderProps;
 
@@ -15,8 +16,8 @@ function AsaPdpContent() {
   const [currentAnswer, setCurrentAnswer] = useState<string>('');
   const [error, setError] = useState<Error | null>(null);
 
-  const disclaimerText =
-    'AI-generated answers aim to help, but they may occasionally miss details or be inaccurate. Double-check important information before purchasing.';
+  // TODO: Consider if we need to use the hook here
+  const { questions } = useCioAsaPdp();
 
   const handleQuestionClick = (question: Question) => {
     setCurrentQuestion(question.value);
@@ -35,7 +36,7 @@ function AsaPdpContent() {
           <Answer text={MOCK_ANSWER} />
           <Feedback />
           <span className='cio-asa-pdp-disclaimer'>
-            {disclaimerText}{' '}
+            {DISCLAIMER_TEXT}{' '}
             <a href='https://example.com/learn-more' className='cio-asa-pdp-learn-more'>
               <u>Learn More.</u>
             </a>
