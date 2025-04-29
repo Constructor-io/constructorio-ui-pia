@@ -5,6 +5,7 @@ import { DEMO_ITEM_ID } from '../../../constants';
 const meta = {
   title: 'Hooks/UseSuggestedQuestions',
   component: UseSuggestedQuestionsExample,
+  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
     docs: {
