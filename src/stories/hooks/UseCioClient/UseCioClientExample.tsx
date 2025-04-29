@@ -17,7 +17,7 @@ function useCioClientExample(props: UseCioClientProps) {
     }
   }, [cioClient]);
 
-  return <DisplayHookExample {...client} />;
+  return <DisplayHookExample content={JSON.stringify(client, null, 2)} />;
 }
 
 export default useCioClientExample;

@@ -10,5 +10,5 @@ export default function UseAnswerResultsExample(props: UseAnswerResultsProps) {
     fetch();
   }, [fetch]);
 
-  return <DisplayHookExample {...others} />;
+  return <DisplayHookExample content={JSON.stringify(others, null, 2)} />;
 }

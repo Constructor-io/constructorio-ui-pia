@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function DisplayHookExample(object: any) {
+export default function DisplayHookExample({ content }: { content: string }) {
   return (
     <div style={{ width: '100%', overflow: 'hidden' }}>
       <pre
@@ -11,7 +11,7 @@ export default function DisplayHookExample(object: any) {
           wordBreak: 'break-word',
           borderRadius: '4px',
         }}>
-        {JSON.stringify(object, null, 2)}
+        {content}
       </pre>
     </div>
   );

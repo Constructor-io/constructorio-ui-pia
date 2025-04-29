@@ -8,5 +8,5 @@ export default function UseSuggestedQuestionsExample(props: UseSuggestedQuestion
   const { itemId } = props;
   const response = useSuggestedQuestions({ itemId });
 
-  return <DisplayHookExample {...response} />;
+  return <DisplayHookExample content={JSON.stringify(response, null, 2)} />;
 }
