@@ -2,13 +2,17 @@ import React, { useEffect } from 'react';
 import useAnswerResults, { UseAnswerResultsProps } from '../../../hooks/useAnswerResults';
 import DisplayHookExample from '../DisplayHookExample';
 
-export default function UseAnswerResultsExample(props: UseAnswerResultsProps) {
+interface UseAnswerResultsExampleProps extends UseAnswerResultsProps {
+  question: string;
+}
+
+export default function UseAnswerResultsExample(props: UseAnswerResultsExampleProps) {
   const { itemId, question } = props;
-  const { fetch, ...others } = useAnswerResults({ itemId, question });
+  const { fetchResult, ...other } = useAnswerResults({ itemId });
 
   useEffect(() => {
-    fetch();
-  }, [fetch]);
+    fetchResult(question);
+  }, [question, fetchResult]);
 
-  return <DisplayHookExample content={JSON.stringify(others, null, 2)} />;
+  return <DisplayHookExample content={JSON.stringify(other, null, 2)} />;
 }

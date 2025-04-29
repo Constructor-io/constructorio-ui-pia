@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Nullable } from '@constructor-io/constructorio-client-javascript';
 import { DEMO_API_KEY } from '../constants';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
@@ -7,7 +7,6 @@ import useCioClient from './useCioClient';
 
 export interface UseAnswerResultsProps {
   itemId: string;
-  question: string;
   parameters?: Record<string, any>;
 }
 
@@ -15,7 +14,7 @@ export interface UseAnswerResultsResponse {
   data: Nullable<AnswerResponse>;
   isLoading: boolean;
   error: Error | null;
-  fetch: () => void;
+  fetchResult: (question: string) => void;
 }
 
 const fetchAnswerResults = async (
@@ -32,36 +31,38 @@ const fetchAnswerResults = async (
 
 export default function useAnswerResults({
   itemId,
-  question,
 }: UseAnswerResultsProps): UseAnswerResultsResponse {
   const client = useCioClient({ apiKey: DEMO_API_KEY });
   const [answerResults, setAnswerResults] = useState<AnswerResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const fetchData = useCallback(() => {
-    if (!client) return;
+  const fetchResult = useCallback(
+    (question: string) => {
+      if (!client) return;
 
-    setIsLoading(true);
-    setError(null);
+      setIsLoading(true);
+      setError(null);
 
-    fetchAnswerResults(client, itemId, question)
-      .then((fetchedAnswerResults) => {
-        setAnswerResults(fetchedAnswerResults);
-        setError(null);
-      })
-      .catch((err) => {
-        setError(err instanceof Error ? err : new Error('Error fetching answer results'));
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, [client, itemId, question]);
+      fetchAnswerResults(client, itemId, question)
+        .then((fetchedAnswerResults) => {
+          setAnswerResults(fetchedAnswerResults);
+          setError(null);
+        })
+        .catch((err) => {
+          setError(err instanceof Error ? err : new Error('Error fetching answer results'));
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    },
+    [client, itemId],
+  );
 
   return {
     data: answerResults,
     isLoading,
     error,
-    fetch: fetchData,
+    fetchResult,
   };
 }

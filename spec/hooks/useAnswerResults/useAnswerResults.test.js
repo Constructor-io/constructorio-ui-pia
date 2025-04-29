@@ -6,7 +6,7 @@ import useCioClient from '../../../src/hooks/useCioClient';
 jest.mock('../../../src/hooks/useCioClient');
 const testAssistantQuery = {
   itemId: 'test-item-id',
-  question: 'What is this product?',
+  question: 'What is the meaning of life?',
 };
 
 describe('Testing Hook: useAnswerResults', () => {
@@ -40,7 +40,7 @@ describe('Testing Hook: useAnswerResults', () => {
   it('Should fetch and return answer results when fetch is called', async () => {
     const { result } = renderHook(() => useAnswerResults(testAssistantQuery));
     act(() => {
-      result.current.fetch();
+      result.current.fetchResult(testAssistantQuery.question);
     });
 
     expect(result.current.isLoading).toBe(true);
@@ -66,7 +66,7 @@ describe('Testing Hook: useAnswerResults', () => {
 
     const { result } = renderHook(() => useAnswerResults(testAssistantQuery));
     act(() => {
-      result.current.fetch();
+      result.current.fetchResult(testAssistantQuery.question);
     });
 
     expect(result.current.isLoading).toBe(true);
@@ -86,7 +86,7 @@ describe('Testing Hook: useAnswerResults', () => {
   it('Should refetch data when fetch is called again', async () => {
     const { result } = renderHook(() => useAnswerResults(testAssistantQuery));
     act(() => {
-      result.current.fetch();
+      result.current.fetchResult(testAssistantQuery.question);
     });
 
     await act(async () => {
@@ -99,7 +99,7 @@ describe('Testing Hook: useAnswerResults', () => {
 
     // Call refetch
     act(() => {
-      result.current.fetch();
+      result.current.fetchResult(testAssistantQuery.question);
     });
 
     expect(result.current.isLoading).toBe(true);
@@ -120,7 +120,7 @@ describe('Testing Hook: useAnswerResults', () => {
     });
 
     act(() => {
-      result.current.fetch();
+      result.current.fetchResult(testAssistantQuery.question);
     });
 
     await act(async () => {
@@ -138,7 +138,7 @@ describe('Testing Hook: useAnswerResults', () => {
     rerender(newTestAssistantQuery);
 
     act(() => {
-      result.current.fetch();
+      result.current.fetchResult(newTestAssistantQuery.question);
     });
 
     await act(async () => {

@@ -26,7 +26,7 @@ export const Default: Story = {
   },
 };
 
-export const IrrelevantQuestions: Story = {
+export const IrrelevantQuestion: Story = {
   args: {
     itemId: DEMO_ITEM_ID,
     question: 'Can I buy a car?',
