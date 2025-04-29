@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import useCioClient, { UseCioClientProps } from '../../../hooks/useCioClient';
 import { DEMO_API_KEY } from '../../../constants';
+import DisplayHookExample from '../DisplayHookExample';
 
 function useCioClientExample(props: UseCioClientProps) {
   const [client, setClient] = useState<ReturnType<typeof useCioClient> | null>(null);
@@ -16,11 +17,7 @@ function useCioClientExample(props: UseCioClientProps) {
     }
   }, [cioClient]);
 
-  return (
-    <div>
-      <pre>{JSON.stringify(client, null, 2)}</pre>
-    </div>
-  );
+  return <DisplayHookExample {...client} />;
 }
 
 export default useCioClientExample;

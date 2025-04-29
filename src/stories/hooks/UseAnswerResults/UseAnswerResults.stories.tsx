@@ -5,6 +5,7 @@ import { DEMO_ITEM_ID, DEMO_QUESTION } from '../../../constants';
 const meta = {
   title: 'Hooks/UseAnswerResults',
   component: UseAnswerResultsExample,
+  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
     docs: {

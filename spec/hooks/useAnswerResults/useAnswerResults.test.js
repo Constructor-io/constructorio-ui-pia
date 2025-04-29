@@ -28,8 +28,20 @@ describe('Testing Hook: useAnswerResults', () => {
     mockClient.assistant.getAnswerResults.mockResolvedValue(mockResponse);
   });
 
-  it('Should fetch and return answer results', async () => {
+  it('Should initialize with default state', () => {
     const { result } = renderHook(() => useAnswerResults(testAssistantQuery));
+
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.data).toBe(null);
+    expect(result.current.error).toBe(null);
+    expect(mockClient.assistant.getAnswerResults).not.toHaveBeenCalled();
+  });
+
+  it('Should fetch and return answer results when fetch is called', async () => {
+    const { result } = renderHook(() => useAnswerResults(testAssistantQuery));
+    act(() => {
+      result.current.fetch();
+    });
 
     expect(result.current.isLoading).toBe(true);
     expect(result.current.data).toBe(null);
@@ -53,6 +65,9 @@ describe('Testing Hook: useAnswerResults', () => {
     mockClient.assistant.getAnswerResults.mockRejectedValue(new Error(errorMessage));
 
     const { result } = renderHook(() => useAnswerResults(testAssistantQuery));
+    act(() => {
+      result.current.fetch();
+    });
 
     expect(result.current.isLoading).toBe(true);
 
@@ -68,8 +83,11 @@ describe('Testing Hook: useAnswerResults', () => {
     expect(result.current.error.message).toBe(errorMessage);
   });
 
-  it('Should refetch data when refetch is called', async () => {
+  it('Should refetch data when fetch is called again', async () => {
     const { result } = renderHook(() => useAnswerResults(testAssistantQuery));
+    act(() => {
+      result.current.fetch();
+    });
 
     await act(async () => {
       await new Promise((resolve) => {
@@ -81,7 +99,7 @@ describe('Testing Hook: useAnswerResults', () => {
 
     // Call refetch
     act(() => {
-      result.current.refetch();
+      result.current.fetch();
     });
 
     expect(result.current.isLoading).toBe(true);
@@ -96,9 +114,13 @@ describe('Testing Hook: useAnswerResults', () => {
     expect(result.current.data).toEqual(mockResponse);
   });
 
-  it('Should update when parameters change', async () => {
-    const { rerender } = renderHook((props) => useAnswerResults(props), {
+  it('Should update refetch dependency when parameters change', async () => {
+    const { result, rerender } = renderHook((props) => useAnswerResults(props), {
       initialProps: testAssistantQuery,
+    });
+
+    act(() => {
+      result.current.fetch();
     });
 
     await act(async () => {
@@ -109,12 +131,15 @@ describe('Testing Hook: useAnswerResults', () => {
 
     mockClient.assistant.getAnswerResults.mockClear();
 
-    // Change props
     const newTestAssistantQuery = {
       itemId: 'new-test-item-id',
       question: 'How do I use this?',
     };
     rerender(newTestAssistantQuery);
+
+    act(() => {
+      result.current.fetch();
+    });
 
     await act(async () => {
       await new Promise((resolve) => {
@@ -123,13 +148,5 @@ describe('Testing Hook: useAnswerResults', () => {
     });
 
     expect(mockClient.assistant.getAnswerResults).toHaveBeenCalledWith(newTestAssistantQuery);
-  });
-
-  it('Should not fetch if client is not available', async () => {
-    useCioClient.mockReturnValue(null);
-
-    renderHook(() => useAnswerResults(testAssistantQuery));
-
-    expect(mockClient.assistant.getAnswerResults).not.toHaveBeenCalled();
   });
 });

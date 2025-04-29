@@ -15,7 +15,7 @@ export interface UseAnswerResultsResponse {
   data: Nullable<AnswerResponse>;
   isLoading: boolean;
   error: Error | null;
-  refetch: () => void;
+  fetch: () => void;
 }
 
 const fetchAnswerResults = async (
@@ -58,14 +58,10 @@ export default function useAnswerResults({
       });
   }, [client, itemId, question]);
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
   return {
     data: answerResults,
     isLoading,
     error,
-    refetch: fetchData,
+    fetch: fetchData,
   };
 }
