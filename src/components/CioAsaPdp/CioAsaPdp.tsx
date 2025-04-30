@@ -20,6 +20,7 @@ export default function CioAsaPdp(props: CioAsaPdpProps) {
 
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
   const [currentAnswer, setCurrentAnswer] = useState<string>('');
+  const [followUpQuestions, setFollowUpQuestions] = useState<Question[]>([]);
 
   const handleQuestionClick = (question: Question) => {
     setCurrentQuestion(question.value);
@@ -34,6 +35,10 @@ export default function CioAsaPdp(props: CioAsaPdpProps) {
   useEffect(() => {
     if (answers.data?.value) {
       setCurrentAnswer(answers.data.value);
+    }
+
+    if (answers.data?.follow_up_questions) {
+      setFollowUpQuestions(answers.data.follow_up_questions);
     }
   }, [answers.data]);
 
@@ -55,12 +60,25 @@ export default function CioAsaPdp(props: CioAsaPdpProps) {
           </>
         )}
       </div>
-      <SuggestedQuestionsContainer
-        questions={questions.data}
-        isLoading={questions.isLoading}
-        error={questions.error}
-        onQuestionClick={handleQuestionClick}
-      />
+      {!currentAnswer ? (
+        <div className='cio-asa-pdp-initial-questions-container'>
+          <SuggestedQuestionsContainer
+            questions={questions.data}
+            isLoading={questions.isLoading}
+            error={questions.error}
+            onQuestionClick={handleQuestionClick}
+          />
+        </div>
+      ) : (
+        <div className='cio-asa-pdp-follow-up-questions-container'>
+          <SuggestedQuestionsContainer
+            questions={followUpQuestions}
+            isLoading={answers.isLoading}
+            error={answers.error}
+            onQuestionClick={handleQuestionClick}
+          />
+        </div>
+      )}
     </div>
   );
 }
