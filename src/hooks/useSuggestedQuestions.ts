@@ -6,11 +6,12 @@ import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 
 export interface UseSuggestedQuestionsProps {
   itemId: string;
+  cioClient?: MockConstructorIOClient;
   parameter?: Record<string, any>;
 }
 
 export interface UseSuggestedQuestionsResponse {
-  questions: Array<Question>;
+  data: Array<Question>;
   isLoading: boolean;
   error: Error | null;
   refetch: () => void;
@@ -23,19 +24,19 @@ const fetchSuggestedQuestions = async (client: MockConstructorIOClient, itemId: 
 
 export default function useSuggestedQuestions({
   itemId,
+  cioClient,
 }: UseSuggestedQuestionsProps): UseSuggestedQuestionsResponse {
-  const client = useCioClient({ apiKey: DEMO_API_KEY });
   const [questions, setQuestions] = useState<Array<Question>>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchData = useCallback(() => {
-    if (!client) return;
+    if (!cioClient) return;
 
     setIsLoading(true);
     setError(null);
 
-    fetchSuggestedQuestions(client, itemId)
+    fetchSuggestedQuestions(cioClient, itemId)
       .then((fetchedQuestions) => {
         setQuestions(fetchedQuestions);
         setError(null);
@@ -46,14 +47,14 @@ export default function useSuggestedQuestions({
       .finally(() => {
         setIsLoading(false);
       });
-  }, [client, itemId]);
+  }, [cioClient, itemId]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
   return {
-    questions,
+    data: questions,
     isLoading,
     error,
     refetch: fetchData,

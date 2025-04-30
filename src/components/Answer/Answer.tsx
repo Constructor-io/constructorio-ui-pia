@@ -16,7 +16,9 @@ export function AnswerSkeleton() {
 }
 
 function Answer({ text, isLoading = false }: AnswerProps) {
-  // TODO: Insert useAnswer hook
+  if (!text) {
+    return null;
+  }
 
   return (
     <div className='cio-asa-pdp-answer' data-testid='answer-container'>

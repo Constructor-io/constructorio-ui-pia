@@ -1,12 +1,11 @@
 import { useCallback, useState } from 'react';
 import { Nullable } from '@constructor-io/constructorio-client-javascript';
-import { DEMO_API_KEY } from '../constants';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 import { AnswerResponse } from './mocks/types';
-import useCioClient from './useCioClient';
 
 export interface UseAnswerResultsProps {
   itemId: string;
+  cioClient: MockConstructorIOClient;
   parameters?: Record<string, any>;
 }
 
@@ -31,20 +30,20 @@ const fetchAnswerResults = async (
 
 export default function useAnswerResults({
   itemId,
+  cioClient,
 }: UseAnswerResultsProps): UseAnswerResultsResponse {
-  const client = useCioClient({ apiKey: DEMO_API_KEY });
   const [answerResults, setAnswerResults] = useState<AnswerResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchResult = useCallback(
     (question: string) => {
-      if (!client) return;
+      if (!cioClient) return;
 
       setIsLoading(true);
       setError(null);
 
-      fetchAnswerResults(client, itemId, question)
+      fetchAnswerResults(cioClient, itemId, question)
         .then((fetchedAnswerResults) => {
           setAnswerResults(fetchedAnswerResults);
           setError(null);
@@ -56,7 +55,7 @@ export default function useAnswerResults({
           setIsLoading(false);
         });
     },
-    [client, itemId],
+    [cioClient, itemId],
   );
 
   return {

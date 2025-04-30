@@ -1,25 +1,37 @@
-import { useCioAsaPdpContext } from './useCioAsaPdpContext';
+import MockConstructorIOClient from './mocks/MockConstructorIOClient';
+import useAnswerResults, { UseAnswerResultsResponse } from './useAnswerResults';
+import useCioClient from './useCioClient';
 import useSuggestedQuestions, { UseSuggestedQuestionsResponse } from './useSuggestedQuestions';
 
-export interface UseCioAsaPdpResponse {
-  // TODO: Add the rest of the hook's return type
-  questions: UseSuggestedQuestionsResponse;
+export interface UseCioAsaPdpProps {
+  apiKey: string;
+  itemId: string;
+  cioClient?: MockConstructorIOClient;
 }
 
-export default function useCioAsaPdp() {
-  const context = useCioAsaPdpContext();
+export interface UseCioAsaPdpResponse {
+  questions: UseSuggestedQuestionsResponse;
+  answers: UseAnswerResultsResponse;
+}
 
-  if (!context) {
-    throw new Error('useCioAsaPdp() function must be used within <CioAsaPdp />');
-  }
+export default function useCioAsaPdp(props: UseCioAsaPdpProps) {
+  const { apiKey, itemId, cioClient: providedClient } = props;
 
-  if (!context.itemId) {
-    throw new Error('Item ID is not available. Make sure to provide it in the <CioAsaPdp />');
-  }
+  const defaultClient = useCioClient({ apiKey });
+  const client = providedClient || defaultClient;
 
-  const questions = useSuggestedQuestions({ itemId: context.itemId });
+  const questions = useSuggestedQuestions({
+    itemId,
+    cioClient: client as MockConstructorIOClient,
+  });
+
+  const answers = useAnswerResults({
+    itemId,
+    cioClient: client as MockConstructorIOClient,
+  });
 
   return {
     questions,
+    answers,
   };
 }

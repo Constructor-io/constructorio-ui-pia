@@ -1,33 +1,72 @@
 import React from 'react';
 import SuggestedQuestion from '../SuggestedQuestion/SuggestedQuestion';
-import useSuggestedQuestions from '../../hooks/useSuggestedQuestions';
 import { Question } from '../../hooks/mocks/types';
+import ErrorBlock from '../Error/ErrorBlock';
 
 interface SuggestedQuestionsContainerProps {
-  itemId: string;
+  questions: Question[];
   onQuestionClick: (question: Question) => void;
-  isError?: boolean;
+  isLoading: boolean;
+  error: Error | null;
+}
+
+function SuggestedQuestionsLoader() {
+  return (
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'>
+      <circle fill='#FF156D' stroke='#FF156D' strokeWidth='15' r='15' cx='40' cy='100'>
+        <animate
+          attributeName='opacity'
+          calcMode='spline'
+          dur='2'
+          values='1;0;1;'
+          keySplines='.5 0 .5 1;.5 0 .5 1'
+          repeatCount='indefinite'
+          begin='-.4'
+        />
+      </circle>
+      <circle fill='#FF156D' stroke='#FF156D' strokeWidth='15' r='15' cx='100' cy='100'>
+        <animate
+          attributeName='opacity'
+          calcMode='spline'
+          dur='2'
+          values='1;0;1;'
+          keySplines='.5 0 .5 1;.5 0 .5 1'
+          repeatCount='indefinite'
+          begin='-.2'
+        />
+      </circle>
+      <circle fill='#FF156D' stroke='#FF156D' strokeWidth='15' r='15' cx='160' cy='100'>
+        <animate
+          attributeName='opacity'
+          calcMode='spline'
+          dur='2'
+          values='1;0;1;'
+          keySplines='.5 0 .5 1;.5 0 .5 1'
+          repeatCount='indefinite'
+          begin='0'
+        />
+      </circle>
+    </svg>
+  );
 }
 
 export default function SuggestedQuestionsContainer({
-  itemId, // Todo: Fetch itemId from context instead of passing it as a prop
+  questions,
   onQuestionClick,
-  isError = false,
+  isLoading,
+  error,
 }: SuggestedQuestionsContainerProps) {
-  // Todo: Replace with context hook
-  const { questions, error } = useSuggestedQuestions({ itemId });
-
   if (!questions || questions.length === 0) {
     return null;
   }
 
-  if (isError || error) {
+  if (error) {
     const errorMessage = error?.message ?? 'Error fetching suggested questions';
-    return (
-      <div data-testid='suggested-questions-container-error-block'>
-        To be replaced with ErrorBlock component: {errorMessage}
-      </div>
-    );
+    return <ErrorBlock message={errorMessage} />;
+  }
+
+  if (isLoading) {
+    return <SuggestedQuestionsLoader />;
   }
 
   return (
