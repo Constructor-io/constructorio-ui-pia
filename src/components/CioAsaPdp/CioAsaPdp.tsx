@@ -7,6 +7,7 @@ import MockConstructorIOClient from '../../hooks/mocks/MockConstructorIOClient';
 import { DISCLAIMER_TEXT } from '../../constants';
 import { Question } from '../../hooks/mocks/types';
 import useCioAsaPdp from '../../hooks/useCioAsaPdp';
+import ErrorBlock from '../Error/ErrorBlock';
 
 export interface CioAsaPdpProps {
   apiKey: string;
@@ -16,53 +17,65 @@ export interface CioAsaPdpProps {
 
 export default function CioAsaPdp(props: CioAsaPdpProps) {
   const { apiKey, itemId, cioClient } = props;
-  const { questions, answers } = useCioAsaPdp({ apiKey, itemId, cioClient });
+  const { suggestedQuestions, answers } = useCioAsaPdp({ apiKey, itemId, cioClient });
 
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
   const [currentAnswer, setCurrentAnswer] = useState<string>('');
-  const [followUpQuestions, setFollowUpQuestions] = useState<Question[]>([]);
+  const [displayedQuestions, setDisplayedQuestions] = useState<Question[]>([]);
 
   const handleSubmitQuestion = (question: Question | string) => {
     const questionText = typeof question === 'string' ? question : question.value;
     setCurrentQuestion(questionText);
-    answers.fetchResult(questionText);
+    answers.getAnswer(questionText);
   };
+
+  useEffect(() => {
+    // Update displayed questions when suggested questions are fetched
+    setDisplayedQuestions(suggestedQuestions.data);
+  }, [suggestedQuestions.data]);
 
   useEffect(() => {
     if (answers.data) {
       if (answers.data.value) setCurrentAnswer(answers.data.value);
-      if (answers.data.follow_up_questions) setFollowUpQuestions(answers.data.follow_up_questions);
+      if (answers.data.follow_up_questions) setDisplayedQuestions(answers.data.follow_up_questions);
     }
   }, [answers.data]);
 
-  const displayQuestions = currentAnswer ? followUpQuestions : questions.data;
+  const error = answers.error || suggestedQuestions.error;
 
   return (
     <div className='cio-asa-pdp-container'>
       <p className='cio-asa-pdp-title'>Any questions about this product?</p>
       <Input onSubmit={handleSubmitQuestion} value={currentQuestion} />
-      <div className='cio-asa-pdp-answer-container'>
-        <Answer text={currentAnswer} isLoading={answers.isLoading} />
-        {currentAnswer && (
-          <>
-            <Feedback />
-            <span className='cio-asa-pdp-disclaimer'>
-              {DISCLAIMER_TEXT}{' '}
-              <a href='https://example.com/learn-more' className='cio-asa-pdp-learn-more'>
-                <u>Learn More.</u>
-              </a>
-            </span>
-          </>
-        )}
-      </div>
-      <div className='cio-asa-pdp-follow-up-questions-container'>
-        <SuggestedQuestionsContainer
-          questions={displayQuestions}
-          isLoading={questions.isLoading}
-          error={questions.error}
-          onQuestionClick={handleSubmitQuestion}
+      {error ? (
+        <ErrorBlock
+          message={
+            answers.error?.message || suggestedQuestions.error?.message || 'Unexpected error'
+          }
         />
-      </div>
+      ) : (
+        <>
+          <Answer text={currentAnswer} isLoading={answers.isLoading} />
+          {!!currentAnswer && !answers.isLoading && (
+            <>
+              <Feedback />
+              <span className='cio-asa-pdp-disclaimer'>
+                {DISCLAIMER_TEXT}{' '}
+                <a href='https://constructor.io' className='cio-asa-pdp-learn-more'>
+                  <u>Learn More.</u>
+                </a>
+              </span>
+            </>
+          )}
+
+          <SuggestedQuestionsContainer
+            questions={displayedQuestions}
+            isLoading={suggestedQuestions.isLoading || answers.isLoading}
+            error={suggestedQuestions.error}
+            onQuestionClick={handleSubmitQuestion}
+          />
+        </>
+      )}
     </div>
   );
 }

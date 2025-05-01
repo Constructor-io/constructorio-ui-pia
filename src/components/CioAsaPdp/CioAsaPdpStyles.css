@@ -1,18 +1,14 @@
 .cio-asa-pdp-container {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .cio-asa-pdp-title {
   font-size: 18px;
   font-weight: 400;
   text-align: start;
-}
-
-.cio-asa-pdp-answer-container {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 16px 0px;
 }
 
 .cio-asa-pdp-disclaimer {

@@ -1,7 +1,7 @@
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
-import useAnswerResults, { UseAnswerResultsResponse } from './useAnswerResults';
+import useAnswerResults, { UseAnswerResultsReturn } from './useAnswerResults';
 import useCioClient from './useCioClient';
-import useSuggestedQuestions, { UseSuggestedQuestionsResponse } from './useSuggestedQuestions';
+import useSuggestedQuestions, { UseSuggestedQuestionsReturn } from './useSuggestedQuestions';
 
 export interface UseCioAsaPdpProps {
   apiKey: string;
@@ -9,18 +9,18 @@ export interface UseCioAsaPdpProps {
   cioClient?: MockConstructorIOClient;
 }
 
-export interface UseCioAsaPdpResponse {
-  questions: UseSuggestedQuestionsResponse;
-  answers: UseAnswerResultsResponse;
+export interface UseCioAsaPdpReturn {
+  suggestedQuestions: UseSuggestedQuestionsReturn;
+  answers: UseAnswerResultsReturn;
 }
 
-export default function useCioAsaPdp(props: UseCioAsaPdpProps) {
+export default function useCioAsaPdp(props: UseCioAsaPdpProps): UseCioAsaPdpReturn {
   const { apiKey, itemId, cioClient: providedClient } = props;
 
   const defaultClient = useCioClient({ apiKey });
   const client = providedClient || defaultClient;
 
-  const questions = useSuggestedQuestions({
+  const suggestedQuestions = useSuggestedQuestions({
     itemId,
     cioClient: client as MockConstructorIOClient,
   });
@@ -31,7 +31,7 @@ export default function useCioAsaPdp(props: UseCioAsaPdpProps) {
   });
 
   return {
-    questions,
+    suggestedQuestions,
     answers,
   };
 }

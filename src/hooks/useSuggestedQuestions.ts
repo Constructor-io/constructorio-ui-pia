@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import useCioClient from './useCioClient';
 import { Question, QuestionResponse } from './mocks/types';
-import { DEMO_API_KEY } from '../constants';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 
 export interface UseSuggestedQuestionsProps {
@@ -10,11 +8,11 @@ export interface UseSuggestedQuestionsProps {
   parameter?: Record<string, any>;
 }
 
-export interface UseSuggestedQuestionsResponse {
+export interface UseSuggestedQuestionsReturn {
   data: Array<Question>;
   isLoading: boolean;
   error: Error | null;
-  refetch: () => void;
+  getSuggestedQuestions: () => void;
 }
 
 const fetchSuggestedQuestions = async (client: MockConstructorIOClient, itemId: string) => {
@@ -25,7 +23,7 @@ const fetchSuggestedQuestions = async (client: MockConstructorIOClient, itemId: 
 export default function useSuggestedQuestions({
   itemId,
   cioClient,
-}: UseSuggestedQuestionsProps): UseSuggestedQuestionsResponse {
+}: UseSuggestedQuestionsProps): UseSuggestedQuestionsReturn {
   const [questions, setQuestions] = useState<Array<Question>>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
@@ -51,12 +49,13 @@ export default function useSuggestedQuestions({
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [itemId]);
 
   return {
     data: questions,
     isLoading,
     error,
-    refetch: fetchData,
+    getSuggestedQuestions: fetchData,
   };
 }

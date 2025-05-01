@@ -9,11 +9,11 @@ export interface UseAnswerResultsProps {
   parameters?: Record<string, any>;
 }
 
-export interface UseAnswerResultsResponse {
+export interface UseAnswerResultsReturn {
   data: Nullable<AnswerResponse>;
   isLoading: boolean;
   error: Error | null;
-  fetchResult: (question: string) => void;
+  getAnswer: (question: string) => void;
 }
 
 const fetchAnswerResults = async (
@@ -31,7 +31,7 @@ const fetchAnswerResults = async (
 export default function useAnswerResults({
   itemId,
   cioClient,
-}: UseAnswerResultsProps): UseAnswerResultsResponse {
+}: UseAnswerResultsProps): UseAnswerResultsReturn {
   const [answerResults, setAnswerResults] = useState<AnswerResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
@@ -62,6 +62,6 @@ export default function useAnswerResults({
     data: answerResults,
     isLoading,
     error,
-    fetchResult,
+    getAnswer: fetchResult,
   };
 }
