@@ -22,30 +22,25 @@ export default function CioAsaPdp(props: CioAsaPdpProps) {
   const [currentAnswer, setCurrentAnswer] = useState<string>('');
   const [followUpQuestions, setFollowUpQuestions] = useState<Question[]>([]);
 
-  const handleQuestionClick = (question: Question) => {
-    setCurrentQuestion(question.value);
-    answers.fetchResult(question.value);
-  };
-
-  const handleSubmit = (question: string) => {
-    setCurrentQuestion(question);
-    answers.fetchResult(question);
+  const handleSubmitQuestion = (question: Question | string) => {
+    const questionText = typeof question === 'string' ? question : question.value;
+    setCurrentQuestion(questionText);
+    answers.fetchResult(questionText);
   };
 
   useEffect(() => {
-    if (answers.data?.value) {
-      setCurrentAnswer(answers.data.value);
-    }
-
-    if (answers.data?.follow_up_questions) {
-      setFollowUpQuestions(answers.data.follow_up_questions);
+    if (answers.data) {
+      if (answers.data.value) setCurrentAnswer(answers.data.value);
+      if (answers.data.follow_up_questions) setFollowUpQuestions(answers.data.follow_up_questions);
     }
   }, [answers.data]);
+
+  const displayQuestions = currentAnswer ? followUpQuestions : questions.data;
 
   return (
     <div className='cio-asa-pdp-container'>
       <p className='cio-asa-pdp-title'>Any questions about this product?</p>
-      <Input onSubmit={handleSubmit} value={currentQuestion} />
+      <Input onSubmit={handleSubmitQuestion} value={currentQuestion} />
       <div className='cio-asa-pdp-answer-container'>
         <Answer text={currentAnswer} isLoading={answers.isLoading} />
         {currentAnswer && (
@@ -60,25 +55,14 @@ export default function CioAsaPdp(props: CioAsaPdpProps) {
           </>
         )}
       </div>
-      {!currentAnswer ? (
-        <div className='cio-asa-pdp-initial-questions-container'>
-          <SuggestedQuestionsContainer
-            questions={questions.data}
-            isLoading={questions.isLoading}
-            error={questions.error}
-            onQuestionClick={handleQuestionClick}
-          />
-        </div>
-      ) : (
-        <div className='cio-asa-pdp-follow-up-questions-container'>
-          <SuggestedQuestionsContainer
-            questions={followUpQuestions}
-            isLoading={answers.isLoading}
-            error={answers.error}
-            onQuestionClick={handleQuestionClick}
-          />
-        </div>
-      )}
+      <div className='cio-asa-pdp-follow-up-questions-container'>
+        <SuggestedQuestionsContainer
+          questions={displayQuestions}
+          isLoading={questions.isLoading}
+          error={questions.error}
+          onQuestionClick={handleSubmitQuestion}
+        />
+      </div>
     </div>
   );
 }
