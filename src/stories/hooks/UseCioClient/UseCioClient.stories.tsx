@@ -6,6 +6,7 @@ import MockConstructorIOClient from '../../../hooks/mocks/MockConstructorIOClien
 const meta = {
   title: 'Hooks/UseCioClient',
   component: UseCioClientExample,
+  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
     docs: {
