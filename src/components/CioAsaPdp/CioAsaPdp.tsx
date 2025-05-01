@@ -8,6 +8,7 @@ import { DISCLAIMER_TEXT } from '../../constants';
 import { Question } from '../../hooks/mocks/types';
 import useCioAsaPdp from '../../hooks/useCioAsaPdp';
 import ErrorBlock from '../Error/ErrorBlock';
+import LoadingSkeleton from '../LoadingSkeleton/LoadingSkeleton';
 
 export interface CioAsaPdpProps {
   apiKey: string;
@@ -42,40 +43,41 @@ export default function CioAsaPdp(props: CioAsaPdpProps) {
   }, [answers.data]);
 
   const error = answers.error || suggestedQuestions.error;
+  const isLoading = answers.isLoading || suggestedQuestions.isLoading;
 
   return (
     <div className='cio-asa-pdp-container'>
       <p className='cio-asa-pdp-title'>Any questions about this product?</p>
       <Input onSubmit={handleSubmitQuestion} value={currentQuestion} />
-      {error ? (
-        <ErrorBlock
-          message={
-            answers.error?.message || suggestedQuestions.error?.message || 'Unexpected error'
-          }
-        />
-      ) : (
-        <>
-          <Answer text={currentAnswer} isLoading={answers.isLoading} />
-          {!!currentAnswer && !answers.isLoading && (
-            <>
-              <Feedback />
-              <span className='cio-asa-pdp-disclaimer'>
-                {DISCLAIMER_TEXT}{' '}
-                <a href='https://constructor.io' className='cio-asa-pdp-learn-more'>
-                  <u>Learn More.</u>
-                </a>
-              </span>
-            </>
-          )}
-
-          <SuggestedQuestionsContainer
-            questions={displayedQuestions}
-            isLoading={suggestedQuestions.isLoading || answers.isLoading}
-            error={suggestedQuestions.error}
-            onQuestionClick={handleSubmitQuestion}
+      {isLoading && <LoadingSkeleton />}
+      {!isLoading &&
+        (error ? (
+          <ErrorBlock
+            message={
+              answers.error?.message || suggestedQuestions.error?.message || 'Unexpected error'
+            }
           />
-        </>
-      )}
+        ) : (
+          <>
+            {!!currentAnswer && !answers.isLoading && (
+              <div className='cio-asa-pdp-answer-container'>
+                <Answer text={currentAnswer} />
+                <Feedback />
+                <span className='cio-asa-pdp-disclaimer'>
+                  {DISCLAIMER_TEXT}{' '}
+                  <a href='https://constructor.io' className='cio-asa-pdp-learn-more'>
+                    <u>Learn More.</u>
+                  </a>
+                </span>
+              </div>
+            )}
+
+            <SuggestedQuestionsContainer
+              questions={displayedQuestions}
+              onQuestionClick={handleSubmitQuestion}
+            />
+          </>
+        ))}
     </div>
   );
 }

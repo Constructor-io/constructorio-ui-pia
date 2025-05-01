@@ -2,7 +2,6 @@
 export const DEMO_API_KEY = 'key_INwEgKqTefVGVdjJ';
 export const DEMO_ITEM_ID = '22368';
 export const DEMO_QUESTION = 'What are the dimensions of the swim cap?';
-export const MOCK_ANSWER = 'The swim cap is 20 inches long and 10 inches wide.';
 export const MOCK_QUESTIONS = [
   { value: 'Is this bunk board suitable for a platform bed?' },
   { value: 'What are the benefits of using a bunk board with a platform bed?' },

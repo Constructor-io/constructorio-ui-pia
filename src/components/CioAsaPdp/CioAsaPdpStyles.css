@@ -2,13 +2,21 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 24px;
 }
 
 .cio-asa-pdp-title {
   font-size: 18px;
   font-weight: 400;
   text-align: start;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.cio-asa-pdp-answer-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .cio-asa-pdp-disclaimer {

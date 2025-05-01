@@ -28,7 +28,7 @@ export default function useSuggestedQuestions({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const fetchData = useCallback(() => {
+  const fetchResult = useCallback(() => {
     if (!cioClient) return;
 
     setIsLoading(true);
@@ -48,14 +48,13 @@ export default function useSuggestedQuestions({
   }, [cioClient, itemId]);
 
   useEffect(() => {
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [itemId]);
+    fetchResult();
+  }, [fetchResult]);
 
   return {
     data: questions,
     isLoading,
     error,
-    getSuggestedQuestions: fetchData,
+    getSuggestedQuestions: fetchResult,
   };
 }

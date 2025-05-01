@@ -1,32 +1,17 @@
 import React from 'react';
 import SuggestedQuestion from '../SuggestedQuestion/SuggestedQuestion';
 import { Question } from '../../hooks/mocks/types';
-import ErrorBlock from '../Error/ErrorBlock';
 
 interface SuggestedQuestionsContainerProps {
   questions: Question[];
   onQuestionClick: (question: Question) => void;
-  isLoading: boolean;
-  error: Error | null;
 }
 
 export default function SuggestedQuestionsContainer({
   questions,
   onQuestionClick,
-  isLoading,
-  error,
 }: SuggestedQuestionsContainerProps) {
   if (!questions || questions.length === 0) {
-    return null;
-  }
-
-  if (error) {
-    const errorMessage = error?.message ?? 'Error fetching suggested questions';
-    return <ErrorBlock message={errorMessage} />;
-  }
-
-  if (isLoading) {
-    // TODO: Add loading state
     return null;
   }
 
