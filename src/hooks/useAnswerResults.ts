@@ -49,7 +49,7 @@ export default function useAnswerResults({
           setError(null);
         })
         .catch((err) => {
-          setError(err instanceof Error ? err : new Error('Error fetching answer results'));
+          setError(err instanceof Error ? err : new Error('Error fetching answer'));
         })
         .finally(() => {
           setIsLoading(false);

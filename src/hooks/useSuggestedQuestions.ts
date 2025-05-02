@@ -40,7 +40,7 @@ export default function useSuggestedQuestions({
         setError(null);
       })
       .catch((err) => {
-        setError(err instanceof Error ? err : new Error('Error fetching suggested questions'));
+        setError(err instanceof Error ? err : new Error('Error fetching questions'));
       })
       .finally(() => {
         setIsLoading(false);
