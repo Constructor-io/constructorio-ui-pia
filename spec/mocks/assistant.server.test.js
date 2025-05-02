@@ -13,7 +13,7 @@ describe('Testing Mocks: Assistant', () => {
   });
 
   describe('getSuggestedQuestions', () => {
-    it('Should fetch suggested questions given item_id', async () => {
+    it('fetches suggested questions given item_id', async () => {
       const result = await client.assistant.getSuggestedQuestions(DEMO_ITEM_ID);
 
       expect(result).toBeDefined();
@@ -25,7 +25,7 @@ describe('Testing Mocks: Assistant', () => {
   });
 
   describe('getAnswerResults', () => {
-    it('Should fetch answer given item_id and questions', async () => {
+    it('fetches answer given item_id and questions', async () => {
       const result = await client.assistant.getAnswerResults({
         itemId: DEMO_ITEM_ID,
         question: DEMO_QUESTION,

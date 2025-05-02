@@ -27,7 +27,7 @@ describe('Testing Hook: useAnswerResults', () => {
     mockClient.assistant.getAnswerResults.mockResolvedValue(mockResponse);
   });
 
-  it('Should initialize with default state', () => {
+  it('initializes with default state', () => {
     const { result } = renderHook(() => useAnswerResults(testProps));
 
     expect(result.current.isLoading).toBe(false);
@@ -36,7 +36,7 @@ describe('Testing Hook: useAnswerResults', () => {
     expect(mockClient.assistant.getAnswerResults).not.toHaveBeenCalled();
   });
 
-  it('Should fetch and return answer results when fetch is called', async () => {
+  it('fetches and returns answer results when getAnswer is called', async () => {
     const { result } = renderHook(() => useAnswerResults(testProps));
 
     act(() => {
@@ -63,7 +63,7 @@ describe('Testing Hook: useAnswerResults', () => {
     expect(result.current.error).toBe(null);
   });
 
-  it('Should handle errors when fetching answer results', async () => {
+  it('handles errors when fetching answer results', async () => {
     const errorMessage = 'Failed to fetch';
     mockClient.assistant.getAnswerResults.mockRejectedValue(new Error(errorMessage));
 
@@ -86,7 +86,7 @@ describe('Testing Hook: useAnswerResults', () => {
     expect(result.current.error.message).toBe(errorMessage);
   });
 
-  it('Should refetch data when getAnswer is called again', async () => {
+  it('refetch data when getAnswer is called again', async () => {
     const { result } = renderHook(() => useAnswerResults(testProps));
 
     act(() => {
@@ -119,7 +119,7 @@ describe('Testing Hook: useAnswerResults', () => {
     expect(result.current.data).toEqual(mockResponse);
   });
 
-  it('Should update dependency when itemId changes', async () => {
+  it('updates dependency when itemId changes', async () => {
     const { result, rerender } = renderHook((props) => useAnswerResults(props), {
       initialProps: testProps,
     });
@@ -160,7 +160,7 @@ describe('Testing Hook: useAnswerResults', () => {
     });
   });
 
-  it('Should not fetch if cioClient is not provided', () => {
+  it('does not fetch if cioClient is not provided', () => {
     const { result } = renderHook(() => useAnswerResults({ ...testProps, cioClient: undefined }));
 
     act(() => {

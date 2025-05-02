@@ -25,7 +25,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     jest.clearAllMocks();
   });
 
-  it('Should fetch and return suggested questions', async () => {
+  it('fetches and returns suggested questions', async () => {
     mockClient.assistant.getSuggestedQuestions.mockResolvedValueOnce({
       questions: testQuestions,
     });
@@ -54,7 +54,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     expect(mockClient.assistant.getSuggestedQuestions).toHaveBeenCalledWith(testItemId);
   });
 
-  it('Should handle errors when fetching questions fails', async () => {
+  it('handles errors when fetching questions fails', async () => {
     const mockError = new Error('Mock error');
     mockClient.assistant.getSuggestedQuestions.mockRejectedValueOnce(mockError);
 
@@ -78,7 +78,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     expect(mockClient.assistant.getSuggestedQuestions).toHaveBeenCalledWith(testItemId);
   });
 
-  it('Should refetch questions when getSuggestedQuestions function is called', async () => {
+  it('refetch questions when getSuggestedQuestions function is called', async () => {
     mockClient.assistant.getSuggestedQuestions.mockResolvedValueOnce({
       questions: testQuestions,
     });
@@ -117,7 +117,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     expect(mockClient.assistant.getSuggestedQuestions).toHaveBeenCalledTimes(1);
   });
 
-  it('Should not fetch if no client provided', async () => {
+  it('does not fetch if no client provided', async () => {
     const { result } = renderHook(() =>
       useSuggestedQuestions({
         itemId: testItemId,
@@ -130,7 +130,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     expect(mockClient.assistant.getSuggestedQuestions).not.toHaveBeenCalled();
   });
 
-  it('Should refetch when itemId changes', async () => {
+  it('refetch when itemId changes', async () => {
     mockClient.assistant.getSuggestedQuestions
       .mockResolvedValueOnce({ questions: testQuestions })
       .mockResolvedValueOnce({ questions: newTestQuestions });
