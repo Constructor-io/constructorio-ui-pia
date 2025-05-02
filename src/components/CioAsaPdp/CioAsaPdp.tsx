@@ -46,8 +46,10 @@ export default function CioAsaPdp(props: CioAsaPdpProps) {
   const isLoading = answers.isLoading || suggestedQuestions.isLoading;
 
   return (
-    <div className='cio-asa-pdp-container'>
-      <p className='cio-asa-pdp-title'>Any questions about this product?</p>
+    <div className='cio-asa-pdp-container' data-testid='cio-asa-pdp-container'>
+      <p className='cio-asa-pdp-title' data-testid='cio-asa-pdp-title'>
+        Any questions about this product?
+      </p>
       <Input onSubmit={handleSubmitQuestion} value={currentQuestion} />
       {isLoading && <LoadingSkeleton />}
       {!isLoading &&
