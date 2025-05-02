@@ -40,6 +40,6 @@ describe('Testing Mocks: Assistant', () => {
       expect(Array.isArray(result.follow_up_questions)).toBe(true);
       expect(result.follow_up_questions[0]).toHaveProperty('value');
       expect(typeof result.follow_up_questions[0].value).toBe('string');
-    }, 10000); // Adding a timeout here as the answer API might take longer to respond
+    }, 15000); // Adding a timeout here as the answer API might take longer to respond
   });
 });
