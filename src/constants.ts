@@ -10,3 +10,5 @@ export const MOCK_QUESTIONS = [
   { value: 'What sizes are available for this bunk board?' },
   { value: 'Can this bunk board be used with a memory foam mattress?' },
 ];
+export const DISCLAIMER_TEXT =
+  'AI-generated answers aim to help, but they may occasionally miss details or be inaccurate. Double-check important information before purchasing.';

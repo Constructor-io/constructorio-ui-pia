@@ -31,7 +31,7 @@ export interface QuestionResponse {
 export interface AnswerResponse {
   value: string;
   alternative: string;
-  follow_up_questions: Array<string>;
+  follow_up_questions: Array<Question>;
 }
 
 export interface StreamStartEvent {
