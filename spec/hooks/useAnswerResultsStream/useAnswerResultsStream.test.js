@@ -28,7 +28,6 @@ describe('Testing Hook: useAnswerResultsStream', () => {
   const testProps = {
     itemId: testItemId,
     question: testQuestion,
-    parameters: {},
     onStart: mockOnStart,
     onMessage: mockOnMessage,
     onEnd: mockOnEnd,
@@ -72,7 +71,6 @@ describe('Testing Hook: useAnswerResultsStream', () => {
       expect.objectContaining({
         itemId: testProps.itemId,
         question: testProps.question,
-        parameters: testProps.parameters,
         signal: expect.any(AbortSignal),
       }),
     );

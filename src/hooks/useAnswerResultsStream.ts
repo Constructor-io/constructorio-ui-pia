@@ -28,12 +28,11 @@ const streamAnswerResults = async (
   client: MockConstructorIOClient,
   props: StreamAnswerResultsProps,
 ) => {
-  const { itemId, question, parameters, onStart, onMessage, onEnd, signal } = props;
+  const { itemId, question, onStart, onMessage, onEnd, signal } = props;
 
   await client.assistant.getAnswerResultsStream({
     itemId,
     question,
-    parameters,
     onStart,
     onMessage,
     onEnd,
@@ -44,7 +43,6 @@ const streamAnswerResults = async (
 export default function useAnswerResultStream({
   itemId,
   question,
-  parameters = {},
   onStart,
   onMessage,
   onEnd,
@@ -90,7 +88,6 @@ export default function useAnswerResultStream({
     streamAnswerResults(client, {
       itemId,
       question,
-      parameters,
       onStart: customOnStart,
       onMessage: customOnMessage,
       onEnd: customOnEnd,
@@ -101,7 +98,7 @@ export default function useAnswerResultStream({
         setError(err instanceof Error ? err : new Error('Error streaming answer results'));
       }
     });
-  }, [client, isStreaming, itemId, question, parameters, onStart, onMessage, onEnd, stopStream]);
+  }, [client, isStreaming, itemId, question, onStart, onMessage, onEnd, stopStream]);
 
   // Returns a cleanup function to stop the stream when the component unmounts
   useEffect(
