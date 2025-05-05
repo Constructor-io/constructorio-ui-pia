@@ -24,22 +24,19 @@ export default function CioAsaPdp(props: CioAsaPdpProps) {
   const [currentAnswer, setCurrentAnswer] = useState<string>('');
   const [displayedQuestions, setDisplayedQuestions] = useState<Question[]>([]);
 
-  const handleSubmitQuestion = (question: Question | string) => {
-    const questionText = typeof question === 'string' ? question : question.value;
-    setCurrentQuestion(questionText);
-    answers.getAnswer(questionText);
+  const handleSubmitQuestion = (question: string) => {
+    setCurrentQuestion(question);
+    answers.getAnswer(question);
   };
 
+  // Update displayed questions when suggested questions are fetched
   useEffect(() => {
-    // Update displayed questions when suggested questions are fetched
     setDisplayedQuestions(suggestedQuestions.data);
   }, [suggestedQuestions.data]);
 
   useEffect(() => {
-    if (answers.data) {
-      if (answers.data.value) setCurrentAnswer(answers.data.value);
-      if (answers.data.follow_up_questions) setDisplayedQuestions(answers.data.follow_up_questions);
-    }
+    if (answers.data?.value) setCurrentAnswer(answers.data.value);
+    if (answers.data?.follow_up_questions) setDisplayedQuestions(answers.data.follow_up_questions);
   }, [answers.data]);
 
   const error = answers.error || suggestedQuestions.error;
@@ -61,7 +58,7 @@ export default function CioAsaPdp(props: CioAsaPdpProps) {
           />
         ) : (
           <>
-            {!!currentAnswer && !answers.isLoading && (
+            {!!currentAnswer && (
               <div className='cio-asa-pdp-answer-container'>
                 <Answer text={currentAnswer} />
                 <Feedback />

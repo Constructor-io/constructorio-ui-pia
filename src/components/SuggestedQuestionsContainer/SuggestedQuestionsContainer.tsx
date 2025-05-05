@@ -4,7 +4,7 @@ import { Question } from '../../hooks/mocks/types';
 
 interface SuggestedQuestionsContainerProps {
   questions: Question[];
-  onQuestionClick: (question: Question) => void;
+  onQuestionClick: (question: string) => void;
 }
 
 export default function SuggestedQuestionsContainer({
@@ -23,7 +23,7 @@ export default function SuggestedQuestionsContainer({
         <SuggestedQuestion
           key={question.value}
           question={question.value}
-          onClick={() => onQuestionClick(question)}
+          onClick={() => onQuestionClick(question.value)}
         />
       ))}
     </div>

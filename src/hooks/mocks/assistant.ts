@@ -70,7 +70,7 @@ class MockAssistant {
       return data;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      throw new Error(`${errorMessage}`);
+      throw new Error(errorMessage);
     }
   }
 
@@ -97,7 +97,7 @@ class MockAssistant {
       return data;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      throw new Error(`${errorMessage}`);
+      throw new Error(errorMessage);
     }
   }
 
@@ -145,8 +145,8 @@ class MockAssistant {
         throw new Error('Unexpected error occurred. Please try again.');
       };
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : String(error);
-      throw new Error(`${errorMsg}`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      throw new Error(errorMessage);
     }
   }
 }
