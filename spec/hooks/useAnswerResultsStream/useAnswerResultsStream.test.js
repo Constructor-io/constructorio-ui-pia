@@ -155,4 +155,28 @@ describe('Testing Hook: useAnswerResultsStream', () => {
     expect(mockGetAnswerResultsStream).not.toHaveBeenCalled();
     expect(result.current.isStreaming).toBe(false);
   });
+
+  it('Should clean up and abort stream on unmount', async () => {
+    mockGetAnswerResultsStream.mockImplementationOnce(() => new Promise(() => {}));
+
+    const mockAbortController = {
+      abort: jest.fn(),
+      signal: {
+        aborted: false,
+      },
+    };
+    global.AbortController = jest.fn().mockImplementation(() => mockAbortController);
+
+    const { result, unmount } = renderHook(() => useAnswerResultsStream(testProps));
+    await act(async () => {
+      result.current.startStream();
+    });
+
+    expect(result.current.isStreaming).toBe(true);
+    expect(global.AbortController).toHaveBeenCalled();
+
+    unmount();
+
+    expect(mockAbortController.abort).toHaveBeenCalled();
+  });
 });

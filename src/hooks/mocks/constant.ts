@@ -1,4 +1,4 @@
-// eslint-disable-next-line prettier/prettier, import/prefer-default-export
+// eslint-disable-next-line import/prefer-default-export
 export const STREAM_EVENTS = {
   START: 'start',
   MESSAGE: 'message',

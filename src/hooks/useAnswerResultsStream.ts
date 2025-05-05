@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import useCioClient from './useCioClient';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 import { StreamEndEvent, StreamMessageEvent, StreamStartEvent } from './mocks/types';
@@ -56,9 +56,9 @@ export default function useAnswerResultStream({
 
   const stopStream = useCallback(() => {
     if (abortControllerRef.current) {
+      setIsStreaming(false);
       abortControllerRef.current.abort();
       abortControllerRef.current = null;
-      setIsStreaming(false);
     }
   }, []);
 
@@ -102,6 +102,15 @@ export default function useAnswerResultStream({
       }
     });
   }, [client, isStreaming, itemId, question, parameters, onStart, onMessage, onEnd, stopStream]);
+
+  // Returns a cleanup function to stop the stream when the component unmounts
+  useEffect(
+    () => () => {
+      stopStream();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   return {
     isStreaming,
