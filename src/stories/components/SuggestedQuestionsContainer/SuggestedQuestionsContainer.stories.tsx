@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
 import SuggestedQuestionsContainer from '../../../components/SuggestedQuestionsContainer/SuggestedQuestionsContainer';
-import { DEMO_ITEM_ID } from '../../../constants';
+import { MOCK_QUESTIONS } from '../../../constants';
 
 const meta = {
   title: 'Components/SuggestedQuestionsContainer',
@@ -17,15 +17,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    itemId: DEMO_ITEM_ID,
+    questions: MOCK_QUESTIONS,
     onQuestionClick: fn(),
-  },
-};
-
-export const Error: Story = {
-  args: {
-    itemId: DEMO_ITEM_ID,
-    onQuestionClick: fn(),
-    isError: true,
   },
 };

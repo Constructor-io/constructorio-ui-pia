@@ -1,42 +1,7 @@
-.cio-asa-pdp-answer-container {
-  width: 430px;
-  padding: 10px;
-}
-
-.cio-asa-pdp-answer-loading {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.skeleton-bar {
-  background-color: rgba(0, 0, 0, 0.05);
-  height: 16px;
-  border-radius: 4px;
+.cio-asa-pdp-answer {
   width: 100%;
-  animation: loading-animation 2s infinite ease-in-out;
-}
-
-.skeleton-short {
-  width: 80%;
-}
-
-.cio-asa-pdp-answer-text {
-  font-size: 13px;
+  font-size: 14px;
   font-style: normal;
-  font-weight: 400;
+  font-weight: 500;
   color: #14151a;
-}
-
-/* Animation for the loader */
-@keyframes loading-animation {
-  0% {
-    background-color: rgba(0, 0, 0, 0.05);
-  }
-  50% {
-    background-color: rgba(0, 0, 0, 0.1);
-  }
-  100% {
-    background-color: rgba(0, 0, 0, 0.05);
-  }
 }

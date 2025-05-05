@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface InputProps {
-  onSubmit: (value: string) => void;
+  value?: string;
   placeholder?: string;
   disabled?: boolean;
+  onSubmit: (value: string) => void;
 }
 
 function SendIcon() {
@@ -20,8 +21,19 @@ function SendIcon() {
   );
 }
 
-function Input({ onSubmit, placeholder = 'Ask anything', disabled = false }: InputProps) {
-  const [value, setValue] = useState('');
+function Input({
+  value: providedValue,
+  placeholder = 'Ask anything',
+  disabled = false,
+  onSubmit,
+}: InputProps) {
+  const [value, setValue] = useState(providedValue || '');
+
+  useEffect(() => {
+    if (providedValue) {
+      setValue(providedValue);
+    }
+  }, [providedValue]);
 
   const handleSubmit = () => {
     if (value.trim()) {
