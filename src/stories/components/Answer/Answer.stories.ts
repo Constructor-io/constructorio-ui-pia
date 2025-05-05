@@ -18,10 +18,3 @@ export const Default: Story = {
     text: 'This is an answer text that should be displayed in the Answer component.',
   },
 };
-
-export const Loading: Story = {
-  args: {
-    text: '',
-    isLoading: true,
-  },
-};

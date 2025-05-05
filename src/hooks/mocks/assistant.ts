@@ -67,16 +67,12 @@ class MockAssistant {
 
     try {
       const response = await fetch(url);
-
-      if (!response.ok) {
-        throw new Error(`Get Suggested Questions failed with status: ${response.status}`);
-      }
-
       const data = await response.json();
+
       return data;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      throw new Error(`Get Suggested Questions failed: ${errorMessage}`);
+      throw new Error(errorMessage);
     }
   }
 
@@ -98,16 +94,12 @@ class MockAssistant {
 
     try {
       const response = await fetch(url);
-
-      if (!response.ok) {
-        throw new Error(`Get Answer failed with status: ${response.status}`);
-      }
-
       const data = await response.json();
+
       return data;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      throw new Error(`Get Answer failed: ${errorMessage}`);
+      throw new Error(errorMessage);
     }
   }
 
@@ -164,11 +156,11 @@ class MockAssistant {
 
       eventSource.onerror = () => {
         eventSource.close();
-        throw new Error('Streaming response failed');
+        throw new Error('Unexpected error occurred. Please try again.');
       };
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : String(error);
-      throw new Error(`Get Streaming Answer failed: ${errorMsg}`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      throw new Error(errorMessage);
     }
   }
 }

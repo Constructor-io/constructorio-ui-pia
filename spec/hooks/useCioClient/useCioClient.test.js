@@ -3,14 +3,14 @@ import useCioClient from '../../../src/hooks/useCioClient';
 import version from '../../../src/version';
 
 describe('Testing Hook: useCioClient', () => {
-  it('Should throw error if Api Key not provided', () => {
+  it('throws error if Api Key not provided', () => {
     const spy = jest.spyOn(console, 'error');
     spy.mockImplementation(() => {});
     expect(() => renderHook(() => useCioClient())).toThrow();
     spy.mockRestore();
   });
 
-  it('Should return client when custom client is provided', () => {
+  it('returns client when custom client is provided', () => {
     const mockClient = { tracker: () => {} };
     const { result } = renderHook(({ cioClient }) => useCioClient({ cioClient }), {
       initialProps: { cioClient: mockClient },
@@ -19,7 +19,7 @@ describe('Testing Hook: useCioClient', () => {
     expect(result.current).toBe(mockClient);
   });
 
-  it('Should return a ConstructorIO Client Object', () => {
+  it('returns a ConstructorIO Client Object', () => {
     const { result } = renderHook(({ apiKey, options }) => useCioClient({ apiKey, options }), {
       initialProps: {
         apiKey: 'xx',
@@ -38,7 +38,7 @@ describe('Testing Hook: useCioClient', () => {
     expect(client.assistant).not.toBeUndefined();
   });
 
-  it('Should return a client with options set', () => {
+  it('returns a client with options set', () => {
     const key = 'xx';
     const clientOptions = {
       version: 'cio-ui-asa-pdp-1.0.0',

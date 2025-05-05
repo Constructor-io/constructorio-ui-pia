@@ -1,19 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
-import useCioClient from './useCioClient';
 import { Question, QuestionResponse } from './mocks/types';
-import { DEMO_API_KEY } from '../constants';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 
 export interface UseSuggestedQuestionsProps {
   itemId: string;
+  cioClient?: MockConstructorIOClient;
   parameter?: Record<string, any>;
 }
 
-interface UseSuggestedQuestionsResponse {
-  questions: Array<Question>;
+export interface UseSuggestedQuestionsReturn {
+  data: Array<Question>;
   isLoading: boolean;
   error: Error | null;
-  refetch: () => void;
+  getSuggestedQuestions: () => void;
 }
 
 const fetchSuggestedQuestions = async (client: MockConstructorIOClient, itemId: string) => {
@@ -23,39 +22,39 @@ const fetchSuggestedQuestions = async (client: MockConstructorIOClient, itemId: 
 
 export default function useSuggestedQuestions({
   itemId,
-}: UseSuggestedQuestionsProps): UseSuggestedQuestionsResponse {
-  const client = useCioClient({ apiKey: DEMO_API_KEY });
+  cioClient,
+}: UseSuggestedQuestionsProps): UseSuggestedQuestionsReturn {
   const [questions, setQuestions] = useState<Array<Question>>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const fetchData = useCallback(() => {
-    if (!client) return;
+  const fetchResult = useCallback(() => {
+    if (!cioClient) return;
 
     setIsLoading(true);
     setError(null);
 
-    fetchSuggestedQuestions(client, itemId)
+    fetchSuggestedQuestions(cioClient, itemId)
       .then((fetchedQuestions) => {
         setQuestions(fetchedQuestions);
         setError(null);
       })
       .catch((err) => {
-        setError(err instanceof Error ? err : new Error('Error fetching suggested questions'));
+        setError(err instanceof Error ? err : new Error('Error fetching questions'));
       })
       .finally(() => {
         setIsLoading(false);
       });
-  }, [client, itemId]);
+  }, [cioClient, itemId]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchResult();
+  }, [fetchResult]);
 
   return {
-    questions,
+    data: questions,
     isLoading,
     error,
-    refetch: fetchData,
+    getSuggestedQuestions: fetchResult,
   };
 }

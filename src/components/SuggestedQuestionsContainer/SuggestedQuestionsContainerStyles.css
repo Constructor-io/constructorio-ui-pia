@@ -3,7 +3,6 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   width: 100%;
-  margin-top: 16px;
 }
 
 @media (max-width: 768px) {
@@ -12,7 +11,7 @@
     flex-wrap: nowrap;
     overflow-x: auto;
     gap: 8px;
-    padding: 4px;
+    padding: 4px 0px;
     width: 100%;
     max-width: 85vw;
 

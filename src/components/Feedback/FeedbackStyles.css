@@ -1,9 +1,8 @@
 .cio-asa-pdp-feedback-container {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
   height: 20px;
-  padding: 8px 16px;
   gap: 8px;
 }
 

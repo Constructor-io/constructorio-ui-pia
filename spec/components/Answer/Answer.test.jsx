@@ -12,9 +12,8 @@ describe('Answer Component', () => {
     expect(getByText('This is an example answer text')).toBeInTheDocument();
   });
 
-  it('renders loading state when isLoading prop is true', () => {
-    const { getByTestId, queryByTestId } = render(<Answer text='' isLoading />);
-    expect(getByTestId('answer-loading')).toBeInTheDocument();
-    expect(queryByTestId('answer-text')).not.toBeInTheDocument();
+  it('renders null when text prop is empty', () => {
+    const { container } = render(<Answer text='' />);
+    expect(container).toBeEmptyDOMElement();
   });
 });
