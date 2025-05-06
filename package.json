@@ -1,10 +1,17 @@
 {
-  "name": "constructorio-ui-asa-pdp",
-  "version": "0.0.1",
+  "name": "@constructor-io/constructorio-ui-asa-pdp",
+  "version": "0.0.0",
   "description": "Constructor.io AI Shopping Assistant PDP UI library for web applications",
-  "author": "constructor.io",
+  "author": "Constructor.io Corporation",
   "license": "MIT",
   "homepage": "https://github.com/Constructor-io/constructorio-ui-asa-pdp#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Constructor-io/constructorio-ui-asa-pdp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Constructor-io/constructorio-ui-asa-pdp/issues"
+  },
   "main": "lib/cjs/index.js",
   "module": "lib/mjs/index.js",
   "exports": {
@@ -12,7 +19,7 @@
       "import": "./lib/mjs/styles.css",
       "require": "./lib/cjs/styles.css"
     },
-    "./constructorio-ui-asa-bundled": {
+    "./constructorio-ui-asa-pdp-bundled": {
       "import": "./dist/constructorio-ui-asa-pdp-bundled.js",
       "require": "./dist/constructorio-ui-asa-pdp-bundled.js"
     },
@@ -32,6 +39,7 @@
   "engines": {
     "node": ">=14"
   },
+  "types": "lib/types/index.d.ts",
   "scripts": {
     "lint": "eslint src --ext js,ts,jsx,tsx",
     "check-types": "npx tsc --noEmit",
@@ -45,9 +53,7 @@
     "build-storybook": "storybook build",
     "storybook-docs-dev": "storybook dev --docs -p 6007",
     "serve-built-storybook": "npx http-server docs",
-    "verify-node-version": "chmod +x ./scripts/verify-node-version.sh && ./scripts/verify-node-version.sh",
-    "version": "npm run verify-node-version && npm run build-storybook && git add -u ./docs && git add ./docs/* && npm run compile",
-    "compile": "node ./src/generateVersion.js && rm -rf lib && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && npm run copy-styles && vite build",
+    "compile": "rm -rf lib && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && npm run copy-styles && vite build",
     "check-license": "license-checker --production --onlyAllow 'Apache-2.0;BSD-3-Clause;MIT;0BSD;BSD-2-Clause' --excludePackages 'picocolors@1.0.0'",
     "prepare": "husky",
     "storybook": "storybook dev -p 6006"
