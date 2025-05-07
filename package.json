@@ -50,13 +50,12 @@
     "test-storybook": "test-storybook",
     "test-storybook:watch": "test-storybook --watch",
     "test-storybook:ci": "start-server-and-test storybook:ci http://localhost:6006 test-storybook",
-    "build-storybook": "storybook build",
+    "build-storybook": "storybook build --docs -o 'docs'",
     "storybook-docs-dev": "storybook dev --docs -p 6007",
     "serve-built-storybook": "npx http-server docs",
     "compile": "rm -rf lib && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && npm run copy-styles && vite build",
     "check-license": "license-checker --production --onlyAllow 'Apache-2.0;BSD-3-Clause;MIT;0BSD;BSD-2-Clause' --excludePackages 'picocolors@1.0.0'",
-    "prepare": "husky",
-    "storybook": "storybook dev -p 6006"
+    "prepare": "husky install"
   },
   "peerDependencies": {
     "@constructor-io/constructorio-client-javascript": "^2.35.14",
@@ -77,7 +76,6 @@
     "@storybook/addon-essentials": "^8.6.4",
     "@storybook/addon-interactions": "^8.6.4",
     "@storybook/addon-links": "^8.6.4",
-    "@storybook/addon-mdx-gfm": "^8.6.4",
     "@storybook/addon-onboarding": "^8.6.4",
     "@storybook/blocks": "^8.6.4",
     "@storybook/react": "^8.6.4",
