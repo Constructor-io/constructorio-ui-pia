@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, waitFor, screen } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import SuggestedQuestionsContainer from '../../../src/components/SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import { MOCK_QUESTIONS } from '../../../src/constants';
@@ -47,6 +47,6 @@ describe('SuggestedQuestionsContainer Component', () => {
     expect(getByText(MOCK_QUESTIONS[0].value)).toBeInTheDocument();
 
     fireEvent.click(getByText(MOCK_QUESTIONS[0].value));
-    expect(defaultProps.onQuestionClick).toHaveBeenCalledWith(MOCK_QUESTIONS[0]);
+    expect(defaultProps.onQuestionClick).toHaveBeenCalledWith(MOCK_QUESTIONS[0].value);
   });
 });
