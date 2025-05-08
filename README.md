@@ -20,27 +20,31 @@
 
 </div>
 
-## Table of Contents
+## Installation
 
-1. Local Development
-2. Development Scripts
-
-## 1. Local Development
-
-Clone the repository and install dependencies:
-
-```sh
-git clone https://github.com/Constructor-io/constructorio-ui-asa-pdp.git
-cd constructorio-ui-asa-pdp
-npm install
+```bash
+npm i @constructor-io/constructorio-ui-asa-pdp
 ```
 
-## 2. Development Scripts
+## Usage
 
-- `npm run dev` - Start Storybook development server
-- `npm test` - Run Jest tests
-- `npm run lint` - Lint source files
-- `npm run check-types` - Type check TypeScript files
+### Using the JavaScript Bundle
+
+This is a framework agnostic method that can be used in any JavaScript project. The `CioAsaPdp` function provides a simple interface to inject the ASA PDP component into the provided `selector`.
+
+In addition to [ASA PDP component props](https://constructor-io.github.io/constructorio-ui-asa-pdp/?path=/docs/components-cioasapdp--docs), this function also accepts `selector` and `includeCSS`.
+
+```js
+import CioAsaPdp from '@constructor-io/constructorio-ui-asa-pdp/constructorio-ui-asa-pdp-bundled';
+
+CioAsaPdp({
+  selector: '#asa-pdp-container',
+  includeCSS: true, // Include the default CSS styles - defaults to true
+  apiKey: '***REMOVED***',
+  itemId: '12345',
+  // ... additional arguments
+});
+```
 
 ## Requirements
 
