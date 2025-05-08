@@ -9,15 +9,18 @@ import { Question } from '../../hooks/mocks/types';
 import useCioAsaPdp from '../../hooks/useCioAsaPdp';
 import ErrorBlock from '../Error/ErrorBlock';
 import LoadingSkeleton from '../LoadingSkeleton/LoadingSkeleton';
+import { CioAsaPdpDisplayConfigs } from '../../types';
 
 export interface CioAsaPdpProps {
   apiKey: string;
   itemId: string;
   cioClient?: MockConstructorIOClient;
+  displayConfigs?: CioAsaPdpDisplayConfigs;
 }
 
 export default function CioAsaPdp(props: CioAsaPdpProps) {
-  const { apiKey, itemId, cioClient } = props;
+  const { apiKey, itemId, cioClient, displayConfigs } = props;
+  const { learnMoreUrl, showFeedback } = displayConfigs || {};
   const { suggestedQuestions, answers } = useCioAsaPdp({ apiKey, itemId, cioClient });
 
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
@@ -61,12 +64,18 @@ export default function CioAsaPdp(props: CioAsaPdpProps) {
             {!!currentAnswer && (
               <div className='cio-asa-pdp-answer-container'>
                 <Answer text={currentAnswer} />
-                <Feedback />
+                {!!showFeedback && <Feedback />}
                 <span className='cio-asa-pdp-disclaimer'>
                   {DISCLAIMER_TEXT}{' '}
-                  <a href='https://constructor.io' className='cio-asa-pdp-learn-more'>
-                    <u>Learn More.</u>
-                  </a>
+                  {!!learnMoreUrl && (
+                    <a
+                      href={learnMoreUrl}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='cio-asa-pdp-learn-more'>
+                      <u>Learn More.</u>
+                    </a>
+                  )}
                 </span>
               </div>
             )}
