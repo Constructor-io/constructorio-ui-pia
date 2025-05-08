@@ -5,6 +5,7 @@ node_modules
 # Pertaining to Building/Deployment
 dist
 lib
+docs
 
 .DS_Store
 *storybook.log
