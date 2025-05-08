@@ -9,8 +9,15 @@
 
 </div>
 
+<hr />
 <div align="center">
-    <img src="src/assets/asa-pdp-demo.png" alt="AI Shopping Assistant PDP UI demonstration" />
+
+![minzipped size](https://img.shields.io/bundlephobia/minzip/@constructor-io/constructorio-ui-asa-pdp?color=green&style=flat-square)
+[![NPM Version](https://img.shields.io/npm/v/@constructor-io/constructorio-ui-asa-pdp?style=flat-square)](https://www.npmjs.com/package/@constructor-io/constructorio-ui-asa-pdp)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/Constructor-io/constructorio-ui-asa-pdp/blob/main/LICENSE)
+
+<img src="src/assets/asa-pdp-demo.png" alt="AI Shopping Assistant PDP UI demonstration" />
+
 </div>
 
 ## Table of Contents
