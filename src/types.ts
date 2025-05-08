@@ -20,6 +20,11 @@ export interface CioAsaPdpProviderProps {
   cioClient?: Nullable<MockConstructorIOClient>;
 }
 
+export type CioAsaPdpDisplayConfigs = {
+  learnMoreUrl?: string;
+  showFeedback?: boolean;
+};
+
 /**
  * Composes a type for a Component that accepts
  * - Props P,
