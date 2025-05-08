@@ -13,10 +13,10 @@
 <div align="center">
 
 ![minzipped size](https://img.shields.io/bundlephobia/minzip/@constructor-io/constructorio-ui-asa-pdp?color=green&style=flat-square)
-[![npm](https://img.shields.io/npm/v/@constructor-io/constructorio-ui-asa-pdp)](https://www.npmjs.com/package/@constructor-io/constructorio-ui-asa-pdp)
-[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Constructor-io/constructorio-ui-asa-pdp/blob/main/LICENSE)
+[![NPM Version](https://img.shields.io/npm/v/@constructor-io/constructorio-ui-asa-pdp?style=flat-square)](https://www.npmjs.com/package/@constructor-io/constructorio-ui-asa-pdp)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/Constructor-io/constructorio-ui-asa-pdp/blob/main/LICENSE)
 
-    <img src="src/assets/asa-pdp-demo.png" alt="AI Shopping Assistant PDP UI demonstration" />
+<img src="src/assets/asa-pdp-demo.png" alt="AI Shopping Assistant PDP UI demonstration" />
 
 </div>
 
