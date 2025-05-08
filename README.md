@@ -1,3 +1,6 @@
+[![npm](https://img.shields.io/npm/v/@constructor-io/constructorio-ui-asa-pdp)](https://www.npmjs.com/package/@constructor-io/constructorio-ui-asa-pdp)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Constructor-io/constructorio-ui-asa-pdp/blob/main/LICENSE)
+
 <div align="center">
   <img src="https://constructor.com/hubfs/constructor-favicon-2024-1.svg" alt="constructor logo" title="constructor logo" width="220px" height="220px">
   
