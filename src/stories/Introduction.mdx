@@ -1,5 +1,61 @@
 import { Meta } from '@storybook/blocks';
+import DemoImage from './assets/asa-pdp-demo.png';
+import AsaIcon from './assets/cioasapdp-icon.svg';
+import './assets/storybook-styles.css';
 
 <Meta title='General/Introduction' />
 
-### ASA PDP Storybook
+# AI Shopping Assistant PDP UI library
+
+ASA PDP is an NLP chatbot embedded in product detail pages, designed to answer key technical product questions essential for final purchase decisions.
+
+<img src={DemoImage} />
+
+Give our ASA PDP library a try today and help your customers make confident purchasing decisions!
+
+## Demo
+
+<a className='link-item' href='./?path=/docs/components-cioasapdp--docs'>
+  <span>
+    <img src={AsaIcon} />
+    <strong>CioAsaPdp</strong>
+    See the component in action
+  </span>
+</a>
+
+## Installation
+
+```bash
+npm i @constructor-io/constructorio-ui-asa-pdp
+```
+
+## Usage
+
+### Using the JavaScript Bundle
+
+This is a framework agnostic method that can be used in any JavaScript project. The `CioAsaPdp` function provides a simple interface to inject the ASA PDP component into the provided `selector`.
+
+In addition to [ASA PDP component props](https://constructor-io.github.io/constructorio-ui-asa-pdp/?path=/docs/components-cioasapdp--docs), this function also accepts `selector` and `includeCSS`.
+
+```js
+import CioAsaPdp from '@constructor-io/constructorio-ui-asa-pdp/constructorio-ui-asa-pdp-bundled';
+
+CioAsaPdp({
+  selector: '#asa-pdp-container',
+  includeCSS: true, // Include the default CSS styles - defaults to true
+  apiKey: 'key_M57QS8SMPdLdLx4x',
+  itemId: '12345',
+  // ... additional arguments
+});
+```
+
+## Requirements
+
+- Node.js v18.20.3 (LTS Hydrogen)
+- React >=16.12.0
+- React DOM >=16.12.0
+
+<div className='badge-wrapper tip-wrapper'>
+  <span className='badge tip'>Tip</span>Having trouble with a unique use case? Contact your friendly
+  Integration Engineers for support!
+</div>
