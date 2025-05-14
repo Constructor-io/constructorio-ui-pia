@@ -16,7 +16,7 @@
 [![NPM Version](https://img.shields.io/npm/v/@constructor-io/constructorio-ui-asa-pdp?style=flat-square)](https://www.npmjs.com/package/@constructor-io/constructorio-ui-asa-pdp)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/Constructor-io/constructorio-ui-asa-pdp/blob/main/LICENSE)
 
-<img src="src/assets/asa-pdp-demo.png" alt="AI Shopping Assistant PDP UI demonstration" />
+<img src="https://raw.githubusercontent.com/Constructor-io/constructorio-ui-asa-pdp/refs/heads/main/src/assets/asa-pdp-demo.png?token=GHSAT0AAAAAAC5V46QGEALKHJ446SQXKNQG2BEEL7A" alt="AI Shopping Assistant PDP UI demonstration" />
 
 </div>
 
