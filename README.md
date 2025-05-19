@@ -42,7 +42,6 @@ CioAsaPdp({
   includeCSS: true, // Include the default CSS styles - defaults to true
   apiKey: 'key_M57QS8SMPdLdLx4x',
   itemId: '12345',
-  // ... additional arguments
 });
 ```
 
