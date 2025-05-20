@@ -1,24 +1,16 @@
-<div align="center">
-  <img src="https://constructor.com/hubfs/constructor-favicon-2024-1.svg" alt="constructor logo" title="constructor logo" width="220px" height="220px">
-  
-  <h1>AI Shopping Assistant PDP UI library</h1>
+# Constructor AI Shopping Assistant PDP UI library
 
-  <p align="center" style="font-size: 1.2rem;">ASA PDP is an NLP chatbot embedded in product detail pages, designed to answer key technical product questions essential for final purchase decisions.</p>
+![minzipped size](https://img.shields.io/bundlephobia/minzip/@constructor-io/constructorio-ui-asa-pdp?color=green)
+[![NPM Version](https://img.shields.io/npm/v/@constructor-io/constructorio-ui-asa-pdp)](https://www.npmjs.com/package/@constructor-io/constructorio-ui-asa-pdp)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Constructor-io/constructorio-ui-asa-pdp/blob/main/LICENSE)
 
-[**Read The Docs**](https://constructor-io.github.io/constructorio-ui-asa-pdp)
+## Introduction
 
-</div>
+ASA PDP is an NLP chatbot embedded in product detail pages, designed to answer key technical product questions essential for final purchase decisions.
 
-<hr />
-<div align="center">
-
-![minzipped size](https://img.shields.io/bundlephobia/minzip/@constructor-io/constructorio-ui-asa-pdp?color=green&style=flat-square)
-[![NPM Version](https://img.shields.io/npm/v/@constructor-io/constructorio-ui-asa-pdp?style=flat-square)](https://www.npmjs.com/package/@constructor-io/constructorio-ui-asa-pdp)
-[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/Constructor-io/constructorio-ui-asa-pdp/blob/main/LICENSE)
+Our [Storybook Docs](https://constructor-io.github.io/constructorio-ui-asa-pdp/?path=/docs/general-introduction--docs) are the best place to explore the behavior and the available configuration options for this UI library.
 
 <img src="src/assets/asa-pdp-demo.png" alt="AI Shopping Assistant PDP UI demonstration" />
-
-</div>
 
 ## Installation
 
@@ -42,7 +34,6 @@ CioAsaPdp({
   includeCSS: true, // Include the default CSS styles - defaults to true
   apiKey: 'key_M57QS8SMPdLdLx4x',
   itemId: '12345',
-  // ... additional arguments
 });
 ```
 
