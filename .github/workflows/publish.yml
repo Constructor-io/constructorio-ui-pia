@@ -54,6 +54,7 @@ jobs:
         with:
           repository: ${{ github.repository }}
           excludes: "prerelease, draft"
+          token: '${{ secrets.GITHUB_TOKEN }}'
 
       - name: Create new git tag
         uses: "./.github/actions/create-version-tag"
