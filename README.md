@@ -10,8 +10,6 @@ ASA PDP is an NLP chatbot embedded in product detail pages, designed to answer k
 
 Our [Storybook Docs](https://constructor-io.github.io/constructorio-ui-asa-pdp/?path=/docs/general-introduction--docs) are the best place to explore the behavior and the available configuration options for this UI library.
 
-<img src="https://raw.githubusercontent.com/Constructor-io/constructorio-ui-asa-pdp/refs/heads/main/src/assets/asa-pdp-demo.png?token=GHSAT0AAAAAAC5V46QGEALKHJ446SQXKNQG2BEEL7A" alt="AI Shopping Assistant PDP UI demonstration" />
-
 ## Installation
 
 ```bash
