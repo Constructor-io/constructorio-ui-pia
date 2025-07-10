@@ -1,7 +1,7 @@
 import { ConstructorClientOptions } from '@constructor-io/constructorio-client-javascript';
 import {
   AnswerResponse,
-  AssistantUrlProps,
+  AgentUrlProps,
   QuestionResponse,
   StreamEndEvent,
   StreamMessageEvent,
@@ -10,15 +10,15 @@ import {
   GetAnswerResultsProps,
 } from './types';
 
-// Create URL for ASA API
-function createAssistantUrl({
+// Create URL for PIA API
+function createAgentUrl({
   itemId,
   question,
   isStreaming = false,
   options,
   parameters = {},
-}: AssistantUrlProps): string {
-  if (!options.assistantServiceUrl) throw new Error('Assistant service URL is required');
+}: AgentUrlProps): string {
+  if (!options.assistantServiceUrl) throw new Error('Agent service URL is required');
 
   const { apiKey, assistantServiceUrl } = options;
   let baseUrl = `${assistantServiceUrl}/v1/item_questions`;
@@ -43,7 +43,7 @@ function createAssistantUrl({
   return url.toString();
 }
 
-class MockAssistant {
+class MockAgent {
   options: ConstructorClientOptions;
 
   constructor(options: ConstructorClientOptions) {
@@ -57,7 +57,7 @@ class MockAssistant {
     if (!itemId) throw new Error('Item ID is required');
     if (!this.options.apiKey) throw new Error('API key is required');
 
-    const url = createAssistantUrl({
+    const url = createAgentUrl({
       itemId,
       options: this.options,
       parameters,
@@ -83,7 +83,7 @@ class MockAssistant {
     if (!question) throw new Error('Question is required');
     if (!this.options.apiKey) throw new Error('API key is required');
 
-    const url = createAssistantUrl({
+    const url = createAgentUrl({
       itemId,
       question,
       options: this.options,
@@ -113,7 +113,7 @@ class MockAssistant {
     if (!question) throw new Error('Question is required');
     if (!this.options.apiKey) throw new Error('API key is required');
 
-    const url = createAssistantUrl({
+    const url = createAgentUrl({
       itemId,
       question,
       isStreaming: true,
@@ -151,4 +151,4 @@ class MockAssistant {
   }
 }
 
-export default MockAssistant;
+export default MockAgent;
