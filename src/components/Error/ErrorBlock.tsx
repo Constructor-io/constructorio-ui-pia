@@ -29,16 +29,16 @@ function RetryIcon() {
 
 function ErrorBlock({ message, onRetry = undefined }: ErrorBlockProps) {
   return (
-    <div className='cio-asa-pdp-error-block-container'>
+    <div className='cio-pia-error-block-container'>
       <div
-        className='cio-asa-pdp-error-block-warning-icon-container'
+        className='cio-pia-error-block-warning-icon-container'
         data-testid='error-block-warning-icon'>
         <WarningIcon />
       </div>
-      <div className='cio-asa-pdp-error-block-text-container'>
-        <p className='cio-asa-pdp-error-block-text'>{message}</p>
+      <div className='cio-pia-error-block-text-container'>
+        <p className='cio-pia-error-block-text'>{message}</p>
         {onRetry && (
-          <button type='button' onClick={onRetry} className='cio-asa-pdp-error-block-retry-button'>
+          <button type='button' onClick={onRetry} className='cio-pia-error-block-retry-button'>
             <RetryIcon />
             Retry
           </button>

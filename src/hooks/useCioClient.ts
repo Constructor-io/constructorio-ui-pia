@@ -29,7 +29,7 @@ const useCioClient: UseCioClient = ({ apiKey, cioClient, options } = {}) => {
       return new MockConstructorIOClient({
         apiKey,
         sendTrackingEvents: true,
-        version: `cio-ui-asa-pdp-${version}`,
+        version: `cio-ui-pia-${version}`,
         ...options,
       });
     }

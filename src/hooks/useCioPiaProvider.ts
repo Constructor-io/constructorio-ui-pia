@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
-import { AsaPdpContextValue, CioAsaPdpProviderProps, IncludeRenderProps } from '../types';
+import { PiaContextValue, CioPiaProviderProps, IncludeRenderProps } from '../types';
 import useCioClient from './useCioClient';
 
-export default function useCioAsaPdpProvider(
-  props: IncludeRenderProps<CioAsaPdpProviderProps, AsaPdpContextValue>,
+export default function useCioPiaProvider(
+  props: IncludeRenderProps<CioPiaProviderProps, PiaContextValue>,
 ) {
   const { apiKey, cioClient: customCioClient, itemId } = props;
 
@@ -11,7 +11,7 @@ export default function useCioAsaPdpProvider(
   const cioClient = useCioClient({ apiKey, cioClient: customCioClient, options: cioClientOptions });
 
   const contextValue = useMemo(
-    (): AsaPdpContextValue => ({
+    (): PiaContextValue => ({
       cioClient,
       cioClientOptions,
       setCioClientOptions,
