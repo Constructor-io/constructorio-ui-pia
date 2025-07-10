@@ -19,7 +19,7 @@ describe('SuggestedQuestion Component', () => {
   it('renders the question icon', () => {
     const { queryByRole } = render(<SuggestedQuestion {...defaultProps} />);
     expect(queryByRole('button')).toContainElement(
-      document.querySelector('.cio-asa-pdp-suggested-question-icon'),
+      document.querySelector('.cio-pia-suggested-question-icon'),
     );
   });
 

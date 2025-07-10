@@ -1,7 +1,7 @@
 import MockConstructorIOClient from '../../src/hooks/mocks/MockConstructorIOClient';
 import { DEMO_API_KEY, DEMO_ITEM_ID, DEMO_QUESTION } from '../../src/constants';
 
-describe('Testing Mocks: Assistant', () => {
+describe('Testing Mocks: Agent', () => {
   let client;
 
   beforeEach(() => {
@@ -14,7 +14,7 @@ describe('Testing Mocks: Assistant', () => {
 
   describe('getSuggestedQuestions', () => {
     it('fetches suggested questions given item_id', async () => {
-      const result = await client.assistant.getSuggestedQuestions(DEMO_ITEM_ID);
+      const result = await client.agent.getSuggestedQuestions(DEMO_ITEM_ID);
 
       expect(result).toBeDefined();
       expect(result.questions).toBeDefined();
@@ -26,7 +26,7 @@ describe('Testing Mocks: Assistant', () => {
 
   describe('getAnswerResults', () => {
     it('fetches answer given item_id and questions', async () => {
-      const result = await client.assistant.getAnswerResults({
+      const result = await client.agent.getAnswerResults({
         itemId: DEMO_ITEM_ID,
         question: DEMO_QUESTION,
       });
