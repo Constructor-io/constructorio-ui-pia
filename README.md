@@ -1,4 +1,4 @@
-# Constructor AI Shopping Assistant PDP UI library
+# Constructor AI Product Insights Agent UI library
 
 ![minzipped size](https://img.shields.io/bundlephobia/minzip/@constructor-io/constructorio-ui-asa-pdp?color=green)
 [![NPM Version](https://img.shields.io/npm/v/@constructor-io/constructorio-ui-asa-pdp)](https://www.npmjs.com/package/@constructor-io/constructorio-ui-asa-pdp)
@@ -6,29 +6,29 @@
 
 ## Introduction
 
-ASA PDP is an NLP chatbot embedded in product detail pages, designed to answer key technical product questions essential for final purchase decisions.
+AI Product Insights Agent is an NLP chatbot embedded in product detail pages, designed to answer key technical product questions essential for final purchase decisions.
 
 Our [Storybook Docs](https://constructor-io.github.io/constructorio-ui-asa-pdp/?path=/docs/general-introduction--docs) are the best place to explore the behavior and the available configuration options for this UI library.
 
 ## Installation
 
 ```bash
-npm i @constructor-io/constructorio-ui-asa-pdp
+npm i @constructor-io/constructorio-ui-pia
 ```
 
 ## Usage
 
 ### Using the JavaScript Bundle
 
-This is a framework agnostic method that can be used in any JavaScript project. The `CioAsaPdp` function provides a simple interface to inject the ASA PDP component into the provided `selector`.
+This is a framework agnostic method that can be used in any JavaScript project. The `CioPia` function provides a simple interface to inject the PIA component into the provided `selector`.
 
-In addition to [ASA PDP component props](https://constructor-io.github.io/constructorio-ui-asa-pdp/?path=/docs/components-cioasapdp--docs), this function also accepts `selector` and `includeCSS`.
+In addition to [PIA component props](https://constructor-io.github.io/constructorio-ui-asa-pdp/?path=/docs/components-cioasapdp--docs), this function also accepts `selector` and `includeCSS`.
 
 ```js
-import CioAsaPdp from '@constructor-io/constructorio-ui-asa-pdp/constructorio-ui-asa-pdp-bundled';
+import CioPia from '@constructor-io/constructorio-ui-pia/constructorio-ui-pia-bundled';
 
-CioAsaPdp({
-  selector: '#asa-pdp-container',
+CioPia({
+  selector: '#pia-container',
   includeCSS: true, // Include the default CSS styles - defaults to true
   apiKey: 'key_M57QS8SMPdLdLx4x',
   itemId: '12345',
