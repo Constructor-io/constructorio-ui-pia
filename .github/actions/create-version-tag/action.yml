@@ -55,7 +55,7 @@ runs:
     - name: Notify Slack about new package version
       uses: ravsamhq/notify-slack-action@bca2d7f5660b833a27bda4f6b8bef389ebfefd25 # v2.3.0
       with:
-        notification_title: "✅ constructorio-ui-asa-pdp package version bumped to ${{ steps.next-version.outputs.version }} successfully"
+        notification_title: "✅ constructorio-ui-pia package version bumped to ${{ steps.next-version.outputs.version }} successfully"
         status: ${{ job.status }}
       env:
         SLACK_WEBHOOK_URL: ${{ inputs.slack-webhook-url }}
