@@ -44,7 +44,7 @@ describe('Testing Hook: useCioClient', () => {
       version: 'cio-ui-pia-1.0.0',
       serviceUrl: 'https://test.service.cnstrc.com',
       quizzesServiceUrl: 'https://test.quizzes.cnstrc.com',
-      assistantServiceUrl: 'https://test.assistant.cnstrc.com',
+      assistantServiceUrl: 'https://test.agent.cnstrc.com',
       sessionId: 1,
       clientId: 'id-1',
       fetch: 'mock-fetch-fn',

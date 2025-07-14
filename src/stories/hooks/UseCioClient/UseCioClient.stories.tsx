@@ -32,7 +32,7 @@ export const WithCustomClient: Story = {
       apiKey: DEMO_API_KEY,
       serviceUrl: 'https://custom.client.com',
       quizzesServiceUrl: 'https://custom.client.quiz.com',
-      assistantServiceUrl: 'https://custom.client.assistant.com',
+      assistantServiceUrl: 'https://custom.client.agent.com',
       sendTrackingEvents: true,
       beaconMode: true,
     }),
