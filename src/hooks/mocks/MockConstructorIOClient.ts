@@ -31,7 +31,7 @@ class MockConstructorIOClient {
       version: options.version || `cio-ui-pia-${version}`,
       serviceUrl: options.serviceUrl || 'https://ac.cnstrc.com',
       quizzesServiceUrl: options.quizzesServiceUrl || 'https://quizzes.cnstrc.com',
-      assistantServiceUrl: options.assistantServiceUrl || 'https://agent.cnstrc.com',
+      agentServiceUrl: options.agentServiceUrl || 'https://agent.cnstrc.com',
       sessionId: options.sessionId || 0,
       clientId: options.clientId || 'this-is-a-random-client-id',
       sendTrackingEvents:
