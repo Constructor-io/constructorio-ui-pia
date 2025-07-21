@@ -1,4 +1,4 @@
-.cio-asa-pdp-feedback-container {
+.cio-pia-feedback-container {
   display: flex;
   align-items: center;
   justify-content: start;
@@ -6,14 +6,14 @@
   gap: 8px;
 }
 
-.cio-asa-pdp-feedback-text {
+.cio-pia-feedback-text {
   font-size: 12px;
   font-weight: 400;
   letter-spacing: -0.5%;
   color: rgba(15, 19, 36, 0.7);
 }
 
-.cio-asa-pdp-feedback-button {
+.cio-pia-feedback-button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -26,6 +26,6 @@
   position: relative;
 }
 
-.cio-asa-pdp-feedback-button:hover {
+.cio-pia-feedback-button:hover {
   opacity: 0.8;
 }

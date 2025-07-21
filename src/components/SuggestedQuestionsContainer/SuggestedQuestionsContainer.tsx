@@ -16,9 +16,7 @@ export default function SuggestedQuestionsContainer({
   }
 
   return (
-    <div
-      className='cio-asa-pdp-suggested-questions-container'
-      data-testid='suggested-questions-list'>
+    <div className='cio-pia-suggested-questions-container' data-testid='suggested-questions-list'>
       {questions.map((question) => (
         <SuggestedQuestion
           key={question.value}

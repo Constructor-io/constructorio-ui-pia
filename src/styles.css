@@ -6,9 +6,9 @@
 @import './components/Answer/AnswerStyles.css';
 @import './components/Error/ErrorStyles.css';
 @import './components/LoadingSkeleton/LoadingSkeletonStyles.css';
-@import './components//CioAsaPdp/CioAsaPdpStyles.css';
+@import './components/CioPia/CioPiaStyles.css';
 
-.cio-asa-pdp,
+.cio-pia,
 * {
   font-family: 'Inter', sans-serif;
 }

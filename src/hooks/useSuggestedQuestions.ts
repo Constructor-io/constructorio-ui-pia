@@ -16,7 +16,7 @@ export interface UseSuggestedQuestionsReturn {
 }
 
 const fetchSuggestedQuestions = async (client: MockConstructorIOClient, itemId: string) => {
-  const response: QuestionResponse = await client.assistant.getSuggestedQuestions(itemId);
+  const response: QuestionResponse = await client.agent.getSuggestedQuestions(itemId);
   return response.questions;
 };
 

@@ -1,17 +1,17 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import CioAsaPdpComponent from './components/CioAsaPdp/CioAsaPdp';
+import CioPiaComponent from './components/CioPia/CioPia';
 import './styles.css';
 
-const CioAsaPdp = ({ selector, includeCSS = true, ...rest }) => {
+const CioPia = ({ selector, includeCSS = true, ...rest }) => {
   if (document) {
-    const stylesheet = document.getElementById('cio-asa-pdp-styles');
+    const stylesheet = document.getElementById('cio-pia-styles');
     const containerElement = document.querySelector(selector);
 
     if (!containerElement) {
       // eslint-disable-next-line no-console
-      console.error(`CioAsaPdp: There were no elements found for the provided selector`);
+      console.error(`CioPia: There were no elements found for the provided selector`);
 
       return;
     }
@@ -26,14 +26,14 @@ const CioAsaPdp = ({ selector, includeCSS = true, ...rest }) => {
 
     ReactDOM.createRoot(containerElement).render(
       <React.StrictMode>
-        <CioAsaPdpComponent {...rest} />
+        <CioPiaComponent {...rest} />
       </React.StrictMode>,
     );
   }
 };
 
 if (window) {
-  window.CioAsaPdp = CioAsaPdp;
+  window.CioPia = CioPia;
 }
 
-export default CioAsaPdp;
+export default CioPia;

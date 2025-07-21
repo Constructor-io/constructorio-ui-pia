@@ -16,7 +16,7 @@ const newTestQuestions = [
 
 describe('Testing Hook: useSuggestedQuestions', () => {
   const mockClient = {
-    assistant: {
+    agent: {
       getSuggestedQuestions: jest.fn(),
     },
   };
@@ -26,7 +26,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
   });
 
   it('fetches and returns suggested questions', async () => {
-    mockClient.assistant.getSuggestedQuestions.mockResolvedValueOnce({
+    mockClient.agent.getSuggestedQuestions.mockResolvedValueOnce({
       questions: testQuestions,
     });
 
@@ -51,12 +51,12 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     expect(result.current.data).toEqual(testQuestions);
     expect(result.current.data.length).toBe(testQuestions.length);
     expect(result.current.error).toBeNull();
-    expect(mockClient.assistant.getSuggestedQuestions).toHaveBeenCalledWith(testItemId);
+    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledWith(testItemId);
   });
 
   it('handles errors when fetching questions fails', async () => {
     const mockError = new Error('Mock error');
-    mockClient.assistant.getSuggestedQuestions.mockRejectedValueOnce(mockError);
+    mockClient.agent.getSuggestedQuestions.mockRejectedValueOnce(mockError);
 
     const { result } = renderHook(() =>
       useSuggestedQuestions({
@@ -75,11 +75,11 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     expect(result.current.data).toEqual([]);
     expect(result.current.error).toBeInstanceOf(Error);
     expect(result.current.error.message).toBe('Mock error');
-    expect(mockClient.assistant.getSuggestedQuestions).toHaveBeenCalledWith(testItemId);
+    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledWith(testItemId);
   });
 
   it('refetch questions when getSuggestedQuestions function is called', async () => {
-    mockClient.assistant.getSuggestedQuestions.mockResolvedValueOnce({
+    mockClient.agent.getSuggestedQuestions.mockResolvedValueOnce({
       questions: testQuestions,
     });
 
@@ -96,8 +96,8 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       });
     });
 
-    mockClient.assistant.getSuggestedQuestions.mockClear();
-    mockClient.assistant.getSuggestedQuestions.mockResolvedValueOnce({
+    mockClient.agent.getSuggestedQuestions.mockClear();
+    mockClient.agent.getSuggestedQuestions.mockResolvedValueOnce({
       questions: newTestQuestions,
     });
 
@@ -114,7 +114,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
 
     // Check state after refetch
     expect(result.current.data).toEqual(newTestQuestions);
-    expect(mockClient.assistant.getSuggestedQuestions).toHaveBeenCalledTimes(1);
+    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledTimes(1);
   });
 
   it('does not fetch if no client provided', async () => {
@@ -127,11 +127,11 @@ describe('Testing Hook: useSuggestedQuestions', () => {
 
     expect(result.current.data).toEqual([]);
     expect(result.current.error).toBeNull();
-    expect(mockClient.assistant.getSuggestedQuestions).not.toHaveBeenCalled();
+    expect(mockClient.agent.getSuggestedQuestions).not.toHaveBeenCalled();
   });
 
   it('refetch when itemId changes', async () => {
-    mockClient.assistant.getSuggestedQuestions
+    mockClient.agent.getSuggestedQuestions
       .mockResolvedValueOnce({ questions: testQuestions })
       .mockResolvedValueOnce({ questions: newTestQuestions });
 
@@ -165,7 +165,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     });
 
     expect(result.current.data).toEqual(newTestQuestions);
-    expect(mockClient.assistant.getSuggestedQuestions).toHaveBeenCalledWith(testItemId);
-    expect(mockClient.assistant.getSuggestedQuestions).toHaveBeenCalledWith(newTestItemId);
+    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledWith(testItemId);
+    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledWith(newTestItemId);
   });
 });

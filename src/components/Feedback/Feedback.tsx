@@ -54,18 +54,18 @@ export default function Feedback() {
   };
 
   return (
-    <div className='cio-asa-pdp-feedback-container'>
-      <p className='cio-asa-pdp-feedback-text'>{feedbackText}</p>
+    <div className='cio-pia-feedback-container'>
+      <p className='cio-pia-feedback-text'>{feedbackText}</p>
       <button
         type='button'
-        className='cio-asa-pdp-feedback-button cio-asa-pdp-feedback-button-up'
+        className='cio-pia-feedback-button'
         aria-label='thumbs up'
         onClick={() => handleFeedback(FeedbackType.UP)}>
         <ThumbsUpIcon isSelected={feedback === FeedbackType.UP} />
       </button>
       <button
         type='button'
-        className='cio-asa-pdp-feedback-button cio-asa-pdp-feedback-button-down'
+        className='cio-pia-feedback-button'
         aria-label='thumbs down'
         onClick={() => handleFeedback(FeedbackType.DOWN)}>
         <ThumbsDownIcon isSelected={feedback === FeedbackType.DOWN} />

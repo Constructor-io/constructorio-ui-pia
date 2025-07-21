@@ -3,18 +3,18 @@ import useAnswerResults, { UseAnswerResultsReturn } from './useAnswerResults';
 import useCioClient from './useCioClient';
 import useSuggestedQuestions, { UseSuggestedQuestionsReturn } from './useSuggestedQuestions';
 
-export interface UseCioAsaPdpProps {
+export interface UseCioPiaProps {
   apiKey: string;
   itemId: string;
   cioClient?: MockConstructorIOClient;
 }
 
-export interface UseCioAsaPdpReturn {
+export interface UseCioPiaReturn {
   suggestedQuestions: UseSuggestedQuestionsReturn;
   answers: UseAnswerResultsReturn;
 }
 
-export default function useCioAsaPdp(props: UseCioAsaPdpProps): UseCioAsaPdpReturn {
+export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
   const { apiKey, itemId, cioClient: providedClient } = props;
 
   const defaultClient = useCioClient({ apiKey });

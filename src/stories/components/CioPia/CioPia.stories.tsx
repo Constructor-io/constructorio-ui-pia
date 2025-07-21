@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import CioAsaPdp from '../../../components/CioAsaPdp/CioAsaPdp';
+import CioPia from '../../../components/CioPia/CioPia';
 import { DEMO_API_KEY, DEMO_ITEM_ID } from '../../../constants';
 
 const meta = {
-  title: 'Components/CioAsaPdp',
-  component: CioAsaPdp,
+  title: 'Components/CioPia',
+  component: CioPia,
   parameters: {
     layout: 'centered',
   },
   tags: ['autodocs'],
-} satisfies Meta<typeof CioAsaPdp>;
+} satisfies Meta<typeof CioPia>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

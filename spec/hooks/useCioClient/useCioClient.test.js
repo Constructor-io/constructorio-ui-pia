@@ -33,18 +33,18 @@ describe('Testing Hook: useCioClient', () => {
     expect(client).not.toBeUndefined();
     expect(client.options).not.toBeUndefined();
     expect(client.options.apiKey).toBe('xx');
-    expect(client.options.version).toBe(`cio-ui-asa-pdp-${version}`);
+    expect(client.options.version).toBe(`cio-ui-pia-${version}`);
     expect(client.search).not.toBeUndefined();
-    expect(client.assistant).not.toBeUndefined();
+    expect(client.agent).not.toBeUndefined();
   });
 
   it('returns a client with options set', () => {
     const key = 'xx';
     const clientOptions = {
-      version: 'cio-ui-asa-pdp-1.0.0',
+      version: 'cio-ui-pia-1.0.0',
       serviceUrl: 'https://test.service.cnstrc.com',
       quizzesServiceUrl: 'https://test.quizzes.cnstrc.com',
-      assistantServiceUrl: 'https://test.assistant.cnstrc.com',
+      assistantServiceUrl: 'https://test.agent.cnstrc.com',
       sessionId: 1,
       clientId: 'id-1',
       fetch: 'mock-fetch-fn',

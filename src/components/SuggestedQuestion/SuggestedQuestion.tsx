@@ -7,7 +7,7 @@ interface SuggestedQuestionProps {
 
 function QuestionSvg() {
   return (
-    <div className='cio-asa-pdp-suggested-question-icon'>
+    <div className='cio-pia-suggested-question-icon'>
       <svg
         width='16'
         height='16'
@@ -29,7 +29,7 @@ function QuestionSvg() {
 
 function SuggestedQuestion({ question, onClick }: SuggestedQuestionProps) {
   return (
-    <button type='button' className='cio-asa-pdp-suggested-question' onClick={onClick}>
+    <button type='button' className='cio-pia-suggested-question' onClick={onClick}>
       <QuestionSvg />
       {question}
     </button>

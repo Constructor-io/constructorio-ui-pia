@@ -1,4 +1,4 @@
-.cio-asa-pdp-suggested-question {
+.cio-pia-suggested-question {
   background: #ffffff;
   border: 1px solid #dee0e3;
   border-radius: 4px;
@@ -21,13 +21,13 @@
   transition: all 0.2s ease;
 }
 
-.cio-asa-pdp-suggested-question:hover {
+.cio-pia-suggested-question:hover {
   background-color: #f8f9fa;
   border-color: #c4c7cc;
   transform: translateY(-1px);
 }
 
-.cio-asa-pdp-suggested-question-icon {
+.cio-pia-suggested-question-icon {
   display: flex;
   padding: 4px;
 }
