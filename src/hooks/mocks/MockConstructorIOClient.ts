@@ -8,7 +8,7 @@ import {
   Tracker,
   Quizzes,
 } from '@constructor-io/constructorio-client-javascript/lib/types/constructorio';
-import MockAssistant from './assistant';
+import MockAgent from './agent';
 import version from '../../version';
 
 class MockConstructorIOClient {
@@ -24,14 +24,14 @@ class MockConstructorIOClient {
 
   public quizzes: Quizzes;
 
-  public assistant: MockAssistant;
+  public agent: MockAgent;
 
   constructor(options: ConstructorClientOptions) {
     this.options = {
-      version: options.version || `cio-ui-asa-pdp-${version}`,
+      version: options.version || `cio-ui-pia-${version}`,
       serviceUrl: options.serviceUrl || 'https://ac.cnstrc.com',
       quizzesServiceUrl: options.quizzesServiceUrl || 'https://quizzes.cnstrc.com',
-      assistantServiceUrl: options.assistantServiceUrl || 'https://assistant.cnstrc.com',
+      assistantServiceUrl: options.assistantServiceUrl || 'https://agent.cnstrc.com',
       sessionId: options.sessionId || 0,
       clientId: options.clientId || 'this-is-a-random-client-id',
       sendTrackingEvents:
@@ -49,8 +49,8 @@ class MockConstructorIOClient {
     this.tracker = cioClient.tracker;
     this.quizzes = cioClient.quizzes;
 
-    // Use the mock assistant instead of the one from the client
-    this.assistant = new MockAssistant(this.options);
+    // Use the mock agent instead of the one from the client
+    this.agent = new MockAgent(this.options);
   }
 }
 

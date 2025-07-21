@@ -5,7 +5,7 @@ import {
 } from '@constructor-io/constructorio-client-javascript';
 import MockConstructorIOClient from './hooks/mocks/MockConstructorIOClient';
 
-export interface AsaPdpContextValue {
+export interface PiaContextValue {
   cioClient: Nullable<MockConstructorIOClient>;
   cioClientOptions: CioClientOptions;
   setCioClientOptions: React.Dispatch<CioClientOptions>;
@@ -14,13 +14,13 @@ export interface AsaPdpContextValue {
 
 export type CioClientOptions = Omit<ConstructorClientOptions, 'apiKey' | 'sendTrackingEvents'>;
 
-export interface CioAsaPdpProviderProps {
+export interface CioPiaProviderProps {
   apiKey: string;
   itemId: string;
   cioClient?: Nullable<MockConstructorIOClient>;
 }
 
-export type CioAsaPdpDisplayConfigs = {
+export type CioPiaDisplayConfigs = {
   learnMoreUrl?: string;
   showFeedback?: boolean;
 };

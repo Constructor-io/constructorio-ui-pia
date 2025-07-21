@@ -10,7 +10,7 @@ function Answer({ text }: AnswerProps) {
   }
 
   return (
-    <div className='cio-asa-pdp-answer' data-testid='answer-text'>
+    <div className='cio-pia-answer' data-testid='answer-text'>
       {text}
     </div>
   );

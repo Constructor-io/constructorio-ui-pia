@@ -1,11 +1,11 @@
-.cio-asa-pdp-container {
+.cio-pia-container {
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
-.cio-asa-pdp-title {
+.cio-pia-title {
   color: #14151a;
   font-size: 18px;
   font-weight: 400;
@@ -14,19 +14,19 @@
   margin-bottom: 0;
 }
 
-.cio-asa-pdp-answer-container {
+.cio-pia-answer-container {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.cio-asa-pdp-disclaimer {
+.cio-pia-disclaimer {
   font-size: 12px;
   font-weight: 400;
   text-align: start;
   color: rgba(15, 19, 36, 0.7);
 }
 
-.cio-asa-pdp-learn-more {
+.cio-pia-learn-more {
   color: inherit;
 }

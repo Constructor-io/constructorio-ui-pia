@@ -51,8 +51,8 @@ describe('ErrorBlock component', () => {
   it('has the correct CSS classes for styling', () => {
     render(<ErrorBlock message={testErrorMessage} />);
 
-    expect(document.querySelector('.cio-asa-pdp-error-block-container')).toBeInTheDocument();
-    expect(document.querySelector('.cio-asa-pdp-error-block-text-container')).toBeInTheDocument();
-    expect(document.querySelector('.cio-asa-pdp-error-block-text')).toBeInTheDocument();
+    expect(document.querySelector('.cio-pia-error-block-container')).toBeInTheDocument();
+    expect(document.querySelector('.cio-pia-error-block-text-container')).toBeInTheDocument();
+    expect(document.querySelector('.cio-pia-error-block-text')).toBeInTheDocument();
   });
 });

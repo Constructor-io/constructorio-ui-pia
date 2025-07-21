@@ -1,14 +1,14 @@
 import React from 'react';
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/react';
-import CioAsaPdp from '../../../src/components/CioAsaPdp/CioAsaPdp';
-import useCioAsaPdp from '../../../src/hooks/useCioAsaPdp';
+import CioPia from '../../../src/components/CioPia/CioPia';
+import useCioPia from '../../../src/hooks/useCioPia';
 import { DEMO_QUESTION, DISCLAIMER_TEXT } from '../../../src/constants';
 
-// Mock the useCioAsaPdp hook
-jest.mock('../../../src/hooks/useCioAsaPdp', () => jest.fn());
+// Mock the useCioPia hook
+jest.mock('../../../src/hooks/useCioPia', () => jest.fn());
 
-describe('CioAsaPdp Component', () => {
+describe('CioPia Component', () => {
   const mockProps = {
     apiKey: 'test-api-key',
     itemId: 'test-item-id',
@@ -65,7 +65,7 @@ describe('CioAsaPdp Component', () => {
     jest.clearAllMocks();
 
     // Default mock implementation
-    useCioAsaPdp.mockImplementation(() => ({
+    useCioPia.mockImplementation(() => ({
       suggestedQuestions: {
         data: mockSuggestedQuestions,
         isLoading: false,
@@ -82,10 +82,10 @@ describe('CioAsaPdp Component', () => {
   });
 
   it('renders the component with default state', () => {
-    const { getByTestId, getByText, getByRole } = render(<CioAsaPdp {...mockProps} />);
+    const { getByTestId, getByText, getByRole } = render(<CioPia {...mockProps} />);
 
-    expect(getByTestId('cio-asa-pdp-container')).toBeInTheDocument();
-    expect(getByTestId('cio-asa-pdp-title')).toBeInTheDocument();
+    expect(getByTestId('cio-pia-container')).toBeInTheDocument();
+    expect(getByTestId('cio-pia-title')).toBeInTheDocument();
     expect(getByRole('textbox')).toBeInTheDocument();
 
     mockSuggestedQuestions.forEach((question) => {
@@ -93,10 +93,10 @@ describe('CioAsaPdp Component', () => {
     });
   });
 
-  it('passes the client to useCioAsaPdp', () => {
-    render(<CioAsaPdp {...mockProps} />);
+  it('passes the client to useCioPia', () => {
+    render(<CioPia {...mockProps} />);
 
-    expect(useCioAsaPdp).toHaveBeenCalledWith({
+    expect(useCioPia).toHaveBeenCalledWith({
       apiKey: mockProps.apiKey,
       itemId: mockProps.itemId,
       cioClient: mockProps.cioClient,
@@ -104,7 +104,7 @@ describe('CioAsaPdp Component', () => {
   });
 
   it('handles question submission via input', () => {
-    const { getByRole } = render(<CioAsaPdp {...mockProps} />);
+    const { getByRole } = render(<CioPia {...mockProps} />);
 
     const input = getByRole('textbox');
     fireEvent.change(input, { target: { value: testQuestion } });
@@ -114,7 +114,7 @@ describe('CioAsaPdp Component', () => {
   });
 
   it('handles question click from suggested questions', () => {
-    const { getByText } = render(<CioAsaPdp {...mockProps} />);
+    const { getByText } = render(<CioPia {...mockProps} />);
 
     fireEvent.click(getByText(mockSuggestedQuestions[0].value));
 
@@ -122,7 +122,7 @@ describe('CioAsaPdp Component', () => {
   });
 
   it('displays answer when available', () => {
-    useCioAsaPdp.mockImplementation(() => ({
+    useCioPia.mockImplementation(() => ({
       suggestedQuestions: {
         data: mockSuggestedQuestions,
         isLoading: false,
@@ -137,14 +137,14 @@ describe('CioAsaPdp Component', () => {
       },
     }));
 
-    const { getByText } = render(<CioAsaPdp {...mockProps} />);
+    const { getByText } = render(<CioPia {...mockProps} />);
 
     expect(getByText(mockAnswerData.value)).toBeInTheDocument();
     expect(getByText(DISCLAIMER_TEXT)).toBeInTheDocument();
   });
 
   it('displays follow-up questions when available in answers data', () => {
-    useCioAsaPdp.mockImplementation(() => ({
+    useCioPia.mockImplementation(() => ({
       suggestedQuestions: {
         data: mockSuggestedQuestions,
         isLoading: false,
@@ -159,7 +159,7 @@ describe('CioAsaPdp Component', () => {
       },
     }));
 
-    const { getByText } = render(<CioAsaPdp {...mockProps} />);
+    const { getByText } = render(<CioPia {...mockProps} />);
 
     mockAnswerData.follow_up_questions.forEach((question) => {
       expect(getByText(question.value)).toBeInTheDocument();
@@ -167,22 +167,22 @@ describe('CioAsaPdp Component', () => {
   });
 
   it('displays loading state when loading', () => {
-    useCioAsaPdp.mockReturnValue(mockLoadingResponse);
-    const { getByTestId } = render(<CioAsaPdp {...mockProps} />);
+    useCioPia.mockReturnValue(mockLoadingResponse);
+    const { getByTestId } = render(<CioPia {...mockProps} />);
 
     expect(getByTestId('loading-skeleton')).toBeInTheDocument();
   });
 
   it('displays error message when there is an error', () => {
-    useCioAsaPdp.mockReturnValue(mockErrorResponse);
+    useCioPia.mockReturnValue(mockErrorResponse);
 
-    render(<CioAsaPdp {...mockProps} />);
+    render(<CioPia {...mockProps} />);
 
     expect(screen.getByText('Something went wrong')).toBeInTheDocument();
   });
 
   it('updates current question when a question is submitted', () => {
-    render(<CioAsaPdp {...mockProps} />);
+    render(<CioPia {...mockProps} />);
 
     const questionToClick = mockSuggestedQuestions[1];
     fireEvent.click(screen.getByText(questionToClick.value));
@@ -192,7 +192,7 @@ describe('CioAsaPdp Component', () => {
   });
 
   it('updates displayed questions when follow-up questions are available', async () => {
-    useCioAsaPdp.mockImplementation(() => ({
+    useCioPia.mockImplementation(() => ({
       suggestedQuestions: {
         data: mockSuggestedQuestions,
         isLoading: false,
@@ -207,7 +207,7 @@ describe('CioAsaPdp Component', () => {
       },
     }));
 
-    const { rerender } = render(<CioAsaPdp {...mockProps} />);
+    const { rerender } = render(<CioPia {...mockProps} />);
 
     // Initially should show the original suggested questions
     mockSuggestedQuestions.forEach((question) => {
@@ -215,7 +215,7 @@ describe('CioAsaPdp Component', () => {
     });
 
     // Update the answers data with follow-up questions
-    useCioAsaPdp.mockImplementation(() => ({
+    useCioPia.mockImplementation(() => ({
       suggestedQuestions: {
         data: mockSuggestedQuestions,
         isLoading: false,
@@ -230,7 +230,7 @@ describe('CioAsaPdp Component', () => {
       },
     }));
 
-    rerender(<CioAsaPdp {...mockProps} />);
+    rerender(<CioPia {...mockProps} />);
 
     mockAnswerData.follow_up_questions.forEach((question) => {
       expect(screen.getByText(question.value)).toBeInTheDocument();

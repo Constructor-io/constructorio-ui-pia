@@ -4,7 +4,7 @@ import { DEMO_QUESTION } from '../../../src/constants';
 
 describe('Testing Hook: useAnswerResults', () => {
   const mockClient = {
-    assistant: {
+    agent: {
       getAnswerResults: jest.fn(),
     },
   };
@@ -24,7 +24,7 @@ describe('Testing Hook: useAnswerResults', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockClient.assistant.getAnswerResults.mockResolvedValue(mockResponse);
+    mockClient.agent.getAnswerResults.mockResolvedValue(mockResponse);
   });
 
   it('initializes with default state', () => {
@@ -33,7 +33,7 @@ describe('Testing Hook: useAnswerResults', () => {
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toBe(null);
     expect(result.current.error).toBe(null);
-    expect(mockClient.assistant.getAnswerResults).not.toHaveBeenCalled();
+    expect(mockClient.agent.getAnswerResults).not.toHaveBeenCalled();
   });
 
   it('fetches and returns answer results when getAnswer is called', async () => {
@@ -54,7 +54,7 @@ describe('Testing Hook: useAnswerResults', () => {
       });
     });
 
-    expect(mockClient.assistant.getAnswerResults).toHaveBeenCalledWith({
+    expect(mockClient.agent.getAnswerResults).toHaveBeenCalledWith({
       itemId: testProps.itemId,
       question: testQuestion,
     });
@@ -65,7 +65,7 @@ describe('Testing Hook: useAnswerResults', () => {
 
   it('handles errors when fetching answer results', async () => {
     const errorMessage = 'Failed to fetch';
-    mockClient.assistant.getAnswerResults.mockRejectedValue(new Error(errorMessage));
+    mockClient.agent.getAnswerResults.mockRejectedValue(new Error(errorMessage));
 
     const { result } = renderHook(() => useAnswerResults(testProps));
     act(() => {
@@ -99,7 +99,7 @@ describe('Testing Hook: useAnswerResults', () => {
       });
     });
 
-    mockClient.assistant.getAnswerResults.mockClear();
+    mockClient.agent.getAnswerResults.mockClear();
 
     // Call getAnswer again
     act(() => {
@@ -114,7 +114,7 @@ describe('Testing Hook: useAnswerResults', () => {
       });
     });
 
-    expect(mockClient.assistant.getAnswerResults).toHaveBeenCalledTimes(1);
+    expect(mockClient.agent.getAnswerResults).toHaveBeenCalledTimes(1);
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toEqual(mockResponse);
   });
@@ -134,7 +134,7 @@ describe('Testing Hook: useAnswerResults', () => {
       });
     });
 
-    mockClient.assistant.getAnswerResults.mockClear();
+    mockClient.agent.getAnswerResults.mockClear();
 
     const newProps = {
       ...testProps,
@@ -154,7 +154,7 @@ describe('Testing Hook: useAnswerResults', () => {
       });
     });
 
-    expect(mockClient.assistant.getAnswerResults).toHaveBeenCalledWith({
+    expect(mockClient.agent.getAnswerResults).toHaveBeenCalledWith({
       itemId: newProps.itemId,
       question: newQuestion,
     });
@@ -167,6 +167,6 @@ describe('Testing Hook: useAnswerResults', () => {
       result.current.getAnswer(testQuestion);
     });
 
-    expect(mockClient.assistant.getAnswerResults).not.toHaveBeenCalled();
+    expect(mockClient.agent.getAnswerResults).not.toHaveBeenCalled();
   });
 });

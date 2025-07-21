@@ -4,7 +4,7 @@ import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 export default defineConfig({
   plugins: [
     cssInjectedByJsPlugin({
-      styleId: 'cio-asa-pdp-styles',
+      styleId: 'cio-pia-styles',
     }),
   ],
   build: {
@@ -14,7 +14,7 @@ export default defineConfig({
         app: './src/bundled.jsx',
       },
       output: {
-        entryFileNames: `constructorio-ui-asa-pdp-bundled.js`,
+        entryFileNames: `constructorio-ui-pia-bundled.js`,
       },
     },
   },

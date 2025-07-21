@@ -48,7 +48,7 @@ function Input({
   };
 
   return (
-    <div className='cio-asa-pdp-input-container'>
+    <div className='cio-pia-input-container'>
       <input
         type='text'
         value={value}
@@ -56,12 +56,12 @@ function Input({
         onKeyDown={handleSubmitOnEnter}
         placeholder={placeholder}
         disabled={disabled}
-        className='cio-asa-pdp-input'
+        className='cio-pia-input'
       />
       <button
         type='button'
         onClick={handleSubmit}
-        className='cio-asa-pdp-send-button'
+        className='cio-pia-send-button'
         disabled={disabled}>
         Send
         <SendIcon />

@@ -6,22 +6,22 @@ import Feedback from '../Feedback/Feedback';
 import MockConstructorIOClient from '../../hooks/mocks/MockConstructorIOClient';
 import { DISCLAIMER_TEXT } from '../../constants';
 import { Question } from '../../hooks/mocks/types';
-import useCioAsaPdp from '../../hooks/useCioAsaPdp';
+import useCioPia from '../../hooks/useCioPia';
 import ErrorBlock from '../Error/ErrorBlock';
 import LoadingSkeleton from '../LoadingSkeleton/LoadingSkeleton';
-import { CioAsaPdpDisplayConfigs } from '../../types';
+import { CioPiaDisplayConfigs } from '../../types';
 
-export interface CioAsaPdpProps {
+export interface CioPiaProps {
   apiKey: string;
   itemId: string;
   cioClient?: MockConstructorIOClient;
-  displayConfigs?: CioAsaPdpDisplayConfigs;
+  displayConfigs?: CioPiaDisplayConfigs;
 }
 
-export default function CioAsaPdp(props: CioAsaPdpProps) {
+export default function CioPia(props: CioPiaProps) {
   const { apiKey, itemId, cioClient, displayConfigs } = props;
   const { learnMoreUrl, showFeedback } = displayConfigs || {};
-  const { suggestedQuestions, answers } = useCioAsaPdp({ apiKey, itemId, cioClient });
+  const { suggestedQuestions, answers } = useCioPia({ apiKey, itemId, cioClient });
 
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
   const [currentAnswer, setCurrentAnswer] = useState<string>('');
@@ -46,8 +46,8 @@ export default function CioAsaPdp(props: CioAsaPdpProps) {
   const isLoading = answers.isLoading || suggestedQuestions.isLoading;
 
   return (
-    <div className='cio-asa-pdp-container' data-testid='cio-asa-pdp-container'>
-      <p className='cio-asa-pdp-title' data-testid='cio-asa-pdp-title'>
+    <div className='cio-pia-container' data-testid='cio-pia-container'>
+      <p className='cio-pia-title' data-testid='cio-pia-title'>
         Any questions about this product?
       </p>
       <Input onSubmit={handleSubmitQuestion} value={currentQuestion} />
@@ -62,17 +62,17 @@ export default function CioAsaPdp(props: CioAsaPdpProps) {
         ) : (
           <>
             {!!currentAnswer && (
-              <div className='cio-asa-pdp-answer-container'>
+              <div className='cio-pia-answer-container'>
                 <Answer text={currentAnswer} />
                 {!!showFeedback && <Feedback />}
-                <span className='cio-asa-pdp-disclaimer'>
+                <span className='cio-pia-disclaimer'>
                   {DISCLAIMER_TEXT}{' '}
                   {!!learnMoreUrl && (
                     <a
                       href={learnMoreUrl}
                       target='_blank'
                       rel='noopener noreferrer'
-                      className='cio-asa-pdp-learn-more'>
+                      className='cio-pia-learn-more'>
                       <u>Learn More.</u>
                     </a>
                   )}

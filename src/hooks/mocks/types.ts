@@ -1,6 +1,6 @@
 import { ConstructorClientOptions } from '@constructor-io/constructorio-client-javascript';
 
-export type AssistantUrlProps = {
+export type AgentUrlProps = {
   itemId: string;
   question?: string;
   isStreaming?: boolean;

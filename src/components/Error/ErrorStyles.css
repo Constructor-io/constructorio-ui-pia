@@ -1,4 +1,4 @@
-.cio-asa-pdp-error-block-container {
+.cio-pia-error-block-container {
   width: 100%;
   max-width: 320px;
   display: flex;
@@ -12,25 +12,25 @@
   font-size: 14px;
 }
 
-.cio-asa-pdp-error-block-warning-icon-container {
+.cio-pia-error-block-warning-icon-container {
   flex: 0 0 24px;
   width: 24px;
   height: 24px;
 }
 
-.cio-asa-pdp-error-block-text-container {
+.cio-pia-error-block-text-container {
   display: flex;
   flex-direction: column;
   margin: 4px 0px;
 }
 
-.cio-asa-pdp-error-block-text {
+.cio-pia-error-block-text {
   margin: 0.5rem 0rem;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.cio-asa-pdp-error-block-retry-button {
+.cio-pia-error-block-retry-button {
   width: 76px;
   display: inline-flex;
   align-items: center;

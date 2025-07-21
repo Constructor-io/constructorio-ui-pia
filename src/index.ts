@@ -1,11 +1,11 @@
-import CioAsaPdp from './components/CioAsaPdp';
+import CioPia from './components/CioPia';
 
 // Components
-export { default as CioAsaPdp } from './components/CioAsaPdp';
+export { default as CioPia } from './components/CioPia';
 
 // Types
-export type { CioAsaPdpProps } from './components/CioAsaPdp';
+export type { CioPiaProps } from './components/CioPia';
 
 // Default
 export * from './types';
-export default CioAsaPdp;
+export default CioPia;

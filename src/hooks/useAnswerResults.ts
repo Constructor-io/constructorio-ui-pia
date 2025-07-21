@@ -21,7 +21,7 @@ const fetchAnswerResults = async (
   itemId: string,
   question: string,
 ) => {
-  const response: AnswerResponse = await client.assistant.getAnswerResults({
+  const response: AnswerResponse = await client.agent.getAnswerResults({
     itemId,
     question,
   });
