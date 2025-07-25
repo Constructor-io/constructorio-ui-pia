@@ -19,6 +19,8 @@ function createAgentUrl({
   parameters = {},
 }: AgentUrlProps): string {
   const { apiKey, agentServiceUrl } = options;
+  if (!agentServiceUrl) throw new Error('Agent service URL is required');
+
   let baseUrl = `${agentServiceUrl}/v1/item_questions`;
   if (question) {
     baseUrl += `/${encodeURIComponent(question)}/answer`;
