@@ -10,6 +10,8 @@ export interface PiaContextValue {
   cioClientOptions: CioClientOptions;
   setCioClientOptions: React.Dispatch<CioClientOptions>;
   itemId: string;
+  variationId?: string;
+  threadId?: string;
 }
 
 export type CioClientOptions = Omit<ConstructorClientOptions, 'apiKey' | 'sendTrackingEvents'>;
@@ -17,6 +19,8 @@ export type CioClientOptions = Omit<ConstructorClientOptions, 'apiKey' | 'sendTr
 export interface CioPiaProviderProps {
   apiKey: string;
   itemId: string;
+  variationId?: string;
+  threadId?: string;
   cioClient?: Nullable<MockConstructorIOClient>;
 }
 

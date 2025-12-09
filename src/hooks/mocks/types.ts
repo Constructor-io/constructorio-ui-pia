@@ -2,6 +2,8 @@ import { ConstructorClientOptions } from '@constructor-io/constructorio-client-j
 
 export type AgentUrlProps = {
   itemId: string;
+  variationId?: string;
+  threadId?: string;
   question?: string;
   isStreaming?: boolean;
   options: ConstructorClientOptions;
@@ -10,6 +12,8 @@ export type AgentUrlProps = {
 
 export type GetAnswerResultsProps = {
   itemId: string;
+  variationId?: string;
+  threadId?: string;
   question: string;
   parameters?: Record<string, any>;
 };
