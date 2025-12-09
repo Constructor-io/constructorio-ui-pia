@@ -30,11 +30,11 @@ const fetchSuggestedQuestions = async ({
   variationId,
   threadId,
 }: FetchSuggestedQuestionsParams) => {
-  const response: QuestionResponse = await client.agent.getSuggestedQuestions(
+  const response: QuestionResponse = await client.agent.getSuggestedQuestions({
     itemId,
     variationId,
     threadId,
-  );
+  });
 
   return response.questions;
 };

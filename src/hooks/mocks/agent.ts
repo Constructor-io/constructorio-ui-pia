@@ -6,6 +6,7 @@ import {
   StreamEndEvent,
   StreamMessageEvent,
   StreamStartEvent,
+  GetSuggestedQuestionsProps,
   GetAnswerResultsStreamProps,
   GetAnswerResultsProps,
 } from './types';
@@ -59,19 +60,19 @@ class MockAgent {
     this.options = options;
   }
 
-  async getSuggestedQuestions(
-    itemId: string,
-    threadId?: string,
-    variationId?: string,
-    parameters: Record<string, any> = {},
-  ): Promise<QuestionResponse> {
+  async getSuggestedQuestions({
+    itemId,
+    variationId,
+    threadId,
+    parameters = {},
+  }: GetSuggestedQuestionsProps): Promise<QuestionResponse> {
     if (!itemId) throw new Error('Item ID is required');
     if (!this.options.apiKey) throw new Error('API key is required');
 
     const url = createAgentUrl({
       itemId,
-      threadId,
       variationId,
+      threadId,
       options: this.options,
       parameters,
     });
@@ -89,8 +90,8 @@ class MockAgent {
 
   async getAnswerResults({
     itemId,
-    threadId,
     variationId,
+    threadId,
     question,
     parameters = {},
   }: GetAnswerResultsProps): Promise<AnswerResponse> {
