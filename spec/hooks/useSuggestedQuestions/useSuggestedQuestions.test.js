@@ -51,7 +51,11 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     expect(result.current.data).toEqual(testQuestions);
     expect(result.current.data.length).toBe(testQuestions.length);
     expect(result.current.error).toBeNull();
-    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledWith(testItemId);
+    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledWith(
+      testItemId,
+      undefined,
+      undefined,
+    );
   });
 
   it('handles errors when fetching questions fails', async () => {
@@ -75,7 +79,11 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     expect(result.current.data).toEqual([]);
     expect(result.current.error).toBeInstanceOf(Error);
     expect(result.current.error.message).toBe('Mock error');
-    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledWith(testItemId);
+    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledWith(
+      testItemId,
+      undefined,
+      undefined,
+    );
   });
 
   it('refetch questions when getSuggestedQuestions function is called', async () => {
@@ -165,7 +173,43 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     });
 
     expect(result.current.data).toEqual(newTestQuestions);
-    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledWith(testItemId);
-    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledWith(newTestItemId);
+    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledWith(
+      testItemId,
+      undefined,
+      undefined,
+    );
+    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledWith(
+      newTestItemId,
+      undefined,
+      undefined,
+    );
+  });
+
+  it('passes threadId and variationId to getSuggestedQuestions', async () => {
+    mockClient.agent.getSuggestedQuestions.mockResolvedValueOnce({
+      questions: testQuestions,
+    });
+
+    const { result } = renderHook(() =>
+      useSuggestedQuestions({
+        itemId: testItemId,
+        threadId: 'test-thread-id',
+        variationId: 'test-variation-id',
+        cioClient: mockClient,
+      }),
+    );
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledWith(
+      testItemId,
+      'test-variation-id',
+      'test-thread-id',
+    );
+    expect(result.current.data).toEqual(testQuestions);
   });
 });
