@@ -56,6 +56,8 @@ describe('Testing Hook: useAnswerResults', () => {
 
     expect(mockClient.agent.getAnswerResults).toHaveBeenCalledWith({
       itemId: testProps.itemId,
+      threadId: undefined,
+      variationId: undefined,
       question: testQuestion,
     });
     expect(result.current.isLoading).toBe(false);
@@ -156,8 +158,39 @@ describe('Testing Hook: useAnswerResults', () => {
 
     expect(mockClient.agent.getAnswerResults).toHaveBeenCalledWith({
       itemId: newProps.itemId,
+      threadId: undefined,
+      variationId: undefined,
       question: newQuestion,
     });
+  });
+
+  it('passes threadId and variationId to getAnswerResults', async () => {
+    const propsWithIds = {
+      itemId: 'test-item-id',
+      threadId: 'test-thread-id',
+      variationId: 'test-variation-id',
+      cioClient: mockClient,
+    };
+
+    const { result } = renderHook(() => useAnswerResults(propsWithIds));
+
+    act(() => {
+      result.current.getAnswer(testQuestion);
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(mockClient.agent.getAnswerResults).toHaveBeenCalledWith({
+      itemId: propsWithIds.itemId,
+      threadId: 'test-thread-id',
+      variationId: 'test-variation-id',
+      question: testQuestion,
+    });
+    expect(result.current.data).toEqual(mockResponse);
   });
 
   it('does not fetch if cioClient is not provided', () => {

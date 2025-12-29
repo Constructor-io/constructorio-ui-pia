@@ -32,6 +32,9 @@ CioPia({
   includeCSS: true, // Include the default CSS styles - defaults to true
   apiKey: '***REMOVED***',
   itemId: '12345',
+  variationId: 'variation-abc',
+  // Optional: provide a thread ID to preserve conversation context (must be a valid UUID)
+  threadId: '550e8400-e29b-41d4-a716-446655440000',
 });
 ```
 
