@@ -14,14 +14,23 @@ import { CioPiaDisplayConfigs } from '../../types';
 export interface CioPiaProps {
   apiKey: string;
   itemId: string;
+  /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000") */
+  threadId?: string;
+  variationId?: string;
   cioClient?: MockConstructorIOClient;
   displayConfigs?: CioPiaDisplayConfigs;
 }
 
 export default function CioPia(props: CioPiaProps) {
-  const { apiKey, itemId, cioClient, displayConfigs } = props;
+  const { apiKey, itemId, threadId, variationId, cioClient, displayConfigs } = props;
   const { learnMoreUrl, showFeedback } = displayConfigs || {};
-  const { suggestedQuestions, answers } = useCioPia({ apiKey, itemId, cioClient });
+  const { suggestedQuestions, answers } = useCioPia({
+    apiKey,
+    itemId,
+    threadId,
+    variationId,
+    cioClient,
+  });
 
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
   const [currentAnswer, setCurrentAnswer] = useState<string>('');

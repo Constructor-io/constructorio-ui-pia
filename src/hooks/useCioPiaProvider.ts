@@ -5,7 +5,7 @@ import useCioClient from './useCioClient';
 export default function useCioPiaProvider(
   props: IncludeRenderProps<CioPiaProviderProps, PiaContextValue>,
 ) {
-  const { apiKey, cioClient: customCioClient, itemId } = props;
+  const { apiKey, cioClient: customCioClient, itemId, variationId, threadId } = props;
 
   const [cioClientOptions, setCioClientOptions] = useState({});
   const cioClient = useCioClient({ apiKey, cioClient: customCioClient, options: cioClientOptions });
@@ -16,8 +16,10 @@ export default function useCioPiaProvider(
       cioClientOptions,
       setCioClientOptions,
       itemId,
+      variationId,
+      threadId,
     }),
-    [cioClient, cioClientOptions, itemId],
+    [cioClient, cioClientOptions, itemId, variationId, threadId],
   );
 
   return contextValue;

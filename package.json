@@ -57,7 +57,7 @@
     "prepare": "husky install"
   },
   "peerDependencies": {
-    "@constructor-io/constructorio-client-javascript": "^2.67.1",
+    "@constructor-io/constructorio-client-javascript": "^2.71.1",
     "react": ">=16.12.0",
     "react-dom": ">=16.12.0",
     "tslib": "^2.4.0"

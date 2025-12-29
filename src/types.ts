@@ -10,6 +10,9 @@ export interface PiaContextValue {
   cioClientOptions: CioClientOptions;
   setCioClientOptions: React.Dispatch<CioClientOptions>;
   itemId: string;
+  variationId?: string;
+  /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000") */
+  threadId?: string;
 }
 
 export type CioClientOptions = Omit<ConstructorClientOptions, 'apiKey' | 'sendTrackingEvents'>;
@@ -17,6 +20,9 @@ export type CioClientOptions = Omit<ConstructorClientOptions, 'apiKey' | 'sendTr
 export interface CioPiaProviderProps {
   apiKey: string;
   itemId: string;
+  variationId?: string;
+  /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000") */
+  threadId?: string;
   cioClient?: Nullable<MockConstructorIOClient>;
 }
 
