@@ -6,6 +6,7 @@ import {
   StreamEndEvent,
   StreamMessageEvent,
   StreamStartEvent,
+  GetSuggestedQuestionsProps,
   GetAnswerResultsStreamProps,
   GetAnswerResultsProps,
 } from './types';
@@ -13,6 +14,8 @@ import {
 // Create URL for PIA API
 function createAgentUrl({
   itemId,
+  threadId,
+  variationId,
   question,
   isStreaming = false,
   options,
@@ -33,6 +36,13 @@ function createAgentUrl({
   url.searchParams.append('item_id', itemId);
   url.searchParams.append('key', apiKey);
 
+  if (threadId) {
+    url.searchParams.append('thread_id', threadId);
+  }
+  if (variationId) {
+    url.searchParams.append('variation_id', variationId);
+  }
+
   // Any additional parameters
   Object.entries(parameters).forEach(([key, value]) => {
     if (value !== undefined) {
@@ -50,15 +60,19 @@ class MockAgent {
     this.options = options;
   }
 
-  async getSuggestedQuestions(
-    itemId: string,
-    parameters: Record<string, any> = {},
-  ): Promise<QuestionResponse> {
+  async getSuggestedQuestions({
+    itemId,
+    variationId,
+    threadId,
+    parameters = {},
+  }: GetSuggestedQuestionsProps): Promise<QuestionResponse> {
     if (!itemId) throw new Error('Item ID is required');
     if (!this.options.apiKey) throw new Error('API key is required');
 
     const url = createAgentUrl({
       itemId,
+      variationId,
+      threadId,
       options: this.options,
       parameters,
     });
@@ -76,6 +90,8 @@ class MockAgent {
 
   async getAnswerResults({
     itemId,
+    variationId,
+    threadId,
     question,
     parameters = {},
   }: GetAnswerResultsProps): Promise<AnswerResponse> {
@@ -85,6 +101,8 @@ class MockAgent {
 
     const url = createAgentUrl({
       itemId,
+      threadId,
+      variationId,
       question,
       options: this.options,
       parameters,
@@ -103,6 +121,8 @@ class MockAgent {
 
   async getAnswerResultsStream({
     itemId,
+    threadId,
+    variationId,
     question,
     parameters,
     onStart,
@@ -115,6 +135,8 @@ class MockAgent {
 
     const url = createAgentUrl({
       itemId,
+      threadId,
+      variationId,
       question,
       isStreaming: true,
       options: this.options,

@@ -5,6 +5,8 @@ import { AnswerResponse } from './mocks/types';
 
 export interface UseAnswerResultsProps {
   itemId: string;
+  variationId?: string;
+  threadId?: string;
   cioClient: MockConstructorIOClient;
   parameters?: Record<string, any>;
 }
@@ -16,13 +18,25 @@ export interface UseAnswerResultsReturn {
   getAnswer: (question: string) => void;
 }
 
-const fetchAnswerResults = async (
-  client: MockConstructorIOClient,
-  itemId: string,
-  question: string,
-) => {
+interface FetchAnswerResultsParams {
+  client: MockConstructorIOClient;
+  itemId: string;
+  question: string;
+  variationId?: string;
+  threadId?: string;
+}
+
+const fetchAnswerResults = async ({
+  client,
+  itemId,
+  question,
+  variationId,
+  threadId,
+}: FetchAnswerResultsParams) => {
   const response: AnswerResponse = await client.agent.getAnswerResults({
     itemId,
+    variationId,
+    threadId,
     question,
   });
   return response;
@@ -30,6 +44,8 @@ const fetchAnswerResults = async (
 
 export default function useAnswerResults({
   itemId,
+  variationId,
+  threadId,
   cioClient,
 }: UseAnswerResultsProps): UseAnswerResultsReturn {
   const [answerResults, setAnswerResults] = useState<AnswerResponse | null>(null);
@@ -43,7 +59,7 @@ export default function useAnswerResults({
       setIsLoading(true);
       setError(null);
 
-      fetchAnswerResults(cioClient, itemId, question)
+      fetchAnswerResults({ client: cioClient, itemId, question, variationId, threadId })
         .then((fetchedAnswerResults) => {
           setAnswerResults(fetchedAnswerResults);
           setError(null);
@@ -55,7 +71,7 @@ export default function useAnswerResults({
           setIsLoading(false);
         });
     },
-    [cioClient, itemId],
+    [cioClient, itemId, variationId, threadId],
   );
 
   return {

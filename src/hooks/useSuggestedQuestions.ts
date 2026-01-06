@@ -4,6 +4,8 @@ import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 
 export interface UseSuggestedQuestionsProps {
   itemId: string;
+  variationId?: string;
+  threadId?: string;
   cioClient?: MockConstructorIOClient;
   parameter?: Record<string, any>;
 }
@@ -15,13 +17,32 @@ export interface UseSuggestedQuestionsReturn {
   getSuggestedQuestions: () => void;
 }
 
-const fetchSuggestedQuestions = async (client: MockConstructorIOClient, itemId: string) => {
-  const response: QuestionResponse = await client.agent.getSuggestedQuestions(itemId);
+interface FetchSuggestedQuestionsParams {
+  client: MockConstructorIOClient;
+  itemId: string;
+  variationId?: string;
+  threadId?: string;
+}
+
+const fetchSuggestedQuestions = async ({
+  client,
+  itemId,
+  variationId,
+  threadId,
+}: FetchSuggestedQuestionsParams) => {
+  const response: QuestionResponse = await client.agent.getSuggestedQuestions({
+    itemId,
+    variationId,
+    threadId,
+  });
+
   return response.questions;
 };
 
 export default function useSuggestedQuestions({
   itemId,
+  variationId,
+  threadId,
   cioClient,
 }: UseSuggestedQuestionsProps): UseSuggestedQuestionsReturn {
   const [questions, setQuestions] = useState<Array<Question>>([]);
@@ -34,7 +55,7 @@ export default function useSuggestedQuestions({
     setIsLoading(true);
     setError(null);
 
-    fetchSuggestedQuestions(cioClient, itemId)
+    fetchSuggestedQuestions({ client: cioClient, itemId, variationId, threadId })
       .then((fetchedQuestions) => {
         setQuestions(fetchedQuestions);
         setError(null);
@@ -45,7 +66,7 @@ export default function useSuggestedQuestions({
       .finally(() => {
         setIsLoading(false);
       });
-  }, [cioClient, itemId]);
+  }, [cioClient, itemId, variationId, threadId]);
 
   useEffect(() => {
     fetchResult();

@@ -6,6 +6,8 @@ import useSuggestedQuestions, { UseSuggestedQuestionsReturn } from './useSuggest
 export interface UseCioPiaProps {
   apiKey: string;
   itemId: string;
+  variationId?: string;
+  threadId?: string;
   cioClient?: MockConstructorIOClient;
 }
 
@@ -15,18 +17,22 @@ export interface UseCioPiaReturn {
 }
 
 export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
-  const { apiKey, itemId, cioClient: providedClient } = props;
+  const { apiKey, itemId, variationId, threadId, cioClient: providedClient } = props;
 
   const defaultClient = useCioClient({ apiKey });
   const client = providedClient || defaultClient;
 
   const suggestedQuestions = useSuggestedQuestions({
     itemId,
+    variationId,
+    threadId,
     cioClient: client as MockConstructorIOClient,
   });
 
   const answers = useAnswerResults({
     itemId,
+    variationId,
+    threadId,
     cioClient: client as MockConstructorIOClient,
   });
 
