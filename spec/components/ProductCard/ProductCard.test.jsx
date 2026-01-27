@@ -8,15 +8,16 @@ const testPrice = '$99.00';
 const testImageUrl = 'https://example.com/image.jpg';
 
 describe('ProductCard Component', () => {
-  const defaultProps = {
-    imageUrl: testImageUrl,
-    title: testTitle,
-    price: testPrice,
-    onClick: jest.fn(),
-  };
+  let defaultProps;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    defaultProps = {
+      imageUrl: testImageUrl,
+      title: testTitle,
+      price: testPrice,
+      onClick: jest.fn(),
+    };
   });
 
   it('renders the product card', () => {
@@ -105,12 +106,12 @@ describe('ProductCard Component', () => {
   });
 
   it('shows fallback when image fails to load', () => {
-    const { getByRole, getByTestId, queryByRole } = render(
+    const { getByRole, getByTestId, container } = render(
       <ProductCard {...defaultProps} />
     );
     const image = getByRole('img');
     fireEvent.error(image);
-    expect(queryByRole('img')).not.toBeInTheDocument();
+    expect(container.querySelector('img')).not.toBeInTheDocument();
     expect(getByTestId('product-card-image-fallback')).toBeInTheDocument();
   });
 
@@ -119,5 +120,34 @@ describe('ProductCard Component', () => {
       <ProductCard imageUrl={testImageUrl} title={testTitle} onClick={jest.fn()} />
     );
     expect(queryByText(testPrice)).not.toBeInTheDocument();
+  });
+
+  it('renders image with loading="lazy" attribute', () => {
+    const { getByRole } = render(<ProductCard {...defaultProps} />);
+    expect(getByRole('img')).toHaveAttribute('loading', 'lazy');
+  });
+
+  it('fallback has role="img" for accessibility', () => {
+    const { getByRole, getByTestId } = render(<ProductCard {...defaultProps} />);
+    const image = getByRole('img');
+    fireEvent.error(image);
+    expect(getByTestId('product-card-image-fallback')).toHaveAttribute('role', 'img');
+  });
+
+  it('does not call onClick when other keys are pressed', () => {
+    const { getByTestId } = render(<ProductCard {...defaultProps} />);
+    fireEvent.keyDown(getByTestId('product-card'), { key: 'Tab' });
+    fireEvent.keyDown(getByTestId('product-card'), { key: 'Escape' });
+    expect(defaultProps.onClick).not.toHaveBeenCalled();
+  });
+
+  it('renders with empty price string', () => {
+    const { queryByTestId } = render(
+      <ProductCard imageUrl={testImageUrl} title={testTitle} price='' onClick={jest.fn()} />
+    );
+    const priceElement = queryByTestId('product-card')?.querySelector(
+      '.cio-pia-product-card-price'
+    );
+    expect(priceElement).not.toBeInTheDocument();
   });
 });

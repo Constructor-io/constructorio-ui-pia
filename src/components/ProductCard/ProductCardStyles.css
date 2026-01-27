@@ -8,10 +8,24 @@
   cursor: pointer;
 }
 
+.cio-pia-product-card--interactive:hover .cio-pia-product-card-image {
+  opacity: 0.85;
+}
+
 .cio-pia-product-card--interactive:focus {
   outline: 2px solid #14151a;
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+.cio-pia-product-card--interactive:focus-visible {
+  outline: 2px solid #14151a;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.cio-pia-product-card--interactive:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .cio-pia-product-card-image-container {

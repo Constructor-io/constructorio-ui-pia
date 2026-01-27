@@ -47,3 +47,18 @@ export const WithoutClickHandler: Story = {
     onClick: undefined,
   },
 };
+
+export const WithoutPrice: Story = {
+  args: {
+    imageUrl: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&h=400&fit=crop',
+    title: 'The Quilted Clubhouse Jacket (Navy)',
+  },
+};
+
+export const ImageError: Story = {
+  args: {
+    imageUrl: 'https://invalid-url-that-will-fail.com/image.jpg',
+    title: 'Product with Failed Image',
+    price: '$49.00',
+  },
+};

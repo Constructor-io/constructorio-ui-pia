@@ -1,18 +1,29 @@
 import React, { useCallback, useState } from 'react';
 
+/**
+ * Props for the ProductCard component
+ */
 export interface ProductCardProps {
+  /** URL of the product image to display */
   imageUrl: string;
+  /** Product title/name */
   title: string;
+  /** Optional product price to display below the title */
   price?: string;
+  /** Optional callback function when the card is clicked */
   onClick?: () => void;
 }
 
+/**
+ * A product card component that displays product image, title, and price.
+ * Supports optional click interactions with full keyboard accessibility.
+ */
 function ProductCard({ imageUrl, title, price, onClick }: ProductCardProps) {
   const [imageError, setImageError] = useState(false);
 
-  const handleImageError = () => {
+  const handleImageError = useCallback(() => {
     setImageError(true);
-  };
+  }, []);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -24,7 +35,9 @@ function ProductCard({ imageUrl, title, price, onClick }: ProductCardProps) {
     [onClick],
   );
 
-  const cardClassName = `cio-pia-product-card${onClick ? ' cio-pia-product-card--interactive' : ''}`;
+  const cardClassName = ['cio-pia-product-card', onClick && 'cio-pia-product-card--interactive']
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div
@@ -39,6 +52,7 @@ function ProductCard({ imageUrl, title, price, onClick }: ProductCardProps) {
           <div
             className='cio-pia-product-card-image-fallback'
             data-testid='product-card-image-fallback'
+            role='img'
             aria-label={`Image for ${title}`}
           />
         ) : (
@@ -46,6 +60,7 @@ function ProductCard({ imageUrl, title, price, onClick }: ProductCardProps) {
             className='cio-pia-product-card-image'
             src={imageUrl}
             alt={title}
+            loading='lazy'
             onError={handleImageError}
           />
         )}
