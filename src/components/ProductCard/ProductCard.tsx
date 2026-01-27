@@ -1,16 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 export interface ProductCardProps {
   imageUrl: string;
   title: string;
-  price: string;
+  price?: string;
   onClick?: () => void;
 }
 
 function ProductCard({ imageUrl, title, price, onClick }: ProductCardProps) {
+  const [imageError, setImageError] = useState(false);
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
+  const cardClassName = onClick
+    ? 'cio-pia-product-card cio-pia-product-card--interactive'
+    : 'cio-pia-product-card';
+
   return (
     <div
-      className='cio-pia-product-card'
+      className={cardClassName}
       data-testid='product-card'
       onClick={onClick}
       role={onClick ? 'button' : undefined}
@@ -27,17 +37,26 @@ function ProductCard({ imageUrl, title, price, onClick }: ProductCardProps) {
       }
     >
       <div className='cio-pia-product-card-image-container'>
-        <img
-          className='cio-pia-product-card-image'
-          src={imageUrl}
-          alt={title}
-        />
+        {imageError ? (
+          <div
+            className='cio-pia-product-card-image-fallback'
+            data-testid='product-card-image-fallback'
+            aria-label={`Image for ${title}`}
+          />
+        ) : (
+          <img
+            className='cio-pia-product-card-image'
+            src={imageUrl}
+            alt={title}
+            onError={handleImageError}
+          />
+        )}
       </div>
       <div className='cio-pia-product-card-content'>
         <p className='cio-pia-product-card-title' title={title}>
           {title}
         </p>
-        <p className='cio-pia-product-card-price'>{price}</p>
+        {price && <p className='cio-pia-product-card-price'>{price}</p>}
       </div>
     </div>
   );

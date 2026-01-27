@@ -87,4 +87,46 @@ describe('ProductCard Component', () => {
     const { getByText } = render(<ProductCard {...defaultProps} />);
     expect(getByText(testTitle)).toHaveAttribute('title', testTitle);
   });
+
+  it('has interactive class when onClick is provided', () => {
+    const { getByTestId } = render(<ProductCard {...defaultProps} />);
+    expect(getByTestId('product-card')).toHaveClass(
+      'cio-pia-product-card--interactive'
+    );
+  });
+
+  it('does not have interactive class when onClick is not provided', () => {
+    const { getByTestId } = render(
+      <ProductCard imageUrl={testImageUrl} title={testTitle} price={testPrice} />
+    );
+    expect(getByTestId('product-card')).not.toHaveClass(
+      'cio-pia-product-card--interactive'
+    );
+  });
+
+  it('shows fallback when image fails to load', () => {
+    const { getByRole, getByTestId, queryByRole } = render(
+      <ProductCard {...defaultProps} />
+    );
+    const image = getByRole('img');
+    fireEvent.error(image);
+    expect(queryByRole('img')).not.toBeInTheDocument();
+    expect(getByTestId('product-card-image-fallback')).toBeInTheDocument();
+  });
+
+  it('does not render price when price is not provided', () => {
+    const { queryByText } = render(
+      <ProductCard imageUrl={testImageUrl} title={testTitle} onClick={jest.fn()} />
+    );
+    expect(queryByText(testPrice)).not.toBeInTheDocument();
+  });
+
+  it('renders without price when price is undefined', () => {
+    const { getByTestId, queryByTestId } = render(
+      <ProductCard imageUrl={testImageUrl} title={testTitle} />
+    );
+    expect(getByTestId('product-card')).toBeInTheDocument();
+    const priceElements = document.querySelectorAll('.cio-pia-product-card-price');
+    expect(priceElements.length).toBe(0);
+  });
 });
