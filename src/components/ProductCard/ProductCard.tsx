@@ -34,8 +34,7 @@ function ProductCard({ imageUrl, title, price, onClick }: ProductCardProps) {
               }
             }
           : undefined
-      }
-    >
+      }>
       <div className='cio-pia-product-card-image-container'>
         {imageError ? (
           <div
