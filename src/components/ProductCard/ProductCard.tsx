@@ -1,6 +1,26 @@
 import React, { useCallback, useState } from 'react';
 
 /**
+ * Placeholder icon displayed when product image fails to load
+ */
+function ImagePlaceholderIcon() {
+  return (
+    <svg
+      width='48'
+      height='48'
+      viewBox='0 0 24 24'
+      fill='none'
+      xmlns='http://www.w3.org/2000/svg'
+      aria-hidden='true'>
+      <path
+        d='M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.51L14.5 12L19 18H5L8.5 13.5Z'
+        fill='#9ca3af'
+      />
+    </svg>
+  );
+}
+
+/**
  * Props for the ProductCard component
  */
 export interface ProductCardProps {
@@ -17,6 +37,20 @@ export interface ProductCardProps {
 /**
  * A product card component that displays product image, title, and price.
  * Supports optional click interactions with full keyboard accessibility.
+ *
+ * @example
+ * ```tsx
+ * <ProductCard
+ *   imageUrl="/product.jpg"
+ *   title="Product Name"
+ *   price="$99.00"
+ *   onClick={() => console.log('clicked')}
+ * />
+ * ```
+ *
+ * @remarks
+ * The component width can be customized using the CSS custom property
+ * `--cio-pia-product-card-width` (default: 180px).
  */
 function ProductCard({ imageUrl, title, price, onClick }: ProductCardProps) {
   const [imageError, setImageError] = useState(false);
@@ -35,9 +69,7 @@ function ProductCard({ imageUrl, title, price, onClick }: ProductCardProps) {
     [onClick],
   );
 
-  const cardClassName = ['cio-pia-product-card', onClick && 'cio-pia-product-card--interactive']
-    .filter(Boolean)
-    .join(' ');
+  const cardClassName = `cio-pia-product-card${onClick ? ' cio-pia-product-card--interactive' : ''}`;
 
   return (
     <div
@@ -53,8 +85,9 @@ function ProductCard({ imageUrl, title, price, onClick }: ProductCardProps) {
             className='cio-pia-product-card-image-fallback'
             data-testid='product-card-image-fallback'
             role='img'
-            aria-label={`Image for ${title}`}
-          />
+            aria-label={`Image for ${title}`}>
+            <ImagePlaceholderIcon />
+          </div>
         ) : (
           <img
             className='cio-pia-product-card-image'

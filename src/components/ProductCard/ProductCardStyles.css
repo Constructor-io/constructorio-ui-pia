@@ -1,7 +1,7 @@
 .cio-pia-product-card {
   display: flex;
   flex-direction: column;
-  width: 180px;
+  width: var(--cio-pia-product-card-width, 180px);
 }
 
 .cio-pia-product-card--interactive {
@@ -12,20 +12,10 @@
   opacity: 0.85;
 }
 
-.cio-pia-product-card--interactive:focus {
-  outline: 2px solid #14151a;
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
 .cio-pia-product-card--interactive:focus-visible {
   outline: 2px solid #14151a;
   outline-offset: 2px;
   border-radius: 4px;
-}
-
-.cio-pia-product-card--interactive:focus:not(:focus-visible) {
-  outline: none;
 }
 
 .cio-pia-product-card-image-container {
@@ -40,6 +30,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: opacity 0.2s ease;
 }
 
 .cio-pia-product-card-image-fallback {
@@ -64,6 +55,11 @@
   line-height: 1.4;
   overflow: hidden;
   text-overflow: ellipsis;
+  /*
+   * Multi-line text truncation using webkit properties.
+   * This is the standard approach until CSS line-clamp has broader support.
+   * Supported in all modern browsers (Chrome, Firefox 68+, Safari, Edge).
+   */
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
