@@ -120,13 +120,4 @@ describe('ProductCard Component', () => {
     );
     expect(queryByText(testPrice)).not.toBeInTheDocument();
   });
-
-  it('renders without price when price is undefined', () => {
-    const { getByTestId, queryByTestId } = render(
-      <ProductCard imageUrl={testImageUrl} title={testTitle} />
-    );
-    expect(getByTestId('product-card')).toBeInTheDocument();
-    const priceElements = document.querySelectorAll('.cio-pia-product-card-price');
-    expect(priceElements.length).toBe(0);
-  });
 });

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 export interface ProductCardProps {
   imageUrl: string;
@@ -14,9 +14,17 @@ function ProductCard({ imageUrl, title, price, onClick }: ProductCardProps) {
     setImageError(true);
   };
 
-  const cardClassName = onClick
-    ? 'cio-pia-product-card cio-pia-product-card--interactive'
-    : 'cio-pia-product-card';
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault();
+        onClick();
+      }
+    },
+    [onClick],
+  );
+
+  const cardClassName = `cio-pia-product-card${onClick ? ' cio-pia-product-card--interactive' : ''}`;
 
   return (
     <div
@@ -25,16 +33,7 @@ function ProductCard({ imageUrl, title, price, onClick }: ProductCardProps) {
       onClick={onClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
-      onKeyDown={
-        onClick
-          ? (e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                onClick();
-              }
-            }
-          : undefined
-      }>
+      onKeyDown={onClick ? handleKeyDown : undefined}>
       <div className='cio-pia-product-card-image-container'>
         {imageError ? (
           <div
