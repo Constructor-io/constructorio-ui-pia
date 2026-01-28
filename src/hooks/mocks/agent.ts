@@ -1,6 +1,5 @@
 import { ConstructorClientOptions } from '@constructor-io/constructorio-client-javascript';
 import {
-  AnswerResponse,
   AgentUrlProps,
   QuestionResponse,
   StreamEndEvent,
@@ -9,6 +8,7 @@ import {
   GetSuggestedQuestionsProps,
   GetAnswerResultsStreamProps,
   GetAnswerResultsProps,
+  GetAnswerResultsResponse,
 } from './types';
 
 // Create URL for PIA API
@@ -94,7 +94,7 @@ class MockAgent {
     threadId,
     question,
     parameters = {},
-  }: GetAnswerResultsProps): Promise<AnswerResponse> {
+  }: GetAnswerResultsProps): Promise<GetAnswerResultsResponse> {
     if (!itemId) throw new Error('Item ID is required');
     if (!question) throw new Error('Question is required');
     if (!this.options.apiKey) throw new Error('API key is required');

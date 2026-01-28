@@ -10,7 +10,10 @@ describe('Testing Hook: useAnswerResults', () => {
   };
 
   const mockResponse = {
+    qna_result_id: 'test-result-id',
+    thread_id: 'test-thread-id',
     value: 'This is a mock answer',
+    item_results: null,
     follow_up_questions: null,
   };
 

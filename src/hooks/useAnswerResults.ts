@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Nullable } from '@constructor-io/constructorio-client-javascript';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
-import { AnswerResponse } from './mocks/types';
+import { GetAnswerResultsResponse } from './mocks/types';
 
 export interface UseAnswerResultsProps {
   itemId: string;
@@ -12,7 +12,7 @@ export interface UseAnswerResultsProps {
 }
 
 export interface UseAnswerResultsReturn {
-  data: Nullable<AnswerResponse>;
+  data: Nullable<GetAnswerResultsResponse>;
   isLoading: boolean;
   error: Error | null;
   getAnswer: (question: string) => void;
@@ -33,7 +33,7 @@ const fetchAnswerResults = async ({
   variationId,
   threadId,
 }: FetchAnswerResultsParams) => {
-  const response: AnswerResponse = await client.agent.getAnswerResults({
+  const response: GetAnswerResultsResponse = await client.agent.getAnswerResults({
     itemId,
     variationId,
     threadId,
@@ -48,7 +48,7 @@ export default function useAnswerResults({
   threadId,
   cioClient,
 }: UseAnswerResultsProps): UseAnswerResultsReturn {
-  const [answerResults, setAnswerResults] = useState<AnswerResponse | null>(null);
+  const [answerResults, setAnswerResults] = useState<GetAnswerResultsResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
