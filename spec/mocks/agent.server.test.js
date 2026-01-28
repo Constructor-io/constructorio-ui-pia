@@ -60,7 +60,6 @@ describe('Testing Mocks: Agent', () => {
       expect(result).toHaveProperty('value');
       expect(result.value).toBeDefined();
       expect(typeof result.value).toBe('string');
-      expect(result.alternatives).toBeUndefined();
       expect(result.follow_up_questions).toBeDefined();
       expect(Array.isArray(result.follow_up_questions)).toBe(true);
       expect(result.follow_up_questions[0]).toHaveProperty('value');

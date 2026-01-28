@@ -11,7 +11,6 @@ describe('Testing Hook: useAnswerResults', () => {
 
   const mockResponse = {
     value: 'This is a mock answer',
-    alternative: null,
     follow_up_questions: null,
   };
 
