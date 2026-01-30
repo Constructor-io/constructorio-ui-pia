@@ -40,4 +40,39 @@ describe('Testing Transformers: transformResultItem', () => {
     expect(typeof result.price).toBe('number');
     expect(result.price).toBe(testItem.data.price);
   });
+
+  it('should return null if data.id is undefined', () => {
+    const { id, ...rest } = testItem.data;
+    const item = {
+      ...testItem,
+      data: { ...rest },
+    };
+
+    expect(transformResultItem(item)).toBeNull();
+  });
+
+  it('should return null if value is undefined', () => {
+    const item = {
+      ...testItem,
+      value: undefined,
+    };
+
+    expect(transformResultItem(item as any)).toBeNull();
+  });
+
+  it('should return null if data is an empty object', () => {
+    const item = {
+      ...testItem,
+      data: {},
+    };
+    expect(transformResultItem(item as any)).toBeNull();
+  });
+
+  it('should return null if data is not an object', () => {
+    const item = {
+      ...testItem,
+      data: 'not-an-object',
+    };
+    expect(transformResultItem(item as any)).toBeNull();
+  });
 });
