@@ -18,11 +18,6 @@ export interface PiaContextValue {
 
 export type CioClientOptions = Omit<ConstructorClientOptions, 'apiKey' | 'sendTrackingEvents'>;
 
-export type Callbacks = {
-  /** Callback when an item in the carousel is clicked. Defaults to opening item.url in a new tab. */
-  onProductClick?: (item: Item) => void;
-};
-
 export interface CioPiaProviderProps {
   apiKey: string;
   itemId: string;
@@ -30,7 +25,6 @@ export interface CioPiaProviderProps {
   /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000") */
   threadId?: string;
   cioClient?: Nullable<MockConstructorIOClient>;
-  callbacks?: Callbacks;
 }
 
 export type CioPiaDisplayConfigs = {
