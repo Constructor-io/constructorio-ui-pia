@@ -55,7 +55,7 @@ export interface ApiItem extends Record<string, any> {
 }
 
 export interface AnswerItemResults {
-  request: Record<string, any>;
+  request?: Record<string, any>;
   response: {
     results: Array<ApiItem>;
   };
