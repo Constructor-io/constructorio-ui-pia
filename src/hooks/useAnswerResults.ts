@@ -30,17 +30,16 @@ interface FetchAnswerResultsParams {
 }
 
 const extractAndTransformItems = (data: Nullable<GetAnswerResultsResponse>): Array<Item> | null => {
-  if (
-    data &&
-    data.item_results &&
-    data.item_results.response &&
-    Array.isArray(data.item_results.response.results)
-  ) {
-    return data.item_results.response.results
-      .map(transformResultItem)
-      .filter((item): item is Item => item !== null);
+  if (!data?.item_results?.response?.results) {
+    return null;
   }
-  return null;
+
+  const { results } = data.item_results.response;
+  if (!Array.isArray(results) || results.length === 0) {
+    return null;
+  }
+
+  return results.map(transformResultItem).filter((item): item is Item => item !== null);
 };
 
 const fetchAnswerResults = async ({
