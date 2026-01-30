@@ -2,6 +2,8 @@ import { useCallback, useState } from 'react';
 import { Nullable } from '@constructor-io/constructorio-client-javascript';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 import { GetAnswerResultsResponse } from './mocks/types';
+import { Item } from '../types';
+import { transformResultItem } from '../utils/transformers';
 
 export interface UseAnswerResultsProps {
   itemId: string;
@@ -13,6 +15,7 @@ export interface UseAnswerResultsProps {
 
 export interface UseAnswerResultsReturn {
   data: Nullable<GetAnswerResultsResponse>;
+  items: Array<Item> | null;
   isLoading: boolean;
   error: Error | null;
   getAnswer: (question: string) => void;
@@ -25,6 +28,20 @@ interface FetchAnswerResultsParams {
   variationId?: string;
   threadId?: string;
 }
+
+const extractAndTransformItems = (data: Nullable<GetAnswerResultsResponse>): Array<Item> | null => {
+  if (
+    data &&
+    data.item_results &&
+    data.item_results.response &&
+    Array.isArray(data.item_results.response.results)
+  ) {
+    return data.item_results.response.results
+      .map(transformResultItem)
+      .filter((item): item is Item => item !== null);
+  }
+  return null;
+};
 
 const fetchAnswerResults = async ({
   client,
@@ -49,6 +66,7 @@ export default function useAnswerResults({
   cioClient,
 }: UseAnswerResultsProps): UseAnswerResultsReturn {
   const [answerResults, setAnswerResults] = useState<GetAnswerResultsResponse | null>(null);
+  const [items, setItems] = useState<Array<Item> | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
@@ -62,6 +80,7 @@ export default function useAnswerResults({
       fetchAnswerResults({ client: cioClient, itemId, question, variationId, threadId })
         .then((fetchedAnswerResults) => {
           setAnswerResults(fetchedAnswerResults);
+          setItems(extractAndTransformItems(fetchedAnswerResults));
           setError(null);
         })
         .catch((err) => {
@@ -76,6 +95,7 @@ export default function useAnswerResults({
 
   return {
     data: answerResults,
+    items,
     isLoading,
     error,
     getAnswer: fetchResult,
