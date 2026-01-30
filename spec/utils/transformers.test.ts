@@ -19,7 +19,7 @@ describe('Testing Transformers: transformResultItem', () => {
     expect(typeof result.variations).toBe('object');
     expect(result.variations?.length).toBe(testItem.variations.length);
 
-    expect(result.variation_map).toBeNull(); // as per testItem
+    expect(result.variations_map).toBeNull(); // as per testItem
 
     // Flattened properties
     expect(typeof result.id).toBe('string');
