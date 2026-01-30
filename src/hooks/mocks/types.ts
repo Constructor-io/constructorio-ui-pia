@@ -46,12 +46,17 @@ export type GetAnswerResultsStreamProps = GetAnswerResultsProps & {
 };
 
 /** Defines loose types for response-related types to account for future changes to API schema */
+export interface ApiItemVariation extends Record<string, any> {
+  value: string;
+  data?: ItemData;
+}
+
 export interface ApiItem extends Record<string, any> {
   value: string;
   matched_terms: Array<string>;
   data: ItemData;
-  variations?: Array<{ value: string; data?: ItemData }>;
-  variations_map?: Record<string, any> | Array<Record<string, any>>;
+  variations?: Array<ApiItemVariation> | null;
+  variations_map?: Record<string, any> | Array<Record<string, any>> | null;
 }
 
 export interface AnswerItemResults {
