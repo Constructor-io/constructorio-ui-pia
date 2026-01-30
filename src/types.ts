@@ -19,8 +19,8 @@ export interface PiaContextValue {
 export type CioClientOptions = Omit<ConstructorClientOptions, 'apiKey' | 'sendTrackingEvents'>;
 
 export type Callbacks = {
-  /** Callback when a product in the carousel is clicked. Defaults to opening product.url in a new tab. */
-  onProductClick?: (product: Item) => void;
+  /** Callback when an item in the carousel is clicked. Defaults to opening item.url in a new tab. */
+  onProductClick?: (item: Item) => void;
 };
 
 export interface CioPiaProviderProps {
