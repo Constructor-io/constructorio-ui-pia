@@ -56,7 +56,8 @@
         "devDependencies": ["**/stories/**/*.*", "**/.storybook/**/*.*", "spec/**/*.*"],
         "peerDependencies": true
       }
-    ]
+    ],
+    "allowAsProps": true
   },
   "overrides": [
     {
