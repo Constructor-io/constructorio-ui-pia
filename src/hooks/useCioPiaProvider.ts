@@ -1,10 +1,8 @@
 import { useMemo, useState } from 'react';
-import { PiaContextValue, CioPiaProviderProps, IncludeRenderProps } from '../types';
+import { PiaContextValue, CioPiaProviderProps } from '../types';
 import useCioClient from './useCioClient';
 
-export default function useCioPiaProvider(
-  props: IncludeRenderProps<CioPiaProviderProps, PiaContextValue>,
-) {
+export default function useCioPiaProvider(props: CioPiaProviderProps) {
   const { apiKey, cioClient: customCioClient, itemId, variationId, threadId } = props;
 
   const [cioClientOptions, setCioClientOptions] = useState({});
