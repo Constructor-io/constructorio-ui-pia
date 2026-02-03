@@ -321,8 +321,8 @@ describe('CioPia Component', () => {
             carousel: {
               item: {
                 reactNode: ({ item }) => (
-                  <div data-testid='custom-carousel-item' onClick={() => customClickHandler(item)}>
-                    Overridden Item: {item?.name}
+                  <div data-testid='custom-overridden-carousel-item'>
+                    Custom Overridden Item: {item?.name}
                   </div>
                 ),
               },
@@ -331,10 +331,10 @@ describe('CioPia Component', () => {
         />,
       );
 
-      const customItems = screen.getAllByTestId('custom-carousel-item');
+      const customItems = screen.getAllByTestId('custom-overridden-carousel-item');
       expect(customItems).toHaveLength(mockItems.length);
-      expect(screen.getByText('Overridden Item: Product 1')).toBeInTheDocument();
-      expect(screen.getByText('Overridden Item: Product 2')).toBeInTheDocument();
+      expect(screen.getByText('Custom Overridden Item: Product 1')).toBeInTheDocument();
+      expect(screen.getByText('Custom Overridden Item: Product 2')).toBeInTheDocument();
     });
 
     it('calls custom onProductClick handler when provided via componentOverrides', () => {
@@ -348,7 +348,7 @@ describe('CioPia Component', () => {
             carousel: {
               item: {
                 reactNode: ({ item }) => (
-                  <div data-testid='custom-carousel-item' onClick={() => customClickHandler(item)}>
+                  <div data-testid='custom-overridden-carousel-item' onClick={() => customClickHandler(item)}>
                     Overridden Item: {item?.name}
                   </div>
                 ),
@@ -357,7 +357,7 @@ describe('CioPia Component', () => {
           }}
         />,
       );
-      const customItems = screen.getAllByTestId('custom-carousel-item');
+      const customItems = screen.getAllByTestId('custom-overridden-carousel-item');
       fireEvent.click(customItems[0]);
 
       expect(customClickHandler).toHaveBeenCalledTimes(1);
@@ -373,10 +373,10 @@ describe('CioPia Component', () => {
           componentOverrides={{
             carousel: {
               previous: {
-                reactNode: () => <button data-testid='custom-prev'>Prev</button>,
+                reactNode: () => <button data-testid='custom-overridden-prev'>Prev</button>,
               },
               next: {
-                reactNode: () => <button data-testid='custom-next'>Next</button>,
+                reactNode: () => <button data-testid='custom-overridden-next'>Next</button>,
               },
             },
           }}
@@ -384,8 +384,8 @@ describe('CioPia Component', () => {
       );
 
       expect(container.querySelector('[data-carousel]')).toBeInTheDocument();
-      expect(screen.getByTestId('custom-prev')).toBeInTheDocument();
-      expect(screen.getByTestId('custom-next')).toBeInTheDocument();
+      expect(screen.getByTestId('custom-overridden-prev')).toBeInTheDocument();
+      expect(screen.getByTestId('custom-overridden-next')).toBeInTheDocument();
     });
   });
 });
