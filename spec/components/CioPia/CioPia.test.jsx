@@ -8,54 +8,26 @@ import { DEMO_QUESTION, DISCLAIMER_TEXT } from '../../../src/constants';
 // Mock the useCioPia hook
 jest.mock('../../../src/hooks/useCioPia', () => jest.fn());
 
-// /**
-//  * Mock the Carousel component from constructorio-ui-components
-//  * to bypass embla-carousel's limitations in the jsdom test environment
-//  */
-// jest.mock('@constructor-io/constructorio-ui-components', () => {
-//   const actual = jest.requireActual('@constructor-io/constructorio-ui-components');
-//   return {
-//     ...actual,
-//     Carousel: ({ items, componentOverrides }) => {
-//       if (!items || items.length === 0) return null;
-
-//       const itemRenderer = componentOverrides?.item?.reactNode;
-
-//       return (
-//         <div className='embla' data-testid='carousel-mock'>
-//           <div className='embla__container'>
-//             {items.map((item, index) => (
-//               <div key={index} className='embla__slide'>
-//                 {itemRenderer ? (
-//                   itemRenderer({ item, index })
-//                 ) : (
-//                   <actual.ProductCard product={item} className='w-full h-full' />
-//                 )}
-//               </div>
-//             ))}
-//           </div>
-//         </div>
-//       );
-//     },
-//   };
-// });
-
-jest.mock('embla-carousel-react', () => {                                                                                
-    return jest.fn(() => [                                                                                                 
-      jest.fn(), // carouselRef - the ref callback                                                                         
-      {                                                                                                                    
-        // Mock EmblaCarouselType API                                                                                      
-        canScrollPrev: jest.fn(() => true),                                                                                
-        canScrollNext: jest.fn(() => true),                                                                                
-        scrollPrev: jest.fn(),                                                                                             
-        scrollNext: jest.fn(),                                                                                             
-        on: jest.fn(),                                                                                                     
-        off: jest.fn(),                                                                                                    
-        rootNode: jest.fn(() => null),                                                                                     
-        slideNodes: jest.fn(() => []),                                                                                     
-      },                                                                                                                   
-    ]);                                                                                                                    
-  });  
+/**
+ * Mock embla-carousel that is used by Carousel component from constructorio-ui-components
+ * to bypass embla-carousel's limitations in the jsdom test environment
+ */
+jest.mock('embla-carousel-react', () => {
+  return jest.fn(() => [
+    jest.fn(), // carouselRef - the ref callback
+    {
+      // Mock EmblaCarouselType API
+      canScrollPrev: jest.fn(() => true),
+      canScrollNext: jest.fn(() => true),
+      scrollPrev: jest.fn(),
+      scrollNext: jest.fn(),
+      on: jest.fn(),
+      off: jest.fn(),
+      rootNode: jest.fn(() => null),
+      slideNodes: jest.fn(() => []),
+    },
+  ]);
+});
 
 const mockProps = {
   apiKey: 'test-api-key',
