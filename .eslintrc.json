@@ -57,7 +57,7 @@
         "peerDependencies": true
       }
     ],
-    "allowAsProps": true
+    "allowAsProps": 0
   },
   "overrides": [
     {

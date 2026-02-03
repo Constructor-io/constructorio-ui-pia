@@ -39,18 +39,18 @@ function PiaCustomCarousel({ items, componentOverrides }: PiaCustomCarouselProps
   }
 
   // Default item renderer with default click behavior
-  const defaultItemRenderer = (props: CarouselItemRenderProps<Item>) => {
-    if (!props.item) {
+  const defaultItemRenderer = ({ item }: CarouselItemRenderProps<Item>) => {
+    if (!item) {
       return null;
     }
 
     return (
       <ProductCard
-        product={props.item}
+        product={item}
         className='w-full h-full'
         onProductClick={() => {
-          if (props.item?.url) {
-            window.open(props.item.url, '_blank', 'noopener,noreferrer');
+          if (item?.url) {
+            window.open(item.url, '_blank', 'noopener,noreferrer');
           }
         }}
       />

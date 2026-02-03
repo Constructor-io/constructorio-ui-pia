@@ -12,6 +12,7 @@ jest.mock('../../../src/hooks/useCioPia', () => jest.fn());
  * Mock embla-carousel that is used by Carousel component from constructorio-ui-components
  * to bypass embla-carousel's limitations in the jsdom test environment
  */
+// eslint-disable-next-line arrow-body-style
 jest.mock('embla-carousel-react', () => {
   return jest.fn(() => [
     jest.fn(), // carouselRef - the ref callback
@@ -312,7 +313,6 @@ describe('CioPia Component', () => {
   describe('Render Overrides Test', () => {
     it('uses custom item renderer when componentOverrides.carousel.item is provided', () => {
       mockUseCioPiaWithItems();
-      const customClickHandler = jest.fn();
 
       render(
         <CioPia
@@ -348,7 +348,16 @@ describe('CioPia Component', () => {
             carousel: {
               item: {
                 reactNode: ({ item }) => (
-                  <div data-testid='custom-overridden-carousel-item' onClick={() => customClickHandler(item)}>
+                  <div
+                    data-testid='custom-overridden-carousel-item'
+                    role='button'
+                    tabIndex={0}
+                    onClick={() => customClickHandler(item)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        customClickHandler(item);
+                      }
+                    }}>
                     Overridden Item: {item?.name}
                   </div>
                 ),
@@ -373,10 +382,18 @@ describe('CioPia Component', () => {
           componentOverrides={{
             carousel: {
               previous: {
-                reactNode: () => <button data-testid='custom-overridden-prev'>Prev</button>,
+                reactNode: () => (
+                  <button type='button' data-testid='custom-overridden-prev'>
+                    Prev
+                  </button>
+                ),
               },
               next: {
-                reactNode: () => <button data-testid='custom-overridden-next'>Next</button>,
+                reactNode: () => (
+                  <button type='button' data-testid='custom-overridden-next'>
+                    Next
+                  </button>
+                ),
               },
             },
           }}
