@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import {
   ConstructorClientOptions,
   Nullable,
@@ -9,6 +9,7 @@ import {
   ComponentOverrideProps,
 } from '@constructor-io/constructorio-ui-components';
 import MockConstructorIOClient from './hooks/mocks/MockConstructorIOClient';
+import { Question } from './hooks/mocks/types';
 
 export interface PiaContextValue {
   cioClient: Nullable<MockConstructorIOClient>;
@@ -43,21 +44,16 @@ export interface Item extends Product, Record<string, any> {
 }
 
 /**
- * Composes a type for a Component that accepts
- * - Props P,
- * - A children function, that takes RenderProps as its argument
- */
-export type IncludeRenderProps<ComponentProps, ChildrenFunctionProps> = ComponentProps & {
-  children?: ((props: ChildrenFunctionProps) => ReactNode) | React.ReactNode;
-};
-
-/**
- * Render props passed to CioPia override functions
+ * Render props passed to CioPia children function
  */
 export interface CioPiaRenderProps {
   items: Item[];
   isLoading: boolean;
   error?: Error | null;
+  currentAnswer: string;
+  currentQuestion: string;
+  displayedQuestions: Question[];
+  handleSubmitQuestion: (question: string) => void;
 }
 
 /**

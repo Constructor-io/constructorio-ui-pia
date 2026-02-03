@@ -405,4 +405,176 @@ describe('CioPia Component', () => {
       expect(screen.getByTestId('custom-overridden-next')).toBeInTheDocument();
     });
   });
+
+  describe('Render Props Test', () => {
+    it('renders custom content when children render props function is provided', () => {
+      mockUseCioPiaWithItems();
+
+      render(
+        <CioPia {...mockProps}>
+          {({ items, currentAnswer }) => (
+            <div data-testid='custom-render-props-content'>
+              <span data-testid='render-props-answer'>{currentAnswer}</span>
+              <span data-testid='render-props-items-count'>{items.length}</span>
+            </div>
+          )}
+        </CioPia>,
+      );
+
+      expect(screen.getByTestId('custom-render-props-content')).toBeInTheDocument();
+      expect(screen.getByTestId('render-props-answer')).toHaveTextContent(mockAnswerData.value);
+      expect(screen.getByTestId('render-props-items-count')).toHaveTextContent(
+        mockItems.length.toString(),
+      );
+    });
+
+    it('passes isLoading state to render props function', () => {
+      useCioPia.mockReturnValue(mockLoadingResponse);
+
+      render(
+        <CioPia {...mockProps}>
+          {({ isLoading }) => (
+            <div data-testid='custom-render-props-content'>
+              {isLoading && <span data-testid='render-props-loading'>Loading...</span>}
+            </div>
+          )}
+        </CioPia>,
+      );
+
+      expect(screen.getByTestId('render-props-loading')).toBeInTheDocument();
+    });
+
+    it('passes error state to render props function', () => {
+      useCioPia.mockReturnValue(mockErrorResponse);
+
+      render(
+        <CioPia {...mockProps}>
+          {({ error }) => (
+            <div data-testid='custom-render-props-content'>
+              {error && <span data-testid='render-props-error'>{error.message}</span>}
+            </div>
+          )}
+        </CioPia>,
+      );
+
+      expect(screen.getByTestId('render-props-error')).toHaveTextContent('Something went wrong');
+    });
+
+    it('passes handleSubmitQuestion to render props function and it works correctly', () => {
+      render(
+        <CioPia {...mockProps}>
+          {({ handleSubmitQuestion }) => (
+            <div data-testid='custom-render-props-content'>
+              <button
+                type='button'
+                data-testid='custom-submit-button'
+                onClick={() => handleSubmitQuestion('Custom question')}>
+                Submit
+              </button>
+            </div>
+          )}
+        </CioPia>,
+      );
+
+      fireEvent.click(screen.getByTestId('custom-submit-button'));
+
+      expect(mockGetAnswer).toHaveBeenCalledWith('Custom question');
+    });
+
+    it('passes displayedQuestions to render props function', () => {
+      render(
+        <CioPia {...mockProps}>
+          {({ displayedQuestions }) => (
+            <div data-testid='custom-render-props-content'>
+              {displayedQuestions.map((q, i) => (
+                <span key={i} data-testid='render-props-question'>
+                  {q.value}
+                </span>
+              ))}
+            </div>
+          )}
+        </CioPia>,
+      );
+
+      const questions = screen.getAllByTestId('render-props-question');
+      expect(questions).toHaveLength(mockSuggestedQuestions.length);
+    });
+
+    it('passes currentQuestion to render props function', () => {
+      render(
+        <CioPia {...mockProps}>
+          {({ currentQuestion, handleSubmitQuestion }) => (
+            <div data-testid='custom-render-props-content'>
+              <span data-testid='render-props-current-question'>{currentQuestion}</span>
+              <button
+                type='button'
+                data-testid='custom-submit-button'
+                onClick={() => handleSubmitQuestion('Test question')}>
+                Submit
+              </button>
+            </div>
+          )}
+        </CioPia>,
+      );
+
+      // Initially empty
+      expect(screen.getByTestId('render-props-current-question')).toHaveTextContent('');
+
+      // After submitting a question
+      fireEvent.click(screen.getByTestId('custom-submit-button'));
+
+      expect(screen.getByTestId('render-props-current-question')).toHaveTextContent('Test question');
+    });
+
+    it('renders custom content via componentOverrides.reactNode', () => {
+      mockUseCioPiaWithItems();
+
+      render(
+        <CioPia
+          {...mockProps}
+          componentOverrides={{
+            reactNode: ({ items, currentAnswer }) => (
+              <div data-testid='override-react-node-content'>
+                <span data-testid='override-answer'>{currentAnswer}</span>
+                <span data-testid='override-items-count'>{items.length}</span>
+              </div>
+            ),
+          }}
+        />,
+      );
+
+      expect(screen.getByTestId('override-react-node-content')).toBeInTheDocument();
+      expect(screen.getByTestId('override-answer')).toHaveTextContent(mockAnswerData.value);
+      expect(screen.getByTestId('override-items-count')).toHaveTextContent(
+        mockItems.length.toString(),
+      );
+    });
+
+    it('prioritizes children over componentOverrides.reactNode', () => {
+      mockUseCioPiaWithItems();
+
+      render(
+        <CioPia
+          {...mockProps}
+          componentOverrides={{
+            reactNode: () => <div data-testid='override-react-node-content'>Override Content</div>,
+          }}>
+          {() => <div data-testid='children-content'>Children Content</div>}
+        </CioPia>,
+      );
+
+      expect(screen.getByTestId('children-content')).toBeInTheDocument();
+      expect(screen.queryByTestId('override-react-node-content')).not.toBeInTheDocument();
+    });
+
+    it('renders static ReactNode children', () => {
+      render(
+        <CioPia {...mockProps}>
+          <div data-testid='static-children'>Static Children Content</div>
+        </CioPia>,
+      );
+
+      expect(screen.getByTestId('static-children')).toBeInTheDocument();
+    });
+  });
 });
