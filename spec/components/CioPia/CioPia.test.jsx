@@ -486,10 +486,8 @@ describe('CioPia Component', () => {
         <CioPia {...mockProps}>
           {({ displayedQuestions }) => (
             <div data-testid='custom-render-props-content'>
-              {displayedQuestions.map((q, i) => (
-                <span key={i} data-testid='render-props-question'>
-                  {q.value}
-                </span>
+              {displayedQuestions.map((q) => (
+                <span data-testid='render-props-question'>{q.value}</span>
               ))}
             </div>
           )}
@@ -523,7 +521,9 @@ describe('CioPia Component', () => {
       // After submitting a question
       fireEvent.click(screen.getByTestId('custom-submit-button'));
 
-      expect(screen.getByTestId('render-props-current-question')).toHaveTextContent('Test question');
+      expect(screen.getByTestId('render-props-current-question')).toHaveTextContent(
+        'Test question',
+      );
     });
 
     it('renders custom content via componentOverrides.reactNode', () => {
