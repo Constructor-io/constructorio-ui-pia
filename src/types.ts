@@ -9,7 +9,6 @@ import {
   ComponentOverrideProps,
 } from '@constructor-io/constructorio-ui-components';
 import MockConstructorIOClient from './hooks/mocks/MockConstructorIOClient';
-import { Question } from './hooks/mocks/types';
 
 export interface PiaContextValue {
   cioClient: Nullable<MockConstructorIOClient>;
