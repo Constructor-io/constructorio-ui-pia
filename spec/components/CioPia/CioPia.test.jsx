@@ -310,7 +310,7 @@ describe('CioPia Component', () => {
     });
   });
 
-  describe('Render Overrides Test', () => {
+  describe('Render Overrides Tests', () => {
     it('uses custom item renderer when componentOverrides.carousel.item is provided', () => {
       mockUseCioPiaWithItems();
 
@@ -406,7 +406,7 @@ describe('CioPia Component', () => {
     });
   });
 
-  describe('Render Props Test', () => {
+  describe('Render Props Tests', () => {
     it('renders custom content when children render props function is provided', () => {
       mockUseCioPiaWithItems();
 
