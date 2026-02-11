@@ -1,8 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Nullable } from '@constructor-io/constructorio-client-javascript';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
-import { GetAnswerResultsResponse } from './mocks/types';
-import { Item } from '../types';
+import { Item, GetAnswerResultsResponse } from '../types';
 import { transformResultItem } from '../utils/transformers';
 
 export interface UseAnswerResultsProps {

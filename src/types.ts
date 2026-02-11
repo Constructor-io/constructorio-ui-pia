@@ -46,3 +46,5 @@ export interface Item extends Product, Record<string, any> {
 export type IncludeRenderProps<ComponentProps, ChildrenFunctionProps> = ComponentProps & {
   children?: ((props: ChildrenFunctionProps) => ReactNode) | React.ReactNode;
 };
+
+export * from './hooks/mocks/types';
