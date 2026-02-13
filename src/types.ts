@@ -47,7 +47,7 @@ export interface Item extends Product, Record<string, any> {
  * Render props passed to CioPia children function
  */
 export interface CioPiaRenderProps {
-  items: Item[];
+  items: Item[] | null;
   isLoading: boolean;
   error?: Error | null;
   currentAnswer: string;

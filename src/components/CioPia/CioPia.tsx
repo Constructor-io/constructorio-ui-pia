@@ -22,7 +22,7 @@ import {
   CioPiaDisplayConfigs,
   CioPiaRenderProps,
   Item,
-  Question
+  Question,
 } from '../../types';
 
 export interface CioPiaProps
@@ -78,6 +78,23 @@ function PiaCustomCarousel({ items, componentOverrides }: PiaCustomCarouselProps
   return <Carousel items={items} componentOverrides={mergedOverrides} />;
 }
 
+function Disclaimer({ learnMoreUrl }: { learnMoreUrl?: string }) {
+  return (
+    <span className='cio-pia-disclaimer'>
+      {DISCLAIMER_TEXT}{' '}
+      {learnMoreUrl && (
+        <a
+          href={learnMoreUrl}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='cio-pia-learn-more'>
+          <u>Learn More.</u>
+        </a>
+      )}
+    </span>
+  );
+}
+
 export default function CioPia(props: CioPiaProps) {
   const {
     apiKey,
@@ -100,7 +117,7 @@ export default function CioPia(props: CioPiaProps) {
 
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
   const [currentAnswer, setCurrentAnswer] = useState<string>('');
-  const [currentItems, setCurrentItems] = useState<Array<Item>>([]);
+  const [currentItems, setCurrentItems] = useState<Array<Item> | null>(null);
   const [displayedQuestions, setDisplayedQuestions] = useState<Question[]>([]);
 
   const handleSubmitQuestion = (question: string) => {
@@ -118,7 +135,13 @@ export default function CioPia(props: CioPiaProps) {
   }, [answers.data]);
 
   useEffect(() => {
-    if (answers.items && answers.items.length > 0) setCurrentItems(answers.items);
+    if (answers.items == null || answers.items.length === 0) {
+      setCurrentItems(null);
+    }
+
+    if (answers.items != null && answers.items.length > 0) {
+      setCurrentItems(answers.items);
+    }
   }, [answers.items]);
 
   const error = answers.error || suggestedQuestions.error;
@@ -128,7 +151,7 @@ export default function CioPia(props: CioPiaProps) {
   const renderProps: CioPiaRenderProps = {
     items: currentItems,
     isLoading,
-    error: error || null,
+    error,
     currentAnswer,
     currentQuestion,
     displayedQuestions,
@@ -142,45 +165,39 @@ export default function CioPia(props: CioPiaProps) {
           Any questions about this product?
         </p>
         <Input onSubmit={handleSubmitQuestion} value={currentQuestion} />
+
         {isLoading && <LoadingSkeleton />}
-        {!isLoading &&
-          (error ? (
-            <ErrorBlock
-              message={
-                answers.error?.message || suggestedQuestions.error?.message || 'Unexpected error'
-              }
-            />
-          ) : (
-            <>
-              {!!currentAnswer && (
-                <div className='cio-pia-answer-container'>
-                  <Answer text={currentAnswer} />
+
+        {!isLoading && error && (
+          <ErrorBlock
+            message={
+              answers.error?.message || suggestedQuestions.error?.message || 'Unexpected error'
+            }
+          />
+        )}
+
+        {!isLoading && !error && (
+          <>
+            {currentAnswer && (
+              <div className='cio-pia-answer-container'>
+                <Answer text={currentAnswer} />
+                {currentItems && (
                   <PiaCustomCarousel
                     items={currentItems}
                     componentOverrides={componentOverrides?.carousel}
                   />
-                  {!!showFeedback && <Feedback />}
-                  <span className='cio-pia-disclaimer'>
-                    {DISCLAIMER_TEXT}{' '}
-                    {!!learnMoreUrl && (
-                      <a
-                        href={learnMoreUrl}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        className='cio-pia-learn-more'>
-                        <u>Learn More.</u>
-                      </a>
-                    )}
-                  </span>
-                </div>
-              )}
+                )}
+                {showFeedback && <Feedback />}
+                <Disclaimer learnMoreUrl={learnMoreUrl} />
+              </div>
+            )}
 
-              <SuggestedQuestionsContainer
-                questions={displayedQuestions}
-                onQuestionClick={handleSubmitQuestion}
-              />
-            </>
-          ))}
+            <SuggestedQuestionsContainer
+              questions={displayedQuestions}
+              onQuestionClick={handleSubmitQuestion}
+            />
+          </>
+        )}
       </RenderPropsWrapper>
     </div>
   );

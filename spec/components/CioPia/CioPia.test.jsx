@@ -278,7 +278,7 @@ describe('CioPia Component', () => {
     });
 
     it('does not render carousel when items array is empty', () => {
-      mockUseCioPiaWithItems({ items: [] });
+      mockUseCioPiaWithItems([]);
 
       render(<CioPia {...mockProps} />);
 
@@ -306,6 +306,30 @@ describe('CioPia Component', () => {
       render(<CioPia {...mockProps} />);
 
       const carousel = document.querySelector('[data-carousel]');
+      expect(carousel).not.toBeInTheDocument();
+    });
+
+    it('does not render carousel when there is no answer yet', () => {
+      useCioPia.mockImplementation(() => ({
+        suggestedQuestions: {
+          data: mockSuggestedQuestions,
+          isLoading: false,
+          error: null,
+          getSuggestedQuestions: mockGetSuggestedQuestions,
+        },
+        answers: {
+          data: null,
+          items: mockItems,
+          isLoading: false,
+          error: null,
+          getAnswer: mockGetAnswer,
+        },
+      }));
+
+      render(<CioPia {...mockProps} />);
+
+      const carousel = document.querySelector('[data-carousel]');
+      // Carousel should not render even if items exist, because there's no currentAnswer
       expect(carousel).not.toBeInTheDocument();
     });
   });
@@ -415,7 +439,7 @@ describe('CioPia Component', () => {
           {({ items, currentAnswer }) => (
             <div data-testid='custom-render-props-content'>
               <span data-testid='render-props-answer'>{currentAnswer}</span>
-              <span data-testid='render-props-items-count'>{items.length}</span>
+              <span data-testid='render-props-items-count'>{items != null ? items.length : 0}</span>
             </div>
           )}
         </CioPia>,
@@ -487,7 +511,9 @@ describe('CioPia Component', () => {
           {({ displayedQuestions }) => (
             <div data-testid='custom-render-props-content'>
               {displayedQuestions.map((q) => (
-                <span data-testid='render-props-question'>{q.value}</span>
+                <span data-testid='render-props-question' key={q.value}>
+                  {q.value}
+                </span>
               ))}
             </div>
           )}
@@ -536,7 +562,7 @@ describe('CioPia Component', () => {
             reactNode: ({ items, currentAnswer }) => (
               <div data-testid='override-react-node-content'>
                 <span data-testid='override-answer'>{currentAnswer}</span>
-                <span data-testid='override-items-count'>{items.length}</span>
+                <span data-testid='override-items-count'>{items != null ? items.length : 0}</span>
               </div>
             ),
           }}
