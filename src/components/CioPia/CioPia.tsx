@@ -18,9 +18,10 @@ import useCioPia from '../../hooks/useCioPia';
 import ErrorBlock from '../Error/ErrorBlock';
 import LoadingSkeleton from '../LoadingSkeleton/LoadingSkeleton';
 import {
-  CioPiaComponentOverrides,
-  CioPiaDisplayConfigs,
   CioPiaRenderProps,
+  CioPiaComponentOverrides,
+  Callbacks,
+  DisplayConfigs,
   Item,
   Question,
 } from '../../types';
@@ -35,15 +36,17 @@ export interface CioPiaProps
   threadId?: string;
   variationId?: string;
   cioClient?: MockConstructorIOClient;
-  displayConfigs?: CioPiaDisplayConfigs;
+  displayConfigs?: DisplayConfigs;
+  callbacks?: Callbacks;
 }
 
 interface PiaCustomCarouselProps {
   items: Array<Item>;
   componentOverrides?: CarouselOverrides<Item>;
+  callbacks?: Callbacks;
 }
 
-function PiaCustomCarousel({ items, componentOverrides }: PiaCustomCarouselProps) {
+function PiaCustomCarousel({ items, componentOverrides, callbacks }: PiaCustomCarouselProps) {
   if (items.length === 0) {
     return null;
   }
@@ -54,16 +57,20 @@ function PiaCustomCarousel({ items, componentOverrides }: PiaCustomCarouselProps
       return null;
     }
 
+    /**
+     * Using props drilling as current implementation
+     * until Event Listeners approach has been released in UI Components library
+     */
+    const handleProductClick = () => {
+      if (callbacks?.onProductCardClick) {
+        callbacks.onProductCardClick(item);
+      } else if (item?.url) {
+        window.open(item.url, '_blank', 'noopener,noreferrer');
+      }
+    };
+
     return (
-      <ProductCard
-        product={item}
-        className='w-full h-full'
-        onProductClick={() => {
-          if (item?.url) {
-            window.open(item.url, '_blank', 'noopener,noreferrer');
-          }
-        }}
-      />
+      <ProductCard product={item} className='w-full h-full' onProductClick={handleProductClick} />
     );
   };
 
@@ -104,6 +111,7 @@ export default function CioPia(props: CioPiaProps) {
     cioClient,
     displayConfigs,
     componentOverrides,
+    callbacks,
     children,
   } = props;
   const { learnMoreUrl, showFeedback } = displayConfigs || {};
@@ -185,6 +193,7 @@ export default function CioPia(props: CioPiaProps) {
                   <PiaCustomCarousel
                     items={currentItems}
                     componentOverrides={componentOverrides?.carousel}
+                    callbacks={callbacks}
                   />
                 )}
                 {showFeedback && <Feedback />}

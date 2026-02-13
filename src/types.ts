@@ -32,10 +32,14 @@ export interface CioPiaProviderProps {
   cioClient?: Nullable<MockConstructorIOClient>;
 }
 
-export type CioPiaDisplayConfigs = {
+export type DisplayConfigs = {
   learnMoreUrl?: string;
   showFeedback?: boolean;
 };
+
+export interface Callbacks {
+  onProductCardClick?: (item: Item) => void;
+}
 
 /** Extends Product type to include PIA-specific fields */
 export interface Item extends Product, Record<string, any> {
@@ -63,8 +67,5 @@ export interface CioPiaRenderProps {
 export interface CioPiaComponentOverrides extends ComponentOverrideProps<CioPiaRenderProps> {
   carousel?: CarouselOverrides<Item>;
 }
-export type IncludeRenderProps<ComponentProps, ChildrenFunctionProps> = ComponentProps & {
-  children?: ((props: ChildrenFunctionProps) => ReactNode) | React.ReactNode;
-};
 
 export * from './hooks/mocks/types';

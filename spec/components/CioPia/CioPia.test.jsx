@@ -334,6 +334,90 @@ describe('CioPia Component', () => {
     });
   });
 
+  describe('Callbacks Tests', () => {
+    it('calls custom onProductCardClick callback when provided', () => {
+      mockUseCioPiaWithItems();
+      const mockOnProductCardClick = jest.fn();
+
+      render(<CioPia {...mockProps} callbacks={{ onProductCardClick: mockOnProductCardClick }} />);
+
+      // Find and click on a product card
+      const productCards = screen.getAllByRole('button');
+      // Filter to find actual product cards (they should have specific attributes)
+      const firstProductCard = productCards.find((card) => card.querySelector('.cio-product-card'));
+
+      if (firstProductCard) {
+        fireEvent.click(firstProductCard);
+        expect(mockOnProductCardClick).toHaveBeenCalledTimes(1);
+        expect(mockOnProductCardClick).toHaveBeenCalledWith(mockItems[0]);
+      }
+    });
+
+    it('uses default behavior (window.open) when onProductCardClick callback is not provided', () => {
+      mockUseCioPiaWithItems();
+      const windowOpenSpy = jest.spyOn(window, 'open').mockImplementation(() => null);
+
+      render(<CioPia {...mockProps} />);
+
+      const productCards = screen.getAllByRole('button');
+      const firstProductCard = productCards.find((card) => card.querySelector('.cio-product-card'));
+
+      if (firstProductCard) {
+        fireEvent.click(firstProductCard);
+        expect(windowOpenSpy).toHaveBeenCalledTimes(1);
+        expect(windowOpenSpy).toHaveBeenCalledWith(
+          mockItems[0].url,
+          '_blank',
+          'noopener,noreferrer',
+        );
+      }
+
+      windowOpenSpy.mockRestore();
+    });
+
+    it('does not call window.open when custom onProductCardClick is provided', () => {
+      mockUseCioPiaWithItems();
+      const mockOnProductCardClick = jest.fn();
+      const windowOpenSpy = jest.spyOn(window, 'open').mockImplementation(() => null);
+
+      render(<CioPia {...mockProps} callbacks={{ onProductCardClick: mockOnProductCardClick }} />);
+
+      const productCards = screen.getAllByRole('button');
+      const firstProductCard = productCards.find((card) => card.querySelector('.cio-product-card'));
+
+      if (firstProductCard) {
+        fireEvent.click(firstProductCard);
+        expect(mockOnProductCardClick).toHaveBeenCalledTimes(1);
+        expect(windowOpenSpy).not.toHaveBeenCalled();
+      }
+
+      windowOpenSpy.mockRestore();
+    });
+
+    it('passes the correct item to onProductCardClick callback', () => {
+      mockUseCioPiaWithItems();
+      const mockOnProductCardClick = jest.fn();
+
+      render(<CioPia {...mockProps} callbacks={{ onProductCardClick: mockOnProductCardClick }} />);
+
+      const productCards = screen.getAllByRole('button');
+      const productCardsWithClass = productCards.filter((card) =>
+        card.querySelector('.cio-product-card'),
+      );
+
+      if (productCardsWithClass.length >= 2) {
+        // Click first product
+        fireEvent.click(productCardsWithClass[0]);
+        expect(mockOnProductCardClick).toHaveBeenLastCalledWith(mockItems[0]);
+
+        // Click second product
+        fireEvent.click(productCardsWithClass[1]);
+        expect(mockOnProductCardClick).toHaveBeenLastCalledWith(mockItems[1]);
+        expect(mockOnProductCardClick).toHaveBeenCalledTimes(2);
+      }
+    });
+  });
+
   describe('Render Overrides Tests', () => {
     it('uses custom item renderer when componentOverrides.carousel.item is provided', () => {
       mockUseCioPiaWithItems();
