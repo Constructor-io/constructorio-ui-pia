@@ -1,8 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Nullable } from '@constructor-io/constructorio-client-javascript';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
-import { GetAnswerResultsResponse } from './mocks/types';
-import { Item } from '../types';
+import { Item, GetAnswerResultsResponse } from '../types';
 import { transformResultItem } from '../utils/transformers';
 
 export interface UseAnswerResultsProps {
@@ -39,7 +38,11 @@ const extractAndTransformItems = (data: Nullable<GetAnswerResultsResponse>): Arr
     return null;
   }
 
-  return results.map(transformResultItem).filter((item): item is Item => item !== null);
+  const transformedItems = results
+    .filter((result) => result?.data?.id && result?.value)
+    .map(transformResultItem) as Item[];
+
+  return transformedItems.length > 0 ? transformedItems : null;
 };
 
 const fetchAnswerResults = async ({

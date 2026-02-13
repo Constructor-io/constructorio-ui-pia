@@ -14,7 +14,6 @@ import Answer from '../Answer/Answer';
 import Feedback from '../Feedback/Feedback';
 import MockConstructorIOClient from '../../hooks/mocks/MockConstructorIOClient';
 import { DISCLAIMER_TEXT } from '../../constants';
-import { Question } from '../../hooks/mocks/types';
 import useCioPia from '../../hooks/useCioPia';
 import ErrorBlock from '../Error/ErrorBlock';
 import LoadingSkeleton from '../LoadingSkeleton/LoadingSkeleton';
@@ -23,6 +22,7 @@ import {
   CioPiaDisplayConfigs,
   CioPiaRenderProps,
   Item,
+  Question
 } from '../../types';
 
 export interface CioPiaProps

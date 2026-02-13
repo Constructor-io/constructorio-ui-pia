@@ -1,7 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { Nullable } from '@constructor-io/constructorio-client-javascript';
-import { ApiItem } from '../hooks/mocks/types';
-import { Item } from '../types';
+import { Item, ApiItem } from '../types';
 
 /**
  * Converts a raw ApiItem from the Get Answers API response into an Item object

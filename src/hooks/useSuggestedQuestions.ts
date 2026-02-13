@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Question, QuestionResponse } from './mocks/types';
+import { Question, QuestionResponse } from '../types';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 
 export interface UseSuggestedQuestionsProps {
