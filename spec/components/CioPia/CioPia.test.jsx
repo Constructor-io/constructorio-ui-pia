@@ -30,6 +30,8 @@ jest.mock('embla-carousel-react', () => {
   ]);
 });
 
+const DATA_CNSTRC_ITEM_ID_SELECTOR = '[data-cnstrc-item-id]';
+
 const mockProps = {
   apiKey: 'test-api-key',
   itemId: 'test-item-id',
@@ -339,12 +341,14 @@ describe('CioPia Component', () => {
       mockUseCioPiaWithItems();
       const mockOnProductCardClick = jest.fn();
 
-      render(<CioPia {...mockProps} callbacks={{ onProductCardClick: mockOnProductCardClick }} />);
+      const { container } = render(
+        <CioPia {...mockProps} callbacks={{ onProductCardClick: mockOnProductCardClick }} />,
+      );
 
-      // Find and click on a product card
-      const productCards = screen.getAllByRole('button');
-      // Filter to find actual product cards (they should have specific attributes)
-      const firstProductCard = productCards.find((card) => card.querySelector('.cio-product-card'));
+      // Find and click on a product card by data attribute
+      const productCards = container.querySelectorAll(DATA_CNSTRC_ITEM_ID_SELECTOR);
+      const firstProductCard = productCards[0];
+      expect(firstProductCard).toBeInTheDocument();
 
       if (firstProductCard) {
         fireEvent.click(firstProductCard);
@@ -357,10 +361,10 @@ describe('CioPia Component', () => {
       mockUseCioPiaWithItems();
       const windowOpenSpy = jest.spyOn(window, 'open').mockImplementation(() => null);
 
-      render(<CioPia {...mockProps} />);
+      const { container } = render(<CioPia {...mockProps} />);
 
-      const productCards = screen.getAllByRole('button');
-      const firstProductCard = productCards.find((card) => card.querySelector('.cio-product-card'));
+      const productCards = container.querySelectorAll(DATA_CNSTRC_ITEM_ID_SELECTOR);
+      const firstProductCard = productCards[0];
 
       if (firstProductCard) {
         fireEvent.click(firstProductCard);
@@ -380,10 +384,13 @@ describe('CioPia Component', () => {
       const mockOnProductCardClick = jest.fn();
       const windowOpenSpy = jest.spyOn(window, 'open').mockImplementation(() => null);
 
-      render(<CioPia {...mockProps} callbacks={{ onProductCardClick: mockOnProductCardClick }} />);
+      const { container } = render(
+        <CioPia {...mockProps} callbacks={{ onProductCardClick: mockOnProductCardClick }} />,
+      );
 
-      const productCards = screen.getAllByRole('button');
-      const firstProductCard = productCards.find((card) => card.querySelector('.cio-product-card'));
+      const productCards = container.querySelectorAll(DATA_CNSTRC_ITEM_ID_SELECTOR);
+      const firstProductCard = productCards[0];
+      expect(firstProductCard).toBeInTheDocument();
 
       if (firstProductCard) {
         fireEvent.click(firstProductCard);
@@ -398,21 +405,120 @@ describe('CioPia Component', () => {
       mockUseCioPiaWithItems();
       const mockOnProductCardClick = jest.fn();
 
-      render(<CioPia {...mockProps} callbacks={{ onProductCardClick: mockOnProductCardClick }} />);
-
-      const productCards = screen.getAllByRole('button');
-      const productCardsWithClass = productCards.filter((card) =>
-        card.querySelector('.cio-product-card'),
+      const { container } = render(
+        <CioPia {...mockProps} callbacks={{ onProductCardClick: mockOnProductCardClick }} />,
       );
 
-      if (productCardsWithClass.length >= 2) {
+      const productCards = container.querySelectorAll(DATA_CNSTRC_ITEM_ID_SELECTOR);
+
+      if (productCards.length >= 2) {
         // Click first product
-        fireEvent.click(productCardsWithClass[0]);
+        fireEvent.click(productCards[0]);
         expect(mockOnProductCardClick).toHaveBeenLastCalledWith(mockItems[0]);
 
         // Click second product
-        fireEvent.click(productCardsWithClass[1]);
+        fireEvent.click(productCards[1]);
         expect(mockOnProductCardClick).toHaveBeenLastCalledWith(mockItems[1]);
+        expect(mockOnProductCardClick).toHaveBeenCalledTimes(2);
+      }
+    });
+
+    it('maintains callback stability when callbacks prop reference does not change', () => {
+      mockUseCioPiaWithItems();
+      const mockOnProductCardClick = jest.fn();
+      const callbacks = { onProductCardClick: mockOnProductCardClick };
+
+      const { container, rerender } = render(<CioPia {...mockProps} callbacks={callbacks} />);
+
+      const productCards = container.querySelectorAll(DATA_CNSTRC_ITEM_ID_SELECTOR);
+      const firstProductCard = productCards[0];
+
+      if (firstProductCard) {
+        fireEvent.click(firstProductCard);
+        expect(mockOnProductCardClick).toHaveBeenCalledTimes(1);
+
+        // Rerender with same callbacks reference
+        rerender(<CioPia {...mockProps} callbacks={callbacks} />);
+
+        // Click again after rerender
+        fireEvent.click(firstProductCard);
+        expect(mockOnProductCardClick).toHaveBeenCalledTimes(2);
+      }
+    });
+
+    it('updates callback behavior when callbacks prop changes', () => {
+      mockUseCioPiaWithItems();
+      const firstCallback = jest.fn();
+      const secondCallback = jest.fn();
+
+      const { container, rerender } = render(
+        <CioPia {...mockProps} callbacks={{ onProductCardClick: firstCallback }} />,
+      );
+
+      const productCards = container.querySelectorAll(DATA_CNSTRC_ITEM_ID_SELECTOR);
+      const firstProductCard = productCards[0];
+
+      if (firstProductCard) {
+        // Click with first callback
+        fireEvent.click(firstProductCard);
+        expect(firstCallback).toHaveBeenCalledTimes(1);
+        expect(secondCallback).not.toHaveBeenCalled();
+
+        // Rerender with different callback
+        rerender(<CioPia {...mockProps} callbacks={{ onProductCardClick: secondCallback }} />);
+        const updatedProductCards = container.querySelectorAll(DATA_CNSTRC_ITEM_ID_SELECTOR);
+
+        // Click with second callback
+        fireEvent.click(updatedProductCards[0]);
+        expect(firstCallback).toHaveBeenCalledTimes(1); // Still 1
+        expect(secondCallback).toHaveBeenCalledTimes(1); // Now called
+      }
+    });
+
+    it('handles product card clicks correctly after items update', () => {
+      const firstItem = {
+        id: 'item-1',
+        name: 'Product 1',
+        url: 'https://example.com/product-1',
+        imageUrl: 'https://example.com/image1.jpg',
+        price: 89,
+      };
+
+      const secondItem = {
+        id: 'item-3',
+        name: 'Product 3',
+        url: 'https://example.com/product-3',
+        imageUrl: 'https://example.com/image3.jpg',
+        price: 149,
+      };
+
+      mockUseCioPiaWithItems([firstItem]);
+      const mockOnProductCardClick = jest.fn();
+
+      const { container, rerender } = render(
+        <CioPia {...mockProps} callbacks={{ onProductCardClick: mockOnProductCardClick }} />,
+      );
+
+      let productCards = container.querySelectorAll(DATA_CNSTRC_ITEM_ID_SELECTOR);
+      expect(productCards.length).toBe(1);
+
+      if (productCards[0]) {
+        fireEvent.click(productCards[0]);
+        expect(mockOnProductCardClick).toHaveBeenLastCalledWith(firstItem);
+      }
+
+      // Update items
+      mockUseCioPiaWithItems([secondItem]);
+      rerender(
+        <CioPia {...mockProps} callbacks={{ onProductCardClick: mockOnProductCardClick }} />,
+      );
+
+      productCards = container.querySelectorAll(DATA_CNSTRC_ITEM_ID_SELECTOR);
+      expect(productCards.length).toBe(1);
+
+      if (productCards[0]) {
+        fireEvent.click(productCards[0]);
+        expect(mockOnProductCardClick).toHaveBeenLastCalledWith(secondItem);
         expect(mockOnProductCardClick).toHaveBeenCalledTimes(2);
       }
     });

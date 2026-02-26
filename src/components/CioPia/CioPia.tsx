@@ -1,19 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Carousel,
-  CarouselItemRenderProps,
-  CarouselOverrides,
   IncludeComponentOverrides,
   IncludeRenderProps,
-  ProductCard,
   RenderPropsWrapper,
 } from '@constructor-io/constructorio-ui-components';
+import Disclaimer from './Disclaimer';
 import Input from '../Input/Input';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import Answer from '../Answer/Answer';
 import Feedback from '../Feedback/Feedback';
 import MockConstructorIOClient from '../../hooks/mocks/MockConstructorIOClient';
-import { DISCLAIMER_TEXT } from '../../constants';
 import useCioPia from '../../hooks/useCioPia';
 import ErrorBlock from '../Error/ErrorBlock';
 import LoadingSkeleton from '../LoadingSkeleton/LoadingSkeleton';
@@ -25,6 +21,7 @@ import {
   Item,
   Question,
 } from '../../types';
+import PiaCustomCarousel from './PiaCustomCarousel';
 
 export interface CioPiaProps
   extends
@@ -38,68 +35,6 @@ export interface CioPiaProps
   cioClient?: MockConstructorIOClient;
   displayConfigs?: DisplayConfigs;
   callbacks?: Callbacks;
-}
-
-interface PiaCustomCarouselProps {
-  items: Array<Item>;
-  componentOverrides?: CarouselOverrides<Item>;
-  callbacks?: Callbacks;
-}
-
-function PiaCustomCarousel({ items, componentOverrides, callbacks }: PiaCustomCarouselProps) {
-  if (items.length === 0) {
-    return null;
-  }
-
-  // Default item renderer with default click behavior
-  const defaultItemRenderer = ({ item }: CarouselItemRenderProps<Item>) => {
-    if (!item) {
-      return null;
-    }
-
-    /**
-     * Using props drilling as current implementation
-     * until Event Listeners approach has been released in UI Components library
-     */
-    const handleProductClick = () => {
-      if (callbacks?.onProductCardClick) {
-        callbacks.onProductCardClick(item);
-      } else if (item?.url) {
-        window.open(item.url, '_blank', 'noopener,noreferrer');
-      }
-    };
-
-    return (
-      <ProductCard product={item} className='w-full h-full' onProductClick={handleProductClick} />
-    );
-  };
-
-  // Merge user-provided overrides with default item renderer
-  const mergedOverrides: CarouselOverrides<Item> = {
-    ...componentOverrides,
-    item: componentOverrides?.item ?? {
-      reactNode: defaultItemRenderer,
-    },
-  };
-
-  return <Carousel items={items} componentOverrides={mergedOverrides} />;
-}
-
-function Disclaimer({ learnMoreUrl }: { learnMoreUrl?: string }) {
-  return (
-    <span className='cio-pia-disclaimer'>
-      {DISCLAIMER_TEXT}{' '}
-      {learnMoreUrl && (
-        <a
-          href={learnMoreUrl}
-          target='_blank'
-          rel='noopener noreferrer'
-          className='cio-pia-learn-more'>
-          <u>Learn More.</u>
-        </a>
-      )}
-    </span>
-  );
 }
 
 export default function CioPia(props: CioPiaProps) {
