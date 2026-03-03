@@ -10,6 +10,6 @@
 @import './components/CioPia/CioPiaStyles.css';
 
 .cio-pia,
-* {
+.cio-pia * {
   font-family: 'Inter', sans-serif;
 }

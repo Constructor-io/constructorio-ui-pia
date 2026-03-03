@@ -9,7 +9,7 @@ import { Item, ApiItem } from '../types';
 export function transformResultItem(resultItem: ApiItem): Nullable<Item> {
   const { value, matched_terms: matchedTerms, data, ...otherFields } = resultItem;
 
-  if (!data || !data.id || !value) {
+  if (!data || typeof data !== 'object' || !data.id || !value) {
     return null;
   }
 

@@ -39,8 +39,8 @@ const extractAndTransformItems = (data: Nullable<GetAnswerResultsResponse>): Arr
   }
 
   const transformedItems = results
-    .filter((result) => result?.data?.id && result?.value)
-    .map(transformResultItem) as Item[];
+    .map(transformResultItem)
+    .filter((item): item is Item => item !== null);
 
   return transformedItems.length > 0 ? transformedItems : null;
 };
@@ -87,6 +87,7 @@ export default function useAnswerResults({
         })
         .catch((err) => {
           setError(err instanceof Error ? err : new Error('Error fetching answer'));
+          setItems(null);
         })
         .finally(() => {
           setIsLoading(false);
