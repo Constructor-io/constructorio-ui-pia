@@ -32,7 +32,7 @@ export interface CioPiaProviderProps {
   cioClient?: Nullable<MockConstructorIOClient>;
 }
 
-export type DisplayConfigs = {
+export type CioPiaDisplayConfigs = {
   learnMoreUrl?: string;
   showFeedback?: boolean;
 };

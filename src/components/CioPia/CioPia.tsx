@@ -17,7 +17,7 @@ import {
   CioPiaRenderProps,
   CioPiaComponentOverrides,
   Callbacks,
-  DisplayConfigs,
+  CioPiaDisplayConfigs,
   Item,
   Question,
 } from '../../types';
@@ -33,7 +33,7 @@ export interface CioPiaProps
   threadId?: string;
   variationId?: string;
   cioClient?: MockConstructorIOClient;
-  displayConfigs?: DisplayConfigs;
+  displayConfigs?: CioPiaDisplayConfigs;
   callbacks?: Callbacks;
 }
 
