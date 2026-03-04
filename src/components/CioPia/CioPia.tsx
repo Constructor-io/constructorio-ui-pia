@@ -56,6 +56,7 @@ export default function CioPia(props: CioPiaProps) {
     variationId,
     cioClient,
   });
+  const { getAnswer } = answers;
 
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
   const [displayedQuestions, setDisplayedQuestions] = useState<Question[]>([]);
@@ -63,9 +64,9 @@ export default function CioPia(props: CioPiaProps) {
   const handleSubmitQuestion = useCallback(
     (question: string) => {
       setCurrentQuestion(question);
-      answers.getAnswer(question);
+      getAnswer(question);
     },
-    [answers.getAnswer],
+    [getAnswer],
   );
 
   useEffect(() => {
