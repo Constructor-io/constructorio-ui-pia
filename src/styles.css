@@ -9,7 +9,7 @@
 @import './components/LoadingSkeleton/LoadingSkeletonStyles.css';
 @import './components/CioPia/CioPiaStyles.css';
 
-.cio-pia,
-.cio-pia * {
+.cio-pia-container,
+.cio-pia-container * {
   font-family: 'Inter', sans-serif;
 }
