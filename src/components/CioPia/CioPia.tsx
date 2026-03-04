@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   IncludeComponentOverrides,
   IncludeRenderProps,
@@ -18,7 +18,6 @@ import {
   CioPiaComponentOverrides,
   Callbacks,
   CioPiaDisplayConfigs,
-  Item,
   Question,
 } from '../../types';
 import PiaCustomCarousel from './PiaCustomCarousel';
@@ -59,34 +58,26 @@ export default function CioPia(props: CioPiaProps) {
   });
 
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
-  const [currentAnswer, setCurrentAnswer] = useState<string>('');
-  const [currentItems, setCurrentItems] = useState<Array<Item> | null>(null);
   const [displayedQuestions, setDisplayedQuestions] = useState<Question[]>([]);
 
-  const handleSubmitQuestion = (question: string) => {
-    setCurrentQuestion(question);
-    answers.getAnswer(question);
-  };
+  const handleSubmitQuestion = useCallback(
+    (question: string) => {
+      setCurrentQuestion(question);
+      answers.getAnswer(question);
+    },
+    [answers.getAnswer],
+  );
 
   useEffect(() => {
     setDisplayedQuestions(suggestedQuestions.data);
   }, [suggestedQuestions.data]);
 
   useEffect(() => {
-    if (answers.data?.value) setCurrentAnswer(answers.data.value);
     if (answers.data?.follow_up_questions) setDisplayedQuestions(answers.data.follow_up_questions);
   }, [answers.data]);
 
-  useEffect(() => {
-    if (answers.items == null || answers.items.length === 0) {
-      setCurrentItems(null);
-    }
-
-    if (answers.items != null && answers.items.length > 0) {
-      setCurrentItems(answers.items);
-    }
-  }, [answers.items]);
-
+  const currentAnswer = answers.data?.value ?? '';
+  const currentItems = answers.items ?? null;
   const error = answers.error || suggestedQuestions.error;
   const isLoading = answers.isLoading || suggestedQuestions.isLoading;
 
