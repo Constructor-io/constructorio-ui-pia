@@ -39,7 +39,9 @@ export default function PiaCustomCarousel({
 
     const handleClick = (e: Event) => {
       const { product } = (e as CustomEvent).detail;
-      productClickHandler(product as Item);
+      if (product) {
+        productClickHandler(product as Item);
+      }
     };
 
     el.addEventListener(CIO_EVENTS.productCard.click, handleClick);

@@ -87,6 +87,7 @@ export default function useAnswerResults({
         })
         .catch((err) => {
           setError(err instanceof Error ? err : new Error('Error fetching answer'));
+          setAnswerResults(null);
           setItems(null);
         })
         .finally(() => {

@@ -530,7 +530,7 @@ describe('CioPia Component', () => {
       windowOpenSpy.mockRestore();
     });
 
-    it('does not throw error when event detail is missing product', () => {
+    it('does not call callback when event detail is missing product', () => {
       mockUseCioPiaWithItems();
       const mockOnProductCardClick = jest.fn();
 
@@ -545,7 +545,7 @@ describe('CioPia Component', () => {
       });
 
       expect(() => wrapper?.dispatchEvent(event)).not.toThrow();
-      expect(mockOnProductCardClick).toHaveBeenCalledWith(undefined);
+      expect(mockOnProductCardClick).not.toHaveBeenCalled();
     });
 
     it('does not attach event listener when carousel is not rendered', () => {
