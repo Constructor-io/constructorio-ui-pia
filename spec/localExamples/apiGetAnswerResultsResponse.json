@@ -1,0 +1,110 @@
+{
+  "qna_result_id": "sample-result-id",
+  "value": "Sample answer to the given question",
+  "thread_id": "sample-thread-id",
+  "item_results": {
+    "request": {
+      "num_results_per_page": 20,
+      "term": "",
+      "page": 1,
+      "section": "Products",
+      "sort_by": "relevance",
+      "sort_order": "descending",
+      "features": {
+        "query_items": true,
+        "a_a_test": true,
+        "auto_generated_refined_query_rules": true,
+        "manual_searchandizing": true,
+        "personalization": true,
+        "filter_items": true,
+        "use_reranker_service_for_search": false,
+        "use_reranker_service_for_browse": false,
+        "use_reranker_service_for_all": false,
+        "custom_autosuggest_ui": false,
+        "disable_test_only_global_rules_search": false,
+        "disable_test_only_global_rules_browse": false,
+        "use_enriched_attributes_as_fuzzy_searchable": false
+      },
+      "feature_variants": {
+        "query_items": "query_items_ctr_and_l2r",
+        "a_a_test": null,
+        "auto_generated_refined_query_rules": "default_rules",
+        "manual_searchandizing": null,
+        "personalization": "default_personalization",
+        "filter_items": "filter_items_w_atcs_and_purchases",
+        "use_reranker_service_for_search": null,
+        "use_reranker_service_for_browse": null,
+        "use_reranker_service_for_all": null,
+        "custom_autosuggest_ui": null,
+        "disable_test_only_global_rules_search": null,
+        "disable_test_only_global_rules_browse": null,
+        "use_enriched_attributes_as_fuzzy_searchable": null
+      }
+    },
+    "response": {
+      "results": [
+        {
+          "value": "Knit Button-Down (Black)",
+          "matched_terms": [],
+          "data": {
+            "id": "CSHRT00463-black",
+            "url": "no-url",
+            "price": 89,
+            "image_url": "https://constructorio-integrations.s3.amazonaws.com/tikus-threads/2022-06-29/WOVEN-CASUAL-SHIRT_BUTTON-DOWN-WOVEN-SHIRT_24746-BK627_40_category-outfitter.jpg",
+            "group_ids": ["1035", "2104", "1198"],
+            "description": "Comfort of a jersey tee in a modern button-down design.",
+            "variation_id": "24747-BK627-MXREG"
+          },
+          "variations": [
+            {
+              "data": {
+                "variation_id": "24747-BK627-MXREG"
+              },
+              "value": "Knit Button-Down (Black)"
+            },
+            {
+              "data": {
+                "variation_id": "24747-BK627-SXREG"
+              },
+              "value": "Knit Button-Down (Black)"
+            }
+          ],
+          "variations_map": null
+        },
+        {
+          "value": "Knit Button-Down (Green Pine Floral)",
+          "matched_terms": [],
+          "data": {
+            "id": "CSHRT00463-green pine floral",
+            "url": "no-url",
+            "price": 88,
+            "image_url": "https://constructorio-integrations.s3.amazonaws.com/tikus-threads/2022-06-29/WOVEN-CASUAL-SHIRT_BUTTON-DOWN-WOVEN-SHIRT_26992-MVH50_3_category.jpg",
+            "group_ids": ["1035", "2104", "1198"],
+            "description": "Comfort of a jersey tee in a modern button-down design.",
+            "variation_id": "26992-MVH50-SXREG"
+          },
+          "variations": [
+            {
+              "data": {
+                "variation_id": "26992-MVH50-SXREG"
+              },
+              "value": "Knit Button-Down (Green Pine Floral)"
+            }
+          ],
+          "variations_map": null
+        }
+      ]
+    }
+  },
+  "follow_up_questions": [
+    {
+      "value": "Sample follow-up question 1"
+    },
+    {
+      "value": "Sample follow-up question 2"
+    },
+    {
+      "value": "Sample follow-up question 3"
+    }
+  ]
+}

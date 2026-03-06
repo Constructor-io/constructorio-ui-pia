@@ -1,0 +1,52 @@
+[
+  {
+    "id": "CSHRT00463-black",
+    "name": "Knit Button-Down (Black)",
+    "matchedTerms": [],
+    "variationId": "24747-BK627-MXREG",
+    "description": "Comfort of a jersey tee in a modern button-down design.",
+    "url": "no-url",
+    "imageUrl": "https://constructorio-integrations.s3.amazonaws.com/tikus-threads/2022-06-29/WOVEN-CASUAL-SHIRT_BUTTON-DOWN-WOVEN-SHIRT_24746-BK627_40_category-outfitter.jpg",
+    "price": 89,
+    "data": {
+      "group_ids": ["1035", "2104", "1198"]
+    },
+    "variations": [
+      {
+        "data": {
+          "variation_id": "24747-BK627-MXREG"
+        },
+        "value": "Knit Button-Down (Black)"
+      },
+      {
+        "data": {
+          "variation_id": "24747-BK627-SXREG"
+        },
+        "value": "Knit Button-Down (Black)"
+      }
+    ],
+    "variations_map": null
+  },
+  {
+    "id": "CSHRT00463-green pine floral",
+    "name": "Knit Button-Down (Green Pine Floral)",
+    "matchedTerms": [],
+    "variationId": "26992-MVH50-SXREG",
+    "description": "Comfort of a jersey tee in a modern button-down design.",
+    "url": "no-url",
+    "imageUrl": "https://constructorio-integrations.s3.amazonaws.com/tikus-threads/2022-06-29/WOVEN-CASUAL-SHIRT_BUTTON-DOWN-WOVEN-SHIRT_26992-MVH50_3_category.jpg",
+    "price": 88,
+    "data": {
+      "group_ids": ["1035", "2104", "1198"]
+    },
+    "variations": [
+      {
+        "data": {
+          "variation_id": "26992-MVH50-SXREG"
+        },
+        "value": "Knit Button-Down (Green Pine Floral)"
+      }
+    ],
+    "variations_map": null
+  }
+]

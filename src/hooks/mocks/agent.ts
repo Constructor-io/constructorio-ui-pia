@@ -1,6 +1,5 @@
 import { ConstructorClientOptions } from '@constructor-io/constructorio-client-javascript';
 import {
-  AnswerResponse,
   AgentUrlProps,
   QuestionResponse,
   StreamEndEvent,
@@ -9,6 +8,7 @@ import {
   GetSuggestedQuestionsProps,
   GetAnswerResultsStreamProps,
   GetAnswerResultsProps,
+  GetAnswerResultsResponse,
 } from './types';
 
 // Create URL for PIA API
@@ -79,11 +79,15 @@ class MockAgent {
 
     try {
       const response = await fetch(url);
+
+      if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
+
       const data = await response.json();
 
       return data;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
+
       throw new Error(errorMessage);
     }
   }
@@ -94,7 +98,7 @@ class MockAgent {
     threadId,
     question,
     parameters = {},
-  }: GetAnswerResultsProps): Promise<AnswerResponse> {
+  }: GetAnswerResultsProps): Promise<GetAnswerResultsResponse> {
     if (!itemId) throw new Error('Item ID is required');
     if (!question) throw new Error('Question is required');
     if (!this.options.apiKey) throw new Error('API key is required');
@@ -110,11 +114,15 @@ class MockAgent {
 
     try {
       const response = await fetch(url);
+
+      if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
+
       const data = await response.json();
 
       return data;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
+
       throw new Error(errorMessage);
     }
   }

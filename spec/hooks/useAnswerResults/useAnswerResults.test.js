@@ -1,6 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
 import useAnswerResults from '../../../src/hooks/useAnswerResults';
 import { DEMO_QUESTION } from '../../../src/constants';
+import { testGetAnswersApiResponse, testTransformedItems } from '../../localExamples';
 
 describe('Testing Hook: useAnswerResults', () => {
   const mockClient = {
@@ -9,11 +10,14 @@ describe('Testing Hook: useAnswerResults', () => {
     },
   };
 
+  // Use mock response without item_results by default
   const mockResponse = {
-    value: 'This is a mock answer',
-    alternative: null,
-    follow_up_questions: null,
+    ...testGetAnswersApiResponse,
+    item_results: undefined,
   };
+
+  // Mock response with item_results
+  const mockResponseWithItemResults = testGetAnswersApiResponse;
 
   const testProps = {
     itemId: 'test-item-id',
@@ -32,6 +36,7 @@ describe('Testing Hook: useAnswerResults', () => {
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toBe(null);
+    expect(result.current.items).toBe(null);
     expect(result.current.error).toBe(null);
     expect(mockClient.agent.getAnswerResults).not.toHaveBeenCalled();
   });
@@ -45,6 +50,7 @@ describe('Testing Hook: useAnswerResults', () => {
 
     expect(result.current.isLoading).toBe(true);
     expect(result.current.data).toBe(null);
+    expect(result.current.items).toBe(null);
     expect(result.current.error).toBe(null);
 
     // Wait for the async operation to complete
@@ -63,6 +69,33 @@ describe('Testing Hook: useAnswerResults', () => {
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toEqual(mockResponse);
     expect(result.current.error).toBe(null);
+    expect(result.current.data.item_results).toBeUndefined();
+  });
+
+  it('fetches and transforms answer results with item_results when available', async () => {
+    mockClient.agent.getAnswerResults.mockResolvedValue(mockResponseWithItemResults);
+
+    const { result } = renderHook(() => useAnswerResults(testProps));
+    act(() => {
+      result.current.getAnswer(testQuestion);
+    });
+
+    expect(result.current.isLoading).toBe(true);
+    expect(result.current.data).toBe(null);
+    expect(result.current.items).toBe(null);
+    expect(result.current.error).toBe(null);
+
+    // Wait for the async operation to complete
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.data).toEqual(mockResponseWithItemResults);
+    expect(result.current.error).toBe(null);
+    expect(result.current.items).toEqual(testTransformedItems);
   });
 
   it('handles errors when fetching answer results', async () => {
