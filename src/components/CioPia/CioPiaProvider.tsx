@@ -1,10 +1,11 @@
 import React from 'react';
-import { PiaContextValue, CioPiaProviderProps, IncludeRenderProps } from '../../types';
+import { IncludeRenderProps } from '@constructor-io/constructorio-ui-components';
+import { PiaContextValue, CioPiaProviderProps } from '../../types';
 import { PiaContext } from '../../hooks/useCioPiaContext';
 import useCioPiaProvider from '../../hooks/useCioPiaProvider';
 
 export default function CioPiaProvider(
-  props: IncludeRenderProps<CioPiaProviderProps, PiaContextValue>,
+  props: CioPiaProviderProps & IncludeRenderProps<PiaContextValue>,
 ) {
   const { children, ...rest } = props;
   const contextValue = useCioPiaProvider(rest);

@@ -1,6 +1,6 @@
 import React from 'react';
 import SuggestedQuestion from '../SuggestedQuestion/SuggestedQuestion';
-import { Question } from '../../hooks/mocks/types';
+import { Question } from '../../types';
 
 interface SuggestedQuestionsContainerProps {
   questions: Question[];

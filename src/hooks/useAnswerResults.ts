@@ -1,7 +1,8 @@
 import { useCallback, useState } from 'react';
 import { Nullable } from '@constructor-io/constructorio-client-javascript';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
-import { AnswerResponse } from './mocks/types';
+import { Item, GetAnswerResultsResponse } from '../types';
+import { transformResultItem } from '../utils/transformers';
 
 export interface UseAnswerResultsProps {
   itemId: string;
@@ -12,7 +13,8 @@ export interface UseAnswerResultsProps {
 }
 
 export interface UseAnswerResultsReturn {
-  data: Nullable<AnswerResponse>;
+  data: Nullable<GetAnswerResultsResponse>;
+  items: Array<Item> | null;
   isLoading: boolean;
   error: Error | null;
   getAnswer: (question: string) => void;
@@ -26,6 +28,23 @@ interface FetchAnswerResultsParams {
   threadId?: string;
 }
 
+const extractAndTransformItems = (data: Nullable<GetAnswerResultsResponse>): Array<Item> | null => {
+  if (!data?.item_results?.response?.results) {
+    return null;
+  }
+
+  const { results } = data.item_results.response;
+  if (!Array.isArray(results) || results.length === 0) {
+    return null;
+  }
+
+  const transformedItems = results
+    .map(transformResultItem)
+    .filter((item): item is Item => item !== null);
+
+  return transformedItems.length > 0 ? transformedItems : null;
+};
+
 const fetchAnswerResults = async ({
   client,
   itemId,
@@ -33,7 +52,7 @@ const fetchAnswerResults = async ({
   variationId,
   threadId,
 }: FetchAnswerResultsParams) => {
-  const response: AnswerResponse = await client.agent.getAnswerResults({
+  const response: GetAnswerResultsResponse = await client.agent.getAnswerResults({
     itemId,
     variationId,
     threadId,
@@ -48,7 +67,8 @@ export default function useAnswerResults({
   threadId,
   cioClient,
 }: UseAnswerResultsProps): UseAnswerResultsReturn {
-  const [answerResults, setAnswerResults] = useState<AnswerResponse | null>(null);
+  const [answerResults, setAnswerResults] = useState<GetAnswerResultsResponse | null>(null);
+  const [items, setItems] = useState<Array<Item> | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
@@ -62,10 +82,13 @@ export default function useAnswerResults({
       fetchAnswerResults({ client: cioClient, itemId, question, variationId, threadId })
         .then((fetchedAnswerResults) => {
           setAnswerResults(fetchedAnswerResults);
+          setItems(extractAndTransformItems(fetchedAnswerResults));
           setError(null);
         })
         .catch((err) => {
           setError(err instanceof Error ? err : new Error('Error fetching answer'));
+          setAnswerResults(null);
+          setItems(null);
         })
         .finally(() => {
           setIsLoading(false);
@@ -76,6 +99,7 @@ export default function useAnswerResults({
 
   return {
     data: answerResults,
+    items,
     isLoading,
     error,
     getAnswer: fetchResult,

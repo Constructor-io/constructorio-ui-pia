@@ -1,0 +1,28 @@
+{
+  "value": "Knit Button-Down (Black)",
+  "matched_terms": [],
+  "data": {
+    "id": "CSHRT00463-black",
+    "url": "no-url",
+    "price": 89,
+    "image_url": "https://constructorio-integrations.s3.amazonaws.com/tikus-threads/2022-06-29/WOVEN-CASUAL-SHIRT_BUTTON-DOWN-WOVEN-SHIRT_24746-BK627_40_category-outfitter.jpg",
+    "group_ids": ["1035", "2104", "1198"],
+    "description": "Comfort of a jersey tee in a modern button-down design.",
+    "variation_id": "24747-BK627-MXREG"
+  },
+  "variations": [
+    {
+      "data": {
+        "variation_id": "24747-BK627-MXREG"
+      },
+      "value": "Knit Button-Down (Black)"
+    },
+    {
+      "data": {
+        "variation_id": "24747-BK627-SXREG"
+      },
+      "value": "Knit Button-Down (Black)"
+    }
+  ],
+  "variations_map": null
+}

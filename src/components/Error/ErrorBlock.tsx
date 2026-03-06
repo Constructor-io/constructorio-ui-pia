@@ -29,7 +29,7 @@ function RetryIcon() {
 
 function ErrorBlock({ message, onRetry = undefined }: ErrorBlockProps) {
   return (
-    <div className='cio-pia-error-block-container'>
+    <div className='cio-pia-error-block-container' data-testid='error-block'>
       <div
         className='cio-pia-error-block-warning-icon-container'
         data-testid='error-block-warning-icon'>

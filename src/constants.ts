@@ -2,6 +2,8 @@
 export const DEMO_API_KEY = 'key_sp4ueBYbI1aV0wl2';
 export const DEMO_ITEM_ID = '244470';
 export const DEMO_QUESTION = 'What type of rug pad material is best for area rugs?';
+export const DEMO_QUESTION_ALTERNATIVE_PRODUCTS =
+  'What alternative products are available for this item?';
 export const MOCK_QUESTIONS = [
   { value: 'Is this bunk board suitable for a platform bed?' },
   { value: 'What are the benefits of using a bunk board with a platform bed?' },
