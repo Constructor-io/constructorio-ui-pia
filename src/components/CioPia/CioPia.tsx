@@ -101,7 +101,7 @@ export default function CioPia(props: CioPiaProps) {
     <div className='cio-pia-container' data-testid='cio-pia-container'>
       <RenderPropsWrapper props={renderProps} override={children || componentOverrides?.reactNode}>
         <p className='cio-pia-title' data-testid='cio-pia-title'>
-          {translate('title', translations)}
+          {translate('Any questions about this product?', translations)}
         </p>
         <Input onSubmit={handleSubmitQuestion} value={currentQuestion} translations={translations} />
 

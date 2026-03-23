@@ -37,13 +37,17 @@ export type CioPiaDisplayConfigs = {
   showFeedback?: boolean;
 };
 
+/**
+ * Translations type for internationalizing UI strings.
+ * All keys are optional - any non-provided translation will fallback to English default.
+ */
 export type Translations = {
-  title?: string;
-  inputPlaceholder?: string;
-  sendButtonText?: string;
-  disclaimerText?: string;
-  feedbackText?: string;
-  learnMoreText?: string;
+  'Any questions about this product?'?: string;
+  'Ask anything'?: string;
+  Send?: string;
+  'AI-generated answers aim to help, but they may occasionally miss details or be inaccurate. Double-check important information before purchasing.'?: string;
+  'Is this answer useful?'?: string;
+  'Learn More.'?: string;
 };
 
 export interface Callbacks {

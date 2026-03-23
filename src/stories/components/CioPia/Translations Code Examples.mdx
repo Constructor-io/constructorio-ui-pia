@@ -1,0 +1,96 @@
+import { Meta, Canvas } from '@storybook/blocks';
+import * as TranslationsStories from './CioPia.translations.stories';
+
+<Meta of={TranslationsStories} />
+
+# Translations (i18n)
+
+The translations feature allows you to customize all UI text strings in the PIA component to support internationalization (i18n).
+All translation keys are optional - any non-provided translation will fallback to English defaults.
+
+> **Important Note:** Translations only apply to hardcoded UI strings within the library (e.g., "Any questions about this product?", "Ask anything", "Send", etc.).
+> They do **not** translate dynamic content from the API response, such as:
+>
+> - Suggested questions
+> - AI-generated answers
+> - Product names, descriptions, and other catalog data
+>
+> API response content should be translated on your backend or through Constructor.io's dashboard configuration.
+
+## Available Translation Keys
+
+All keys are optional. Here are the translatable strings:
+
+```typescript
+{
+  // Title
+  "Any questions about this product?": "...",
+
+  // Input
+  "Ask anything": "...",
+
+  // Send button
+  "Send": "...",
+
+  // Disclaimer
+  "AI-generated answers aim to help, but they may occasionally miss details or be inaccurate. Double-check important information before purchasing.": "...",
+
+  // Feedback
+  "Is this answer useful?": "...",
+
+  // Learn more link
+  "Learn More.": "..."
+}
+```
+
+## Spanish Translation Example
+
+<Canvas of={TranslationsStories.AllCustomText} />
+
+## Basic Usage
+
+```jsx
+import { CioPia } from '@constructor-io/constructorio-ui-pia';
+import '@constructor-io/constructorio-ui-pia/styles.css';
+
+const DEMO_API_KEY = 'key_sp4ueBYbI1aV0wl2';
+const DEMO_ITEM_ID = '244470';
+
+export default function MyComponent() {
+  return (
+    <CioPia
+      apiKey={DEMO_API_KEY}
+      itemId={DEMO_ITEM_ID}
+      displayConfigs={{
+        showFeedback: true,
+        learnMoreUrl: 'https://constructor.io/learn-more',
+      }}
+      translations={{
+        'Any questions about this product?': '¿Alguna pregunta sobre este producto?',
+        'Ask anything': 'Pregunta lo que quieras',
+        Send: 'Enviar',
+        'AI-generated answers aim to help, but they may occasionally miss details or be inaccurate. Double-check important information before purchasing.':
+          'Las respuestas de IA pueden no ser siempre precisas.',
+        'Is this answer useful?': '¿Es útil esta respuesta?',
+        'Learn More.': 'Más información.',
+      }}
+    />
+  );
+}
+```
+
+## Partial Translations
+
+You can override only specific strings. Any key not provided will use the English default:
+
+```jsx
+<CioPia
+  apiKey={DEMO_API_KEY}
+  itemId={DEMO_ITEM_ID}
+  translations={{
+    'Any questions about this product?': 'Got a question? Ask our AI assistant!',
+  }}
+/>
+```
+
+<Canvas of={TranslationsStories.CustomTitle} />

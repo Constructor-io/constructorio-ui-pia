@@ -1,6 +1,7 @@
 import React from 'react';
 import { Translations } from '../../types';
 import { translate } from '../../utils/translate';
+import { DISCLAIMER_TEXT } from '../../constants';
 
 export default function Disclaimer({
   learnMoreUrl,
@@ -11,14 +12,14 @@ export default function Disclaimer({
 }) {
   return (
     <span className='cio-pia-disclaimer'>
-      {translate('disclaimerText', translations)}{' '}
+      {translate(DISCLAIMER_TEXT, translations)}{' '}
       {learnMoreUrl && (
         <a
           href={learnMoreUrl}
           target='_blank'
           rel='noopener noreferrer'
           className='cio-pia-learn-more'>
-          <u>{translate('learnMoreText', translations)}</u>
+          <u>{translate('Learn More.', translations)}</u>
         </a>
       )}
     </span>

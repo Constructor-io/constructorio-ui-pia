@@ -23,12 +23,7 @@ function SendIcon() {
   );
 }
 
-function Input({
-  value: providedValue,
-  disabled = false,
-  onSubmit,
-  translations,
-}: InputProps) {
+function Input({ value: providedValue, placeholder, disabled = false, onSubmit, translations }: InputProps) {
   const [value, setValue] = useState(providedValue || '');
 
   useEffect(() => {
@@ -49,6 +44,12 @@ function Input({
     }
   };
 
+  // Priority: translations > placeholder prop > default
+  const resolvedPlaceholder =
+    translations?.['Ask anything'] !== undefined
+      ? translate('Ask anything', translations)
+      : (placeholder ?? translate('Ask anything'));
+
   return (
     <div className='cio-pia-input-container'>
       <input
@@ -56,7 +57,7 @@ function Input({
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleSubmitOnEnter}
-        placeholder={translate('inputPlaceholder', translations)}
+        placeholder={resolvedPlaceholder}
         disabled={disabled}
         className='cio-pia-input'
       />
@@ -65,7 +66,7 @@ function Input({
         onClick={handleSubmit}
         className='cio-pia-send-button'
         disabled={disabled}>
-        {translate('sendButtonText', translations)}
+        {translate('Send', translations)}
         <SendIcon />
       </button>
     </div>

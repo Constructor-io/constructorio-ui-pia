@@ -56,7 +56,7 @@ export default function Feedback({ translations }: { translations?: Translations
 
   return (
     <div className='cio-pia-feedback-container'>
-      <p className='cio-pia-feedback-text'>{translate('feedbackText', translations)}</p>
+      <p className='cio-pia-feedback-text'>{translate('Is this answer useful?', translations)}</p>
       <button
         type='button'
         className='cio-pia-feedback-button'
