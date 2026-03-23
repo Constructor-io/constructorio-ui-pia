@@ -18,8 +18,10 @@ import {
   CioPiaComponentOverrides,
   Callbacks,
   CioPiaDisplayConfigs,
+  Translations,
   Question,
 } from '../../types';
+import { translate } from '../../utils/translate';
 import PiaCustomCarousel from './PiaCustomCarousel';
 
 export interface CioPiaProps
@@ -34,6 +36,7 @@ export interface CioPiaProps
   cioClient?: MockConstructorIOClient;
   displayConfigs?: CioPiaDisplayConfigs;
   callbacks?: Callbacks;
+  translations?: Translations;
 }
 
 export default function CioPia(props: CioPiaProps) {
@@ -47,6 +50,7 @@ export default function CioPia(props: CioPiaProps) {
     componentOverrides,
     callbacks,
     children,
+    translations,
   } = props;
   const { learnMoreUrl, showFeedback } = displayConfigs || {};
   const { suggestedQuestions, answers } = useCioPia({
@@ -97,9 +101,9 @@ export default function CioPia(props: CioPiaProps) {
     <div className='cio-pia-container' data-testid='cio-pia-container'>
       <RenderPropsWrapper props={renderProps} override={children || componentOverrides?.reactNode}>
         <p className='cio-pia-title' data-testid='cio-pia-title'>
-          Any questions about this product?
+          {translate('title', translations)}
         </p>
-        <Input onSubmit={handleSubmitQuestion} value={currentQuestion} />
+        <Input onSubmit={handleSubmitQuestion} value={currentQuestion} translations={translations} />
 
         {isLoading && <LoadingSkeleton />}
 
@@ -123,8 +127,8 @@ export default function CioPia(props: CioPiaProps) {
                     callbacks={callbacks}
                   />
                 )}
-                {showFeedback && <Feedback />}
-                <Disclaimer learnMoreUrl={learnMoreUrl} />
+                {showFeedback && <Feedback translations={translations} />}
+                <Disclaimer learnMoreUrl={learnMoreUrl} translations={translations} />
               </div>
             )}
 

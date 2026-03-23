@@ -1,17 +1,24 @@
 import React from 'react';
-import { DISCLAIMER_TEXT } from '../../constants';
+import { Translations } from '../../types';
+import { translate } from '../../utils/translate';
 
-export default function Disclaimer({ learnMoreUrl }: { learnMoreUrl?: string }) {
+export default function Disclaimer({
+  learnMoreUrl,
+  translations,
+}: {
+  learnMoreUrl?: string;
+  translations?: Translations;
+}) {
   return (
     <span className='cio-pia-disclaimer'>
-      {DISCLAIMER_TEXT}{' '}
+      {translate('disclaimerText', translations)}{' '}
       {learnMoreUrl && (
         <a
           href={learnMoreUrl}
           target='_blank'
           rel='noopener noreferrer'
           className='cio-pia-learn-more'>
-          <u>Learn More.</u>
+          <u>{translate('learnMoreText', translations)}</u>
         </a>
       )}
     </span>

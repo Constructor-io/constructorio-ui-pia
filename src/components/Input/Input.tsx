@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { Translations } from '../../types';
+import { translate } from '../../utils/translate';
 
 interface InputProps {
   value?: string;
-  placeholder?: string;
   disabled?: boolean;
   onSubmit: (value: string) => void;
+  translations?: Translations;
 }
 
 function SendIcon() {
@@ -23,9 +25,9 @@ function SendIcon() {
 
 function Input({
   value: providedValue,
-  placeholder = 'Ask anything',
   disabled = false,
   onSubmit,
+  translations,
 }: InputProps) {
   const [value, setValue] = useState(providedValue || '');
 
@@ -54,7 +56,7 @@ function Input({
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleSubmitOnEnter}
-        placeholder={placeholder}
+        placeholder={translate('inputPlaceholder', translations)}
         disabled={disabled}
         className='cio-pia-input'
       />
@@ -63,7 +65,7 @@ function Input({
         onClick={handleSubmit}
         className='cio-pia-send-button'
         disabled={disabled}>
-        Send
+        {translate('sendButtonText', translations)}
         <SendIcon />
       </button>
     </div>

@@ -37,6 +37,15 @@ export type CioPiaDisplayConfigs = {
   showFeedback?: boolean;
 };
 
+export type Translations = {
+  title?: string;
+  inputPlaceholder?: string;
+  sendButtonText?: string;
+  disclaimerText?: string;
+  feedbackText?: string;
+  learnMoreText?: string;
+};
+
 export interface Callbacks {
   onProductCardClick?: (item: Item) => void;
 }
