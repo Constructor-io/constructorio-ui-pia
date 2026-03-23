@@ -4,6 +4,7 @@ import { translate } from '../../utils/translate';
 
 interface InputProps {
   value?: string;
+  placeholder?: string;
   disabled?: boolean;
   onSubmit: (value: string) => void;
   translations?: Translations;
@@ -25,6 +26,7 @@ function SendIcon() {
 
 function Input({
   value: providedValue,
+  placeholder = 'Ask anything',
   disabled = false,
   onSubmit,
   translations,
@@ -56,7 +58,7 @@ function Input({
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleSubmitOnEnter}
-        placeholder={translate('inputPlaceholder', translations)}
+        placeholder={translate('inputPlaceholder', translations) || placeholder}
         disabled={disabled}
         className='cio-pia-input'
       />
