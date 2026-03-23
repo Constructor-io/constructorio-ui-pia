@@ -5,5 +5,28 @@
   "dictionaries": ["en_US", "html", "css"],
   "ignorePaths": ["lib", "docs"],
   "flagWords": [],
-  "words": ["constructorio", "cnstrc", "Autodocs", "autodocs", "Embla"]
+  "words": [
+    "constructorio",
+    "cnstrc",
+    "Autodocs",
+    "autodocs",
+    "Embla",
+    "Alguna",
+    "Enviar",
+    "Pregunta",
+    "Título",
+    "Útil",
+    "esta",
+    "información",
+    "precisas",
+    "producto",
+    "pueden",
+    "pregunta",
+    "quieras",
+    "respuesta",
+    "respuestas",
+    "siempre",
+    "sobre",
+    "útil"
+  ]
 }

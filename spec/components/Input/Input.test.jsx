@@ -15,11 +15,32 @@ describe('Input Component', () => {
     expect(getByPlaceholderText('Ask anything')).toBeInTheDocument();
   });
 
-  it('renders with custom placeholder', () => {
+  it('renders with custom placeholder via translations', () => {
+    const { getByPlaceholderText } = render(
+      <Input
+        onSubmit={mockSubmit}
+        translations={{ 'Ask anything': 'Custom placeholder' }}
+      />,
+    );
+    expect(getByPlaceholderText('Custom placeholder')).toBeInTheDocument();
+  });
+
+  it('renders with placeholder prop when translations not provided', () => {
     const { getByPlaceholderText } = render(
       <Input onSubmit={mockSubmit} placeholder='Custom placeholder' />,
     );
     expect(getByPlaceholderText('Custom placeholder')).toBeInTheDocument();
+  });
+
+  it('prefers translations over placeholder prop', () => {
+    const { getByPlaceholderText } = render(
+      <Input
+        onSubmit={mockSubmit}
+        placeholder='From prop'
+        translations={{ 'Ask anything': 'From translations' }}
+      />,
+    );
+    expect(getByPlaceholderText('From translations')).toBeInTheDocument();
   });
 
   it('handles text input', () => {
