@@ -5,7 +5,7 @@ import { translate } from '../../utils/translate';
 interface InputProps {
   value?: string;
   disabled?: boolean;
-  // @deprecated Use translations
+  /** @deprecated Use the `translations` prop instead. */
   placeholder?: string;
   onSubmit: (value: string) => void;
   translations?: Translations;
