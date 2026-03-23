@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Translations } from '../../types';
+import { translate } from '../../utils/translate';
 
 enum FeedbackType {
   UP = 'up',
@@ -45,8 +47,7 @@ function ThumbsDownIcon({ isSelected }: { isSelected: boolean }) {
   );
 }
 
-export default function Feedback() {
-  const feedbackText = 'Is this answer useful?';
+export default function Feedback({ translations }: { translations?: Translations }) {
   const [feedback, setFeedback] = useState<FeedbackType | null>(null);
 
   const handleFeedback = (type: FeedbackType) => {
@@ -55,7 +56,7 @@ export default function Feedback() {
 
   return (
     <div className='cio-pia-feedback-container'>
-      <p className='cio-pia-feedback-text'>{feedbackText}</p>
+      <p className='cio-pia-feedback-text'>{translate('feedbackText', translations)}</p>
       <button
         type='button'
         className='cio-pia-feedback-button'
