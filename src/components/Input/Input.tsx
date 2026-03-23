@@ -26,7 +26,6 @@ function SendIcon() {
 
 function Input({
   value: providedValue,
-  placeholder = 'Ask anything',
   disabled = false,
   onSubmit,
   translations,
@@ -58,7 +57,7 @@ function Input({
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleSubmitOnEnter}
-        placeholder={translate('inputPlaceholder', translations) || placeholder}
+        placeholder={translate('inputPlaceholder', translations)}
         disabled={disabled}
         className='cio-pia-input'
       />
