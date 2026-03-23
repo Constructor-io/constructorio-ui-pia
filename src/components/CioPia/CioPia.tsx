@@ -103,7 +103,11 @@ export default function CioPia(props: CioPiaProps) {
         <p className='cio-pia-title' data-testid='cio-pia-title'>
           {translate('Any questions about this product?', translations)}
         </p>
-        <Input onSubmit={handleSubmitQuestion} value={currentQuestion} translations={translations} />
+        <Input
+          onSubmit={handleSubmitQuestion}
+          value={currentQuestion}
+          translations={translations}
+        />
 
         {isLoading && <LoadingSkeleton />}
 

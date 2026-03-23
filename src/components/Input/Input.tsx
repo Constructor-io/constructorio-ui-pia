@@ -5,6 +5,8 @@ import { translate } from '../../utils/translate';
 interface InputProps {
   value?: string;
   disabled?: boolean;
+  // @deprecated Use translations
+  placeholder?: string;
   onSubmit: (value: string) => void;
   translations?: Translations;
 }
@@ -23,7 +25,13 @@ function SendIcon() {
   );
 }
 
-function Input({ value: providedValue, placeholder, disabled = false, onSubmit, translations }: InputProps) {
+function Input({
+  value: providedValue,
+  placeholder,
+  disabled = false,
+  onSubmit,
+  translations,
+}: InputProps) {
   const [value, setValue] = useState(providedValue || '');
 
   useEffect(() => {
