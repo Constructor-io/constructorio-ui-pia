@@ -33,12 +33,12 @@ export const AllCustomText: Story = {
       learnMoreUrl: 'https://constructor.io/learn-more',
     },
     translations: {
-      title: 'Alguna pregunta sobre este producto?',
+      title: '¿Alguna pregunta sobre este producto?',
       inputPlaceholder: 'Pregunta lo que quieras',
       sendButtonText: 'Enviar',
       disclaimerText: 'Las respuestas de IA pueden no ser siempre precisas.',
-      feedbackText: 'Es util esta respuesta?',
-      learnMoreText: 'Mas informacion.',
+      feedbackText: '¿Es útil esta respuesta?',
+      learnMoreText: 'Más información.',
     },
   },
 };

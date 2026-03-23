@@ -11,6 +11,6 @@ const defaultTranslations: Required<Translations> = {
 };
 
 export const translate = (key: keyof Translations, translations?: Translations): string => {
-  if (translations?.[key] !== undefined) return translations[key] as string;
+  if (translations?.[key] !== undefined) return translations[key]!;
   return defaultTranslations[key];
 };
