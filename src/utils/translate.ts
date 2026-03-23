@@ -10,7 +10,7 @@ const defaultTranslations: Required<Translations> = {
   learnMoreText: 'Learn More.',
 };
 
-export const translate = (key: keyof Translations, translations?: Translations) => {
-  if (translations?.[key] !== undefined) return translations[key];
+export const translate = (key: keyof Translations, translations?: Translations): string => {
+  if (translations?.[key] !== undefined) return translations[key] as string;
   return defaultTranslations[key];
 };
