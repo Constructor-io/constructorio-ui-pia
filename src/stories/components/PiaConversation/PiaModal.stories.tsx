@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import React from 'react';
 import PiaModal from '../../../components/PiaConversation/PiaModal';
 import PiaConversation from '../../../components/PiaConversation/PiaConversation';
 import { MOCK_QUESTIONS } from '../../../constants';
@@ -39,8 +38,6 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    currentAnswer: '',
-    currentItems: null,
     displayedQuestions: mockQuestions,
     handleSubmitQuestion: (question: string) => console.log('Submit:', question),
     isLoading: false,
@@ -61,8 +58,6 @@ export const Default: Story = {
 
 export const WithAnswer: Story = {
   args: {
-    currentAnswer: '',
-    currentItems: null,
     displayedQuestions: mockQuestions,
     handleSubmitQuestion: (question: string) => console.log('Submit:', question),
     isLoading: false,
@@ -83,12 +78,9 @@ export const WithAnswer: Story = {
 
 export const WithFeedback: Story = {
   args: {
-    currentAnswer: '',
-    currentItems: null,
     displayedQuestions: mockQuestions,
     handleSubmitQuestion: (question: string) => console.log('Submit:', question),
     isLoading: false,
-    showFeedback: true,
   },
   render: (args) => (
     <PiaModal {...args}>
@@ -107,12 +99,9 @@ export const WithFeedback: Story = {
 
 export const WithLearnMore: Story = {
   args: {
-    currentAnswer: '',
-    currentItems: null,
     displayedQuestions: mockQuestions,
     handleSubmitQuestion: (question: string) => console.log('Submit:', question),
     isLoading: false,
-    learnMoreUrl: 'https://constructor.io/learn-more',
   },
   render: (args) => (
     <PiaModal {...args}>
@@ -131,12 +120,9 @@ export const WithLearnMore: Story = {
 
 export const MultipleConversations: Story = {
   args: {
-    currentAnswer: '',
-    currentItems: null,
     displayedQuestions: mockQuestions,
     handleSubmitQuestion: (question: string) => console.log('Submit:', question),
     isLoading: false,
-    showFeedback: true,
   },
   render: (args) => (
     <PiaModal {...args}>

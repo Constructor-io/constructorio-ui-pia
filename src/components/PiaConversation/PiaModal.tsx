@@ -1,12 +1,8 @@
 import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
 import Input from '../Input/Input';
-import Answer from '../Answer/Answer';
-import Feedback from '../Feedback/Feedback';
-import Disclaimer from '../CioPia/Disclaimer';
-import PiaCustomCarousel from '../CioPia/PiaCustomCarousel';
 import { translate } from '../../utils/translate';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
-import { Translations, Question, Item, Callbacks, CioPiaComponentOverrides } from '../../types';
+import { Translations, Question, CioPiaComponentOverrides } from '../../types';
 
 function CloseIcon() {
   return (
@@ -20,28 +16,18 @@ function CloseIcon() {
 }
 
 interface PiaModalProps {
-  currentAnswer: string;
-  currentItems: Array<Item> | null;
   displayedQuestions: Question[];
   handleSubmitQuestion: (question: string) => void;
   isLoading: boolean;
-  showFeedback?: boolean;
-  learnMoreUrl?: string;
   componentOverrides?: CioPiaComponentOverrides;
-  callbacks?: Callbacks;
   translations?: Translations;
 }
 
 export default function PiaModal({
-  currentAnswer,
-  currentItems,
   displayedQuestions,
   handleSubmitQuestion,
   isLoading,
-  showFeedback,
-  learnMoreUrl,
   componentOverrides,
-  callbacks,
   translations,
   children,
 }: PropsWithChildren<PiaModalProps>) {
@@ -108,30 +94,6 @@ export default function PiaModal({
         {translate('Any questions about this product?', translations)}
       </p>
       <Input onSubmit={handleQuestion} disabled={isLoading} translations={translations} />
-
-      {!isOpen && !isLoading && currentAnswer && (
-        <div className='cio-pia-answer-container'>
-          <Answer text={currentAnswer} componentOverride={componentOverrides?.answer} />
-          {currentItems && (
-            <PiaCustomCarousel
-              items={currentItems}
-              componentOverrides={componentOverrides?.carousel}
-              callbacks={callbacks}
-            />
-          )}
-          {showFeedback && (
-            <Feedback
-              translations={translations}
-              componentOverride={componentOverrides?.feedback}
-            />
-          )}
-          <Disclaimer
-            learnMoreUrl={learnMoreUrl}
-            translations={translations}
-            componentOverride={componentOverrides?.disclaimer}
-          />
-        </div>
-      )}
 
       {!isOpen && !isLoading && (
         <SuggestedQuestionsContainer

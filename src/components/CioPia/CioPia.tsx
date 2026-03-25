@@ -148,15 +148,10 @@ export default function CioPia(props: CioPiaProps) {
   if (type === 'modal') {
     return (
       <PiaModal
-        currentAnswer={currentAnswer}
-        currentItems={currentItems}
         displayedQuestions={displayedQuestions}
         handleSubmitQuestion={handleSubmitQuestion}
         isLoading={isLoading}
-        showFeedback={showFeedback}
-        learnMoreUrl={learnMoreUrl}
         componentOverrides={componentOverrides}
-        callbacks={callbacks}
         translations={translations}>
         <PiaConversation
           {...conversationHistoryProps}
