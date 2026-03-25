@@ -1,6 +1,6 @@
 /* Conversation Mode */
 .cio-pia-conversation {
-  max-height: 600px;
+  max-height: var(--cio-pia-conversation-max-height);
 }
 
 .cio-pia-conversation-footer {
@@ -16,8 +16,9 @@
   border-radius: 12px;
   padding: 0;
   width: 90%;
-  max-width: 640px;
-  max-height: 80vh;
+  max-width: var(--cio-pia-modal-max-width);
+  min-width: var(--cio-pia-modal-min-width);
+  max-height: var(--cio-pia-modal-height);
   overflow: hidden;
   box-shadow:
     0px 8px 32px rgba(0, 0, 0, 0.12),
@@ -31,8 +32,8 @@
 .cio-pia-modal-content {
   display: flex;
   flex-direction: column;
-  height: 80vh;
-  max-height: 80vh;
+  height: var(--cio-pia-modal-height);
+  max-height: var(--cio-pia-modal-height);
 }
 
 .cio-pia-modal-header {

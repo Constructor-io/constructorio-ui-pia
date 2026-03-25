@@ -1,22 +1,24 @@
 .cio-pia-conversation-history {
+  --conversation-gap: 16px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--conversation-gap);
   overflow-y: auto;
   flex: 1;
   min-height: 0;
+  width: 100%;
 }
 
 .cio-pia-conversation-entry {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--conversation-gap);
 }
 
 .cio-pia-chat-question {
   align-self: flex-end;
-  background: #f0f0f5;
-  border-radius: 12px 12px 2px 12px;
+  background: var(--cio-pia-chat-question-bg);
+  border-radius: 12px 12px 12px 12px;
   padding: 8px 12px;
   font-size: 14px;
   font-weight: 500;
@@ -24,14 +26,24 @@
   max-width: 80%;
   text-align: start;
   word-break: break-word;
+  transition: border-radius 0.3s ease;
 }
 
 .cio-pia-conversation-entry .cio-pia-answer-container {
   align-self: flex-start;
-  background: #f8f8fa;
-  border-radius: 12px 12px 12px 2px;
+  background: var(--cio-pia-chat-answer-bg);
+  border-radius: 12px 12px 12px 12px;
   padding: 8px 12px;
   max-width: 80%;
+  transition: border-radius 0.3s ease;
+}
+
+.cio-pia-conversation-entry:last-child .cio-pia-chat-question {
+  border-bottom-right-radius: 2px;
+}
+
+.cio-pia-conversation-entry:last-child .cio-pia-answer-container {
+  border-bottom-left-radius: 2px;
 }
 
 .cio-pia-conversation-loading {

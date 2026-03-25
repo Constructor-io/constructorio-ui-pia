@@ -36,14 +36,31 @@ export default function ConversationHistory({
   callbacks,
   componentOverrides,
 }: ConversationHistoryProps) {
-  const historyEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    historyEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const hasOverflow = container.scrollHeight > container.clientHeight;
+    if (!hasOverflow) return;
+
+    const threshold = 50;
+    const distanceFromBottom =
+      container.scrollHeight - container.scrollTop - container.clientHeight;
+    const isNearBottom = distanceFromBottom < threshold;
+
+    if (isNearBottom) {
+      container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+    }
   }, [conversationHistory, isLoading]);
 
   return (
-    <div className='cio-pia-conversation-history' role='log' aria-label='Conversation history'>
+    <div
+      ref={scrollContainerRef}
+      className='cio-pia-conversation-history'
+      role='log'
+      aria-label='Conversation history'>
       {conversationHistory.map((entry) => {
         const lastEntry = conversationHistory[conversationHistory.length - 1];
         const isLast = entry === lastEntry;
@@ -90,8 +107,6 @@ export default function ConversationHistory({
           </div>
         );
       })}
-
-      <div ref={historyEndRef} />
     </div>
   );
 }
