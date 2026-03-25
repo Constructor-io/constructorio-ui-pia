@@ -52,7 +52,11 @@ export default function ConversationHistory({
           <div key={entry.id} className='cio-pia-conversation-entry'>
             <div className='cio-pia-chat-question'>{entry.question}</div>
 
-            {isLast && isLoading && <LoadingSkeleton />}
+            {isLast && isLoading && (
+              <div className='cio-pia-conversation-loading'>
+                <LoadingSkeleton />
+              </div>
+            )}
 
             {isLast && !isLoading && error && (
               <ErrorBlock message={error.message || 'Unexpected error'} />
@@ -74,14 +78,14 @@ export default function ConversationHistory({
                     componentOverride={componentOverrides?.feedback}
                   />
                 )}
-                {isLast && (
-                  <Disclaimer
-                    learnMoreUrl={learnMoreUrl}
-                    translations={translations}
-                    componentOverride={componentOverrides?.disclaimer}
-                  />
-                )}
               </div>
+            )}
+            {isLast && entry.answer && (
+              <Disclaimer
+                learnMoreUrl={learnMoreUrl}
+                translations={translations}
+                componentOverride={componentOverrides?.disclaimer}
+              />
             )}
           </div>
         );

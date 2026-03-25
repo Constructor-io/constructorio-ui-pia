@@ -101,9 +101,12 @@ export default function CioPia(props: CioPiaProps) {
     if (answers.data?.follow_up_questions) setDisplayedQuestions(answers.data.follow_up_questions);
   }, [answers.data]);
 
-  // Update the last conversation entry when answer resolves
+  const prevAnswerDataRef = useRef(answers.data);
+
   useEffect(() => {
     if (!isConversation || conversationHistory.length === 0 || !answers.data) return;
+    if (answers.data === prevAnswerDataRef.current) return;
+    prevAnswerDataRef.current = answers.data;
     setConversationHistory((prev) => {
       const updated = [...prev];
       updated[updated.length - 1] = {
