@@ -5,7 +5,7 @@ import ConversationHistory from '../../../src/components/ConversationHistory/Con
 import { DISCLAIMER_TEXT } from '../../../src/constants';
 
 beforeAll(() => {
-  Element.prototype.scrollIntoView = jest.fn();
+  Element.prototype.scrollTo = jest.fn();
 });
 
 /**

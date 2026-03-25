@@ -859,7 +859,7 @@ describe('CioPia Component', () => {
 });
 
 beforeAll(() => {
-  Element.prototype.scrollIntoView = jest.fn();
+  Element.prototype.scrollTo = jest.fn();
   HTMLDialogElement.prototype.showModal = jest.fn(function mock() {
     this.setAttribute('open', '');
   });
@@ -943,9 +943,7 @@ describe('CioPia Modal Mode', () => {
   });
 
   it('renders cio-pia-container with title, input, and suggested questions in the base view', () => {
-    const { container } = render(
-      <CioPia {...mockProps} displayConfigs={{ type: 'modal' }} />,
-    );
+    const { container } = render(<CioPia {...mockProps} displayConfigs={{ type: 'modal' }} />);
 
     // Base view is the top-level .cio-pia-container (not the one inside the dialog)
     const baseView = container.querySelector(':scope > .cio-pia-container');

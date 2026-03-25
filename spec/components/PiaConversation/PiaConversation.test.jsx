@@ -4,7 +4,7 @@ import { render, fireEvent, screen } from '@testing-library/react';
 import PiaConversation from '../../../src/components/PiaConversation/PiaConversation';
 
 beforeAll(() => {
-  Element.prototype.scrollIntoView = jest.fn();
+  Element.prototype.scrollTo = jest.fn();
 });
 
 const mockSuggestedQuestions = [
