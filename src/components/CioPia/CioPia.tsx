@@ -70,7 +70,9 @@ export default function CioPia(props: CioPiaProps) {
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
   const [displayedQuestions, setDisplayedQuestions] = useState<Question[]>([]);
   const [conversationHistory, setConversationHistory] = useState<ConversationEntry[]>([]);
+
   const entryIdRef = useRef(0);
+  const prevAnswerDataRef = useRef(answers.data);
 
   const handleSubmitQuestion = useCallback(
     (question: string) => {
@@ -100,8 +102,6 @@ export default function CioPia(props: CioPiaProps) {
   useEffect(() => {
     if (answers.data?.follow_up_questions) setDisplayedQuestions(answers.data.follow_up_questions);
   }, [answers.data]);
-
-  const prevAnswerDataRef = useRef(answers.data);
 
   useEffect(() => {
     if (!isConversation || conversationHistory.length === 0 || !answers.data) return;
