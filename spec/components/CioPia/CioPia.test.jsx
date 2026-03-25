@@ -943,10 +943,14 @@ describe('CioPia Modal Mode', () => {
   });
 
   it('renders cio-pia-container with title, input, and suggested questions in the base view', () => {
-    render(<CioPia {...mockProps} displayConfigs={{ type: 'modal' }} />);
+    const { container } = render(
+      <CioPia {...mockProps} displayConfigs={{ type: 'modal' }} />,
+    );
 
-    expect(screen.getByTestId('cio-pia-container')).toBeInTheDocument();
-    expect(screen.getByTestId('cio-pia-title')).toBeInTheDocument();
+    // Base view is the top-level .cio-pia-container (not the one inside the dialog)
+    const baseView = container.querySelector(':scope > .cio-pia-container');
+    expect(baseView).toBeInTheDocument();
+    expect(screen.getAllByTestId('cio-pia-title').length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByRole('textbox').length).toBeGreaterThanOrEqual(1);
     mockSuggestedQuestions.forEach((question) => {
       expect(screen.getAllByText(question.value).length).toBeGreaterThanOrEqual(1);
@@ -956,10 +960,10 @@ describe('CioPia Modal Mode', () => {
   it('implies conversation behavior (isConversation = true) for modal type', () => {
     const { container } = render(<CioPia {...mockProps} displayConfigs={{ type: 'modal' }} />);
 
-    // Modal uses PiaModal which renders a dialog — this confirms it took the modal branch
-    // rather than the default inline branch
+    // Modal uses PiaModal which renders a dialog with PiaConversation inside
     expect(container.querySelector('dialog.cio-pia-modal')).toBeInTheDocument();
-    expect(container.querySelector('.cio-pia-conversation')).not.toBeInTheDocument();
+    // PiaConversation lives inside the dialog, not as the top-level container
+    expect(container.querySelector('dialog .cio-pia-conversation')).toBeInTheDocument();
   });
 });
 

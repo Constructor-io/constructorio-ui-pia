@@ -26,7 +26,6 @@ import { translate } from '../../utils/translate';
 import PiaCustomCarousel from './PiaCustomCarousel';
 import PiaModal from '../PiaConversation/PiaModal';
 import PiaConversation from '../PiaConversation/PiaConversation';
-import ConversationHistory from '../ConversationHistory/ConversationHistory';
 
 export interface CioPiaProps
   extends
@@ -153,11 +152,15 @@ export default function CioPia(props: CioPiaProps) {
         isLoading={isLoading}
         showFeedback={showFeedback}
         learnMoreUrl={learnMoreUrl}
-        suggestedQuestionsError={suggestedQuestions.error}
         componentOverrides={componentOverrides}
         callbacks={callbacks}
         translations={translations}>
-        <ConversationHistory {...conversationHistoryProps} />
+        <PiaConversation
+          {...conversationHistoryProps}
+          displayedQuestions={displayedQuestions}
+          handleSubmitQuestion={handleSubmitQuestion}
+          suggestedQuestionsError={suggestedQuestions.error}
+        />
       </PiaModal>
     );
   }

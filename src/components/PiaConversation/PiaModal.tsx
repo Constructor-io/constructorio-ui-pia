@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
 import Input from '../Input/Input';
-import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import Answer from '../Answer/Answer';
 import Feedback from '../Feedback/Feedback';
 import Disclaimer from '../CioPia/Disclaimer';
 import PiaCustomCarousel from '../CioPia/PiaCustomCarousel';
 import { translate } from '../../utils/translate';
+import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import { Translations, Question, Item, Callbacks, CioPiaComponentOverrides } from '../../types';
 
 function CloseIcon() {
@@ -27,11 +27,9 @@ interface PiaModalProps {
   isLoading: boolean;
   showFeedback?: boolean;
   learnMoreUrl?: string;
-  suggestedQuestionsError: Error | null;
   componentOverrides?: CioPiaComponentOverrides;
   callbacks?: Callbacks;
   translations?: Translations;
-  children: React.ReactNode;
 }
 
 export default function PiaModal({
@@ -42,12 +40,11 @@ export default function PiaModal({
   isLoading,
   showFeedback,
   learnMoreUrl,
-  suggestedQuestionsError,
   componentOverrides,
   callbacks,
   translations,
   children,
-}: PiaModalProps) {
+}: PropsWithChildren<PiaModalProps>) {
   const [isOpen, setIsOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -136,7 +133,7 @@ export default function PiaModal({
         </div>
       )}
 
-      {!isOpen && !isLoading && !suggestedQuestionsError && (
+      {!isOpen && !isLoading && (
         <SuggestedQuestionsContainer
           questions={displayedQuestions}
           onQuestionClick={handleQuestion}
@@ -158,24 +155,7 @@ export default function PiaModal({
               <CloseIcon />
             </button>
           </div>
-          <div className='cio-pia-modal-body'>
-            {children}
-
-            <div className='cio-pia-conversation-footer'>
-              {!isLoading && !suggestedQuestionsError && (
-                <SuggestedQuestionsContainer
-                  questions={displayedQuestions}
-                  onQuestionClick={handleSubmitQuestion}
-                  componentOverride={componentOverrides?.suggestedQuestions}
-                />
-              )}
-              <Input
-                onSubmit={handleSubmitQuestion}
-                disabled={isLoading}
-                translations={translations}
-              />
-            </div>
-          </div>
+          <div className='cio-pia-modal-body'>{children}</div>
         </div>
       </dialog>
     </div>

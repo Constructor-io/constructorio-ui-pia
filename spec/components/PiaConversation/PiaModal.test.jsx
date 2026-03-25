@@ -68,8 +68,7 @@ const defaultProps = {
   displayedQuestions: mockSuggestedQuestions,
   handleSubmitQuestion: mockHandleSubmitQuestion,
   isLoading: false,
-  suggestedQuestionsError: null,
-  children: <div data-testid='conversation-history'>Conversation History</div>,
+  children: <div data-testid='dialog-content'>Dialog Content</div>,
 };
 
 beforeEach(() => {
@@ -208,31 +207,12 @@ describe('PiaModal Component', () => {
   });
 
   describe('Dialog Content', () => {
-    it('renders children (conversation history) inside the dialog', () => {
+    it('renders dialogContent inside the dialog', () => {
       const { container } = render(<PiaModal {...defaultProps} />);
 
       const dialog = container.querySelector('dialog');
-      expect(within(dialog).getByTestId('conversation-history')).toBeInTheDocument();
-      expect(within(dialog).getByText('Conversation History')).toBeInTheDocument();
-    });
-
-    it('renders suggested questions inside the dialog footer', () => {
-      const { container } = render(<PiaModal {...defaultProps} />);
-
-      const dialog = container.querySelector('dialog');
-      expect(dialog).toBeInTheDocument();
-
-      // Dialog is closed so content is hidden from accessibility tree — use hidden: true
-      mockSuggestedQuestions.forEach((question) => {
-        expect(within(dialog).getByText(question.value, { hidden: true })).toBeInTheDocument();
-      });
-    });
-
-    it('renders input inside the dialog footer', () => {
-      const { container } = render(<PiaModal {...defaultProps} />);
-
-      const dialog = container.querySelector('dialog');
-      expect(within(dialog).getByRole('textbox', { hidden: true })).toBeInTheDocument();
+      expect(within(dialog).getByTestId('dialog-content')).toBeInTheDocument();
+      expect(within(dialog).getByText('Dialog Content')).toBeInTheDocument();
     });
 
     it('dialog has aria-label', () => {
@@ -245,9 +225,7 @@ describe('PiaModal Component', () => {
 
   describe('Base view hides after modal opens', () => {
     it('hides base view answer and suggested questions when modal is open', () => {
-      const { container } = render(
-        <PiaModal {...defaultProps} currentAnswer='Some answer' />,
-      );
+      const { container } = render(<PiaModal {...defaultProps} currentAnswer='Some answer' />);
 
       // Before opening — base view shows answer and questions
       expect(container.querySelector(BASE_ANSWER)).toBeInTheDocument();
