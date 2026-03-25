@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   IncludeComponentOverrides,
   IncludeRenderProps,
@@ -20,9 +20,13 @@ import {
   CioPiaDisplayConfigs,
   Translations,
   Question,
+  ConversationEntry,
 } from '../../types';
 import { translate } from '../../utils/translate';
 import PiaCustomCarousel from './PiaCustomCarousel';
+import PiaModal from '../PiaConversation/PiaModal';
+import PiaConversation from '../PiaConversation/PiaConversation';
+import ConversationHistory from '../ConversationHistory/ConversationHistory';
 
 export interface CioPiaProps
   extends
@@ -52,7 +56,7 @@ export default function CioPia(props: CioPiaProps) {
     children,
     translations,
   } = props;
-  const { learnMoreUrl, showFeedback } = displayConfigs || {};
+  const { learnMoreUrl, showFeedback, mode = 'default', type = 'inline' } = displayConfigs || {};
   const { suggestedQuestions, answers } = useCioPia({
     apiKey,
     itemId,
@@ -62,16 +66,33 @@ export default function CioPia(props: CioPiaProps) {
   });
   const { getAnswer } = answers;
 
+  const isConversation = mode === 'conversation' || type === 'modal';
+
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
   const [displayedQuestions, setDisplayedQuestions] = useState<Question[]>([]);
+  const [conversationHistory, setConversationHistory] = useState<ConversationEntry[]>([]);
+  const entryIdRef = useRef(0);
 
   const handleSubmitQuestion = useCallback(
     (question: string) => {
       setCurrentQuestion(question);
       getAnswer(question);
+
+      if (isConversation) {
+        entryIdRef.current += 1;
+        const id = entryIdRef.current;
+        setConversationHistory((prev) => [...prev, { id, question, answer: '' }]);
+      }
     },
-    [getAnswer],
+    [getAnswer, isConversation],
   );
+
+  // Reset all state when itemId changes
+  useEffect(() => {
+    setCurrentQuestion('');
+    setDisplayedQuestions([]);
+    setConversationHistory([]);
+  }, [itemId]);
 
   useEffect(() => {
     setDisplayedQuestions(suggestedQuestions.data);
@@ -81,12 +102,24 @@ export default function CioPia(props: CioPiaProps) {
     if (answers.data?.follow_up_questions) setDisplayedQuestions(answers.data.follow_up_questions);
   }, [answers.data]);
 
+  // Update the last conversation entry when answer resolves
+  useEffect(() => {
+    if (!isConversation || conversationHistory.length === 0 || !answers.data) return;
+    setConversationHistory((prev) => {
+      const updated = [...prev];
+      updated[updated.length - 1] = {
+        ...updated[updated.length - 1],
+        answer: answers.data?.value ?? '',
+      };
+      return updated;
+    });
+  }, [isConversation, conversationHistory.length, answers.data]);
+
   const currentAnswer = answers.data?.value ?? '';
   const currentItems = answers.items ?? null;
   const error = answers.error || suggestedQuestions.error;
   const isLoading = answers.isLoading || suggestedQuestions.isLoading;
 
-  // Build render props to pass to children function or componentOverrides.reactNode
   const renderProps: CioPiaRenderProps = {
     items: currentItems,
     isLoading,
@@ -95,8 +128,52 @@ export default function CioPia(props: CioPiaProps) {
     currentQuestion,
     displayedQuestions,
     handleSubmitQuestion,
+    conversationHistory,
   };
 
+  const conversationHistoryProps = {
+    conversationHistory,
+    isLoading,
+    error,
+    currentItems,
+    showFeedback,
+    learnMoreUrl,
+    translations,
+    callbacks,
+    componentOverrides,
+  };
+
+  if (type === 'modal') {
+    return (
+      <PiaModal
+        currentAnswer={currentAnswer}
+        currentItems={currentItems}
+        displayedQuestions={displayedQuestions}
+        handleSubmitQuestion={handleSubmitQuestion}
+        isLoading={isLoading}
+        showFeedback={showFeedback}
+        learnMoreUrl={learnMoreUrl}
+        suggestedQuestionsError={suggestedQuestions.error}
+        componentOverrides={componentOverrides}
+        callbacks={callbacks}
+        translations={translations}>
+        <ConversationHistory {...conversationHistoryProps} />
+      </PiaModal>
+    );
+  }
+
+  if (isConversation) {
+    return (
+      <PiaConversation
+        {...conversationHistoryProps}
+        displayedQuestions={displayedQuestions}
+        handleSubmitQuestion={handleSubmitQuestion}
+        suggestedQuestionsError={suggestedQuestions.error}
+      />
+    );
+  }
+
+  // Default inline mode
   return (
     <div className='cio-pia-container' data-testid='cio-pia-container'>
       <RenderPropsWrapper props={renderProps} override={children || componentOverrides?.reactNode}>
@@ -123,7 +200,7 @@ export default function CioPia(props: CioPiaProps) {
           <>
             {currentAnswer && (
               <div className='cio-pia-answer-container'>
-                <Answer text={currentAnswer} />
+                <Answer text={currentAnswer} componentOverride={componentOverrides?.answer} />
                 {currentItems && (
                   <PiaCustomCarousel
                     items={currentItems}
@@ -131,14 +208,24 @@ export default function CioPia(props: CioPiaProps) {
                     callbacks={callbacks}
                   />
                 )}
-                {showFeedback && <Feedback translations={translations} />}
-                <Disclaimer learnMoreUrl={learnMoreUrl} translations={translations} />
+                {showFeedback && (
+                  <Feedback
+                    translations={translations}
+                    componentOverride={componentOverrides?.feedback}
+                  />
+                )}
+                <Disclaimer
+                  learnMoreUrl={learnMoreUrl}
+                  translations={translations}
+                  componentOverride={componentOverrides?.disclaimer}
+                />
               </div>
             )}
 
             <SuggestedQuestionsContainer
               questions={displayedQuestions}
               onQuestionClick={handleSubmitQuestion}
+              componentOverride={componentOverrides?.suggestedQuestions}
             />
           </>
         )}

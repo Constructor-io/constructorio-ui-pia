@@ -32,9 +32,14 @@ export interface CioPiaProviderProps {
   cioClient?: Nullable<MockConstructorIOClient>;
 }
 
+export type CioPiaMode = 'default' | 'conversation';
+export type CioPiaType = 'inline' | 'modal';
+
 export type CioPiaDisplayConfigs = {
   learnMoreUrl?: string;
   showFeedback?: boolean;
+  mode?: CioPiaMode;
+  type?: CioPiaType;
 };
 
 /**
@@ -60,6 +65,12 @@ export interface Item extends Product, Record<string, any> {
   matchedTerms?: string[];
 }
 
+export interface ConversationEntry {
+  id: number;
+  question: string;
+  answer: string;
+}
+
 /**
  * Render props passed to CioPia children function
  */
@@ -71,14 +82,37 @@ export interface CioPiaRenderProps {
   currentQuestion: string;
   displayedQuestions: Question[];
   handleSubmitQuestion: (question: string) => void;
+  conversationHistory: ConversationEntry[];
+}
+
+export interface AnswerRenderProps {
+  text: string;
+}
+
+export interface SuggestedQuestionsRenderProps {
+  questions: Question[];
+  onQuestionClick: (question: string) => void;
+}
+
+export interface DisclaimerRenderProps {
+  learnMoreUrl?: string;
+  translations?: Translations;
+}
+
+export interface FeedbackRenderProps {
+  translations?: Translations;
 }
 
 /**
  * Component overrides for CioPia
- * Allows customization of carousel component
+ * Allows customization of sub-components via reactNode or render props functions
  */
 export interface CioPiaComponentOverrides extends ComponentOverrideProps<CioPiaRenderProps> {
   carousel?: CarouselOverrides<Item>;
+  answer?: ComponentOverrideProps<AnswerRenderProps>;
+  suggestedQuestions?: ComponentOverrideProps<SuggestedQuestionsRenderProps>;
+  disclaimer?: ComponentOverrideProps<DisclaimerRenderProps>;
+  feedback?: ComponentOverrideProps<FeedbackRenderProps>;
 }
 
 export * from './hooks/mocks/types';

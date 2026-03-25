@@ -14,6 +14,13 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+export const Default: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: DEMO_ITEM_ID,
+  },
+};
+
 export const WithFeedback: Story = {
   args: {
     apiKey: DEMO_API_KEY,
@@ -34,13 +41,24 @@ export const WithLearnMore: Story = {
   },
 };
 
-export const WithAllDisplayConfigs: Story = {
+export const ConversationMode: Story = {
   args: {
     apiKey: DEMO_API_KEY,
     itemId: DEMO_ITEM_ID,
     displayConfigs: {
+      mode: 'conversation',
       showFeedback: true,
-      learnMoreUrl: 'https://constructor.io/learn-more',
+    },
+  },
+};
+
+export const ModalType: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: DEMO_ITEM_ID,
+    displayConfigs: {
+      type: 'modal',
+      showFeedback: true,
     },
   },
 };

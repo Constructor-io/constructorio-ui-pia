@@ -8,6 +8,8 @@
 @import './components/Error/ErrorStyles.css';
 @import './components/LoadingSkeleton/LoadingSkeletonStyles.css';
 @import './components/CioPia/CioPiaStyles.css';
+@import './components/ConversationHistory/ConversationHistoryStyles.css';
+@import './components/PiaConversation/PiaConversationStyles.css';
 
 .cio-pia-container,
 .cio-pia-container * {

@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
-import { Translations } from '../../types';
+import {
+  ComponentOverrideProps,
+  RenderPropsWrapper,
+} from '@constructor-io/constructorio-ui-components';
+import { Translations, FeedbackRenderProps } from '../../types';
 import { translate } from '../../utils/translate';
 
 enum FeedbackType {
@@ -47,7 +51,12 @@ function ThumbsDownIcon({ isSelected }: { isSelected: boolean }) {
   );
 }
 
-export default function Feedback({ translations }: { translations?: Translations }) {
+interface FeedbackProps {
+  translations?: Translations;
+  componentOverride?: ComponentOverrideProps<FeedbackRenderProps>;
+}
+
+export default function Feedback({ translations, componentOverride }: FeedbackProps) {
   const [feedback, setFeedback] = useState<FeedbackType | null>(null);
 
   const handleFeedback = (type: FeedbackType) => {
@@ -55,22 +64,24 @@ export default function Feedback({ translations }: { translations?: Translations
   };
 
   return (
-    <div className='cio-pia-feedback-container'>
-      <p className='cio-pia-feedback-text'>{translate('Is this answer useful?', translations)}</p>
-      <button
-        type='button'
-        className='cio-pia-feedback-button'
-        aria-label='thumbs up'
-        onClick={() => handleFeedback(FeedbackType.UP)}>
-        <ThumbsUpIcon isSelected={feedback === FeedbackType.UP} />
-      </button>
-      <button
-        type='button'
-        className='cio-pia-feedback-button'
-        aria-label='thumbs down'
-        onClick={() => handleFeedback(FeedbackType.DOWN)}>
-        <ThumbsDownIcon isSelected={feedback === FeedbackType.DOWN} />
-      </button>
-    </div>
+    <RenderPropsWrapper props={{ translations }} override={componentOverride?.reactNode}>
+      <div className='cio-pia-feedback-container'>
+        <p className='cio-pia-feedback-text'>{translate('Is this answer useful?', translations)}</p>
+        <button
+          type='button'
+          className='cio-pia-feedback-button'
+          aria-label='thumbs up'
+          onClick={() => handleFeedback(FeedbackType.UP)}>
+          <ThumbsUpIcon isSelected={feedback === FeedbackType.UP} />
+        </button>
+        <button
+          type='button'
+          className='cio-pia-feedback-button'
+          aria-label='thumbs down'
+          onClick={() => handleFeedback(FeedbackType.DOWN)}>
+          <ThumbsDownIcon isSelected={feedback === FeedbackType.DOWN} />
+        </button>
+      </div>
+    </RenderPropsWrapper>
   );
 }

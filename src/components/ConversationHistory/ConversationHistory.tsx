@@ -1,0 +1,93 @@
+import React, { useEffect, useRef } from 'react';
+import Answer from '../Answer/Answer';
+import Feedback from '../Feedback/Feedback';
+import Disclaimer from '../CioPia/Disclaimer';
+import ErrorBlock from '../Error/ErrorBlock';
+import LoadingSkeleton from '../LoadingSkeleton/LoadingSkeleton';
+import PiaCustomCarousel from '../CioPia/PiaCustomCarousel';
+import {
+  ConversationEntry,
+  Translations,
+  Item,
+  Callbacks,
+  CioPiaComponentOverrides,
+} from '../../types';
+
+export interface ConversationHistoryProps {
+  conversationHistory: ConversationEntry[];
+  isLoading: boolean;
+  error: Error | null;
+  currentItems?: Item[] | null;
+  showFeedback?: boolean;
+  learnMoreUrl?: string;
+  translations?: Translations;
+  callbacks?: Callbacks;
+  componentOverrides?: CioPiaComponentOverrides;
+}
+
+export default function ConversationHistory({
+  conversationHistory,
+  isLoading,
+  error,
+  currentItems,
+  showFeedback,
+  learnMoreUrl,
+  translations,
+  callbacks,
+  componentOverrides,
+}: ConversationHistoryProps) {
+  const historyEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    historyEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [conversationHistory, isLoading]);
+
+  return (
+    <div className='cio-pia-conversation-history' role='log' aria-label='Conversation history'>
+      {conversationHistory.map((entry) => {
+        const lastEntry = conversationHistory[conversationHistory.length - 1];
+        const isLast = entry === lastEntry;
+
+        return (
+          <div key={entry.id} className='cio-pia-conversation-entry'>
+            <div className='cio-pia-chat-question'>{entry.question}</div>
+
+            {isLast && isLoading && <LoadingSkeleton />}
+
+            {isLast && !isLoading && error && (
+              <ErrorBlock message={error.message || 'Unexpected error'} />
+            )}
+
+            {entry.answer && (
+              <div className='cio-pia-answer-container'>
+                <Answer text={entry.answer} componentOverride={componentOverrides?.answer} />
+                {isLast && currentItems && (
+                  <PiaCustomCarousel
+                    items={currentItems}
+                    componentOverrides={componentOverrides?.carousel}
+                    callbacks={callbacks}
+                  />
+                )}
+                {isLast && showFeedback && (
+                  <Feedback
+                    translations={translations}
+                    componentOverride={componentOverrides?.feedback}
+                  />
+                )}
+                {isLast && (
+                  <Disclaimer
+                    learnMoreUrl={learnMoreUrl}
+                    translations={translations}
+                    componentOverride={componentOverrides?.disclaimer}
+                  />
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      <div ref={historyEndRef} />
+    </div>
+  );
+}
