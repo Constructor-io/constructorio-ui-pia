@@ -834,253 +834,254 @@ describe('CioPia Component', () => {
       expect(screen.getByTestId('static-children')).toBeInTheDocument();
     });
   });
-});
-describe('CioPia Conversation Mode', () => {
-  it('renders conversation layout with cio-pia-conversation class', () => {
-    const { container } = render(
-      <CioPia {...mockProps} displayConfigs={{ mode: 'conversation' }} />,
-    );
 
-    expect(container.querySelector('.cio-pia-conversation')).toBeInTheDocument();
-  });
+  describe('Conversation Mode', () => {
+    it('renders conversation layout with cio-pia-conversation class', () => {
+      const { container } = render(
+        <CioPia {...mockProps} displayConfigs={{ mode: 'conversation' }} />,
+      );
 
-  it('shows title when there is no conversation history', () => {
-    render(<CioPia {...mockProps} displayConfigs={{ mode: 'conversation' }} />);
-
-    expect(screen.getByTestId('cio-pia-title')).toBeInTheDocument();
-  });
-
-  it('adds an entry to conversation history when a question is submitted', () => {
-    const { container } = render(
-      <CioPia {...mockProps} displayConfigs={{ mode: 'conversation' }} />,
-    );
-
-    const input = screen.getByRole('textbox');
-    fireEvent.change(input, { target: { value: 'What color is this?' } });
-    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
-
-    expect(container.querySelector('.cio-pia-chat-question')).toBeInTheDocument();
-    expect(screen.getByText('What color is this?')).toBeInTheDocument();
-  });
-
-  it('hides title after a question is submitted', () => {
-    render(<CioPia {...mockProps} displayConfigs={{ mode: 'conversation' }} />);
-
-    const input = screen.getByRole('textbox');
-    fireEvent.change(input, { target: { value: 'What size is this?' } });
-    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
-
-    expect(screen.queryByTestId('cio-pia-title')).not.toBeInTheDocument();
-  });
-
-  it('shows answer in conversation history when answer resolves', () => {
-    const { rerender } = render(
-      <CioPia {...mockProps} displayConfigs={{ mode: 'conversation' }} />,
-    );
-
-    const input = screen.getByRole('textbox');
-    fireEvent.change(input, { target: { value: 'Tell me about this product' } });
-    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
-
-    mockUseCioPia({ answerData: mockAnswerData });
-    rerender(<CioPia {...mockProps} displayConfigs={{ mode: 'conversation' }} />);
-
-    expect(screen.getByText(mockAnswerData.value)).toBeInTheDocument();
-  });
-
-  it('shows suggested questions and input in the conversation footer', () => {
-    const { container } = render(
-      <CioPia {...mockProps} displayConfigs={{ mode: 'conversation' }} />,
-    );
-
-    const footer = container.querySelector('.cio-pia-conversation-footer');
-    expect(footer).toBeInTheDocument();
-    expect(within(footer).getByRole('textbox')).toBeInTheDocument();
-    mockSuggestedQuestions.forEach((question) => {
-      expect(screen.getByText(question.value)).toBeInTheDocument();
+      expect(container.querySelector('.cio-pia-conversation')).toBeInTheDocument();
     });
-  });
-});
 
-describe('CioPia Modal Mode', () => {
-  it('renders the modal layout with a dialog element', () => {
-    const { container } = render(<CioPia {...mockProps} displayConfigs={{ type: 'modal' }} />);
+    it('shows title when there is no conversation history', () => {
+      render(<CioPia {...mockProps} displayConfigs={{ mode: 'conversation' }} />);
 
-    expect(container.querySelector('dialog')).toBeInTheDocument();
-  });
+      expect(screen.getByTestId('cio-pia-title')).toBeInTheDocument();
+    });
 
-  it('renders cio-pia-container with title, input, and suggested questions in the base view', () => {
-    const { container } = render(<CioPia {...mockProps} displayConfigs={{ type: 'modal' }} />);
+    it('adds an entry to conversation history when a question is submitted', () => {
+      const { container } = render(
+        <CioPia {...mockProps} displayConfigs={{ mode: 'conversation' }} />,
+      );
 
-    // Base view is the top-level .cio-pia-container (not the one inside the dialog)
-    const baseView = container.querySelector(':scope > .cio-pia-container');
-    expect(baseView).toBeInTheDocument();
-    expect(screen.getAllByTestId('cio-pia-title').length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByRole('textbox').length).toBeGreaterThanOrEqual(1);
-    mockSuggestedQuestions.forEach((question) => {
-      expect(screen.getAllByText(question.value).length).toBeGreaterThanOrEqual(1);
+      const input = screen.getByRole('textbox');
+      fireEvent.change(input, { target: { value: 'What color is this?' } });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+      expect(container.querySelector('.cio-pia-chat-question')).toBeInTheDocument();
+      expect(screen.getByText('What color is this?')).toBeInTheDocument();
+    });
+
+    it('hides title after a question is submitted', () => {
+      render(<CioPia {...mockProps} displayConfigs={{ mode: 'conversation' }} />);
+
+      const input = screen.getByRole('textbox');
+      fireEvent.change(input, { target: { value: 'What size is this?' } });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+      expect(screen.queryByTestId('cio-pia-title')).not.toBeInTheDocument();
+    });
+
+    it('shows answer in conversation history when answer resolves', () => {
+      const { rerender } = render(
+        <CioPia {...mockProps} displayConfigs={{ mode: 'conversation' }} />,
+      );
+
+      const input = screen.getByRole('textbox');
+      fireEvent.change(input, { target: { value: 'Tell me about this product' } });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+      mockUseCioPia({ answerData: mockAnswerData });
+      rerender(<CioPia {...mockProps} displayConfigs={{ mode: 'conversation' }} />);
+
+      expect(screen.getByText(mockAnswerData.value)).toBeInTheDocument();
+    });
+
+    it('shows suggested questions and input in the conversation footer', () => {
+      const { container } = render(
+        <CioPia {...mockProps} displayConfigs={{ mode: 'conversation' }} />,
+      );
+
+      const footer = container.querySelector('.cio-pia-conversation-footer');
+      expect(footer).toBeInTheDocument();
+      expect(within(footer).getByRole('textbox')).toBeInTheDocument();
+      mockSuggestedQuestions.forEach((question) => {
+        expect(screen.getByText(question.value)).toBeInTheDocument();
+      });
     });
   });
 
-  it('implies conversation behavior (isConversation = true) for modal type', () => {
-    const { container } = render(<CioPia {...mockProps} displayConfigs={{ type: 'modal' }} />);
+  describe('Modal Mode', () => {
+    it('renders the modal layout with a dialog element', () => {
+      const { container } = render(<CioPia {...mockProps} displayConfigs={{ type: 'modal' }} />);
 
-    // Modal uses PiaModal which renders a dialog with PiaConversation inside
-    expect(container.querySelector('dialog.cio-pia-modal')).toBeInTheDocument();
-    // PiaConversation lives inside the dialog, not as the top-level container
-    expect(container.querySelector('dialog .cio-pia-conversation')).toBeInTheDocument();
-  });
-});
-
-describe('CioPia State Reset on itemId Change', () => {
-  it('resets conversation history and input value when itemId changes', () => {
-    const { rerender } = render(
-      <CioPia {...mockProps} itemId='item-1' displayConfigs={{ mode: 'conversation' }} />,
-    );
-
-    const input = screen.getByRole('textbox');
-    fireEvent.change(input, { target: { value: 'A question about item 1' } });
-    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
-
-    expect(screen.getByText('A question about item 1')).toBeInTheDocument();
-
-    rerender(<CioPia {...mockProps} itemId='item-2' displayConfigs={{ mode: 'conversation' }} />);
-
-    // Input should be cleared and conversation history gone
-    expect(screen.getByRole('textbox')).toHaveValue('');
-    expect(screen.queryByText('A question about item 1')).not.toBeInTheDocument();
-  });
-
-  it('resets displayedQuestions in default mode when itemId changes', () => {
-    mockUseCioPia({ answerData: mockAnswerData });
-
-    const { rerender } = render(<CioPia {...mockProps} itemId='item-1' />);
-
-    // Follow-up questions should be displayed
-    mockAnswerData.follow_up_questions.forEach((question) => {
-      expect(screen.getByText(question.value)).toBeInTheDocument();
+      expect(container.querySelector('dialog')).toBeInTheDocument();
     });
 
-    // Change itemId — displayedQuestions should reset to empty until new suggestions load
-    rerender(<CioPia {...mockProps} itemId='item-2' />);
+    it('renders cio-pia-container with title, input, and suggested questions in the base view', () => {
+      const { container } = render(<CioPia {...mockProps} displayConfigs={{ type: 'modal' }} />);
 
-    // Follow-up questions from the previous item should be gone
-    mockAnswerData.follow_up_questions.forEach((question) => {
-      expect(screen.queryByText(question.value)).not.toBeInTheDocument();
+      // Base view is the top-level .cio-pia-container (not the one inside the dialog)
+      const baseView = container.querySelector(':scope > .cio-pia-container');
+      expect(baseView).toBeInTheDocument();
+      expect(screen.getAllByTestId('cio-pia-title').length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByRole('textbox').length).toBeGreaterThanOrEqual(1);
+      mockSuggestedQuestions.forEach((question) => {
+        expect(screen.getAllByText(question.value).length).toBeGreaterThanOrEqual(1);
+      });
     });
-  });
-});
 
-describe('CioPia Sub-component Overrides', () => {
-  it('renders custom Answer component via componentOverrides.answer', () => {
-    mockUseCioPia({ answerData: mockAnswerData });
+    it('implies conversation behavior (isConversation = true) for modal type', () => {
+      const { container } = render(<CioPia {...mockProps} displayConfigs={{ type: 'modal' }} />);
 
-    render(
-      <CioPia
-        {...mockProps}
-        componentOverrides={{
-          answer: {
-            reactNode: ({ text }) => <div data-testid='custom-answer'>Custom: {text}</div>,
-          },
-        }}
-      />,
-    );
-
-    expect(screen.getByTestId('custom-answer')).toBeInTheDocument();
-    expect(screen.getByText(`Custom: ${mockAnswerData.value}`)).toBeInTheDocument();
-    expect(screen.queryByTestId('answer-text')).not.toBeInTheDocument();
-  });
-
-  it('renders custom SuggestedQuestionsContainer via componentOverrides.suggestedQuestions', () => {
-    render(
-      <CioPia
-        {...mockProps}
-        componentOverrides={{
-          suggestedQuestions: {
-            reactNode: ({ questions, onQuestionClick }) => (
-              <ul data-testid='custom-suggested-questions'>
-                {questions.map((q) => (
-                  <li key={q.value}>
-                    <button type='button' onClick={() => onQuestionClick(q.value)}>
-                      {q.value}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ),
-          },
-        }}
-      />,
-    );
-
-    expect(screen.getByTestId('custom-suggested-questions')).toBeInTheDocument();
-    expect(screen.queryByTestId('suggested-questions-list')).not.toBeInTheDocument();
-    mockSuggestedQuestions.forEach((question) => {
-      expect(screen.getByText(question.value)).toBeInTheDocument();
+      // Modal uses PiaModal which renders a dialog with PiaConversation inside
+      expect(container.querySelector('dialog.cio-pia-modal')).toBeInTheDocument();
+      // PiaConversation lives inside the dialog, not as the top-level container
+      expect(container.querySelector('dialog .cio-pia-conversation')).toBeInTheDocument();
     });
   });
 
-  it('custom suggestedQuestions override responds to click', () => {
-    render(
-      <CioPia
-        {...mockProps}
-        componentOverrides={{
-          suggestedQuestions: {
-            reactNode: ({ questions, onQuestionClick }) => (
-              <ul data-testid='custom-suggested-questions'>
-                {questions.map((q) => (
-                  <li key={q.value}>
-                    <button type='button' onClick={() => onQuestionClick(q.value)}>
-                      {q.value}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ),
-          },
-        }}
-      />,
-    );
+  describe('State Reset on itemId Change', () => {
+    it('resets conversation history and input value when itemId changes', () => {
+      const { rerender } = render(
+        <CioPia {...mockProps} itemId='item-1' displayConfigs={{ mode: 'conversation' }} />,
+      );
 
-    fireEvent.click(screen.getByText(mockSuggestedQuestions[0].value));
-    expect(mockGetAnswer).toHaveBeenCalledWith(mockSuggestedQuestions[0].value);
+      const input = screen.getByRole('textbox');
+      fireEvent.change(input, { target: { value: 'A question about item 1' } });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+      expect(screen.getByText('A question about item 1')).toBeInTheDocument();
+
+      rerender(<CioPia {...mockProps} itemId='item-2' displayConfigs={{ mode: 'conversation' }} />);
+
+      // Input should be cleared and conversation history gone
+      expect(screen.getByRole('textbox')).toHaveValue('');
+      expect(screen.queryByText('A question about item 1')).not.toBeInTheDocument();
+    });
+
+    it('resets displayedQuestions in default mode when itemId changes', () => {
+      mockUseCioPia({ answerData: mockAnswerData });
+
+      const { rerender } = render(<CioPia {...mockProps} itemId='item-1' />);
+
+      // Follow-up questions should be displayed
+      mockAnswerData.follow_up_questions.forEach((question) => {
+        expect(screen.getByText(question.value)).toBeInTheDocument();
+      });
+
+      // Change itemId — displayedQuestions should reset to empty until new suggestions load
+      rerender(<CioPia {...mockProps} itemId='item-2' />);
+
+      // Follow-up questions from the previous item should be gone
+      mockAnswerData.follow_up_questions.forEach((question) => {
+        expect(screen.queryByText(question.value)).not.toBeInTheDocument();
+      });
+    });
   });
 
-  it('renders custom Disclaimer via componentOverrides.disclaimer', () => {
-    mockUseCioPia({ answerData: mockAnswerData });
+  describe('Sub-component Overrides', () => {
+    it('renders custom Answer component via componentOverrides.answer', () => {
+      mockUseCioPia({ answerData: mockAnswerData });
 
-    render(
-      <CioPia
-        {...mockProps}
-        componentOverrides={{
-          disclaimer: {
-            reactNode: () => <div data-testid='custom-disclaimer'>Custom Disclaimer Text</div>,
-          },
-        }}
-      />,
-    );
+      render(
+        <CioPia
+          {...mockProps}
+          componentOverrides={{
+            answer: {
+              reactNode: ({ text }) => <div data-testid='custom-answer'>Custom: {text}</div>,
+            },
+          }}
+        />,
+      );
 
-    expect(screen.getByTestId('custom-disclaimer')).toBeInTheDocument();
-    expect(screen.getByText('Custom Disclaimer Text')).toBeInTheDocument();
-    expect(screen.queryByText(/AI-generated/)).not.toBeInTheDocument();
-  });
+      expect(screen.getByTestId('custom-answer')).toBeInTheDocument();
+      expect(screen.getByText(`Custom: ${mockAnswerData.value}`)).toBeInTheDocument();
+      expect(screen.queryByTestId('answer-text')).not.toBeInTheDocument();
+    });
 
-  it('renders custom Feedback via componentOverrides.feedback with showFeedback enabled', () => {
-    mockUseCioPia({ answerData: mockAnswerData });
+    it('renders custom SuggestedQuestionsContainer via componentOverrides.suggestedQuestions', () => {
+      render(
+        <CioPia
+          {...mockProps}
+          componentOverrides={{
+            suggestedQuestions: {
+              reactNode: ({ questions, onQuestionClick }) => (
+                <ul data-testid='custom-suggested-questions'>
+                  {questions.map((q) => (
+                    <li key={q.value}>
+                      <button type='button' onClick={() => onQuestionClick(q.value)}>
+                        {q.value}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ),
+            },
+          }}
+        />,
+      );
 
-    render(
-      <CioPia
-        {...mockProps}
-        displayConfigs={{ showFeedback: true }}
-        componentOverrides={{
-          feedback: {
-            reactNode: () => <div data-testid='custom-feedback'>Custom Feedback Widget</div>,
-          },
-        }}
-      />,
-    );
+      expect(screen.getByTestId('custom-suggested-questions')).toBeInTheDocument();
+      expect(screen.queryByTestId('suggested-questions-list')).not.toBeInTheDocument();
+      mockSuggestedQuestions.forEach((question) => {
+        expect(screen.getByText(question.value)).toBeInTheDocument();
+      });
+    });
 
-    expect(screen.getByTestId('custom-feedback')).toBeInTheDocument();
-    expect(screen.getByText('Custom Feedback Widget')).toBeInTheDocument();
+    it('custom suggestedQuestions override responds to click', () => {
+      render(
+        <CioPia
+          {...mockProps}
+          componentOverrides={{
+            suggestedQuestions: {
+              reactNode: ({ questions, onQuestionClick }) => (
+                <ul data-testid='custom-suggested-questions'>
+                  {questions.map((q) => (
+                    <li key={q.value}>
+                      <button type='button' onClick={() => onQuestionClick(q.value)}>
+                        {q.value}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ),
+            },
+          }}
+        />,
+      );
+
+      fireEvent.click(screen.getByText(mockSuggestedQuestions[0].value));
+      expect(mockGetAnswer).toHaveBeenCalledWith(mockSuggestedQuestions[0].value);
+    });
+
+    it('renders custom Disclaimer via componentOverrides.disclaimer', () => {
+      mockUseCioPia({ answerData: mockAnswerData });
+
+      render(
+        <CioPia
+          {...mockProps}
+          componentOverrides={{
+            disclaimer: {
+              reactNode: () => <div data-testid='custom-disclaimer'>Custom Disclaimer Text</div>,
+            },
+          }}
+        />,
+      );
+
+      expect(screen.getByTestId('custom-disclaimer')).toBeInTheDocument();
+      expect(screen.getByText('Custom Disclaimer Text')).toBeInTheDocument();
+      expect(screen.queryByText(/AI-generated/)).not.toBeInTheDocument();
+    });
+
+    it('renders custom Feedback via componentOverrides.feedback with showFeedback enabled', () => {
+      mockUseCioPia({ answerData: mockAnswerData });
+
+      render(
+        <CioPia
+          {...mockProps}
+          displayConfigs={{ showFeedback: true }}
+          componentOverrides={{
+            feedback: {
+              reactNode: () => <div data-testid='custom-feedback'>Custom Feedback Widget</div>,
+            },
+          }}
+        />,
+      );
+
+      expect(screen.getByTestId('custom-feedback')).toBeInTheDocument();
+      expect(screen.getByText('Custom Feedback Widget')).toBeInTheDocument();
+    });
   });
 });

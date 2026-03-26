@@ -4,17 +4,17 @@ import { render, screen } from '@testing-library/react';
 import ConversationHistory from '../../../src/components/ConversationHistory/ConversationHistory';
 import { DISCLAIMER_TEXT } from '../../../src/constants';
 
-const baseProps = {
-  conversationHistory: [],
-  isLoading: false,
-  error: null,
-};
-
-beforeEach(() => {
-  jest.clearAllMocks();
-});
-
 describe('ConversationHistory Component', () => {
+  const baseProps = {
+    conversationHistory: [],
+    isLoading: false,
+    error: null,
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('has role="log" and aria-label for accessibility', () => {
     render(<ConversationHistory {...baseProps} conversationHistory={[]} />);
 
@@ -60,7 +60,6 @@ describe('ConversationHistory Component', () => {
       <ConversationHistory {...baseProps} conversationHistory={conversationHistory} isLoading />,
     );
 
-    // Only one loading skeleton should exist (on the last entry)
     expect(screen.getAllByTestId('loading-skeleton')).toHaveLength(1);
   });
 

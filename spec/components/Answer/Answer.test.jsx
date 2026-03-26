@@ -16,28 +16,26 @@ describe('Answer Component', () => {
     const { container } = render(<Answer text='' />);
     expect(container).toBeEmptyDOMElement();
   });
-});
 
-describe('Answer Component - componentOverride', () => {
-  const mockAnswer = 'This is an example answer text';
+  describe('componentOverride', () => {
+    it('renders default content when no componentOverride is provided', () => {
+      const { getByTestId, getByText } = render(<Answer text={mockAnswer} />);
+      expect(getByTestId('answer-text')).toBeInTheDocument();
+      expect(getByText(mockAnswer)).toBeInTheDocument();
+    });
 
-  it('renders default content when no componentOverride is provided', () => {
-    const { getByTestId, getByText } = render(<Answer text={mockAnswer} />);
-    expect(getByTestId('answer-text')).toBeInTheDocument();
-    expect(getByText(mockAnswer)).toBeInTheDocument();
-  });
+    it('renders a render props function override and passes the text prop to it', () => {
+      const renderPropsOverride = ({ text }) => (
+        <div data-testid='custom-answer-render-props'>Custom: {text}</div>
+      );
 
-  it('renders a render props function override and passes the text prop to it', () => {
-    const renderPropsOverride = ({ text }) => (
-      <div data-testid='custom-answer-render-props'>Custom: {text}</div>
-    );
+      const { getByTestId, queryByTestId } = render(
+        <Answer text={mockAnswer} componentOverride={{ reactNode: renderPropsOverride }} />,
+      );
 
-    const { getByTestId, queryByTestId } = render(
-      <Answer text={mockAnswer} componentOverride={{ reactNode: renderPropsOverride }} />,
-    );
-
-    expect(getByTestId('custom-answer-render-props')).toBeInTheDocument();
-    expect(getByTestId('custom-answer-render-props')).toHaveTextContent(`Custom: ${mockAnswer}`);
-    expect(queryByTestId('answer-text')).not.toBeInTheDocument();
+      expect(getByTestId('custom-answer-render-props')).toBeInTheDocument();
+      expect(getByTestId('custom-answer-render-props')).toHaveTextContent(`Custom: ${mockAnswer}`);
+      expect(queryByTestId('answer-text')).not.toBeInTheDocument();
+    });
   });
 });

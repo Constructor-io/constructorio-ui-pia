@@ -1,37 +1,37 @@
 import { renderHook, act } from '@testing-library/react';
 import useConversation from '../../../src/hooks/useConversation';
 
-const testQuestions = [
-  { value: 'Mock question 1' },
-  { value: 'Mock question 2' },
-  { value: 'Mock question 3' },
-];
-
-const followUpQuestions = [{ value: 'Follow-up question 1' }, { value: 'Follow-up question 2' }];
-
-const mockAnswerValue = 'Sample answer to the given question';
-
-function createMockPia(overrides = {}) {
-  return {
-    suggestedQuestions: {
-      data: [],
-      isLoading: false,
-      error: null,
-      getSuggestedQuestions: jest.fn(),
-      ...overrides.suggestedQuestions,
-    },
-    answers: {
-      data: null,
-      items: null,
-      isLoading: false,
-      error: null,
-      getAnswer: jest.fn(),
-      ...overrides.answers,
-    },
-  };
-}
-
 describe('Testing Hook: useConversation', () => {
+  const testQuestions = [
+    { value: 'Mock question 1' },
+    { value: 'Mock question 2' },
+    { value: 'Mock question 3' },
+  ];
+
+  const followUpQuestions = [{ value: 'Follow-up question 1' }, { value: 'Follow-up question 2' }];
+
+  const mockAnswerValue = 'Sample answer to the given question';
+
+  function createMockPia(overrides = {}) {
+    return {
+      suggestedQuestions: {
+        data: [],
+        isLoading: false,
+        error: null,
+        getSuggestedQuestions: jest.fn(),
+        ...overrides.suggestedQuestions,
+      },
+      answers: {
+        data: null,
+        items: null,
+        isLoading: false,
+        error: null,
+        getAnswer: jest.fn(),
+        ...overrides.answers,
+      },
+    };
+  }
+
   beforeEach(() => {
     jest.clearAllMocks();
   });

@@ -3,42 +3,32 @@ import '@testing-library/jest-dom';
 import { render, fireEvent, screen, within } from '@testing-library/react';
 import PiaModal from '../../../src/components/PiaConversation/PiaModal';
 
-beforeAll(() => {
-  HTMLDialogElement.prototype.showModal = jest.fn(function mock() {
-    this.setAttribute('open', '');
-  });
-  HTMLDialogElement.prototype.close = jest.fn(function mock() {
-    this.removeAttribute('open');
-  });
-});
-
-const mockSuggestedQuestions = [
-  { value: 'Suggested question 1?' },
-  { value: 'Suggested question 2?' },
-  { value: 'Suggested question 3?' },
-];
-
-const mockHandleSubmitQuestion = jest.fn();
-const mockOnClose = jest.fn();
-
-const defaultProps = {
-  initialQuestions: mockSuggestedQuestions,
-  handleSubmitQuestion: mockHandleSubmitQuestion,
-  isLoading: false,
-  onClose: mockOnClose,
-  children: <div data-testid='dialog-content'>Dialog Content</div>,
-};
-
-beforeEach(() => {
-  jest.clearAllMocks();
-  document.body.classList.remove('cio-pia-modal-open');
-});
-
-// Selectors scoped to base view (direct children of .cio-pia-container, excluding dialog)
 const BASE_INPUT = '.cio-pia-container > .cio-pia-input-container input';
 const BASE_QUESTIONS = '.cio-pia-container > .cio-pia-suggested-questions-container';
 
 describe('PiaModal Component', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    document.body.classList.remove('cio-pia-modal-open');
+  });
+
+  const mockSuggestedQuestions = [
+    { value: 'Suggested question 1?' },
+    { value: 'Suggested question 2?' },
+    { value: 'Suggested question 3?' },
+  ];
+
+  const mockHandleSubmitQuestion = jest.fn();
+  const mockOnClose = jest.fn();
+
+  const defaultProps = {
+    initialQuestions: mockSuggestedQuestions,
+    handleSubmitQuestion: mockHandleSubmitQuestion,
+    isLoading: false,
+    onClose: mockOnClose,
+    children: <div data-testid='dialog-content'>Dialog Content</div>,
+  };
+
   describe('Base View', () => {
     it('renders title, input, and suggested questions', () => {
       const { container } = render(<PiaModal {...defaultProps} />);

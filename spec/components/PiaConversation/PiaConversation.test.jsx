@@ -3,27 +3,27 @@ import '@testing-library/jest-dom';
 import { render, fireEvent, screen } from '@testing-library/react';
 import PiaConversation from '../../../src/components/PiaConversation/PiaConversation';
 
-const mockSuggestedQuestions = [
-  { value: 'What material is this made of?' },
-  { value: 'Is this available in other colors?' },
-  { value: 'What are the dimensions?' },
-];
-
-const mockHandleSubmitQuestion = jest.fn();
-
-const baseProps = {
-  conversationHistory: [],
-  isLoading: false,
-  error: null,
-  displayedQuestions: mockSuggestedQuestions,
-  handleSubmitQuestion: mockHandleSubmitQuestion,
-};
-
-beforeEach(() => {
-  jest.clearAllMocks();
-});
-
 describe('PiaConversation Component', () => {
+  const mockSuggestedQuestions = [
+    { value: 'What material is this made of?' },
+    { value: 'Is this available in other colors?' },
+    { value: 'What are the dimensions?' },
+  ];
+
+  const mockHandleSubmitQuestion = jest.fn();
+
+  const baseProps = {
+    conversationHistory: [],
+    isLoading: false,
+    error: null,
+    displayedQuestions: mockSuggestedQuestions,
+    handleSubmitQuestion: mockHandleSubmitQuestion,
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('Title rendering', () => {
     it('renders title when there is no conversation history', () => {
       render(<PiaConversation {...baseProps} conversationHistory={[]} />);
