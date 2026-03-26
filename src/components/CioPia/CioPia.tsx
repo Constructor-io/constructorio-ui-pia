@@ -88,11 +88,19 @@ export default function CioPia(props: CioPiaProps) {
     [getAnswer, isConversation],
   );
 
+  const resetState = useCallback(() => {
+    setCurrentQuestion('');
+    setDisplayedQuestions(suggestedQuestions.data);
+    setConversationHistory([]);
+    entryIdRef.current = 0;
+  }, [suggestedQuestions.data]);
+
   // Reset all state when itemId changes
   useEffect(() => {
     setCurrentQuestion('');
     setDisplayedQuestions([]);
     setConversationHistory([]);
+    entryIdRef.current = 0;
   }, [itemId]);
 
   useEffect(() => {
@@ -143,35 +151,27 @@ export default function CioPia(props: CioPiaProps) {
     translations,
     callbacks,
     componentOverrides,
+    displayedQuestions,
+    handleSubmitQuestion,
+    suggestedQuestionsError: suggestedQuestions.error,
   };
 
   if (type === 'modal') {
     return (
       <PiaModal
-        displayedQuestions={displayedQuestions}
+        initialQuestions={suggestedQuestions.data}
         handleSubmitQuestion={handleSubmitQuestion}
         isLoading={isLoading}
         componentOverrides={componentOverrides}
-        translations={translations}>
-        <PiaConversation
-          {...conversationHistoryProps}
-          displayedQuestions={displayedQuestions}
-          handleSubmitQuestion={handleSubmitQuestion}
-          suggestedQuestionsError={suggestedQuestions.error}
-        />
+        translations={translations}
+        onClose={resetState}>
+        <PiaConversation {...conversationHistoryProps} />
       </PiaModal>
     );
   }
 
   if (isConversation) {
-    return (
-      <PiaConversation
-        {...conversationHistoryProps}
-        displayedQuestions={displayedQuestions}
-        handleSubmitQuestion={handleSubmitQuestion}
-        suggestedQuestionsError={suggestedQuestions.error}
-      />
-    );
+    return <PiaConversation {...conversationHistoryProps} />;
   }
 
   // Default inline mode

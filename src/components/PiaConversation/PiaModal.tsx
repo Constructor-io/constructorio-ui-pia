@@ -16,19 +16,21 @@ function CloseIcon() {
 }
 
 interface PiaModalProps {
-  displayedQuestions: Question[];
+  initialQuestions: Question[];
   handleSubmitQuestion: (question: string) => void;
   isLoading: boolean;
   componentOverrides?: CioPiaComponentOverrides;
   translations?: Translations;
+  onClose?: () => void;
 }
 
 export default function PiaModal({
-  displayedQuestions,
+  initialQuestions,
   handleSubmitQuestion,
   isLoading,
   componentOverrides,
   translations,
+  onClose,
   children,
 }: PropsWithChildren<PiaModalProps>) {
   const [isOpen, setIsOpen] = useState(false);
@@ -40,7 +42,8 @@ export default function PiaModal({
 
   const closeModal = useCallback(() => {
     setIsOpen(false);
-  }, []);
+    onClose?.();
+  }, [onClose]);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -93,11 +96,11 @@ export default function PiaModal({
       <p className='cio-pia-title' data-testid='cio-pia-title'>
         {translate('Any questions about this product?', translations)}
       </p>
-      <Input onSubmit={handleQuestion} disabled={isLoading} translations={translations} />
+      <Input onSubmit={handleQuestion} disabled={isLoading || isOpen} translations={translations} />
 
-      {!isOpen && !isLoading && (
+      {initialQuestions.length > 0 && (
         <SuggestedQuestionsContainer
-          questions={displayedQuestions}
+          questions={initialQuestions}
           onQuestionClick={handleQuestion}
           componentOverride={componentOverrides?.suggestedQuestions}
         />

@@ -19,11 +19,13 @@ const mockSuggestedQuestions = [
 ];
 
 const mockHandleSubmitQuestion = jest.fn();
+const mockOnClose = jest.fn();
 
 const defaultProps = {
-  displayedQuestions: mockSuggestedQuestions,
+  initialQuestions: mockSuggestedQuestions,
   handleSubmitQuestion: mockHandleSubmitQuestion,
   isLoading: false,
+  onClose: mockOnClose,
   children: <div data-testid='dialog-content'>Dialog Content</div>,
 };
 
@@ -53,16 +55,26 @@ describe('PiaModal Component', () => {
       });
     });
 
+    it('does not render suggested questions when initialQuestions is empty', () => {
+      const { container } = render(<PiaModal {...defaultProps} initialQuestions={[]} />);
+
+      expect(container.querySelector(BASE_QUESTIONS)).not.toBeInTheDocument();
+    });
+
     it('input is disabled when isLoading is true', () => {
       const { container } = render(<PiaModal {...defaultProps} isLoading />);
 
       expect(container.querySelector(BASE_INPUT)).toBeDisabled();
     });
 
-    it('hides suggested questions when loading', () => {
-      const { container } = render(<PiaModal {...defaultProps} isLoading />);
+    it('input is disabled when modal is open', () => {
+      const { container } = render(<PiaModal {...defaultProps} />);
 
-      expect(container.querySelector(BASE_QUESTIONS)).not.toBeInTheDocument();
+      const baseInput = container.querySelector(BASE_INPUT);
+      fireEvent.change(baseInput, { target: { value: 'What is this product?' } });
+      fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
+
+      expect(container.querySelector(BASE_INPUT)).toBeDisabled();
     });
   });
 
@@ -90,7 +102,6 @@ describe('PiaModal Component', () => {
     it('closes modal when close button is clicked', () => {
       const { container } = render(<PiaModal {...defaultProps} />);
 
-      // Open modal first
       const baseInput = container.querySelector(BASE_INPUT);
       fireEvent.change(baseInput, { target: { value: 'What is this product?' } });
       fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
@@ -102,6 +113,20 @@ describe('PiaModal Component', () => {
       fireEvent.click(closeButton);
 
       expect(HTMLDialogElement.prototype.close).toHaveBeenCalled();
+    });
+
+    it('calls onClose when modal is closed', () => {
+      const { container } = render(<PiaModal {...defaultProps} />);
+
+      const baseInput = container.querySelector(BASE_INPUT);
+      fireEvent.change(baseInput, { target: { value: 'What is this product?' } });
+      fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
+
+      const dialog = container.querySelector('dialog');
+      const closeButton = within(dialog).getByRole('button', { name: 'Close', hidden: true });
+      fireEvent.click(closeButton);
+
+      expect(mockOnClose).toHaveBeenCalled();
     });
 
     it('calls handleSubmitQuestion when question is submitted', () => {
@@ -116,7 +141,7 @@ describe('PiaModal Component', () => {
   });
 
   describe('Dialog Content', () => {
-    it('renders dialogContent inside the dialog', () => {
+    it('renders children inside the dialog', () => {
       const { container } = render(<PiaModal {...defaultProps} />);
 
       const dialog = container.querySelector('dialog');
@@ -132,20 +157,22 @@ describe('PiaModal Component', () => {
     });
   });
 
-  describe('Base view hides after modal opens', () => {
-    it('hides suggested questions when modal is open', () => {
+  describe('Suggested questions visibility', () => {
+    it('shows suggested questions in base view when initialQuestions has items', () => {
       const { container } = render(<PiaModal {...defaultProps} />);
 
-      // Before opening — base view shows questions
       expect(container.querySelector(BASE_QUESTIONS)).toBeInTheDocument();
+    });
+
+    it('keeps suggested questions visible after modal opens', () => {
+      const { container } = render(<PiaModal {...defaultProps} />);
 
       // Open modal
       const baseInput = container.querySelector(BASE_INPUT);
       fireEvent.change(baseInput, { target: { value: 'Follow up?' } });
       fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
 
-      // After opening — base view hides questions
-      expect(container.querySelector(BASE_QUESTIONS)).not.toBeInTheDocument();
+      expect(container.querySelector(BASE_QUESTIONS)).toBeInTheDocument();
     });
   });
 });
