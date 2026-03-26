@@ -835,17 +835,6 @@ describe('CioPia Component', () => {
     });
   });
 });
-
-beforeAll(() => {
-  Element.prototype.scrollTo = jest.fn();
-  HTMLDialogElement.prototype.showModal = jest.fn(function mock() {
-    this.setAttribute('open', '');
-  });
-  HTMLDialogElement.prototype.close = jest.fn(function mock() {
-    this.removeAttribute('open');
-  });
-});
-
 describe('CioPia Conversation Mode', () => {
   it('renders conversation layout with cio-pia-conversation class', () => {
     const { container } = render(

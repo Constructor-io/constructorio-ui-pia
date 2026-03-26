@@ -3,10 +3,6 @@ import '@testing-library/jest-dom';
 import { render, fireEvent, screen } from '@testing-library/react';
 import PiaConversation from '../../../src/components/PiaConversation/PiaConversation';
 
-beforeAll(() => {
-  Element.prototype.scrollTo = jest.fn();
-});
-
 const mockSuggestedQuestions = [
   { value: 'What material is this made of?' },
   { value: 'Is this available in other colors?' },

@@ -4,10 +4,6 @@ import { render, screen } from '@testing-library/react';
 import ConversationHistory from '../../../src/components/ConversationHistory/ConversationHistory';
 import { DISCLAIMER_TEXT } from '../../../src/constants';
 
-beforeAll(() => {
-  Element.prototype.scrollTo = jest.fn();
-});
-
 const baseProps = {
   conversationHistory: [],
   isLoading: false,
