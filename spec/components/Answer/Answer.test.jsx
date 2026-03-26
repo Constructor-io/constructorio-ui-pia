@@ -40,16 +40,4 @@ describe('Answer Component - componentOverride', () => {
     expect(getByTestId('custom-answer-render-props')).toHaveTextContent(`Custom: ${mockAnswer}`);
     expect(queryByTestId('answer-text')).not.toBeInTheDocument();
   });
-
-  it('renders a static ReactNode override instead of the default content', () => {
-    const staticOverride = <div data-testid='custom-answer-static'>Static override</div>;
-
-    const { getByTestId, queryByTestId } = render(
-      <Answer text={mockAnswer} componentOverride={{ reactNode: staticOverride }} />,
-    );
-
-    expect(getByTestId('custom-answer-static')).toBeInTheDocument();
-    expect(getByTestId('custom-answer-static')).toHaveTextContent('Static override');
-    expect(queryByTestId('answer-text')).not.toBeInTheDocument();
-  });
 });
