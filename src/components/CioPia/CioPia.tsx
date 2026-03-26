@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React from 'react';
 import {
   IncludeComponentOverrides,
   IncludeRenderProps,
@@ -11,6 +11,7 @@ import Answer from '../Answer/Answer';
 import Feedback from '../Feedback/Feedback';
 import MockConstructorIOClient from '../../hooks/mocks/MockConstructorIOClient';
 import useCioPia from '../../hooks/useCioPia';
+import useConversation from '../../hooks/useConversation';
 import ErrorBlock from '../Error/ErrorBlock';
 import LoadingSkeleton from '../LoadingSkeleton/LoadingSkeleton';
 import {
@@ -19,8 +20,6 @@ import {
   Callbacks,
   CioPiaDisplayConfigs,
   Translations,
-  Question,
-  ConversationEntry,
 } from '../../types';
 import { translate } from '../../utils/translate';
 import PiaCustomCarousel from './PiaCustomCarousel';
@@ -56,80 +55,27 @@ export default function CioPia(props: CioPiaProps) {
     translations,
   } = props;
   const { learnMoreUrl, showFeedback, mode = 'default', type = 'inline' } = displayConfigs || {};
-  const { suggestedQuestions, answers } = useCioPia({
+  const isConversation = mode === 'conversation' || type === 'modal';
+
+  const pia = useCioPia({
     apiKey,
     itemId,
     threadId,
     variationId,
     cioClient,
   });
-  const { getAnswer } = answers;
 
-  const isConversation = mode === 'conversation' || type === 'modal';
-
-  const [currentQuestion, setCurrentQuestion] = useState<string>('');
-  const [displayedQuestions, setDisplayedQuestions] = useState<Question[]>([]);
-  const [conversationHistory, setConversationHistory] = useState<ConversationEntry[]>([]);
-
-  const entryIdRef = useRef(0);
-  const prevAnswerValueRef = useRef(answers.data?.value);
-
-  const handleSubmitQuestion = useCallback(
-    (question: string) => {
-      setCurrentQuestion(question);
-      getAnswer(question);
-
-      if (isConversation) {
-        entryIdRef.current += 1;
-        const id = entryIdRef.current;
-        setConversationHistory((prev) => [...prev, { id, question, answer: '' }]);
-      }
-    },
-    [getAnswer, isConversation],
-  );
-
-  const resetState = useCallback(() => {
-    setCurrentQuestion('');
-    setDisplayedQuestions(suggestedQuestions.data);
-    setConversationHistory([]);
-    prevAnswerValueRef.current = undefined;
-  }, [suggestedQuestions.data]);
-
-  // Reset all state when itemId changes
-  useEffect(() => {
-    setCurrentQuestion('');
-    setDisplayedQuestions([]);
-    setConversationHistory([]);
-    prevAnswerValueRef.current = undefined;
-  }, [itemId]);
-
-  useEffect(() => {
-    setDisplayedQuestions(suggestedQuestions.data);
-  }, [suggestedQuestions.data]);
-
-  useEffect(() => {
-    if (answers.data?.follow_up_questions) setDisplayedQuestions(answers.data.follow_up_questions);
-  }, [answers.data]);
-
-  useEffect(() => {
-    const answerValue = answers.data?.value ?? '';
-    if (!isConversation || conversationHistory.length === 0 || !answerValue) return;
-    if (answerValue === prevAnswerValueRef.current) return;
-    prevAnswerValueRef.current = answerValue;
-    setConversationHistory((prev) => {
-      const updated = [...prev];
-      updated[updated.length - 1] = {
-        ...updated[updated.length - 1],
-        answer: answerValue,
-      };
-      return updated;
-    });
-  }, [isConversation, conversationHistory.length, answers.data]);
-
-  const currentAnswer = answers.data?.value ?? '';
-  const currentItems = answers.items ?? null;
-  const error = answers.error || suggestedQuestions.error;
-  const isLoading = answers.isLoading || suggestedQuestions.isLoading;
+  const {
+    currentQuestion,
+    displayedQuestions,
+    conversationHistory,
+    currentAnswer,
+    currentItems,
+    isLoading,
+    error,
+    handleSubmitQuestion,
+    resetState,
+  } = useConversation({ pia, itemId, isConversation });
 
   const renderProps: CioPiaRenderProps = {
     items: currentItems,
@@ -159,7 +105,7 @@ export default function CioPia(props: CioPiaProps) {
   if (type === 'modal') {
     return (
       <PiaModal
-        initialQuestions={suggestedQuestions.data}
+        initialQuestions={pia.suggestedQuestions.data}
         handleSubmitQuestion={handleSubmitQuestion}
         isLoading={isLoading}
         componentOverrides={componentOverrides}
@@ -189,13 +135,7 @@ export default function CioPia(props: CioPiaProps) {
 
         {isLoading && <LoadingSkeleton />}
 
-        {!isLoading && error && (
-          <ErrorBlock
-            message={
-              answers.error?.message || suggestedQuestions.error?.message || 'Unexpected error'
-            }
-          />
-        )}
+        {!isLoading && error && <ErrorBlock message={error?.message || 'Unexpected error'} />}
 
         {!isLoading && !error && (
           <>
