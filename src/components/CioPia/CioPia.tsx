@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   IncludeComponentOverrides,
   IncludeRenderProps,
@@ -72,7 +72,7 @@ export default function CioPia(props: CioPiaProps) {
   const [conversationHistory, setConversationHistory] = useState<ConversationEntry[]>([]);
 
   const entryIdRef = useRef(0);
-  const prevAnswerDataRef = useRef(answers.data);
+  const prevAnswerValueRef = useRef(answers.data?.value);
 
   const handleSubmitQuestion = useCallback(
     (question: string) => {
@@ -92,7 +92,7 @@ export default function CioPia(props: CioPiaProps) {
     setCurrentQuestion('');
     setDisplayedQuestions(suggestedQuestions.data);
     setConversationHistory([]);
-    entryIdRef.current = 0;
+    prevAnswerValueRef.current = undefined;
   }, [suggestedQuestions.data]);
 
   // Reset all state when itemId changes
@@ -100,7 +100,7 @@ export default function CioPia(props: CioPiaProps) {
     setCurrentQuestion('');
     setDisplayedQuestions([]);
     setConversationHistory([]);
-    entryIdRef.current = 0;
+    prevAnswerValueRef.current = undefined;
   }, [itemId]);
 
   useEffect(() => {
@@ -112,14 +112,15 @@ export default function CioPia(props: CioPiaProps) {
   }, [answers.data]);
 
   useEffect(() => {
-    if (!isConversation || conversationHistory.length === 0 || !answers.data) return;
-    if (answers.data === prevAnswerDataRef.current) return;
-    prevAnswerDataRef.current = answers.data;
+    const answerValue = answers.data?.value ?? '';
+    if (!isConversation || conversationHistory.length === 0 || !answerValue) return;
+    if (answerValue === prevAnswerValueRef.current) return;
+    prevAnswerValueRef.current = answerValue;
     setConversationHistory((prev) => {
       const updated = [...prev];
       updated[updated.length - 1] = {
         ...updated[updated.length - 1],
-        answer: answers.data?.value ?? '',
+        answer: answerValue,
       };
       return updated;
     });
@@ -211,6 +212,7 @@ export default function CioPia(props: CioPiaProps) {
                 {showFeedback && (
                   <Feedback
                     translations={translations}
+                    onFeedback={callbacks?.onFeedback}
                     componentOverride={componentOverrides?.feedback}
                   />
                 )}

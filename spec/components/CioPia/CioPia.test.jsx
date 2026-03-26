@@ -9,27 +9,8 @@ import { DEMO_QUESTION, DISCLAIMER_TEXT } from '../../../src/constants';
 // Mock the useCioPia hook
 jest.mock('../../../src/hooks/useCioPia', () => jest.fn());
 
-/**
- * Mock embla-carousel that is used by Carousel component from constructorio-ui-components
- * to bypass embla-carousel's limitations in the jsdom test environment
- */
-// eslint-disable-next-line arrow-body-style
-jest.mock('embla-carousel-react', () => {
-  return jest.fn(() => [
-    jest.fn(), // carouselRef - the ref callback
-    {
-      // Mock EmblaCarouselType API
-      canScrollPrev: jest.fn(() => true),
-      canScrollNext: jest.fn(() => true),
-      scrollPrev: jest.fn(),
-      scrollNext: jest.fn(),
-      on: jest.fn(),
-      off: jest.fn(),
-      rootNode: jest.fn(() => null),
-      slideNodes: jest.fn(() => []),
-    },
-  ]);
-});
+// Uses manual mock from __mocks__/embla-carousel-react.js
+jest.mock('embla-carousel-react');
 
 const CAROUSEL_SELECTOR = '[data-carousel]';
 

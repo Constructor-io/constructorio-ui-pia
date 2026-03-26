@@ -4,7 +4,9 @@ export default function SuggestedQuestionsSkeleton() {
   return (
     <div
       className='cio-pia-suggested-questions-container'
-      data-testid='suggested-questions-skeleton'>
+      data-testid='suggested-questions-skeleton'
+      aria-busy='true'
+      aria-label='Loading suggestions'>
       <div className='cio-pia-suggested-question-skeleton' />
       <div className='cio-pia-suggested-question-skeleton' />
       <div className='cio-pia-suggested-question-skeleton' />

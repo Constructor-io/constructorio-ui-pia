@@ -11,6 +11,11 @@ import {
 import MockConstructorIOClient from './hooks/mocks/MockConstructorIOClient';
 import { Question } from './hooks/mocks/types';
 
+export enum FeedbackType {
+  UP = 'up',
+  DOWN = 'down',
+}
+
 export interface PiaContextValue {
   cioClient: Nullable<MockConstructorIOClient>;
   cioClientOptions: CioClientOptions;
@@ -58,6 +63,7 @@ export type Translations = {
 
 export interface Callbacks {
   onProductCardClick?: (item: Item) => void;
+  onFeedback?: (type: FeedbackType) => void;
 }
 
 /** Extends Product type to include PIA-specific fields */
@@ -102,6 +108,7 @@ export interface DisclaimerRenderProps {
 
 export interface FeedbackRenderProps {
   translations?: Translations;
+  onFeedback?: (type: FeedbackType) => void;
 }
 
 /**

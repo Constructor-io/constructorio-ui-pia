@@ -4,6 +4,8 @@ import { translate } from '../../utils/translate';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import { Translations, Question, CioPiaComponentOverrides } from '../../types';
 
+const OVERFLOW_HIDDEN_CLASS = 'cio-pia-modal-open';
+
 function CloseIcon() {
   return (
     <svg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -51,14 +53,14 @@ export default function PiaModal({
 
     if (isOpen) {
       dialog.showModal();
-      document.body.style.overflow = 'hidden';
+      document.body.classList.add(OVERFLOW_HIDDEN_CLASS);
     } else if (dialog.open) {
       dialog.close();
-      document.body.style.overflow = '';
+      document.body.classList.remove(OVERFLOW_HIDDEN_CLASS);
     }
 
     return () => {
-      document.body.style.overflow = '';
+      document.body.classList.remove(OVERFLOW_HIDDEN_CLASS);
     };
   }, [isOpen]);
 

@@ -31,6 +31,7 @@ const defaultProps = {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  document.body.classList.remove('cio-pia-modal-open');
 });
 
 // Selectors scoped to base view (direct children of .cio-pia-container, excluding dialog)
@@ -149,11 +150,16 @@ describe('PiaModal Component', () => {
       expect(within(dialog).getByText('Dialog Content')).toBeInTheDocument();
     });
 
-    it('dialog has aria-labelledby', () => {
+    it('dialog has aria-labelledby pointing to the modal title', () => {
       const { container } = render(<PiaModal {...defaultProps} />);
 
       const dialog = container.querySelector('dialog');
-      expect(dialog).toHaveAttribute('aria-labelledby', 'cio-pia-modal-title');
+      const labelledBy = dialog.getAttribute('aria-labelledby');
+      expect(labelledBy).toMatch('cio-pia-modal-title');
+
+      const title = container.querySelector(`#${labelledBy}`);
+      expect(title).toBeInTheDocument();
+      expect(title).toHaveTextContent('Ask about this product');
     });
   });
 

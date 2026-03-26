@@ -10,6 +10,11 @@
   flex-shrink: 0;
 }
 
+/* Body class applied when modal is open */
+body.cio-pia-modal-open {
+  overflow: hidden;
+}
+
 /* Modal */
 .cio-pia-modal {
   border: none;

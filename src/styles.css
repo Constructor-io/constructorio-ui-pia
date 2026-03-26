@@ -11,8 +11,7 @@
 @import './components/ConversationHistory/ConversationHistoryStyles.css';
 @import './components/PiaConversation/PiaConversationStyles.css';
 
-.cio-pia-container,
-.cio-pia-container * {
+.cio-pia-container {
   font-family: 'Inter', sans-serif;
   --cio-pia-chat-question-bg: #f0f0f5;
   --cio-pia-chat-answer-bg: #f8f8fa;
@@ -20,4 +19,8 @@
   --cio-pia-modal-height: 80vh;
   --cio-pia-modal-max-width: 640px;
   --cio-pia-modal-min-width: 320px;
+}
+
+.cio-pia-container * {
+  font-family: inherit;
 }

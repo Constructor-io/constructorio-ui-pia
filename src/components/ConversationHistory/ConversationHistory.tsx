@@ -53,16 +53,15 @@ export default function ConversationHistory({
       className='cio-pia-conversation-history'
       role='log'
       aria-label='Conversation history'>
-      {conversationHistory.map((entry) => {
-        const lastEntry = conversationHistory[conversationHistory.length - 1];
-        const isLast = entry === lastEntry;
+      {conversationHistory.map((entry, index) => {
+        const isLast = index === conversationHistory.length - 1;
 
         return (
           <div key={entry.id} className='cio-pia-conversation-entry'>
             <div className='cio-pia-chat-question'>{entry.question}</div>
 
             {isLast && isLoading && (
-              <div className='cio-pia-conversation-loading'>
+              <div className='cio-pia-conversation-loading' aria-live='polite'>
                 <LoadingSkeleton />
               </div>
             )}
@@ -84,6 +83,7 @@ export default function ConversationHistory({
                 {isLast && showFeedback && (
                   <Feedback
                     translations={translations}
+                    onFeedback={callbacks?.onFeedback}
                     componentOverride={componentOverrides?.feedback}
                   />
                 )}
