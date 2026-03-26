@@ -51,7 +51,6 @@ export const Default: Story = {
         error={null}
         displayedQuestions={mockQuestions}
         handleSubmitQuestion={args.handleSubmitQuestion}
-        suggestedQuestionsError={null}
       />
     </PiaModal>
   ),
@@ -71,7 +70,6 @@ export const WithAnswer: Story = {
         error={null}
         displayedQuestions={mockQuestions}
         handleSubmitQuestion={args.handleSubmitQuestion}
-        suggestedQuestionsError={null}
       />
     </PiaModal>
   ),
@@ -92,7 +90,6 @@ export const WithFeedback: Story = {
         showFeedback
         displayedQuestions={mockQuestions}
         handleSubmitQuestion={args.handleSubmitQuestion}
-        suggestedQuestionsError={null}
       />
     </PiaModal>
   ),
@@ -113,7 +110,6 @@ export const WithLearnMore: Story = {
         learnMoreUrl='https://constructor.io/learn-more'
         displayedQuestions={mockQuestions}
         handleSubmitQuestion={args.handleSubmitQuestion}
-        suggestedQuestionsError={null}
       />
     </PiaModal>
   ),
@@ -134,7 +130,6 @@ export const MultipleConversations: Story = {
         showFeedback
         displayedQuestions={mockQuestions}
         handleSubmitQuestion={args.handleSubmitQuestion}
-        suggestedQuestionsError={null}
       />
     </PiaModal>
   ),

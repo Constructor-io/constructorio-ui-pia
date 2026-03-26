@@ -21,7 +21,6 @@ const baseProps = {
   error: null,
   displayedQuestions: mockSuggestedQuestions,
   handleSubmitQuestion: mockHandleSubmitQuestion,
-  suggestedQuestionsError: null,
 };
 
 beforeEach(() => {
@@ -64,13 +63,8 @@ describe('PiaConversation Component', () => {
       });
     });
 
-    it('hides suggested questions when there is a suggestedQuestionsError', () => {
-      render(
-        <PiaConversation
-          {...baseProps}
-          suggestedQuestionsError={new Error('Failed to fetch questions')}
-        />,
-      );
+    it('hides suggested questions when there is an error', () => {
+      render(<PiaConversation {...baseProps} error={new Error('Failed to fetch questions')} />);
 
       mockSuggestedQuestions.forEach((question) => {
         expect(screen.queryByText(question.value)).not.toBeInTheDocument();

@@ -11,7 +11,6 @@ import ConversationHistory, {
 export interface PiaConversationProps extends ConversationHistoryProps {
   displayedQuestions: Question[];
   handleSubmitQuestion: (question: string) => void;
-  suggestedQuestionsError: Error | null;
 }
 
 export default function PiaConversation({
@@ -26,7 +25,6 @@ export default function PiaConversation({
   componentOverrides,
   displayedQuestions,
   handleSubmitQuestion,
-  suggestedQuestionsError,
 }: PiaConversationProps) {
   const hasHistory = conversationHistory.length > 0;
 
@@ -51,8 +49,8 @@ export default function PiaConversation({
       />
 
       <div className='cio-pia-conversation-footer'>
-        {isLoading && !suggestedQuestionsError && <SuggestedQuestionsSkeleton />}
-        {!isLoading && !suggestedQuestionsError && (
+        {isLoading && !error && <SuggestedQuestionsSkeleton />}
+        {!isLoading && !error && (
           <SuggestedQuestionsContainer
             questions={displayedQuestions}
             onQuestionClick={handleSubmitQuestion}

@@ -23,7 +23,6 @@ export const Empty: Story = {
     error: null,
     displayedQuestions: mockQuestions,
     handleSubmitQuestion: (question: string) => console.log('Submit:', question),
-    suggestedQuestionsError: null,
   },
 };
 
@@ -47,7 +46,6 @@ export const WithConversation: Story = {
     error: null,
     displayedQuestions: mockQuestions,
     handleSubmitQuestion: (question: string) => console.log('Submit:', question),
-    suggestedQuestionsError: null,
   },
 };
 
@@ -65,7 +63,6 @@ export const Loading: Story = {
     error: null,
     displayedQuestions: [],
     handleSubmitQuestion: (question: string) => console.log('Submit:', question),
-    suggestedQuestionsError: null,
   },
 };
 
@@ -78,7 +75,6 @@ export const WithError: Story = {
     error: new Error('Failed to fetch answer. Please try again.'),
     displayedQuestions: [],
     handleSubmitQuestion: (question: string) => console.log('Submit:', question),
-    suggestedQuestionsError: null,
   },
 };
 
@@ -97,7 +93,6 @@ export const WithFeedback: Story = {
     showFeedback: true,
     displayedQuestions: mockQuestions,
     handleSubmitQuestion: (question: string) => console.log('Submit:', question),
-    suggestedQuestionsError: null,
   },
 };
 
@@ -116,6 +111,5 @@ export const WithLearnMore: Story = {
     learnMoreUrl: 'https://constructor.io/learn-more',
     displayedQuestions: mockQuestions,
     handleSubmitQuestion: (question: string) => console.log('Submit:', question),
-    suggestedQuestionsError: null,
   },
 };

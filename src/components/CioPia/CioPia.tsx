@@ -153,7 +153,6 @@ export default function CioPia(props: CioPiaProps) {
     componentOverrides,
     displayedQuestions,
     handleSubmitQuestion,
-    suggestedQuestionsError: suggestedQuestions.error,
   };
 
   if (type === 'modal') {
