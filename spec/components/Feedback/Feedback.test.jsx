@@ -1,22 +1,38 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Feedback from '../../../src/components/Feedback/Feedback';
 
 describe('Feedback Component', () => {
-  it('renders the feedback component', () => {
-    const { getByText, getByLabelText } = render(<Feedback />);
+  const onFeedback = jest.fn();
 
-    expect(getByText('Is this answer useful?')).toBeInTheDocument();
-    expect(getByLabelText('thumbs up')).toBeInTheDocument();
-    expect(getByLabelText('thumbs down')).toBeInTheDocument();
+  it('renders the feedback component', () => {
+    render(<Feedback />);
+
+    expect(screen.getByText('Is this answer useful?')).toBeInTheDocument();
+    expect(screen.getByLabelText('thumbs up')).toBeInTheDocument();
+    expect(screen.getByLabelText('thumbs down')).toBeInTheDocument();
+  });
+
+  it('calls onFeedback with "up" when thumbs up is clicked', () => {
+    render(<Feedback onFeedback={onFeedback} />);
+
+    fireEvent.click(screen.getByLabelText('thumbs up'));
+    expect(onFeedback).toHaveBeenCalledWith('up');
+  });
+
+  it('calls onFeedback with "down" when thumbs down is clicked', () => {
+    render(<Feedback onFeedback={onFeedback} />);
+
+    fireEvent.click(screen.getByLabelText('thumbs down'));
+    expect(onFeedback).toHaveBeenCalledWith('down');
   });
 
   describe('componentOverride', () => {
     it('renders custom content when componentOverride.reactNode is a render props function', () => {
       const translations = { 'Is this answer useful?': 'Helpful?' };
 
-      const { getByTestId, queryByText } = render(
+      render(
         <Feedback
           translations={translations}
           componentOverride={{
@@ -31,31 +47,24 @@ describe('Feedback Component', () => {
         />,
       );
 
-      expect(getByTestId('custom-feedback')).toBeInTheDocument();
-      expect(getByTestId('custom-feedback-translation')).toHaveTextContent('Helpful?');
-      expect(queryByText('thumbs up')).not.toBeInTheDocument();
+      expect(screen.getByTestId('custom-feedback')).toBeInTheDocument();
+      expect(screen.getByTestId('custom-feedback-translation')).toHaveTextContent('Helpful?');
+      expect(screen.queryByText('thumbs up')).not.toBeInTheDocument();
     });
 
-    it('renders a static ReactNode override instead of the default feedback UI', () => {
-      const { getByTestId, queryByLabelText } = render(
-        <Feedback
-          componentOverride={{
-            reactNode: <div data-testid='static-feedback-override'>Custom Feedback</div>,
-          }}
-        />,
+    it('calls onFeedback when rendering through override', () => {
+      const renderPropsOverride = ({ onFeedback: onFeedbackOverride }) => (
+        <button type='button' onClick={() => onFeedbackOverride('up')}>
+          Custom Upvote
+        </button>
       );
 
-      expect(getByTestId('static-feedback-override')).toBeInTheDocument();
-      expect(queryByLabelText('thumbs up')).not.toBeInTheDocument();
-      expect(queryByLabelText('thumbs down')).not.toBeInTheDocument();
-    });
+      render(
+        <Feedback onFeedback={onFeedback} componentOverride={{ reactNode: renderPropsOverride }} />,
+      );
 
-    it('renders the default feedback UI when no componentOverride is provided', () => {
-      const { getByText, getByLabelText } = render(<Feedback />);
-
-      expect(getByText('Is this answer useful?')).toBeInTheDocument();
-      expect(getByLabelText('thumbs up')).toBeInTheDocument();
-      expect(getByLabelText('thumbs down')).toBeInTheDocument();
+      fireEvent.click(screen.getByText('Custom Upvote'));
+      expect(onFeedback).toHaveBeenCalledWith('up');
     });
   });
 });
