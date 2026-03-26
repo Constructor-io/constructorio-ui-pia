@@ -106,12 +106,14 @@ export default function PiaModal({
         />
       )}
 
-      <dialog ref={dialogRef} className='cio-pia-modal' aria-label='Product questions'>
+      <dialog
+        ref={dialogRef}
+        className='cio-pia-modal'
+        aria-hidden={!isOpen}
+        aria-label={translate('Ask about this product', translations)}>
         <div className='cio-pia-modal-content'>
           <div className='cio-pia-modal-header'>
-            <p className='cio-pia-title'>
-              {translate('Any questions about this product?', translations)}
-            </p>
+            <p className='cio-pia-title'>{translate('Ask about this product', translations)}</p>
             <button
               type='button'
               className='cio-pia-modal-close-button'

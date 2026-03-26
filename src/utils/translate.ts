@@ -8,6 +8,7 @@ const defaultTranslations: Translations = {
   [DISCLAIMER_TEXT]: DISCLAIMER_TEXT,
   'Is this answer useful?': 'Is this answer useful?',
   'Learn More.': 'Learn More.',
+  'Ask about this product': 'Ask about this product',
 };
 
 /**

@@ -1,6 +1,7 @@
 import React from 'react';
 import Input from '../Input/Input';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
+import SuggestedQuestionsSkeleton from '../SuggestedQuestionsContainer/SuggestedQuestionsSkeleton';
 import { translate } from '../../utils/translate';
 import { Question } from '../../types';
 import ConversationHistory, {
@@ -50,6 +51,7 @@ export default function PiaConversation({
       />
 
       <div className='cio-pia-conversation-footer'>
+        {isLoading && !suggestedQuestionsError && <SuggestedQuestionsSkeleton />}
         {!isLoading && !suggestedQuestionsError && (
           <SuggestedQuestionsContainer
             questions={displayedQuestions}

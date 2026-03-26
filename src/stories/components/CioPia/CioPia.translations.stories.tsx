@@ -39,6 +39,7 @@ export const AllCustomText: Story = {
       [DISCLAIMER_TEXT]: 'Las respuestas de IA pueden no ser siempre precisas.',
       'Is this answer useful?': '¿Es útil esta respuesta?',
       'Learn More.': 'Más información.',
+      'Ask about this product': 'Pregunta sobre este producto',
     },
   },
 };

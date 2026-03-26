@@ -53,6 +53,7 @@ export type Translations = {
   'AI-generated answers aim to help, but they may occasionally miss details or be inaccurate. Double-check important information before purchasing.'?: string;
   'Is this answer useful?'?: string;
   'Learn More.'?: string;
+  'Ask about this product'?: string;
 };
 
 export interface Callbacks {
