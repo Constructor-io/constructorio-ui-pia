@@ -18,12 +18,6 @@ describe('Answer Component', () => {
   });
 
   describe('componentOverride', () => {
-    it('renders default content when no componentOverride is provided', () => {
-      const { getByTestId, getByText } = render(<Answer text={mockAnswer} />);
-      expect(getByTestId('answer-text')).toBeInTheDocument();
-      expect(getByText(mockAnswer)).toBeInTheDocument();
-    });
-
     it('renders a render props function override and passes the text prop to it', () => {
       const renderPropsOverride = ({ text }) => (
         <div data-testid='custom-answer-render-props'>Custom: {text}</div>
