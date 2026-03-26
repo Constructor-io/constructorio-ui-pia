@@ -149,11 +149,11 @@ describe('PiaModal Component', () => {
       expect(within(dialog).getByText('Dialog Content')).toBeInTheDocument();
     });
 
-    it('dialog has aria-label', () => {
+    it('dialog has aria-labelledby', () => {
       const { container } = render(<PiaModal {...defaultProps} />);
 
       const dialog = container.querySelector('dialog');
-      expect(dialog).toHaveAttribute('aria-label', 'Product questions');
+      expect(dialog).toHaveAttribute('aria-labelledby', 'cio-pia-modal-title');
     });
   });
 
