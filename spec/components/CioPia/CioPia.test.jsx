@@ -9,9 +9,6 @@ import { DEMO_QUESTION, DISCLAIMER_TEXT } from '../../../src/constants';
 // Mock the useCioPia hook
 jest.mock('../../../src/hooks/useCioPia', () => jest.fn());
 
-// Uses manual mock from __mocks__/embla-carousel-react.js
-jest.mock('embla-carousel-react');
-
 const CAROUSEL_SELECTOR = '[data-carousel]';
 
 function dispatchProductCardClickEvent(element, product) {

@@ -12,6 +12,4 @@ const useEmblaCarousel = jest.fn(() => [
   },
 ]);
 
-module.exports = useEmblaCarousel;
-module.exports.__esModule = true;
-module.exports.default = useEmblaCarousel;
+export default useEmblaCarousel;

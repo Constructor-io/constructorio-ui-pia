@@ -8,9 +8,6 @@ beforeAll(() => {
   Element.prototype.scrollTo = jest.fn();
 });
 
-// Uses manual mock from __mocks__/embla-carousel-react.js
-jest.mock('embla-carousel-react');
-
 const baseProps = {
   conversationHistory: [],
   isLoading: false,
