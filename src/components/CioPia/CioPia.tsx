@@ -116,9 +116,7 @@ export default function CioPia(props: CioPiaProps) {
     );
   }
 
-  if (isConversation) {
-    return <PiaConversation {...conversationHistoryProps} />;
-  }
+  if (isConversation) return <PiaConversation {...conversationHistoryProps} />;
 
   // Default inline mode
   return (

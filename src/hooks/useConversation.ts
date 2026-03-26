@@ -56,7 +56,6 @@ export default function useConversation({
     prevAnswerValueRef.current = undefined;
   }, [suggestedQuestions.data]);
 
-  // Reset all state when itemId changes
   useEffect(() => {
     setCurrentQuestion('');
     setDisplayedQuestions([]);
@@ -64,23 +63,21 @@ export default function useConversation({
     prevAnswerValueRef.current = undefined;
   }, [itemId]);
 
-  // Sync initial suggested questions
   useEffect(() => {
     setDisplayedQuestions(suggestedQuestions.data);
   }, [suggestedQuestions.data]);
 
-  // Sync follow-up questions from answer response
   useEffect(() => {
     if (answers.data?.follow_up_questions) setDisplayedQuestions(answers.data.follow_up_questions);
   }, [answers.data]);
 
-  // Sync answer data into conversation history
   useEffect(() => {
     const answerValue = answers.data?.value ?? '';
-    if (!isConversation || conversationHistory.length === 0 || !answerValue) return;
+    if (!isConversation || !answerValue) return;
     if (answerValue === prevAnswerValueRef.current) return;
     prevAnswerValueRef.current = answerValue;
     setConversationHistory((prev) => {
+      if (prev.length === 0) return prev;
       const updated = [...prev];
       updated[updated.length - 1] = {
         ...updated[updated.length - 1],
@@ -88,7 +85,7 @@ export default function useConversation({
       };
       return updated;
     });
-  }, [isConversation, conversationHistory.length, answers.data]);
+  }, [isConversation, answers.data]);
 
   const currentAnswer = answers.data?.value ?? '';
   const currentItems = answers.items ?? null;

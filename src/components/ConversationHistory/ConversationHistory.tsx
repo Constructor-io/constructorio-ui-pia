@@ -40,11 +40,13 @@ export default function ConversationHistory({
 
   useEffect(() => {
     const container = scrollContainerRef.current;
-    if (!container) return;
+    if (!container) return undefined;
 
-    requestAnimationFrame(() => {
+    const frameId = requestAnimationFrame(() => {
       container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
     });
+
+    return () => cancelAnimationFrame(frameId);
   }, [conversationHistory, isLoading]);
 
   return (
