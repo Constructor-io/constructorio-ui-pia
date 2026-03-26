@@ -38,6 +38,7 @@ export default function ConversationHistory({
 }: ConversationHistoryProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isNearBottomRef = useRef(true);
+  const prevEntryCountRef = useRef(conversationHistory.length);
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -58,7 +59,10 @@ export default function ConversationHistory({
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    if (isNearBottomRef.current) {
+    const newEntry = conversationHistory.length > prevEntryCountRef.current;
+    prevEntryCountRef.current = conversationHistory.length;
+
+    if (newEntry || isNearBottomRef.current) {
       container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
     }
   }, [conversationHistory, isLoading]);

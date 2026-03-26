@@ -1,3 +1,4 @@
+import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import PiaModal from '../../../components/PiaConversation/PiaModal';
 import PiaConversation from '../../../components/PiaConversation/PiaConversation';
@@ -38,7 +39,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    displayedQuestions: mockQuestions,
+    initialQuestions: mockQuestions,
     handleSubmitQuestion: (question: string) => console.log('Submit:', question),
     isLoading: false,
   },
@@ -58,7 +59,7 @@ export const Default: Story = {
 
 export const WithAnswer: Story = {
   args: {
-    displayedQuestions: mockQuestions,
+    initialQuestions: mockQuestions,
     handleSubmitQuestion: (question: string) => console.log('Submit:', question),
     isLoading: false,
   },
@@ -78,7 +79,7 @@ export const WithAnswer: Story = {
 
 export const WithFeedback: Story = {
   args: {
-    displayedQuestions: mockQuestions,
+    initialQuestions: mockQuestions,
     handleSubmitQuestion: (question: string) => console.log('Submit:', question),
     isLoading: false,
   },
@@ -99,7 +100,7 @@ export const WithFeedback: Story = {
 
 export const WithLearnMore: Story = {
   args: {
-    displayedQuestions: mockQuestions,
+    initialQuestions: mockQuestions,
     handleSubmitQuestion: (question: string) => console.log('Submit:', question),
     isLoading: false,
   },
@@ -120,7 +121,7 @@ export const WithLearnMore: Story = {
 
 export const MultipleConversations: Story = {
   args: {
-    displayedQuestions: mockQuestions,
+    initialQuestions: mockQuestions,
     handleSubmitQuestion: (question: string) => console.log('Submit:', question),
     isLoading: false,
   },
