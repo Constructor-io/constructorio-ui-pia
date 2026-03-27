@@ -2,7 +2,9 @@ import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import PiaModal from '../../../components/PiaConversation/PiaModal';
 import PiaConversation from '../../../components/PiaConversation/PiaConversation';
-import { MOCK_QUESTIONS } from '../../../constants';
+import useCioPia from '../../../hooks/useCioPia';
+import useConversation from '../../../hooks/useConversation';
+import { DEMO_API_KEY, DEMO_ITEM_ID, MOCK_QUESTIONS } from '../../../constants';
 
 const mockQuestions = MOCK_QUESTIONS.slice(0, 3);
 
@@ -37,23 +39,38 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-  args: {
-    initialQuestions: mockQuestions,
-    handleSubmitQuestion: (question: string) => console.log('Submit:', question),
-    isLoading: false,
-  },
-  render: (args) => (
-    <PiaModal {...args}>
+function InteractiveWrapper() {
+  const pia = useCioPia({ apiKey: DEMO_API_KEY, itemId: DEMO_ITEM_ID });
+  const {
+    conversationHistory,
+    displayedQuestions,
+    isLoading,
+    error,
+    currentItems,
+    handleSubmitQuestion,
+    resetState,
+  } = useConversation({ pia, itemId: DEMO_ITEM_ID, isConversation: true });
+
+  return (
+    <PiaModal
+      initialQuestions={pia.suggestedQuestions.data}
+      handleSubmitQuestion={handleSubmitQuestion}
+      isLoading={isLoading}
+      onClose={resetState}>
       <PiaConversation
-        conversationHistory={[]}
-        isLoading={false}
-        error={null}
-        displayedQuestions={mockQuestions}
-        handleSubmitQuestion={args.handleSubmitQuestion}
+        conversationHistory={conversationHistory}
+        isLoading={isLoading}
+        error={error}
+        currentItems={currentItems}
+        displayedQuestions={displayedQuestions}
+        handleSubmitQuestion={handleSubmitQuestion}
       />
     </PiaModal>
-  ),
+  );
+}
+
+export const Default = {
+  render: () => <InteractiveWrapper />,
 };
 
 export const WithAnswer: Story = {
