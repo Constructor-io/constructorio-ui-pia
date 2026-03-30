@@ -1,36 +1,9 @@
-import React from 'react';
-import {
-  ConstructorClientOptions,
-  Nullable,
-} from '@constructor-io/constructorio-client-javascript';
 import {
   Product,
   CarouselOverrides,
   ComponentOverrideProps,
 } from '@constructor-io/constructorio-ui-components';
-import MockConstructorIOClient from './hooks/mocks/MockConstructorIOClient';
 import { Question } from './hooks/mocks/types';
-
-export interface PiaContextValue {
-  cioClient: Nullable<MockConstructorIOClient>;
-  cioClientOptions: CioClientOptions;
-  setCioClientOptions: React.Dispatch<CioClientOptions>;
-  itemId: string;
-  variationId?: string;
-  /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000") */
-  threadId?: string;
-}
-
-export type CioClientOptions = Omit<ConstructorClientOptions, 'apiKey' | 'sendTrackingEvents'>;
-
-export interface CioPiaProviderProps {
-  apiKey: string;
-  itemId: string;
-  variationId?: string;
-  /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000") */
-  threadId?: string;
-  cioClient?: Nullable<MockConstructorIOClient>;
-}
 
 export type CioPiaDisplayConfigs = {
   learnMoreUrl?: string;
