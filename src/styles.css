@@ -1,5 +1,5 @@
 @import '@constructor-io/constructorio-ui-components/styles.css';
-@import '@constructor-io/constructorio-ui-checkout/style.css';
+@import '@constructor-io/constructorio-ui-checkout/styles.css';
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap');
 @import './components/SuggestedQuestion/SuggestedQuestionStyles.css';
 @import './components/SuggestedQuestionsContainer/SuggestedQuestionsContainerStyles.css';
