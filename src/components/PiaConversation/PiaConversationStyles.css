@@ -1,5 +1,24 @@
 .cio-pia-conversation {
   max-height: var(--cio-pia-conversation-max-height);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.cio-pia-conversation-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 4px;
+}
+
+.cio-pia-conversation-checkout {
+  flex-shrink: 0;
+  width: 100%;
+  max-width: 560px;
 }
 
 .cio-pia-conversation-footer {
@@ -47,22 +66,6 @@ body.cio-pia-modal-open {
   flex-shrink: 0;
 }
 
-.cio-pia-modal-close-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  color: rgba(15, 19, 36, 0.6);
-  border-radius: 4px;
-}
-
-.cio-pia-modal-close-button:hover {
-  color: #14151a;
-  background: rgba(0, 0, 0, 0.05);
-}
-
 .cio-pia-modal-body {
   flex: 1;
   overflow: hidden;
@@ -76,9 +79,7 @@ body.cio-pia-modal-open {
   min-height: 0;
 }
 
-.cio-pia-modal-body .cio-pia-conversation-history {
-  max-height: none;
-  flex: 1;
+.cio-pia-modal-body .cio-pia-conversation-body {
   padding: 16px 20px 0;
 }
 

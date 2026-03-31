@@ -23,7 +23,6 @@ export interface UseConversationReturn {
 export default function useConversation({
   pia,
   itemId,
-  isConversation,
 }: UseConversationProps): UseConversationReturn {
   const { suggestedQuestions, answers } = pia;
   const { getAnswer } = answers;
@@ -40,19 +39,18 @@ export default function useConversation({
       setCurrentQuestion(question);
       getAnswer(question);
 
-      if (isConversation) {
-        entryIdRef.current += 1;
-        const id = entryIdRef.current;
-        setConversationHistory((prev) => [...prev, { id, question, answer: '' }]);
-      }
+      entryIdRef.current += 1;
+      const id = entryIdRef.current;
+      setConversationHistory((prev) => [...prev, { id, question, answer: '' }]);
     },
-    [getAnswer, isConversation],
+    [getAnswer],
   );
 
   const resetState = useCallback(() => {
     setCurrentQuestion('');
     setDisplayedQuestions(suggestedQuestions.data);
     setConversationHistory([]);
+    entryIdRef.current = 0;
     prevAnswerValueRef.current = undefined;
   }, [suggestedQuestions.data]);
 
@@ -73,7 +71,7 @@ export default function useConversation({
 
   useEffect(() => {
     const answerValue = answers.data?.value ?? '';
-    if (!isConversation || !answerValue) return;
+    if (!answerValue) return;
     if (answerValue === prevAnswerValueRef.current) return;
     prevAnswerValueRef.current = answerValue;
     setConversationHistory((prev) => {
@@ -85,7 +83,7 @@ export default function useConversation({
       };
       return updated;
     });
-  }, [isConversation, answers.data]);
+  }, [answers.data]);
 
   const currentAnswer = answers.data?.value ?? '';
   const currentItems = answers.items ?? null;

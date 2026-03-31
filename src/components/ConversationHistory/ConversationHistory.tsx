@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import Answer from '../Answer/Answer';
 import Feedback from '../Feedback/Feedback';
 import Disclaimer from '../CioPia/Disclaimer';
@@ -36,25 +36,8 @@ export default function ConversationHistory({
   callbacks,
   componentOverrides,
 }: ConversationHistoryProps) {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return undefined;
-
-    const frameId = requestAnimationFrame(() => {
-      container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
-    });
-
-    return () => cancelAnimationFrame(frameId);
-  }, [conversationHistory, isLoading]);
-
   return (
-    <div
-      ref={scrollContainerRef}
-      className='cio-pia-conversation-history'
-      role='log'
-      aria-label='Conversation history'>
+    <div className='cio-pia-conversation-history' role='log' aria-label='Conversation history'>
       {conversationHistory.map((entry, index) => {
         const isLast = index === conversationHistory.length - 1;
 

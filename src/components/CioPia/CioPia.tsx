@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import {
   IncludeComponentOverrides,
   IncludeRenderProps,
   RenderPropsWrapper,
 } from '@constructor-io/constructorio-ui-components';
+import { CioCheckout } from '@constructor-io/constructorio-ui-checkout';
+import type {
+  CioCheckoutProps,
+  CioCheckoutHandle,
+} from '@constructor-io/constructorio-ui-checkout';
 import Disclaimer from './Disclaimer';
 import Input from '../Input/Input';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
@@ -39,6 +44,8 @@ export interface CioPiaProps
   displayConfigs?: CioPiaDisplayConfigs;
   callbacks?: Callbacks;
   translations?: Translations;
+  /** Checkout props — triggerWhen receives PIA state for type inference */
+  checkoutProps?: CioCheckoutProps<CioPiaRenderProps>[];
 }
 
 export default function CioPia(props: CioPiaProps) {
@@ -53,6 +60,7 @@ export default function CioPia(props: CioPiaProps) {
     callbacks,
     children,
     translations,
+    checkoutProps = [],
   } = props;
   const { learnMoreUrl, showFeedback, mode = 'default', type = 'inline' } = displayConfigs || {};
   const isConversation = mode === 'conversation' || type === 'modal';
@@ -65,6 +73,8 @@ export default function CioPia(props: CioPiaProps) {
     cioClient,
   });
 
+  const checkoutRef = useRef<CioCheckoutHandle>(null);
+
   const {
     currentQuestion,
     displayedQuestions,
@@ -74,8 +84,13 @@ export default function CioPia(props: CioPiaProps) {
     isLoading,
     error,
     handleSubmitQuestion,
-    resetState,
+    resetState: resetConversation,
   } = useConversation({ pia, itemId, isConversation });
+
+  const resetState = useCallback(() => {
+    resetConversation();
+    checkoutRef.current?.reset();
+  }, [resetConversation]);
 
   const renderProps: CioPiaRenderProps = {
     items: currentItems,
@@ -102,6 +117,26 @@ export default function CioPia(props: CioPiaProps) {
     handleSubmitQuestion,
   };
 
+  const checkoutElement = checkoutProps.length > 0 && (
+    <div className='cio-pia-checkout-container'>
+      {checkoutProps.map((checkout, index) => (
+        <CioCheckout
+          // eslint-disable-next-line react/no-array-index-key
+          key={`cio-checkout-${index}`}
+          ref={checkoutRef}
+          {...checkout}
+          triggerWhen={(state: CioPiaRenderProps) => {
+            if (checkout.triggerWhen) {
+              return checkout.triggerWhen(renderProps);
+            }
+            return state.conversationHistory.length > 0 && !state.isLoading && !state.error;
+          }}
+          triggerState={renderProps}
+        />
+      ))}
+    </div>
+  );
+
   if (type === 'modal') {
     return (
       <PiaModal
@@ -111,12 +146,14 @@ export default function CioPia(props: CioPiaProps) {
         componentOverrides={componentOverrides}
         translations={translations}
         onClose={resetState}>
-        <PiaConversation {...conversationHistoryProps} />
+        <PiaConversation {...conversationHistoryProps} checkoutElement={checkoutElement} />
       </PiaModal>
     );
   }
 
-  if (isConversation) return <PiaConversation {...conversationHistoryProps} />;
+  if (isConversation) {
+    return <PiaConversation {...conversationHistoryProps} checkoutElement={checkoutElement} />;
+  }
 
   // Default inline mode
   return (
@@ -134,6 +171,8 @@ export default function CioPia(props: CioPiaProps) {
         {isLoading && <LoadingSkeleton />}
 
         {!isLoading && error && <ErrorBlock message={error?.message || 'Unexpected error'} />}
+
+        {!isLoading && !error && checkoutElement}
 
         {!isLoading && !error && (
           <>

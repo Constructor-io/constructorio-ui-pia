@@ -1,4 +1,5 @@
 import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
+import { Button } from '@constructor-io/constructorio-ui-components';
 import Input from '../Input/Input';
 import { translate } from '../../utils/translate';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
@@ -114,13 +115,9 @@ export default function PiaModal({
             <p className='cio-pia-title' id='cio-pia-modal-title'>
               {translate('Ask about this product', translations)}
             </p>
-            <button
-              type='button'
-              className='cio-pia-modal-close-button'
-              aria-label='Close'
-              onClick={closeModal}>
+            <Button variant='ghost' size='icon' onClick={closeModal} aria-label='Close'>
               <CloseIcon />
-            </button>
+            </Button>
           </div>
           <div className='cio-pia-modal-body'>{children}</div>
         </div>

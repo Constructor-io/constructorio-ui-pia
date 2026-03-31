@@ -30,3 +30,9 @@
 .cio-pia-learn-more {
   color: inherit;
 }
+
+.cio-pia-checkout-container {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+}
