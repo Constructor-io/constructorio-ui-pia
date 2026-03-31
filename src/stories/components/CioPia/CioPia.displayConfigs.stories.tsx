@@ -25,18 +25,14 @@ export const Default: Story = {
 
 const demoSession = () =>
   Promise.resolve({
-    clientSecret:
-      'cs_test_b1ZAiDKMyi8r6D0qfXgNOhKchjBbxV60s59cxgHZD77PjeURUBpk0M1ZOf_secret_fidnandhYHdWcXxpYCc%2FJ2FgY2RwaXEnKSdkdWxOYHwnPyd1blpxYHZxWjA0UUNwXUpMa09GcHQ3NU1tQW1rb25iNkldXU1NXzVkYGJ%2FaGppTWRmMVV3a3JjPFd2dlZjamlTMTBrPXNSc0phT313QFRQVFV0PTM3a05WTWBzPVJJUj12NTVVQG5HRn9KZCcpJ3BsSGphYCc%2FJ2BoZ2BhYWBhJyknaWR8anBxUXx1YCc%2FJ2hwaXFsWmxxYGgnKSd3YGFsd2BmcUprRmpodWlgcWxqayc%2FJ2tgc2B3JyknZ2RmbmJ3anBrYUZqaWp3Jz8nJmNjY2NjYyd4JSUl',
-    publishableKey:
-      'pk_test_51TFuXOInJCuq20HhDhnjkg3LXXHHZ0aegzmolHac4Prnwf9RssSfolV45n8vWvOdJxrEQUQPq862nKSHev8WLW8s00PEkBCzOa',
+    clientSecret: 'cs_test_REPLACE_WITH_YOUR_OWN_CLIENT_SECRET',
+    publishableKey: 'pk_test_REPLACE_WITH_YOUR_OWN_PUBLISHABLE_KEY',
   });
 
 const demoSession2 = () =>
   Promise.resolve({
-    clientSecret:
-      'cs_test_b1ZAiDKMyi8r6D0qfXgNOhKchjBbxV60s59cxgHZD77PjeURUBpk0M1ZOf_secret_fidnandhYHdWcXxpYCc%2FJ2FgY2RwaXEnKSdkdWxOYHwnPyd1blpxYHZxWjA0UUNwXUpMa09GcHQ3NU1tQW1rb25iNkldXU1NXzVkYGJ%2FaGppTWRmMVV3a3JjPFd2dlZjamlTMTBrPXNSc0phT313QFRQVFV0PTM3a05WTWBzPVJJUj12NTVVQG5HRn9KZCcpJ3BsSGphYCc%2FJ2BoZ2BhYWBhJyknaWR8anBxUXx1YCc%2FJ2hwaXFsWmxxYGgnKSd3YGFsd2BmcUprRmpodWlgcWxqayc%2FJ2tgc2B3JyknZ2RmbmJ3anBrYUZqaWp3Jz8nJmNjY2NjYyd4JSUl',
-    publishableKey:
-      'pk_test_51TFuXOInJCuq20HhDhnjkg3LXXHHZ0aegzmolHac4Prnwf9RssSfolV45n8vWvOdJxrEQUQPq862nKSHev8WLW8s00PEkBCzOa',
+    clientSecret: 'cs_test_REPLACE_WITH_YOUR_OWN_CLIENT_SECRET',
+    publishableKey: 'pk_test_REPLACE_WITH_YOUR_OWN_PUBLISHABLE_KEY',
   });
 
 export const WithCheckout: Story = {

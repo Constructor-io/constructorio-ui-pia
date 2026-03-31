@@ -129,7 +129,7 @@ export default function CioPia(props: CioPiaProps) {
             if (checkout.triggerWhen) {
               return checkout.triggerWhen(renderProps);
             }
-            return state.conversationHistory.length > 0 && !state.isLoading && !state.error;
+            return state.conversationHistory.length >= 3 && !state.isLoading && !state.error;
           }}
           triggerState={renderProps}
         />
