@@ -1,15 +1,14 @@
-import React from 'react';
-import {
-  ConstructorClientOptions,
-  Nullable,
-} from '@constructor-io/constructorio-client-javascript';
 import {
   Product,
   CarouselOverrides,
   ComponentOverrideProps,
 } from '@constructor-io/constructorio-ui-components';
-import MockConstructorIOClient from './hooks/mocks/MockConstructorIOClient';
+import {
+  ConstructorClientOptions,
+  Nullable,
+} from '@constructor-io/constructorio-client-javascript';
 import { Question } from './hooks/mocks/types';
+import MockConstructorIOClient from './hooks/mocks/MockConstructorIOClient';
 
 export enum FeedbackType {
   UP = 'up',
