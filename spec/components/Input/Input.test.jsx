@@ -17,10 +17,7 @@ describe('Input Component', () => {
 
   it('renders with custom placeholder via translations', () => {
     const { getByPlaceholderText } = render(
-      <Input
-        onSubmit={mockSubmit}
-        translations={{ 'Ask anything': 'Custom placeholder' }}
-      />,
+      <Input onSubmit={mockSubmit} translations={{ 'Ask anything': 'Custom placeholder' }} />,
     );
     expect(getByPlaceholderText('Custom placeholder')).toBeInTheDocument();
   });

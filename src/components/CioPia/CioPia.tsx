@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React from 'react';
 import {
   IncludeComponentOverrides,
   IncludeRenderProps,
@@ -11,6 +11,7 @@ import Answer from '../Answer/Answer';
 import Feedback from '../Feedback/Feedback';
 import MockConstructorIOClient from '../../hooks/mocks/MockConstructorIOClient';
 import useCioPia from '../../hooks/useCioPia';
+import useConversation from '../../hooks/useConversation';
 import ErrorBlock from '../Error/ErrorBlock';
 import LoadingSkeleton from '../LoadingSkeleton/LoadingSkeleton';
 import {
@@ -19,10 +20,11 @@ import {
   Callbacks,
   CioPiaDisplayConfigs,
   Translations,
-  Question,
 } from '../../types';
 import { translate } from '../../utils/translate';
 import PiaCustomCarousel from './PiaCustomCarousel';
+import PiaModal from '../PiaConversation/PiaModal';
+import PiaConversation from '../PiaConversation/PiaConversation';
 
 export interface CioPiaProps
   extends
@@ -52,41 +54,29 @@ export default function CioPia(props: CioPiaProps) {
     children,
     translations,
   } = props;
-  const { learnMoreUrl, showFeedback } = displayConfigs || {};
-  const { suggestedQuestions, answers } = useCioPia({
+  const { learnMoreUrl, showFeedback, mode = 'default', type = 'inline' } = displayConfigs || {};
+  const isConversation = mode === 'conversation' || type === 'modal';
+
+  const pia = useCioPia({
     apiKey,
     itemId,
     threadId,
     variationId,
     cioClient,
   });
-  const { getAnswer } = answers;
 
-  const [currentQuestion, setCurrentQuestion] = useState<string>('');
-  const [displayedQuestions, setDisplayedQuestions] = useState<Question[]>([]);
+  const {
+    currentQuestion,
+    displayedQuestions,
+    conversationHistory,
+    currentAnswer,
+    currentItems,
+    isLoading,
+    error,
+    handleSubmitQuestion,
+    resetState,
+  } = useConversation({ pia, itemId, isConversation });
 
-  const handleSubmitQuestion = useCallback(
-    (question: string) => {
-      setCurrentQuestion(question);
-      getAnswer(question);
-    },
-    [getAnswer],
-  );
-
-  useEffect(() => {
-    setDisplayedQuestions(suggestedQuestions.data);
-  }, [suggestedQuestions.data]);
-
-  useEffect(() => {
-    if (answers.data?.follow_up_questions) setDisplayedQuestions(answers.data.follow_up_questions);
-  }, [answers.data]);
-
-  const currentAnswer = answers.data?.value ?? '';
-  const currentItems = answers.items ?? null;
-  const error = answers.error || suggestedQuestions.error;
-  const isLoading = answers.isLoading || suggestedQuestions.isLoading;
-
-  // Build render props to pass to children function or componentOverrides.reactNode
   const renderProps: CioPiaRenderProps = {
     items: currentItems,
     isLoading,
@@ -95,8 +85,40 @@ export default function CioPia(props: CioPiaProps) {
     currentQuestion,
     displayedQuestions,
     handleSubmitQuestion,
+    conversationHistory,
   };
 
+  const conversationHistoryProps = {
+    conversationHistory,
+    isLoading,
+    error,
+    currentItems,
+    showFeedback,
+    learnMoreUrl,
+    translations,
+    callbacks,
+    componentOverrides,
+    displayedQuestions,
+    handleSubmitQuestion,
+  };
+
+  if (type === 'modal') {
+    return (
+      <PiaModal
+        initialQuestions={pia.suggestedQuestions.data}
+        handleSubmitQuestion={handleSubmitQuestion}
+        isLoading={isLoading}
+        componentOverrides={componentOverrides}
+        translations={translations}
+        onClose={resetState}>
+        <PiaConversation {...conversationHistoryProps} />
+      </PiaModal>
+    );
+  }
+
+  if (isConversation) return <PiaConversation {...conversationHistoryProps} />;
+
+  // Default inline mode
   return (
     <div className='cio-pia-container' data-testid='cio-pia-container'>
       <RenderPropsWrapper props={renderProps} override={children || componentOverrides?.reactNode}>
@@ -111,19 +133,13 @@ export default function CioPia(props: CioPiaProps) {
 
         {isLoading && <LoadingSkeleton />}
 
-        {!isLoading && error && (
-          <ErrorBlock
-            message={
-              answers.error?.message || suggestedQuestions.error?.message || 'Unexpected error'
-            }
-          />
-        )}
+        {!isLoading && error && <ErrorBlock message={error?.message || 'Unexpected error'} />}
 
         {!isLoading && !error && (
           <>
             {currentAnswer && (
               <div className='cio-pia-answer-container'>
-                <Answer text={currentAnswer} />
+                <Answer text={currentAnswer} componentOverride={componentOverrides?.answer} />
                 {currentItems && (
                   <PiaCustomCarousel
                     items={currentItems}
@@ -131,14 +147,25 @@ export default function CioPia(props: CioPiaProps) {
                     callbacks={callbacks}
                   />
                 )}
-                {showFeedback && <Feedback translations={translations} />}
-                <Disclaimer learnMoreUrl={learnMoreUrl} translations={translations} />
+                {showFeedback && (
+                  <Feedback
+                    translations={translations}
+                    onFeedback={callbacks?.onFeedback}
+                    componentOverride={componentOverrides?.feedback}
+                  />
+                )}
+                <Disclaimer
+                  learnMoreUrl={learnMoreUrl}
+                  translations={translations}
+                  componentOverride={componentOverrides?.disclaimer}
+                />
               </div>
             )}
 
             <SuggestedQuestionsContainer
               questions={displayedQuestions}
               onQuestionClick={handleSubmitQuestion}
+              componentOverride={componentOverrides?.suggestedQuestions}
             />
           </>
         )}

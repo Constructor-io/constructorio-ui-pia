@@ -1,0 +1,105 @@
+import { Meta, Canvas } from '@storybook/blocks';
+import * as DisplayConfigsStories from './CioPia.displayConfigs.stories';
+
+<Meta of={DisplayConfigsStories} />
+
+# Display Configs
+
+The `displayConfigs` prop allows you to control the presentation and behavior of the PIA component.
+
+## Available Options
+
+```typescript
+{
+  // Show feedback thumbs up/down buttons below the answer
+  showFeedback?: boolean;
+
+  // URL for a "Learn More" link in the disclaimer
+  learnMoreUrl?: string;
+
+  // Controls Q&A behavior: 'default' (single Q&A) or 'conversation' (multi-turn chat)
+  mode?: 'default' | 'conversation';
+
+  // Controls presentation: 'inline' (embedded) or 'modal' (dialog overlay)
+  type?: 'inline' | 'modal';
+}
+```
+
+## Default Mode (Inline)
+
+The default mode renders a single question-answer experience inline on the page. Each new question replaces the previous answer.
+
+<Canvas of={DisplayConfigsStories.Default} />
+
+## With Feedback
+
+Shows thumbs up/down buttons below the answer so users can rate the response.
+
+<Canvas of={DisplayConfigsStories.WithFeedback} />
+
+## With Learn More
+
+Adds a "Learn More" link to the disclaimer section.
+
+<Canvas of={DisplayConfigsStories.WithLearnMore} />
+
+## Conversation Mode
+
+Conversation mode (`mode: 'conversation'`) enables multi-turn chat. Questions and answers are preserved as a scrollable conversation history,
+and follow-up questions appear after each response.
+
+<Canvas of={DisplayConfigsStories.ConversationMode} />
+
+## Modal Type
+
+The modal type (`type: 'modal'`) renders the component with an inline preview that expands into a full dialog overlay when a question is asked.
+Modal type always uses conversation mode internally, so setting `mode` is not required.
+
+<Canvas of={DisplayConfigsStories.ModalType} />
+
+## Basic Usage
+
+```jsx
+import { CioPia } from '@constructor-io/constructorio-ui-pia';
+import '@constructor-io/constructorio-ui-pia/styles.css';
+
+// Default inline mode
+<CioPia apiKey="YOUR_API_KEY" itemId="YOUR_ITEM_ID" />
+
+// Conversation mode
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId="YOUR_ITEM_ID"
+  displayConfigs={{
+    mode: 'conversation',
+    showFeedback: true,
+  }}
+/>
+
+// Modal type
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId="YOUR_ITEM_ID"
+  displayConfigs={{
+    type: 'modal',
+    showFeedback: true,
+  }}
+/>
+```
+
+## Combining Options
+
+All display config options can be combined:
+
+```jsx
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId="YOUR_ITEM_ID"
+  displayConfigs={{
+    mode: 'conversation',
+    type: 'modal',
+    showFeedback: true,
+    learnMoreUrl: 'https://example.com/learn-more',
+  }}
+/>
+```
