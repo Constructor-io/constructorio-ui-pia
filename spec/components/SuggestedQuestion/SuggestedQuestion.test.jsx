@@ -3,9 +3,9 @@ import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import SuggestedQuestion from '../../../src/components/SuggestedQuestion/SuggestedQuestion';
 
-const testSuggestedQuestion = 'Test question?';
-
 describe('SuggestedQuestion Component', () => {
+  const testSuggestedQuestion = 'Test question?';
+
   const defaultProps = {
     question: testSuggestedQuestion,
     onClick: jest.fn(),

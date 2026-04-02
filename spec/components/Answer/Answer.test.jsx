@@ -16,4 +16,20 @@ describe('Answer Component', () => {
     const { container } = render(<Answer text='' />);
     expect(container).toBeEmptyDOMElement();
   });
+
+  describe('componentOverride', () => {
+    it('renders a render props function override and passes the text prop to it', () => {
+      const renderPropsOverride = ({ text }) => (
+        <div data-testid='custom-answer-render-props'>Custom: {text}</div>
+      );
+
+      const { getByTestId, queryByTestId } = render(
+        <Answer text={mockAnswer} componentOverride={{ reactNode: renderPropsOverride }} />,
+      );
+
+      expect(getByTestId('custom-answer-render-props')).toBeInTheDocument();
+      expect(getByTestId('custom-answer-render-props')).toHaveTextContent(`Custom: ${mockAnswer}`);
+      expect(queryByTestId('answer-text')).not.toBeInTheDocument();
+    });
+  });
 });
