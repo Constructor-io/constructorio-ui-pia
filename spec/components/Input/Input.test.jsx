@@ -68,6 +68,16 @@ describe('Input Component', () => {
     expect(mockSubmit).toHaveBeenCalledWith('test input');
   });
 
+  it('calls preventDefault on Enter to avoid parent form submission', () => {
+    const { queryByRole } = render(<Input onSubmit={mockSubmit} />);
+    const input = queryByRole('textbox');
+
+    fireEvent.change(input, { target: { value: 'test input' } });
+    const prevented = !fireEvent.keyDown(input, { key: 'Enter' });
+
+    expect(prevented).toBe(true);
+  });
+
   it('does not call onSubmit with empty input', () => {
     const { queryByRole } = render(<Input onSubmit={mockSubmit} />);
     const button = queryByRole('button');

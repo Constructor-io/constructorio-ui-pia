@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Nullable } from '@constructor-io/constructorio-client-javascript';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 import { Item, GetAnswerResultsResponse } from '../types';
@@ -26,6 +26,7 @@ interface FetchAnswerResultsParams {
   question: string;
   variationId?: string;
   threadId?: string;
+  signal?: AbortSignal;
 }
 
 const extractAndTransformItems = (data: Nullable<GetAnswerResultsResponse>): Array<Item> | null => {
@@ -51,12 +52,14 @@ const fetchAnswerResults = async ({
   question,
   variationId,
   threadId,
+  signal,
 }: FetchAnswerResultsParams) => {
   const response: GetAnswerResultsResponse = await client.agent.getAnswerResults({
     itemId,
     variationId,
     threadId,
     question,
+    signal,
   });
   return response;
 };
@@ -71,30 +74,59 @@ export default function useAnswerResults({
   const [items, setItems] = useState<Array<Item> | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const fetchResult = useCallback(
     (question: string) => {
       if (!cioClient) return;
 
+      // Abort any in-flight request before starting a new one
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
       setIsLoading(true);
       setError(null);
 
-      fetchAnswerResults({ client: cioClient, itemId, question, variationId, threadId })
+      fetchAnswerResults({
+        client: cioClient,
+        itemId,
+        question,
+        variationId,
+        threadId,
+        signal: controller.signal,
+      })
         .then((fetchedAnswerResults) => {
+          if (controller.signal.aborted) return;
           setAnswerResults(fetchedAnswerResults);
           setItems(extractAndTransformItems(fetchedAnswerResults));
           setError(null);
         })
         .catch((err) => {
+          if (controller.signal.aborted) return;
           setError(err instanceof Error ? err : new Error('Error fetching answer'));
           setAnswerResults(null);
           setItems(null);
         })
         .finally(() => {
+          if (controller.signal.aborted) return;
           setIsLoading(false);
         });
     },
     [cioClient, itemId, variationId, threadId],
+  );
+
+  // Abort in-flight request on unmount
+  useEffect(
+    () => () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    },
+    [],
   );
 
   return {

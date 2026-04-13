@@ -98,6 +98,7 @@ class MockAgent {
     threadId,
     question,
     parameters = {},
+    signal,
   }: GetAnswerResultsProps): Promise<GetAnswerResultsResponse> {
     if (!itemId) throw new Error('Item ID is required');
     if (!question) throw new Error('Question is required');
@@ -113,7 +114,7 @@ class MockAgent {
     });
 
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, { signal });
 
       if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
 
@@ -121,6 +122,9 @@ class MockAgent {
 
       return data;
     } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        throw error;
+      }
       const errorMessage = error instanceof Error ? error.message : String(error);
 
       throw new Error(errorMessage);
