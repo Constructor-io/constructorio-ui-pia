@@ -75,6 +75,7 @@ export interface ConversationEntry {
   id: number;
   question: string;
   answer: string;
+  items?: Item[] | null;
 }
 
 /**

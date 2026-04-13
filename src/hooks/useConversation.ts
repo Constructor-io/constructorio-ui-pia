@@ -82,10 +82,11 @@ export default function useConversation({
       updated[updated.length - 1] = {
         ...updated[updated.length - 1],
         answer: answerValue,
+        items: answers.items ?? null,
       };
       return updated;
     });
-  }, [isConversation, answers.data]);
+  }, [isConversation, answers.data, answers.items]);
 
   const currentAnswer = answers.data?.value ?? '';
   const currentItems = answers.items ?? null;

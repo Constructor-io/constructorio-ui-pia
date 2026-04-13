@@ -75,9 +75,9 @@ export default function ConversationHistory({
             {entry.answer && (
               <div className='cio-pia-answer-container'>
                 <Answer text={entry.answer} componentOverride={componentOverrides?.answer} />
-                {isLast && currentItems && (
+                {(isLast ? currentItems : entry.items) && (
                   <PiaCustomCarousel
-                    items={currentItems}
+                    items={(isLast ? currentItems : entry.items)!}
                     componentOverrides={componentOverrides?.carousel}
                     callbacks={callbacks}
                   />
