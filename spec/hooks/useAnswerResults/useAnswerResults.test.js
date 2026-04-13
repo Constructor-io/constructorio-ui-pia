@@ -65,7 +65,6 @@ describe('Testing Hook: useAnswerResults', () => {
       threadId: undefined,
       variationId: undefined,
       question: testQuestion,
-      signal: expect.any(AbortSignal),
     });
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toEqual(mockResponse);
@@ -195,7 +194,6 @@ describe('Testing Hook: useAnswerResults', () => {
       threadId: undefined,
       variationId: undefined,
       question: newQuestion,
-      signal: expect.any(AbortSignal),
     });
   });
 
@@ -224,7 +222,6 @@ describe('Testing Hook: useAnswerResults', () => {
       threadId: 'test-thread-id',
       variationId: 'test-variation-id',
       question: testQuestion,
-      signal: expect.any(AbortSignal),
     });
     expect(result.current.data).toEqual(mockResponse);
   });

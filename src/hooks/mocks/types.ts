@@ -37,7 +37,6 @@ export type GetAnswerResultsProps = {
   threadId?: string;
   question: string;
   parameters?: Record<string, any>;
-  signal?: AbortSignal;
 };
 
 export type GetAnswerResultsStreamProps = GetAnswerResultsProps & {
