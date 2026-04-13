@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Input from '../../../src/components/Input/Input';
 
@@ -73,9 +73,14 @@ describe('Input Component', () => {
     const input = queryByRole('textbox');
 
     fireEvent.change(input, { target: { value: 'test input' } });
-    const prevented = !fireEvent.keyDown(input, { key: 'Enter' });
 
-    expect(prevented).toBe(true);
+    const event = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
+    const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+    act(() => {
+      input.dispatchEvent(event);
+    });
+
+    expect(preventDefaultSpy).toHaveBeenCalledTimes(1);
   });
 
   it('does not call onSubmit with empty input', () => {
