@@ -49,6 +49,7 @@ function Input({
 
   const handleSubmitOnEnter = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
+      e.preventDefault();
       handleSubmit();
     }
   };
