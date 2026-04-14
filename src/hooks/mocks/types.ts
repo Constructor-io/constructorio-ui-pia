@@ -11,7 +11,11 @@ export type AgentUrlProps = {
   question?: string;
   isStreaming?: boolean;
   options: ConstructorClientOptions;
-  parameters?: Record<string, string>;
+  parameters?: Record<string, any>;
+};
+
+export type SuggestedQuestionsParameters = {
+  numResults?: number;
 };
 
 export type GetSuggestedQuestionsProps = {
@@ -19,7 +23,7 @@ export type GetSuggestedQuestionsProps = {
   variationId?: string;
   /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000") */
   threadId?: string;
-  parameters?: Record<string, any>;
+  parameters?: SuggestedQuestionsParameters;
 };
 
 export interface Question {

@@ -74,7 +74,9 @@ class MockAgent {
       variationId,
       threadId,
       options: this.options,
-      parameters,
+      parameters: {
+        num_results: parameters.numResults,
+      },
     });
 
     try {

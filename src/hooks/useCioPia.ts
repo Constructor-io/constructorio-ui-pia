@@ -1,3 +1,4 @@
+import { SuggestedQuestionsParameters } from '../types';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 import useAnswerResults, { UseAnswerResultsReturn } from './useAnswerResults';
 import useCioClient from './useCioClient';
@@ -9,6 +10,7 @@ export interface UseCioPiaProps {
   variationId?: string;
   threadId?: string;
   cioClient?: MockConstructorIOClient;
+  suggestedQuestionsParameters?: SuggestedQuestionsParameters;
 }
 
 export interface UseCioPiaReturn {
@@ -17,7 +19,14 @@ export interface UseCioPiaReturn {
 }
 
 export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
-  const { apiKey, itemId, variationId, threadId, cioClient: providedClient } = props;
+  const {
+    apiKey,
+    itemId,
+    variationId,
+    threadId,
+    cioClient: providedClient,
+    suggestedQuestionsParameters,
+  } = props;
 
   const defaultClient = useCioClient({ apiKey });
   const client = providedClient || defaultClient;
@@ -27,6 +36,7 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     variationId,
     threadId,
     cioClient: client as MockConstructorIOClient,
+    parameters: suggestedQuestionsParameters,
   });
 
   const answers = useAnswerResults({

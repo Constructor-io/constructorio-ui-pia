@@ -212,4 +212,71 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     });
     expect(result.current.data).toEqual(testQuestions);
   });
+
+  it('passes parameters to getSuggestedQuestions', async () => {
+    mockClient.agent.getSuggestedQuestions.mockResolvedValueOnce({
+      questions: testQuestions,
+    });
+    const parameters = { numResults: 2 };
+
+    renderHook(() =>
+      useSuggestedQuestions({
+        itemId: testItemId,
+        cioClient: mockClient,
+        parameters,
+      }),
+    );
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledWith({
+      itemId: testItemId,
+      variationId: undefined,
+      threadId: undefined,
+      parameters,
+    });
+  });
+
+  it('refetches when parameters change', async () => {
+    mockClient.agent.getSuggestedQuestions
+      .mockResolvedValueOnce({ questions: testQuestions })
+      .mockResolvedValueOnce({ questions: newTestQuestions });
+    const initialParameters = { numResults: 3 };
+    const updatedParameters = { numResults: 1 };
+
+    const { result, rerender } = renderHook((props) => useSuggestedQuestions(props), {
+      initialProps: {
+        itemId: testItemId,
+        cioClient: mockClient,
+        parameters: initialParameters,
+      },
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(result.current.data).toEqual(testQuestions);
+
+    rerender({
+      itemId: testItemId,
+      cioClient: mockClient,
+      parameters: updatedParameters,
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(result.current.data).toEqual(newTestQuestions);
+    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledTimes(2);
+  });
 });

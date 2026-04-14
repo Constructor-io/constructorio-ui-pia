@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Question, QuestionResponse } from '../types';
+import { Question, QuestionResponse, SuggestedQuestionsParameters } from '../types';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 
 export interface UseSuggestedQuestionsProps {
@@ -7,7 +7,7 @@ export interface UseSuggestedQuestionsProps {
   variationId?: string;
   threadId?: string;
   cioClient?: MockConstructorIOClient;
-  parameter?: Record<string, any>;
+  parameters?: SuggestedQuestionsParameters;
 }
 
 export interface UseSuggestedQuestionsReturn {
@@ -22,6 +22,7 @@ interface FetchSuggestedQuestionsParams {
   itemId: string;
   variationId?: string;
   threadId?: string;
+  parameters?: SuggestedQuestionsParameters;
 }
 
 const fetchSuggestedQuestions = async ({
@@ -29,11 +30,13 @@ const fetchSuggestedQuestions = async ({
   itemId,
   variationId,
   threadId,
+  parameters,
 }: FetchSuggestedQuestionsParams) => {
   const response: QuestionResponse = await client.agent.getSuggestedQuestions({
     itemId,
     variationId,
     threadId,
+    parameters,
   });
 
   return response.questions;
@@ -44,6 +47,7 @@ export default function useSuggestedQuestions({
   variationId,
   threadId,
   cioClient,
+  parameters,
 }: UseSuggestedQuestionsProps): UseSuggestedQuestionsReturn {
   const [questions, setQuestions] = useState<Array<Question>>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -55,7 +59,13 @@ export default function useSuggestedQuestions({
     setIsLoading(true);
     setError(null);
 
-    fetchSuggestedQuestions({ client: cioClient, itemId, variationId, threadId })
+    fetchSuggestedQuestions({
+      client: cioClient,
+      itemId,
+      variationId,
+      threadId,
+      parameters,
+    })
       .then((fetchedQuestions) => {
         setQuestions(fetchedQuestions);
         setError(null);
@@ -66,7 +76,7 @@ export default function useSuggestedQuestions({
       .finally(() => {
         setIsLoading(false);
       });
-  }, [cioClient, itemId, variationId, threadId]);
+  }, [cioClient, itemId, variationId, threadId, parameters]);
 
   useEffect(() => {
     fetchResult();
