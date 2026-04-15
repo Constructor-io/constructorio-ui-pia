@@ -1,7 +1,21 @@
 // jest.config.js
+const commonConfig = {
+  collectCoverageFrom: ['src/(components|hooks)/**/*.[jt]s?(x)'],
+  coverageDirectory: './coverage',
+  coverageThreshold: {
+    global: {
+      branches: 85,
+      functions: 85,
+      lines: 85,
+      statements: 85,
+    },
+  },
+};
+
 module.exports = {
   projects: [
     {
+      ...commonConfig,
       displayName: 'client',
       testEnvironment: 'jsdom',
       testMatch: ['**/**/*.test.(js|jsx|ts|tsx)', '!**/**/*.server.test.(js|jsx|ts|tsx)'],
@@ -12,6 +26,7 @@ module.exports = {
       },
     },
     {
+      ...commonConfig,
       displayName: 'server',
       testEnvironment: 'node',
       testMatch: ['**/**/*.server.test.(js|jsx)'],
