@@ -19,6 +19,8 @@ export interface ConversationHistoryProps {
   error: Error | null;
   currentItems?: Item[] | null;
   showFeedback?: boolean;
+  /** Show product carousels from previous conversation entries. Defaults to true. */
+  showPreviousItems?: boolean;
   learnMoreUrl?: string;
   translations?: Translations;
   callbacks?: Callbacks;
@@ -31,6 +33,7 @@ export default function ConversationHistory({
   error,
   currentItems,
   showFeedback,
+  showPreviousItems = true,
   learnMoreUrl,
   translations,
   callbacks,
@@ -75,7 +78,7 @@ export default function ConversationHistory({
             {entry.answer && (
               <div className='cio-pia-answer-container'>
                 <Answer text={entry.answer} componentOverride={componentOverrides?.answer} />
-                {(isLast ? currentItems : entry.items) && (
+                {(isLast ? currentItems : showPreviousItems && entry.items) && (
                   <PiaCustomCarousel
                     items={(isLast ? currentItems : entry.items)!}
                     componentOverrides={componentOverrides?.carousel}

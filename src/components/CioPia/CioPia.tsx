@@ -54,7 +54,13 @@ export default function CioPia(props: CioPiaProps) {
     children,
     translations,
   } = props;
-  const { learnMoreUrl, showFeedback, mode = 'default', type = 'inline' } = displayConfigs || {};
+  const {
+    learnMoreUrl,
+    showFeedback,
+    mode = 'default',
+    type = 'inline',
+    showPreviousItems = true,
+  } = displayConfigs || {};
   const isConversation = mode === 'conversation' || type === 'modal';
 
   const pia = useCioPia({
@@ -94,6 +100,7 @@ export default function CioPia(props: CioPiaProps) {
     error,
     currentItems,
     showFeedback,
+    showPreviousItems,
     learnMoreUrl,
     translations,
     callbacks,
