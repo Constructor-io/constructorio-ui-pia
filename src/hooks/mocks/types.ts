@@ -3,6 +3,10 @@ import {
   ItemData,
 } from '@constructor-io/constructorio-client-javascript';
 
+export type SuggestedQuestionsParameters = {
+  numResults?: number;
+};
+
 export type AgentUrlProps = {
   itemId: string;
   variationId?: string;
@@ -11,11 +15,7 @@ export type AgentUrlProps = {
   question?: string;
   isStreaming?: boolean;
   options: ConstructorClientOptions;
-  parameters?: Record<string, any>;
-};
-
-export type SuggestedQuestionsParameters = {
-  numResults?: number;
+  parameters?: Record<string, string | number | boolean>;
 };
 
 export type GetSuggestedQuestionsProps = {

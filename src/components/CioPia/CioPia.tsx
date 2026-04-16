@@ -28,7 +28,8 @@ import PiaModal from '../PiaConversation/PiaModal';
 import PiaConversation from '../PiaConversation/PiaConversation';
 
 export interface CioPiaProps
-  extends IncludeRenderProps<CioPiaRenderProps>,
+  extends
+    IncludeRenderProps<CioPiaRenderProps>,
     IncludeComponentOverrides<CioPiaComponentOverrides> {
   apiKey: string;
   itemId: string;
