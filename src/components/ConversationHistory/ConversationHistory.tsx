@@ -60,6 +60,8 @@ export default function ConversationHistory({
       aria-label='Conversation history'>
       {conversationHistory.map((entry, index) => {
         const isLast = index === conversationHistory.length - 1;
+        const previousItems = showPreviousItems ? entry.items : null;
+        const carouselItems = isLast ? currentItems : previousItems;
 
         return (
           <div key={entry.id} className='cio-pia-conversation-entry'>
@@ -78,9 +80,9 @@ export default function ConversationHistory({
             {entry.answer && (
               <div className='cio-pia-answer-container'>
                 <Answer text={entry.answer} componentOverride={componentOverrides?.answer} />
-                {(isLast ? currentItems : showPreviousItems && entry.items) && (
+                {carouselItems && (
                   <PiaCustomCarousel
-                    items={(isLast ? currentItems : entry.items)!}
+                    items={carouselItems}
                     componentOverrides={componentOverrides?.carousel}
                     callbacks={callbacks}
                   />
