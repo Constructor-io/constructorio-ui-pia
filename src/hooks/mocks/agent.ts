@@ -5,6 +5,7 @@ import {
   StreamEndEvent,
   StreamMessageEvent,
   StreamStartEvent,
+  SuggestedQuestionsParameters,
   GetSuggestedQuestionsProps,
   GetAnswerResultsStreamProps,
   GetAnswerResultsProps,
@@ -53,6 +54,15 @@ function createAgentUrl({
   return url.toString();
 }
 
+// Map camelCase SuggestedQuestionsParameters to snake_case query params expected by the API
+function mapSuggestedQuestionsParams(
+  params: SuggestedQuestionsParameters,
+): Record<string, string | number | boolean> {
+  const result: Record<string, string | number | boolean> = {};
+  if (params.numResults !== undefined) result.num_results = params.numResults;
+  return result;
+}
+
 class MockAgent {
   options: ConstructorClientOptions;
 
@@ -74,7 +84,7 @@ class MockAgent {
       variationId,
       threadId,
       options: this.options,
-      parameters,
+      parameters: mapSuggestedQuestionsParams(parameters),
     });
 
     try {

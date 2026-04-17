@@ -178,6 +178,18 @@ describe('CioPia Component', () => {
       });
     });
 
+    it('passes suggestedQuestionsParameters to useCioPia', () => {
+      const parameters = { numResults: 2 };
+
+      render(<CioPia {...mockProps} suggestedQuestionsParameters={parameters} />);
+
+      expect(useCioPia).toHaveBeenCalledWith(
+        expect.objectContaining({
+          suggestedQuestionsParameters: parameters,
+        }),
+      );
+    });
+
     it('handles question submission via input', () => {
       const { getByRole } = render(<CioPia {...mockProps} />);
       const input = getByRole('textbox');

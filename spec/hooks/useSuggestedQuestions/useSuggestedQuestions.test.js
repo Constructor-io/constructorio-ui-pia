@@ -55,6 +55,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       itemId: testItemId,
       variationId: undefined,
       threadId: undefined,
+      parameters: undefined,
     });
   });
 
@@ -83,6 +84,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       itemId: testItemId,
       variationId: undefined,
       threadId: undefined,
+      parameters: undefined,
     });
   });
 
@@ -177,11 +179,13 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       itemId: testItemId,
       variationId: undefined,
       threadId: undefined,
+      parameters: undefined,
     });
     expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledWith({
       itemId: newTestItemId,
       variationId: undefined,
       threadId: undefined,
+      parameters: undefined,
     });
   });
 
@@ -209,7 +213,129 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       itemId: testItemId,
       variationId: 'test-variation-id',
       threadId: 'test-thread-id',
+      parameters: undefined,
     });
     expect(result.current.data).toEqual(testQuestions);
+  });
+
+  it('passes parameters to getSuggestedQuestions', async () => {
+    mockClient.agent.getSuggestedQuestions.mockResolvedValueOnce({
+      questions: testQuestions,
+    });
+    const parameters = { numResults: 2 };
+
+    renderHook(() =>
+      useSuggestedQuestions({
+        itemId: testItemId,
+        cioClient: mockClient,
+        parameters,
+      }),
+    );
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledWith({
+      itemId: testItemId,
+      variationId: undefined,
+      threadId: undefined,
+      parameters,
+    });
+  });
+
+  it('refetches when parameters change', async () => {
+    mockClient.agent.getSuggestedQuestions
+      .mockResolvedValueOnce({ questions: testQuestions })
+      .mockResolvedValueOnce({ questions: newTestQuestions });
+    const initialParameters = { numResults: 3 };
+    const updatedParameters = { numResults: 1 };
+
+    const { result, rerender } = renderHook((props) => useSuggestedQuestions(props), {
+      initialProps: {
+        itemId: testItemId,
+        cioClient: mockClient,
+        parameters: initialParameters,
+      },
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(result.current.data).toEqual(testQuestions);
+
+    rerender({
+      itemId: testItemId,
+      cioClient: mockClient,
+      parameters: updatedParameters,
+    });
+    expect(result.current.isLoading).toBe(true);
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.data).toEqual(newTestQuestions);
+    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledTimes(2);
+    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenLastCalledWith({
+      itemId: testItemId,
+      variationId: undefined,
+      threadId: undefined,
+      parameters: updatedParameters,
+    });
+  });
+
+  it('refetches when parameters are removed', async () => {
+    mockClient.agent.getSuggestedQuestions
+      .mockResolvedValueOnce({ questions: testQuestions })
+      .mockResolvedValueOnce({ questions: newTestQuestions });
+    const initialParameters = { numResults: 3 };
+
+    const { result, rerender } = renderHook((props) => useSuggestedQuestions(props), {
+      initialProps: {
+        itemId: testItemId,
+        cioClient: mockClient,
+        parameters: initialParameters,
+      },
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(result.current.data).toEqual(testQuestions);
+
+    rerender({
+      itemId: testItemId,
+      cioClient: mockClient,
+      parameters: undefined,
+    });
+    expect(result.current.isLoading).toBe(true);
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.data).toEqual(newTestQuestions);
+    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledTimes(2);
+    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenLastCalledWith({
+      itemId: testItemId,
+      variationId: undefined,
+      threadId: undefined,
+      parameters: undefined,
+    });
   });
 });

@@ -20,6 +20,7 @@ import {
   Callbacks,
   CioPiaDisplayConfigs,
   Translations,
+  SuggestedQuestionsParameters,
 } from '../../types';
 import { translate } from '../../utils/translate';
 import PiaCustomCarousel from './PiaCustomCarousel';
@@ -39,6 +40,7 @@ export interface CioPiaProps
   displayConfigs?: CioPiaDisplayConfigs;
   callbacks?: Callbacks;
   translations?: Translations;
+  suggestedQuestionsParameters?: SuggestedQuestionsParameters;
 }
 
 export default function CioPia(props: CioPiaProps) {
@@ -53,6 +55,7 @@ export default function CioPia(props: CioPiaProps) {
     callbacks,
     children,
     translations,
+    suggestedQuestionsParameters,
   } = props;
   const { learnMoreUrl, showFeedback, mode = 'default', type = 'inline' } = displayConfigs || {};
   const isConversation = mode === 'conversation' || type === 'modal';
@@ -63,6 +66,7 @@ export default function CioPia(props: CioPiaProps) {
     threadId,
     variationId,
     cioClient,
+    suggestedQuestionsParameters,
   });
 
   const {
