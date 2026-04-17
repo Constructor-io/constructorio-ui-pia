@@ -67,4 +67,47 @@ describe('Feedback Component', () => {
       expect(onFeedback).toHaveBeenCalledWith('up');
     });
   });
+
+  it('has no feedback selected initially', () => {
+    const { getByLabelText } = render(<Feedback />);
+
+    const thumbsUp = getByLabelText('thumbs up');
+    const thumbsDown = getByLabelText('thumbs down');
+
+    // Both should render unselected SVGs (fill #0F1324 with opacity 0.6)
+    expect(thumbsUp.querySelector('path').getAttribute('fill')).toBe('#0F1324');
+    expect(thumbsDown.querySelector('path').getAttribute('fill')).toBe('#0F1324');
+  });
+
+  it('selects thumbs up when clicked', () => {
+    const { getByLabelText } = render(<Feedback />);
+
+    const thumbsUp = getByLabelText('thumbs up');
+    fireEvent.click(thumbsUp);
+
+    expect(thumbsUp.querySelector('path').getAttribute('fill')).toBe('#4CAF50');
+  });
+
+  it('selects thumbs down when clicked', () => {
+    const { getByLabelText } = render(<Feedback />);
+
+    const thumbsDown = getByLabelText('thumbs down');
+    fireEvent.click(thumbsDown);
+
+    expect(thumbsDown.querySelector('path').getAttribute('fill')).toBe('#F44336');
+  });
+
+  it('switches selection when clicking the other button', () => {
+    const { getByLabelText } = render(<Feedback />);
+
+    const thumbsUp = getByLabelText('thumbs up');
+    const thumbsDown = getByLabelText('thumbs down');
+
+    fireEvent.click(thumbsUp);
+    expect(thumbsUp.querySelector('path').getAttribute('fill')).toBe('#4CAF50');
+
+    fireEvent.click(thumbsDown);
+    expect(thumbsDown.querySelector('path').getAttribute('fill')).toBe('#F44336');
+    expect(thumbsUp.querySelector('path').getAttribute('fill')).toBe('#0F1324');
+  });
 });

@@ -1,16 +1,16 @@
 // eslint-disable-next-line import/prefer-default-export
-export const DEMO_API_KEY = '***REMOVED***';
-export const DEMO_ITEM_ID = '244470';
-export const DEMO_QUESTION = 'What type of rug pad material is best for area rugs?';
+export const DEMO_API_KEY = 'key_13TO6qN9H3BP3Wrn';
+export const DEMO_ITEM_ID = '149100215';
+export const DEMO_QUESTION = 'What is the nutritional content of this shake?';
 export const DEMO_QUESTION_ALTERNATIVE_PRODUCTS =
   'What alternative products are available for this item?';
 export const MOCK_QUESTIONS = [
-  { value: 'Is this bunk board suitable for a platform bed?' },
-  { value: 'What are the benefits of using a bunk board with a platform bed?' },
-  { value: 'What is a bunk board and how does it differ from a box spring?' },
-  { value: 'Is this bunk board made in the USA?' },
-  { value: 'What sizes are available for this bunk board?' },
-  { value: 'Can this bunk board be used with a memory foam mattress?' },
+  { value: 'What is the nutritional content per serving?' },
+  { value: 'How many calories does each bottle contain?' },
+  { value: 'What is the shelf life of this product?' },
+  { value: 'Is this shake suitable for specific dietary needs?' },
+  { value: 'What flavor options are available for Ensure shakes?' },
+  { value: 'What is the serving size and calorie count?' },
 ];
 export const DISCLAIMER_TEXT =
   'AI-generated answers aim to help, but they may occasionally miss details or be inaccurate. Double-check important information before purchasing.';

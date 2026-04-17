@@ -1,11 +1,13 @@
 # Pertaining to Development
 node_modules
 .vscode
+.env*
 
 # Pertaining to Building/Deployment
 dist
 lib
 docs
+coverage
 
 .DS_Store
 *storybook.log

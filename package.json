@@ -1,9 +1,19 @@
 {
   "name": "@constructor-io/constructorio-ui-pia",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Constructor.io AI Product Insights Agent UI library for web applications",
   "author": "Constructor.io Corporation",
   "license": "MIT",
+  "keywords": [
+    "constructor.io",
+    "ai",
+    "product insights",
+    "chatbot",
+    "ecommerce",
+    "react",
+    "ui",
+    "product discovery"
+  ],
   "homepage": "https://github.com/Constructor-io/constructorio-ui-pia#readme",
   "repository": {
     "type": "git",
@@ -33,10 +43,11 @@
     }
   },
   "files": [
-    "dist/constructorio-ui-pia-bundled.js"
+    "dist/constructorio-ui-pia-bundled.js",
+    "lib/"
   ],
   "engines": {
-    "node": ">=14"
+    "node": ">=20"
   },
   "types": "lib/types/index.d.ts",
   "scripts": {
