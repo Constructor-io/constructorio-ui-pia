@@ -60,8 +60,8 @@ export default function ConversationHistory({
       aria-label='Conversation history'>
       {conversationHistory.map((entry, index) => {
         const isLast = index === conversationHistory.length - 1;
-        const previousItems = showPreviousItems ? entry.items : null;
-        const carouselItems = isLast ? currentItems : previousItems;
+        const entryItems = showPreviousItems ? entry.items : null;
+        const carouselItems = isLast ? (currentItems ?? entry.items) : entryItems;
 
         return (
           <div key={entry.id} className='cio-pia-conversation-entry'>

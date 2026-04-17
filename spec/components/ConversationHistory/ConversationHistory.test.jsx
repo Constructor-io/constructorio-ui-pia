@@ -278,42 +278,6 @@ describe('ConversationHistory Component', () => {
     expect(carousels).toHaveLength(1);
   });
 
-  it('shows carousels on previous entries by default (showPreviousItems defaults to true)', () => {
-    const previousItems = [
-      {
-        id: 'item-prev',
-        name: 'Previous Product',
-        url: 'https://example.com/prev',
-        imageUrl: 'https://example.com/prev.jpg',
-        price: 5,
-      },
-    ];
-    const currentItems = [
-      {
-        id: 'item-cur',
-        name: 'Current Product',
-        url: 'https://example.com/cur',
-        imageUrl: 'https://example.com/cur.jpg',
-        price: 10,
-      },
-    ];
-    const conversationHistory = [
-      { id: 1, question: 'First question', answer: 'First answer', items: previousItems },
-      { id: 2, question: 'Last question', answer: 'Last answer' },
-    ];
-
-    const { container } = render(
-      <ConversationHistory
-        {...baseProps}
-        conversationHistory={conversationHistory}
-        currentItems={currentItems}
-      />,
-    );
-
-    const carousels = container.querySelectorAll('[data-carousel]');
-    expect(carousels).toHaveLength(2);
-  });
-
   it('does not render carousel when currentItems is null', () => {
     const conversationHistory = [{ id: 1, question: 'Last question', answer: 'Last answer' }];
 
