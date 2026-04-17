@@ -74,6 +74,7 @@ class MockAgent {
       variationId,
       threadId,
       options: this.options,
+      // Map camelCase params to snake_case query params expected by the API
       parameters: parameters.numResults !== undefined ? { num_results: parameters.numResults } : {},
     });
 

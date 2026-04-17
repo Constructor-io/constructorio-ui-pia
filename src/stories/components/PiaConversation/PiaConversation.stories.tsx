@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
+import { action } from '@storybook/addon-actions';
 import PiaConversation from '../../../components/PiaConversation/PiaConversation';
 import useCioPia from '../../../hooks/useCioPia';
 import useConversation from '../../../hooks/useConversation';
@@ -65,7 +66,7 @@ export const WithConversation: Story = {
     isLoading: false,
     error: null,
     displayedQuestions: mockQuestions,
-    handleSubmitQuestion: (question: string) => console.log('Submit:', question),
+    handleSubmitQuestion: action('handleSubmitQuestion'),
   },
 };
 
@@ -82,7 +83,7 @@ export const Loading: Story = {
     isLoading: true,
     error: null,
     displayedQuestions: [],
-    handleSubmitQuestion: (question: string) => console.log('Submit:', question),
+    handleSubmitQuestion: action('handleSubmitQuestion'),
   },
 };
 
@@ -94,7 +95,7 @@ export const WithError: Story = {
     isLoading: false,
     error: new Error('Failed to fetch answer. Please try again.'),
     displayedQuestions: [],
-    handleSubmitQuestion: (question: string) => console.log('Submit:', question),
+    handleSubmitQuestion: action('handleSubmitQuestion'),
   },
 };
 
@@ -112,7 +113,7 @@ export const WithFeedback: Story = {
     error: null,
     showFeedback: true,
     displayedQuestions: mockQuestions,
-    handleSubmitQuestion: (question: string) => console.log('Submit:', question),
+    handleSubmitQuestion: action('handleSubmitQuestion'),
   },
 };
 
@@ -130,6 +131,6 @@ export const WithLearnMore: Story = {
     error: null,
     learnMoreUrl: 'https://constructor.io/learn-more',
     displayedQuestions: mockQuestions,
-    handleSubmitQuestion: (question: string) => console.log('Submit:', question),
+    handleSubmitQuestion: action('handleSubmitQuestion'),
   },
 };

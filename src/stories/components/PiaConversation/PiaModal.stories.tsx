@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
+import { action } from '@storybook/addon-actions';
 import PiaModal from '../../../components/PiaConversation/PiaModal';
 import PiaConversation from '../../../components/PiaConversation/PiaConversation';
 import useCioPia from '../../../hooks/useCioPia';
@@ -76,7 +77,7 @@ export const Default = {
 export const WithAnswer: Story = {
   args: {
     initialQuestions: mockQuestions,
-    handleSubmitQuestion: (question: string) => console.log('Submit:', question),
+    handleSubmitQuestion: action('handleSubmitQuestion'),
     isLoading: false,
   },
   render: (args) => (
@@ -95,7 +96,7 @@ export const WithAnswer: Story = {
 export const WithFeedback: Story = {
   args: {
     initialQuestions: mockQuestions,
-    handleSubmitQuestion: (question: string) => console.log('Submit:', question),
+    handleSubmitQuestion: action('handleSubmitQuestion'),
     isLoading: false,
   },
   render: (args) => (
@@ -115,7 +116,7 @@ export const WithFeedback: Story = {
 export const WithLearnMore: Story = {
   args: {
     initialQuestions: mockQuestions,
-    handleSubmitQuestion: (question: string) => console.log('Submit:', question),
+    handleSubmitQuestion: action('handleSubmitQuestion'),
     isLoading: false,
   },
   render: (args) => (
@@ -135,7 +136,7 @@ export const WithLearnMore: Story = {
 export const MultipleConversations: Story = {
   args: {
     initialQuestions: mockQuestions,
-    handleSubmitQuestion: (question: string) => console.log('Submit:', question),
+    handleSubmitQuestion: action('handleSubmitQuestion'),
     isLoading: false,
   },
   render: (args) => (

@@ -53,8 +53,6 @@ export default function useSuggestedQuestions({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const { numResults } = parameters || {};
-
   const fetchResult = useCallback(() => {
     if (!cioClient) return;
 
@@ -66,7 +64,7 @@ export default function useSuggestedQuestions({
       itemId,
       variationId,
       threadId,
-      parameters: numResults !== undefined ? { numResults } : undefined,
+      parameters,
     })
       .then((fetchedQuestions) => {
         setQuestions(fetchedQuestions);
@@ -78,7 +76,7 @@ export default function useSuggestedQuestions({
       .finally(() => {
         setIsLoading(false);
       });
-  }, [cioClient, itemId, variationId, threadId, numResults]);
+  }, [cioClient, itemId, variationId, threadId, parameters]);
 
   useEffect(() => {
     fetchResult();

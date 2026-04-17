@@ -55,6 +55,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       itemId: testItemId,
       variationId: undefined,
       threadId: undefined,
+      parameters: undefined,
     });
   });
 
@@ -83,6 +84,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       itemId: testItemId,
       variationId: undefined,
       threadId: undefined,
+      parameters: undefined,
     });
   });
 
@@ -177,11 +179,13 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       itemId: testItemId,
       variationId: undefined,
       threadId: undefined,
+      parameters: undefined,
     });
     expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledWith({
       itemId: newTestItemId,
       variationId: undefined,
       threadId: undefined,
+      parameters: undefined,
     });
   });
 
@@ -209,6 +213,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       itemId: testItemId,
       variationId: 'test-variation-id',
       threadId: 'test-thread-id',
+      parameters: undefined,
     });
     expect(result.current.data).toEqual(testQuestions);
   });
