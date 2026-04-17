@@ -274,6 +274,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       cioClient: mockClient,
       parameters: updatedParameters,
     });
+    expect(result.current.isLoading).toBe(true);
 
     await act(async () => {
       await new Promise((resolve) => {
@@ -281,7 +282,60 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       });
     });
 
+    expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toEqual(newTestQuestions);
     expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledTimes(2);
+    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenLastCalledWith({
+      itemId: testItemId,
+      variationId: undefined,
+      threadId: undefined,
+      parameters: updatedParameters,
+    });
+  });
+
+  it('refetches when parameters are removed', async () => {
+    mockClient.agent.getSuggestedQuestions
+      .mockResolvedValueOnce({ questions: testQuestions })
+      .mockResolvedValueOnce({ questions: newTestQuestions });
+    const initialParameters = { numResults: 3 };
+
+    const { result, rerender } = renderHook((props) => useSuggestedQuestions(props), {
+      initialProps: {
+        itemId: testItemId,
+        cioClient: mockClient,
+        parameters: initialParameters,
+      },
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(result.current.data).toEqual(testQuestions);
+
+    rerender({
+      itemId: testItemId,
+      cioClient: mockClient,
+      parameters: undefined,
+    });
+    expect(result.current.isLoading).toBe(true);
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.data).toEqual(newTestQuestions);
+    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledTimes(2);
+    expect(mockClient.agent.getSuggestedQuestions).toHaveBeenLastCalledWith({
+      itemId: testItemId,
+      variationId: undefined,
+      threadId: undefined,
+      parameters: undefined,
+    });
   });
 });

@@ -76,7 +76,8 @@ export default function useSuggestedQuestions({
       .finally(() => {
         setIsLoading(false);
       });
-  }, [cioClient, itemId, variationId, threadId, parameters]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- primitive dep prevents refetch on object reference change
+  }, [cioClient, itemId, variationId, threadId, parameters?.numResults]);
 
   useEffect(() => {
     fetchResult();

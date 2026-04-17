@@ -20,3 +20,11 @@ export const Default: Story = {
     itemId: DEMO_ITEM_ID,
   },
 };
+
+export const WithLimitedQuestions: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: DEMO_ITEM_ID,
+    suggestedQuestionsParameters: { numResults: 2 },
+  },
+};
