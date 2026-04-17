@@ -1,6 +1,6 @@
 {
   "name": "@constructor-io/constructorio-ui-pia",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Constructor.io AI Product Insights Agent UI library for web applications",
   "author": "Constructor.io Corporation",
   "license": "MIT",
@@ -47,7 +47,7 @@
     "lib/"
   ],
   "engines": {
-    "node": ">=14"
+    "node": ">=20"
   },
   "types": "lib/types/index.d.ts",
   "scripts": {
