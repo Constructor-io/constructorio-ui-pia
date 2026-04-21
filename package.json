@@ -63,7 +63,7 @@
     "build-storybook": "storybook build --docs -o 'docs'",
     "storybook-docs-dev": "storybook dev --docs -p 6007",
     "serve-built-storybook": "npx http-server docs",
-    "compile": "rm -rf lib && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && npm run copy-styles && vite build",
+    "compile": "rm -rf lib && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && tsc-alias -p tsconfig.json --resolve-full-paths && npm run copy-styles && vite build",
     "check-license": "license-checker --production --onlyAllow 'Apache-2.0;BSD-3-Clause;MIT;0BSD;BSD-2-Clause;ISC' --excludePackages 'picocolors@1.0.0;graceful-fs@4.2.11;lightningcss@1.30.2;lightningcss-darwin-arm64@1.30.2;lightningcss-linux-x64-gnu@1.30.2;lightningcss-linux-x64-musl@1.30.2'",
     "prepare": "husky"
   },
@@ -121,6 +121,7 @@
     "prop-types": "^15.8.1",
     "start-server-and-test": "^2.0.10",
     "storybook": "^8.6.4",
+    "tsc-alias": "^1.8.16",
     "typescript": "^4.9.4",
     "typescript-eslint": "^8.26.1",
     "vite": "^6.3.5",
