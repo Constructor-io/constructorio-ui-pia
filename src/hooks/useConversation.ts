@@ -76,15 +76,20 @@ export default function useConversation({
     if (!isConversation || !answerValue) return;
     if (answerValue === prevAnswerValueRef.current) return;
     prevAnswerValueRef.current = answerValue;
+    const items = answers.items ?? null;
     setConversationHistory((prev) => {
       if (prev.length === 0) return prev;
       const updated = [...prev];
       updated[updated.length - 1] = {
         ...updated[updated.length - 1],
         answer: answerValue,
+        items,
       };
       return updated;
     });
+    // answers.items is read but intentionally excluded — it always arrives
+    // in the same render batch as answers.data (set together in useAnswerResults).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConversation, answers.data]);
 
   const currentAnswer = answers.data?.value ?? '';

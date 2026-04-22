@@ -44,6 +44,8 @@ export type CioPiaDisplayConfigs = {
   showFeedback?: boolean;
   mode?: CioPiaMode;
   type?: CioPiaType;
+  /** Show product carousels from previous conversation entries. Defaults to true. */
+  showPreviousItems?: boolean;
 };
 
 /**
@@ -75,6 +77,7 @@ export interface ConversationEntry {
   id: number;
   question: string;
   answer: string;
+  items?: Item[] | null;
 }
 
 /**

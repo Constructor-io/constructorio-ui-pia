@@ -178,6 +178,106 @@ describe('ConversationHistory Component', () => {
     expect(carousels).toHaveLength(1);
   });
 
+  it('renders carousel from entry.items on previous entries', () => {
+    const previousItems = [
+      {
+        id: 'item-prev',
+        name: 'Previous Product',
+        url: 'https://example.com/prev',
+        imageUrl: 'https://example.com/prev.jpg',
+        price: 5,
+      },
+    ];
+    const currentItems = [
+      {
+        id: 'item-cur',
+        name: 'Current Product',
+        url: 'https://example.com/cur',
+        imageUrl: 'https://example.com/cur.jpg',
+        price: 10,
+      },
+    ];
+    const conversationHistory = [
+      { id: 1, question: 'First question', answer: 'First answer', items: previousItems },
+      { id: 2, question: 'Last question', answer: 'Last answer' },
+    ];
+
+    const { container } = render(
+      <ConversationHistory
+        {...baseProps}
+        conversationHistory={conversationHistory}
+        currentItems={currentItems}
+      />,
+    );
+
+    const carousels = container.querySelectorAll('[data-carousel]');
+    expect(carousels).toHaveLength(2);
+  });
+
+  it('does not render carousel on previous entries without items', () => {
+    const currentItems = [
+      {
+        id: 'item-1',
+        name: 'Product 1',
+        url: 'https://example.com/1',
+        imageUrl: 'https://example.com/img.jpg',
+        price: 10,
+      },
+    ];
+    const conversationHistory = [
+      { id: 1, question: 'First question', answer: 'First answer' },
+      { id: 2, question: 'Last question', answer: 'Last answer' },
+    ];
+
+    const { container } = render(
+      <ConversationHistory
+        {...baseProps}
+        conversationHistory={conversationHistory}
+        currentItems={currentItems}
+      />,
+    );
+
+    const carousels = container.querySelectorAll('[data-carousel]');
+    expect(carousels).toHaveLength(1);
+  });
+
+  it('hides carousels on previous entries when showPreviousItems is false', () => {
+    const previousItems = [
+      {
+        id: 'item-prev',
+        name: 'Previous Product',
+        url: 'https://example.com/prev',
+        imageUrl: 'https://example.com/prev.jpg',
+        price: 5,
+      },
+    ];
+    const currentItems = [
+      {
+        id: 'item-cur',
+        name: 'Current Product',
+        url: 'https://example.com/cur',
+        imageUrl: 'https://example.com/cur.jpg',
+        price: 10,
+      },
+    ];
+    const conversationHistory = [
+      { id: 1, question: 'First question', answer: 'First answer', items: previousItems },
+      { id: 2, question: 'Last question', answer: 'Last answer' },
+    ];
+
+    const { container } = render(
+      <ConversationHistory
+        {...baseProps}
+        conversationHistory={conversationHistory}
+        currentItems={currentItems}
+        showPreviousItems={false}
+      />,
+    );
+
+    const carousels = container.querySelectorAll('[data-carousel]');
+    expect(carousels).toHaveLength(1);
+  });
+
   it('does not render carousel when currentItems is null', () => {
     const conversationHistory = [{ id: 1, question: 'Last question', answer: 'Last answer' }];
 
