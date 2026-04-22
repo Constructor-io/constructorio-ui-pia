@@ -422,6 +422,28 @@ describe('Testing Hook: useConversation', () => {
       expect(result.current.conversationHistory[0].items).toEqual(firstItems);
       expect(result.current.conversationHistory[1].items).toEqual(secondItems);
     });
+
+    it('persists null items when answer arrives with no items', () => {
+      const getAnswer = jest.fn();
+      let pia = createMockPia({ answers: { getAnswer } });
+
+      const { result, rerender } = renderHook((props) => useConversation(props), {
+        initialProps: { pia, itemId: 'test-item', isConversation: true },
+      });
+
+      act(() => {
+        result.current.handleSubmitQuestion('What is this?');
+      });
+
+      expect(result.current.conversationHistory[0].items).toBeUndefined();
+
+      pia = createMockPia({
+        answers: { getAnswer, data: { value: 'An answer' }, items: null },
+      });
+      rerender({ pia, itemId: 'test-item', isConversation: true });
+
+      expect(result.current.conversationHistory[0].items).toBeNull();
+    });
   });
 
   describe('resetState', () => {

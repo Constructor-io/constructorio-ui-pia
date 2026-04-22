@@ -278,6 +278,36 @@ describe('ConversationHistory Component', () => {
     expect(carousels).toHaveLength(1);
   });
 
+  it('hides carousel on last entry when showPreviousItems is false and currentItems is null', () => {
+    const conversationHistory = [
+      {
+        id: 1,
+        question: 'Q',
+        answer: 'A',
+        items: [
+          {
+            id: 'x',
+            name: 'P',
+            url: '/',
+            imageUrl: '/img.jpg',
+            price: 1,
+          },
+        ],
+      },
+    ];
+
+    const { container } = render(
+      <ConversationHistory
+        {...baseProps}
+        conversationHistory={conversationHistory}
+        currentItems={null}
+        showPreviousItems={false}
+      />,
+    );
+
+    expect(container.querySelector('[data-carousel]')).not.toBeInTheDocument();
+  });
+
   it('does not render carousel when currentItems is null', () => {
     const conversationHistory = [{ id: 1, question: 'Last question', answer: 'Last answer' }];
 

@@ -61,7 +61,7 @@ export default function ConversationHistory({
       {conversationHistory.map((entry, index) => {
         const isLast = index === conversationHistory.length - 1;
         const entryItems = showPreviousItems ? entry.items : null;
-        const carouselItems = isLast ? (currentItems ?? entry.items) : entryItems;
+        const carouselItems = isLast ? (currentItems ?? entryItems) : entryItems;
 
         return (
           <div key={entry.id} className='cio-pia-conversation-entry'>

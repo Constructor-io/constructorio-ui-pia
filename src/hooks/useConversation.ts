@@ -76,7 +76,7 @@ export default function useConversation({
     if (!isConversation || !answerValue) return;
     if (answerValue === prevAnswerValueRef.current) return;
     prevAnswerValueRef.current = answerValue;
-    const items = answers.items ?? null;
+    const { items } = answers;
     setConversationHistory((prev) => {
       if (prev.length === 0) return prev;
       const updated = [...prev];
