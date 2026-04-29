@@ -28,3 +28,13 @@ export const WithLimitedQuestions: Story = {
     suggestedQuestionsParameters: { numResults: 2 },
   },
 };
+
+export const WithFormatImageUrl: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: DEMO_ITEM_ID,
+    formatters: {
+      formatImageUrl: (url) => (url.startsWith('/') ? `https://example.com${url}` : url),
+    },
+  },
+};

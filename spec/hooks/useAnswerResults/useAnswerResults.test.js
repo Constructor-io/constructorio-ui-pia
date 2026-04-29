@@ -238,7 +238,7 @@ describe('Testing Hook: useAnswerResults', () => {
 
   it('applies formatImageUrl to transformed items when provided', async () => {
     mockClient.agent.getAnswerResults.mockResolvedValue(mockResponseWithItemResults);
-    const formatImageUrl = (url) => `https://cdn.example.com${new URL(url).pathname}`;
+    const formatImageUrl = (url) => `https://cdn.example.com/${url}`;
 
     const { result } = renderHook(() =>
       useAnswerResults({ ...testProps, formatImageUrl }),

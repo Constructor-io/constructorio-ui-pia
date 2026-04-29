@@ -63,6 +63,9 @@ export type Translations = {
 export interface Callbacks {
   onProductCardClick?: (item: Item) => void;
   onFeedback?: (type: FeedbackType) => void;
+}
+
+export interface Formatters {
   formatImageUrl?: (url: string) => string;
 }
 
