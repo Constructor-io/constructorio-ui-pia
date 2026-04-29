@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Nullable } from '@constructor-io/constructorio-client-javascript';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
-import { Item, GetAnswerResultsResponse } from '../types';
+import { Formatters, Item, GetAnswerResultsResponse } from '../types';
 import { transformResultItem } from '../utils/transformers';
 
 export interface UseAnswerResultsProps {
@@ -10,7 +10,8 @@ export interface UseAnswerResultsProps {
   threadId?: string;
   cioClient: MockConstructorIOClient;
   parameters?: Record<string, any>;
-  formatImageUrl?: (url: string) => string;
+  /** Define outside the component or wrap with useCallback to avoid unnecessary re-renders. */
+  formatImageUrl?: Formatters['formatImageUrl'];
 }
 
 export interface UseAnswerResultsReturn {

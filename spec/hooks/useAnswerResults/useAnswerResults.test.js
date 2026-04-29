@@ -255,9 +255,10 @@ describe('Testing Hook: useAnswerResults', () => {
     });
 
     expect(result.current.items).not.toBeNull();
+    expect(result.current.items.some((item) => item.imageUrl)).toBe(true);
     result.current.items.forEach((item, index) => {
       const originalUrl = testTransformedItems[index].imageUrl;
-      expect(originalUrl).toBeTruthy();
+      if (!originalUrl) return;
       const expectedUrl = originalUrl.replace(/^https:\/\/[^/]+/, 'https://cdn.example.com');
       expect(item.imageUrl).toBe(expectedUrl);
     });

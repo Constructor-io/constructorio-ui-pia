@@ -1,4 +1,4 @@
-import { SuggestedQuestionsParameters } from '../types';
+import { Formatters, SuggestedQuestionsParameters } from '../types';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 import useAnswerResults, { UseAnswerResultsReturn } from './useAnswerResults';
 import useCioClient from './useCioClient';
@@ -11,7 +11,7 @@ export interface UseCioPiaProps {
   threadId?: string;
   cioClient?: MockConstructorIOClient;
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
-  formatImageUrl?: (url: string) => string;
+  formatImageUrl?: Formatters['formatImageUrl'];
 }
 
 export interface UseCioPiaReturn {

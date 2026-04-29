@@ -33,6 +33,7 @@ export function transformResultItem(
     ...otherMetadataFields
   } = data;
 
+  // Skip formatting for absent or empty URLs; consumers should handle placeholders separately.
   const formattedImageUrl =
     imageUrl !== undefined && imageUrl !== '' && formatImageUrl
       ? formatImageUrl(imageUrl)
