@@ -29,12 +29,14 @@ export const WithLimitedQuestions: Story = {
   },
 };
 
+const prependCdnBase = (url: string) => (url.startsWith('/') ? `https://example.com${url}` : url);
+
 export const WithFormatImageUrl: Story = {
   args: {
     apiKey: DEMO_API_KEY,
     itemId: DEMO_ITEM_ID,
     formatters: {
-      formatImageUrl: (url) => (url.startsWith('/') ? `https://example.com${url}` : url),
+      formatImageUrl: prependCdnBase,
     },
   },
 };

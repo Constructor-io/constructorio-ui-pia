@@ -111,5 +111,19 @@ describe('Testing Transformers: transformResultItem', () => {
       expect(result!.imageUrl).toBeUndefined();
       expect(formatImageUrl).not.toHaveBeenCalled();
     });
+
+    it('should not call formatImageUrl when image_url is an empty string', () => {
+      const formatImageUrl = jest.fn((url: string) => `https://cdn.example.com${url}`);
+      const itemWithEmptyImageUrl = {
+        ...testItem,
+        data: { ...testItem.data, image_url: '' },
+      };
+
+      const result = transformResultItem(itemWithEmptyImageUrl as any, formatImageUrl);
+
+      expect(result).not.toBeNull();
+      expect(result!.imageUrl).toBe('');
+      expect(formatImageUrl).not.toHaveBeenCalled();
+    });
   });
 });

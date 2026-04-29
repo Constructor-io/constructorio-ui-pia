@@ -65,7 +65,9 @@ export interface Callbacks {
   onFeedback?: (type: FeedbackType) => void;
 }
 
+/** Formatter functions for transforming data before display. */
 export interface Formatters {
+  /** Transforms image URLs before rendering (e.g., prepend a CDN base URL). */
   formatImageUrl?: (url: string) => string;
 }
 

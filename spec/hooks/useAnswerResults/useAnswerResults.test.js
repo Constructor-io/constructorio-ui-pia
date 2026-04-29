@@ -238,7 +238,7 @@ describe('Testing Hook: useAnswerResults', () => {
 
   it('applies formatImageUrl to transformed items when provided', async () => {
     mockClient.agent.getAnswerResults.mockResolvedValue(mockResponseWithItemResults);
-    const formatImageUrl = (url) => `https://cdn.example.com/${url}`;
+    const formatImageUrl = (url) => url.replace(/^https:\/\/[^/]+/, 'https://cdn.example.com');
 
     const { result } = renderHook(() =>
       useAnswerResults({ ...testProps, formatImageUrl }),
@@ -255,8 +255,10 @@ describe('Testing Hook: useAnswerResults', () => {
     });
 
     expect(result.current.items).not.toBeNull();
-    result.current.items.forEach((item) => {
-      expect(item.imageUrl).toMatch(/^https:\/\/cdn\.example\.com\//);
+    result.current.items.forEach((item, index) => {
+      const originalUrl = testTransformedItems[index].imageUrl;
+      const expectedUrl = originalUrl.replace(/^https:\/\/[^/]+/, 'https://cdn.example.com');
+      expect(item.imageUrl).toBe(expectedUrl);
     });
   });
 
