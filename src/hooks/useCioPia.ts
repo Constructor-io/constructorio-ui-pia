@@ -11,6 +11,7 @@ export interface UseCioPiaProps {
   threadId?: string;
   cioClient?: MockConstructorIOClient;
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
+  formatImageUrl?: (url: string) => string;
 }
 
 export interface UseCioPiaReturn {
@@ -26,6 +27,7 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     threadId,
     cioClient: providedClient,
     suggestedQuestionsParameters,
+    formatImageUrl,
   } = props;
 
   const defaultClient = useCioClient({ apiKey });
@@ -44,6 +46,7 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     variationId,
     threadId,
     cioClient: client as MockConstructorIOClient,
+    formatImageUrl,
   });
 
   return {

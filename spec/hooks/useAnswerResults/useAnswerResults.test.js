@@ -235,4 +235,46 @@ describe('Testing Hook: useAnswerResults', () => {
 
     expect(mockClient.agent.getAnswerResults).not.toHaveBeenCalled();
   });
+
+  it('applies formatImageUrl to transformed items when provided', async () => {
+    mockClient.agent.getAnswerResults.mockResolvedValue(mockResponseWithItemResults);
+    const formatImageUrl = (url) => `https://cdn.example.com${new URL(url).pathname}`;
+
+    const { result } = renderHook(() =>
+      useAnswerResults({ ...testProps, formatImageUrl }),
+    );
+
+    act(() => {
+      result.current.getAnswer(testQuestion);
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(result.current.items).not.toBeNull();
+    result.current.items.forEach((item) => {
+      expect(item.imageUrl).toMatch(/^https:\/\/cdn\.example\.com\//);
+    });
+  });
+
+  it('does not modify image URLs when formatImageUrl is not provided', async () => {
+    mockClient.agent.getAnswerResults.mockResolvedValue(mockResponseWithItemResults);
+
+    const { result } = renderHook(() => useAnswerResults(testProps));
+
+    act(() => {
+      result.current.getAnswer(testQuestion);
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(result.current.items).toEqual(testTransformedItems);
+  });
 });

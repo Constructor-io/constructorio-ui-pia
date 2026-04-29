@@ -67,6 +67,7 @@ export default function CioPia(props: CioPiaProps) {
     variationId,
     cioClient,
     suggestedQuestionsParameters,
+    formatImageUrl: callbacks?.formatImageUrl,
   });
 
   const {

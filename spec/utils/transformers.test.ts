@@ -75,4 +75,41 @@ describe('Testing Transformers: transformResultItem', () => {
     };
     expect(transformResultItem(item as any)).toBeNull();
   });
+
+  describe('formatImageUrl callback', () => {
+    it('should apply formatImageUrl to the image URL when provided', () => {
+      const formatImageUrl = (url: string) => `https://cdn.example.com${url}`;
+      const itemWithRelativeUrl = {
+        ...testItem,
+        data: { ...testItem.data, image_url: '/images/product.jpg' },
+      };
+
+      const result = transformResultItem(itemWithRelativeUrl, formatImageUrl);
+
+      expect(result).not.toBeNull();
+      expect(result!.imageUrl).toBe('https://cdn.example.com/images/product.jpg');
+    });
+
+    it('should not modify imageUrl when formatImageUrl is not provided', () => {
+      const result = transformResultItem(testItem);
+
+      expect(result).not.toBeNull();
+      expect(result!.imageUrl).toBe(testItem.data.image_url);
+    });
+
+    it('should not call formatImageUrl when image_url is undefined', () => {
+      const formatImageUrl = jest.fn((url: string) => `https://cdn.example.com${url}`);
+      const { image_url, ...dataWithoutImage } = testItem.data;
+      const itemWithoutImage = {
+        ...testItem,
+        data: dataWithoutImage,
+      };
+
+      const result = transformResultItem(itemWithoutImage as any, formatImageUrl);
+
+      expect(result).not.toBeNull();
+      expect(result!.imageUrl).toBeUndefined();
+      expect(formatImageUrl).not.toHaveBeenCalled();
+    });
+  });
 });

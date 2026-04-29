@@ -6,7 +6,10 @@ import { Item, ApiItem } from '../types';
  * Converts a raw ApiItem from the Get Answers API response into an Item object
  * that can be used in the Carousel component.
  */
-export function transformResultItem(resultItem: ApiItem): Nullable<Item> {
+export function transformResultItem(
+  resultItem: ApiItem,
+  formatImageUrl?: (url: string) => string,
+): Nullable<Item> {
   const { value, matched_terms: matchedTerms, data, ...otherFields } = resultItem;
 
   if (!data || typeof data !== 'object' || !data.id || !value) {
@@ -30,6 +33,8 @@ export function transformResultItem(resultItem: ApiItem): Nullable<Item> {
     ...otherMetadataFields
   } = data;
 
+  const formattedImageUrl = imageUrl && formatImageUrl ? formatImageUrl(imageUrl) : imageUrl;
+
   return {
     id,
     name: value,
@@ -37,7 +42,7 @@ export function transformResultItem(resultItem: ApiItem): Nullable<Item> {
     variationId,
     description,
     url,
-    imageUrl,
+    imageUrl: formattedImageUrl,
     price,
     salePrice,
     rating,

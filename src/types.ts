@@ -63,6 +63,7 @@ export type Translations = {
 export interface Callbacks {
   onProductCardClick?: (item: Item) => void;
   onFeedback?: (type: FeedbackType) => void;
+  formatImageUrl?: (url: string) => string;
 }
 
 /** Extends Product type to include PIA-specific fields */
