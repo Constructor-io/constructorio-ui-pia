@@ -33,7 +33,10 @@ export function transformResultItem(
     ...otherMetadataFields
   } = data;
 
-  const formattedImageUrl = imageUrl && formatImageUrl ? formatImageUrl(imageUrl) : imageUrl;
+  const formattedImageUrl =
+    imageUrl !== undefined && imageUrl !== '' && formatImageUrl
+      ? formatImageUrl(imageUrl)
+      : imageUrl;
 
   return {
     id,

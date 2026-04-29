@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Nullable } from '@constructor-io/constructorio-client-javascript';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 import { Item, GetAnswerResultsResponse } from '../types';
@@ -77,9 +77,6 @@ export default function useAnswerResults({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const formatImageUrlRef = useRef(formatImageUrl);
-  formatImageUrlRef.current = formatImageUrl;
-
   const fetchResult = useCallback(
     (question: string) => {
       if (!cioClient) return;
@@ -90,7 +87,7 @@ export default function useAnswerResults({
       fetchAnswerResults({ client: cioClient, itemId, question, variationId, threadId })
         .then((fetchedAnswerResults) => {
           setAnswerResults(fetchedAnswerResults);
-          setItems(extractAndTransformItems(fetchedAnswerResults, formatImageUrlRef.current));
+          setItems(extractAndTransformItems(fetchedAnswerResults, formatImageUrl));
           setError(null);
         })
         .catch((err) => {
@@ -102,7 +99,7 @@ export default function useAnswerResults({
           setIsLoading(false);
         });
     },
-    [cioClient, itemId, variationId, threadId],
+    [cioClient, itemId, variationId, threadId, formatImageUrl],
   );
 
   return {

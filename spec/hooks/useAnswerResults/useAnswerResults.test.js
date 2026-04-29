@@ -257,6 +257,7 @@ describe('Testing Hook: useAnswerResults', () => {
     expect(result.current.items).not.toBeNull();
     result.current.items.forEach((item, index) => {
       const originalUrl = testTransformedItems[index].imageUrl;
+      expect(originalUrl).toBeTruthy();
       const expectedUrl = originalUrl.replace(/^https:\/\/[^/]+/, 'https://cdn.example.com');
       expect(item.imageUrl).toBe(expectedUrl);
     });
