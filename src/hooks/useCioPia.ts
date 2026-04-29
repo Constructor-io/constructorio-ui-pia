@@ -11,6 +11,7 @@ export interface UseCioPiaProps {
   threadId?: string;
   cioClient?: MockConstructorIOClient;
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
+  /** Define outside the component or wrap with useCallback to avoid unnecessary re-renders. */
   formatImageUrl?: Formatters['formatImageUrl'];
 }
 

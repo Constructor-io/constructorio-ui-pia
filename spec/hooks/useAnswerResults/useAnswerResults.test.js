@@ -238,7 +238,9 @@ describe('Testing Hook: useAnswerResults', () => {
 
   it('applies formatImageUrl to transformed items when provided', async () => {
     mockClient.agent.getAnswerResults.mockResolvedValue(mockResponseWithItemResults);
-    const formatImageUrl = (url) => url.replace(/^https:\/\/[^/]+/, 'https://cdn.example.com');
+    const formatImageUrl = jest.fn((url) =>
+      url.replace(/^https:\/\/[^/]+/, 'https://cdn.example.com'),
+    );
 
     const { result } = renderHook(() =>
       useAnswerResults({ ...testProps, formatImageUrl }),
@@ -255,10 +257,9 @@ describe('Testing Hook: useAnswerResults', () => {
     });
 
     expect(result.current.items).not.toBeNull();
-    expect(result.current.items.some((item) => item.imageUrl)).toBe(true);
+    expect(formatImageUrl).toHaveBeenCalledTimes(testTransformedItems.length);
     result.current.items.forEach((item, index) => {
       const originalUrl = testTransformedItems[index].imageUrl;
-      if (!originalUrl) return;
       const expectedUrl = originalUrl.replace(/^https:\/\/[^/]+/, 'https://cdn.example.com');
       expect(item.imageUrl).toBe(expectedUrl);
     });
