@@ -117,6 +117,34 @@ export const WithFeedback: Story = {
   },
 };
 
+function WithoutPreviousItemsWrapper() {
+  const pia = useCioPia({ apiKey: DEMO_API_KEY, itemId: DEMO_ITEM_ID });
+  const {
+    conversationHistory,
+    displayedQuestions,
+    isLoading,
+    error,
+    currentItems,
+    handleSubmitQuestion,
+  } = useConversation({ pia, itemId: DEMO_ITEM_ID, isConversation: true });
+
+  return (
+    <PiaConversation
+      conversationHistory={conversationHistory}
+      isLoading={isLoading}
+      error={error}
+      currentItems={currentItems}
+      showPreviousItems={false}
+      displayedQuestions={displayedQuestions}
+      handleSubmitQuestion={handleSubmitQuestion}
+    />
+  );
+}
+
+export const WithoutPreviousItems = {
+  render: () => <WithoutPreviousItemsWrapper />,
+};
+
 export const WithLearnMore: Story = {
   args: {
     conversationHistory: [
