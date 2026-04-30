@@ -92,7 +92,7 @@ export default function useConversation({
       };
       return updated;
     });
-  }, [isConversation, answers.data?.value, answers.items]);
+  }, [isConversation, answers.data, answers.items]);
 
   const currentAnswer = answers.data?.value ?? '';
   const currentItems = answers.items ?? null;

@@ -278,7 +278,7 @@ describe('ConversationHistory Component', () => {
     expect(carousels).toHaveLength(1);
   });
 
-  it('currentItems null overrides entry.items on last entry', () => {
+  it('does not render carousel when currentItems is null even if entry has items', () => {
     const conversationHistory = [
       {
         id: 1,
@@ -329,7 +329,7 @@ describe('ConversationHistory Component', () => {
     expect(carousels).toHaveLength(1);
   });
 
-  it('currentItems takes precedence over entry.items on last entry', () => {
+  it('renders currentItems instead of entry.items on last entry when both are provided', () => {
     const entryItems = [
       {
         id: 'item-old',
