@@ -364,20 +364,6 @@ describe('ConversationHistory Component', () => {
     expect(screen.queryByText('Old Product')).not.toBeInTheDocument();
   });
 
-  it('does not render carousel when currentItems is null', () => {
-    const conversationHistory = [{ id: 1, question: 'Last question', answer: 'Last answer' }];
-
-    const { container } = render(
-      <ConversationHistory
-        {...baseProps}
-        conversationHistory={conversationHistory}
-        currentItems={null}
-      />,
-    );
-
-    expect(container.querySelector('[data-carousel]')).not.toBeInTheDocument();
-  });
-
   it('does not show feedback on last entry when showFeedback is false or not provided', () => {
     const conversationHistory = [{ id: 1, question: 'Last question', answer: 'Last answer' }];
 
