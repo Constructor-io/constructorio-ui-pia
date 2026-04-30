@@ -190,6 +190,18 @@ describe('CioPia Component', () => {
       );
     });
 
+    it('passes formatImageUrl from formatters to useCioPia', () => {
+      const formatImageUrl = (url) => `https://cdn.example.com${url}`;
+
+      render(<CioPia {...mockProps} formatters={{ formatImageUrl }} />);
+
+      expect(useCioPia).toHaveBeenCalledWith(
+        expect.objectContaining({
+          formatImageUrl,
+        }),
+      );
+    });
+
     it('handles question submission via input', () => {
       const { getByRole } = render(<CioPia {...mockProps} />);
       const input = getByRole('textbox');

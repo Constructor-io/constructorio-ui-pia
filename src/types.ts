@@ -67,6 +67,12 @@ export interface Callbacks {
   onFeedback?: (type: FeedbackType) => void;
 }
 
+/** Formatter functions for transforming data before display. */
+export interface Formatters {
+  /** Transforms image URLs before rendering (e.g., prepend a CDN base URL). */
+  formatImageUrl?: (url: string) => string;
+}
+
 /** Extends Product type to include PIA-specific fields */
 export interface Item extends Product, Record<string, any> {
   url?: string;

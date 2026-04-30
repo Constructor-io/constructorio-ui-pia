@@ -21,6 +21,7 @@ import {
   CioPiaDisplayConfigs,
   Translations,
   SuggestedQuestionsParameters,
+  Formatters,
 } from '../../types';
 import { translate } from '../../utils/translate';
 import PiaCustomCarousel from './PiaCustomCarousel';
@@ -39,6 +40,8 @@ export interface CioPiaProps
   cioClient?: MockConstructorIOClient;
   displayConfigs?: CioPiaDisplayConfigs;
   callbacks?: Callbacks;
+  /** Define formatter functions outside the component or memoize to avoid unnecessary re-renders. */
+  formatters?: Formatters;
   translations?: Translations;
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
 }
@@ -53,6 +56,7 @@ export default function CioPia(props: CioPiaProps) {
     displayConfigs,
     componentOverrides,
     callbacks,
+    formatters,
     children,
     translations,
     suggestedQuestionsParameters,
@@ -73,6 +77,7 @@ export default function CioPia(props: CioPiaProps) {
     variationId,
     cioClient,
     suggestedQuestionsParameters,
+    formatImageUrl: formatters?.formatImageUrl,
   });
 
   const {
