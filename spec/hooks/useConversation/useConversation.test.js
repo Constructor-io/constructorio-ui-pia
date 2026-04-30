@@ -423,7 +423,7 @@ describe('Testing Hook: useConversation', () => {
       expect(result.current.conversationHistory[1].items).toEqual(secondItems);
     });
 
-    it('persists null items when answer arrives with no items', () => {
+    it('stores null items when answer arrives with no items', () => {
       const getAnswer = jest.fn();
       let pia = createMockPia({ answers: { getAnswer } });
 
