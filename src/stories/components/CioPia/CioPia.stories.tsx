@@ -14,6 +14,9 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+// Define outside the component (or use useCallback) to avoid unnecessary re-renders.
+const prependCdnBase = (url: string) => (url.startsWith('/') ? `https://example.com${url}` : url);
+
 export const Default: Story = {
   args: {
     apiKey: DEMO_API_KEY,
@@ -26,5 +29,15 @@ export const WithLimitedQuestions: Story = {
     apiKey: DEMO_API_KEY,
     itemId: DEMO_ITEM_ID,
     suggestedQuestionsParameters: { numResults: 2 },
+  },
+};
+
+export const WithFormatImageUrl: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: DEMO_ITEM_ID,
+    formatters: {
+      formatImageUrl: prependCdnBase,
+    },
   },
 };

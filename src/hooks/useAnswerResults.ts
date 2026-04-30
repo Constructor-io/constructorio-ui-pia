@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Nullable } from '@constructor-io/constructorio-client-javascript';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
-import { Item, GetAnswerResultsResponse } from '../types';
+import { Formatters, Item, GetAnswerResultsResponse } from '../types';
 import { transformResultItem } from '../utils/transformers';
 
 export interface UseAnswerResultsProps {
@@ -10,6 +10,7 @@ export interface UseAnswerResultsProps {
   threadId?: string;
   cioClient: MockConstructorIOClient;
   parameters?: Record<string, any>;
+  formatImageUrl?: Formatters['formatImageUrl'];
 }
 
 export interface UseAnswerResultsReturn {
@@ -28,7 +29,10 @@ interface FetchAnswerResultsParams {
   threadId?: string;
 }
 
-const extractAndTransformItems = (data: Nullable<GetAnswerResultsResponse>): Array<Item> | null => {
+const extractAndTransformItems = (
+  data: Nullable<GetAnswerResultsResponse>,
+  formatImageUrl?: Formatters['formatImageUrl'],
+): Array<Item> | null => {
   if (!data?.item_results?.response?.results) {
     return null;
   }
@@ -39,7 +43,7 @@ const extractAndTransformItems = (data: Nullable<GetAnswerResultsResponse>): Arr
   }
 
   const transformedItems = results
-    .map(transformResultItem)
+    .map((item) => transformResultItem(item, formatImageUrl))
     .filter((item): item is Item => item !== null);
 
   return transformedItems.length > 0 ? transformedItems : null;
@@ -66,6 +70,7 @@ export default function useAnswerResults({
   variationId,
   threadId,
   cioClient,
+  formatImageUrl,
 }: UseAnswerResultsProps): UseAnswerResultsReturn {
   const [answerResults, setAnswerResults] = useState<GetAnswerResultsResponse | null>(null);
   const [items, setItems] = useState<Array<Item> | null>(null);
@@ -82,7 +87,7 @@ export default function useAnswerResults({
       fetchAnswerResults({ client: cioClient, itemId, question, variationId, threadId })
         .then((fetchedAnswerResults) => {
           setAnswerResults(fetchedAnswerResults);
-          setItems(extractAndTransformItems(fetchedAnswerResults));
+          setItems(extractAndTransformItems(fetchedAnswerResults, formatImageUrl));
           setError(null);
         })
         .catch((err) => {
@@ -94,7 +99,7 @@ export default function useAnswerResults({
           setIsLoading(false);
         });
     },
-    [cioClient, itemId, variationId, threadId],
+    [cioClient, itemId, variationId, threadId, formatImageUrl],
   );
 
   return {

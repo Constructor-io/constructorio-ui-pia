@@ -235,4 +235,53 @@ describe('Testing Hook: useAnswerResults', () => {
 
     expect(mockClient.agent.getAnswerResults).not.toHaveBeenCalled();
   });
+
+  it('applies formatImageUrl to transformed items when provided', async () => {
+    mockClient.agent.getAnswerResults.mockResolvedValue(mockResponseWithItemResults);
+    const formatImageUrl = jest.fn((url) =>
+      url.replace(/^https:\/\/[^/]+/, 'https://cdn.example.com'),
+    );
+
+    const { result } = renderHook(() =>
+      useAnswerResults({ ...testProps, formatImageUrl }),
+    );
+
+    act(() => {
+      result.current.getAnswer(testQuestion);
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(result.current.items).not.toBeNull();
+    expect(formatImageUrl).toHaveBeenCalledTimes(
+      mockResponseWithItemResults.item_results.response.results.length,
+    );
+    result.current.items.forEach((item, index) => {
+      const originalUrl = testTransformedItems[index].imageUrl;
+      const expectedUrl = originalUrl.replace(/^https:\/\/[^/]+/, 'https://cdn.example.com');
+      expect(item.imageUrl).toBe(expectedUrl);
+    });
+  });
+
+  it('does not modify image URLs when formatImageUrl is not provided', async () => {
+    mockClient.agent.getAnswerResults.mockResolvedValue(mockResponseWithItemResults);
+
+    const { result } = renderHook(() => useAnswerResults(testProps));
+
+    act(() => {
+      result.current.getAnswer(testQuestion);
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(result.current.items).toEqual(testTransformedItems);
+  });
 });

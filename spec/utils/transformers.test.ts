@@ -75,4 +75,66 @@ describe('Testing Transformers: transformResultItem', () => {
     };
     expect(transformResultItem(item as any)).toBeNull();
   });
+
+  describe('formatImageUrl callback', () => {
+    it('should apply formatImageUrl to the image URL when provided', () => {
+      const formatImageUrl = (url: string) => `https://cdn.example.com${url}`;
+      const itemWithRelativeUrl = {
+        ...testItem,
+        data: { ...testItem.data, image_url: '/images/product.jpg' },
+      };
+
+      const result = transformResultItem(itemWithRelativeUrl, formatImageUrl);
+
+      expect(result).not.toBeNull();
+      expect(result!.imageUrl).toBe('https://cdn.example.com/images/product.jpg');
+    });
+
+    it('should not modify imageUrl when formatImageUrl is not provided', () => {
+      const result = transformResultItem(testItem);
+
+      expect(result).not.toBeNull();
+      expect(result!.imageUrl).toBe(testItem.data.image_url);
+    });
+
+    it('should not call formatImageUrl when image_url is undefined', () => {
+      const formatImageUrl = jest.fn((url: string) => `https://cdn.example.com${url}`);
+      const { image_url, ...dataWithoutImage } = testItem.data;
+      const itemWithoutImage = {
+        ...testItem,
+        data: dataWithoutImage,
+      };
+
+      const result = transformResultItem(itemWithoutImage as any, formatImageUrl);
+
+      expect(result).not.toBeNull();
+      expect(result!.imageUrl).toBeUndefined();
+      expect(formatImageUrl).not.toHaveBeenCalled();
+    });
+
+    it('should not call formatImageUrl when image_url is an empty string', () => {
+      const formatImageUrl = jest.fn((url: string) => `https://cdn.example.com${url}`);
+      const itemWithEmptyImageUrl = {
+        ...testItem,
+        data: { ...testItem.data, image_url: '' },
+      };
+
+      const result = transformResultItem(itemWithEmptyImageUrl as any, formatImageUrl);
+
+      expect(result).not.toBeNull();
+      expect(result!.imageUrl).toBe('');
+      expect(formatImageUrl).not.toHaveBeenCalled();
+    });
+
+    it('should fall back to original imageUrl when formatImageUrl throws', () => {
+      const formatImageUrl = () => {
+        throw new Error('formatter error');
+      };
+
+      const result = transformResultItem(testItem, formatImageUrl);
+
+      expect(result).not.toBeNull();
+      expect(result!.imageUrl).toBe(testItem.data.image_url);
+    });
+  });
 });

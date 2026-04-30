@@ -1,12 +1,15 @@
 /* eslint-disable import/prefer-default-export */
 import { Nullable } from '@constructor-io/constructorio-client-javascript';
-import { Item, ApiItem } from '../types';
+import { Formatters, Item, ApiItem } from '../types';
 
 /**
  * Converts a raw ApiItem from the Get Answers API response into an Item object
  * that can be used in the Carousel component.
  */
-export function transformResultItem(resultItem: ApiItem): Nullable<Item> {
+export function transformResultItem(
+  resultItem: ApiItem,
+  formatImageUrl?: Formatters['formatImageUrl'],
+): Nullable<Item> {
   const { value, matched_terms: matchedTerms, data, ...otherFields } = resultItem;
 
   if (!data || typeof data !== 'object' || !data.id || !value) {
@@ -30,6 +33,16 @@ export function transformResultItem(resultItem: ApiItem): Nullable<Item> {
     ...otherMetadataFields
   } = data;
 
+  // Skip formatting for absent or empty URLs; consumers should handle placeholders separately.
+  let formattedImageUrl = imageUrl;
+  if (formatImageUrl && imageUrl) {
+    try {
+      formattedImageUrl = formatImageUrl(imageUrl);
+    } catch {
+      formattedImageUrl = imageUrl;
+    }
+  }
+
   return {
     id,
     name: value,
@@ -37,7 +50,7 @@ export function transformResultItem(resultItem: ApiItem): Nullable<Item> {
     variationId,
     description,
     url,
-    imageUrl,
+    imageUrl: formattedImageUrl,
     price,
     salePrice,
     rating,

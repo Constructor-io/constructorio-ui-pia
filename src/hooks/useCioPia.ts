@@ -1,4 +1,4 @@
-import { SuggestedQuestionsParameters } from '../types';
+import { Formatters, SuggestedQuestionsParameters } from '../types';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 import useAnswerResults, { UseAnswerResultsReturn } from './useAnswerResults';
 import useCioClient from './useCioClient';
@@ -11,6 +11,8 @@ export interface UseCioPiaProps {
   threadId?: string;
   cioClient?: MockConstructorIOClient;
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
+  /** Define outside the component or wrap with useCallback to avoid unnecessary re-renders. */
+  formatImageUrl?: Formatters['formatImageUrl'];
 }
 
 export interface UseCioPiaReturn {
@@ -26,6 +28,7 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     threadId,
     cioClient: providedClient,
     suggestedQuestionsParameters,
+    formatImageUrl,
   } = props;
 
   const defaultClient = useCioClient({ apiKey });
@@ -44,6 +47,7 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     variationId,
     threadId,
     cioClient: client as MockConstructorIOClient,
+    formatImageUrl,
   });
 
   return {
