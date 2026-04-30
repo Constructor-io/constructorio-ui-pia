@@ -19,9 +19,9 @@ export interface ConversationHistoryProps {
   error: Error | null;
   /**
    * Items for the latest conversation entry's carousel.
-   * - undefined (not provided): falls back to entry.items
-   * - null: explicitly no items, hides the carousel
-   * - Item[]: shows these items, overriding entry.items
+   * - `undefined` (not provided): falls back to entry.items
+   * - `null`: explicitly no items, hides the carousel
+   * - `Item[]`: shows these items, overriding entry.items
    */
   currentItems?: Item[] | null;
   showFeedback?: boolean;
