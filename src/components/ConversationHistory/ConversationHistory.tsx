@@ -62,60 +62,60 @@ export default function ConversationHistory({
   }, [conversationHistory, isLoading]);
 
   return (
-    <div
-      ref={scrollContainerRef}
-      className='cio-pia-conversation-history'
-      role='log'
-      aria-label='Conversation history'>
-      {conversationHistory.map((entry, index) => {
-        const isLast = index === conversationHistory.length - 1;
-        const previousEntryItems = showPreviousItems ? entry.items : null;
-        const latestEntryItems = currentItems !== undefined ? currentItems : entry.items;
-        const carouselItems = isLast ? latestEntryItems : previousEntryItems;
+    <div className='cio-pia-conversation-history'>
+      <div
+        ref={scrollContainerRef}
+        className='cio-pia-conversation-entries'
+        role='log'
+        aria-label='Conversation history'>
+        {conversationHistory.map((entry, index) => {
+          const isLast = index === conversationHistory.length - 1;
+          const previousEntryItems = showPreviousItems ? entry.items : null;
+          const latestEntryItems = currentItems !== undefined ? currentItems : entry.items;
+          const carouselItems = isLast ? latestEntryItems : previousEntryItems;
 
-        return (
-          <div key={entry.id} className='cio-pia-conversation-entry'>
-            <div className='cio-pia-chat-question'>{entry.question}</div>
+          return (
+            <div key={entry.id} className='cio-pia-conversation-entry'>
+              <div className='cio-pia-chat-question'>{entry.question}</div>
 
-            {isLast && isLoading && (
-              <div className='cio-pia-conversation-loading' aria-live='polite'>
-                <LoadingSkeleton />
-              </div>
-            )}
+              {isLast && isLoading && (
+                <div className='cio-pia-conversation-loading' aria-live='polite'>
+                  <LoadingSkeleton />
+                </div>
+              )}
 
-            {isLast && !isLoading && error && (
-              <ErrorBlock message={error.message || 'Unexpected error'} />
-            )}
+              {isLast && !isLoading && error && (
+                <ErrorBlock message={error.message || 'Unexpected error'} />
+              )}
 
-            {entry.answer && (
-              <div className='cio-pia-answer-container'>
-                <Answer text={entry.answer} componentOverride={componentOverrides?.answer} />
-                {carouselItems && (
-                  <PiaCustomCarousel
-                    items={carouselItems}
-                    componentOverrides={componentOverrides?.carousel}
-                    callbacks={callbacks}
-                  />
-                )}
-                {isLast && showFeedback && (
-                  <Feedback
-                    translations={translations}
-                    onFeedback={callbacks?.onFeedback}
-                    componentOverride={componentOverrides?.feedback}
-                  />
-                )}
-              </div>
-            )}
-            {isLast && entry.answer && (
-              <Disclaimer
-                learnMoreUrl={learnMoreUrl}
-                translations={translations}
-                componentOverride={componentOverrides?.disclaimer}
-              />
-            )}
-          </div>
-        );
-      })}
+              {entry.answer && (
+                <div className='cio-pia-answer-container'>
+                  <Answer text={entry.answer} componentOverride={componentOverrides?.answer} />
+                  {carouselItems && (
+                    <PiaCustomCarousel
+                      items={carouselItems}
+                      componentOverrides={componentOverrides?.carousel}
+                      callbacks={callbacks}
+                    />
+                  )}
+                  {isLast && showFeedback && (
+                    <Feedback
+                      translations={translations}
+                      onFeedback={callbacks?.onFeedback}
+                      componentOverride={componentOverrides?.feedback}
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <Disclaimer
+        learnMoreUrl={learnMoreUrl}
+        translations={translations}
+        componentOverride={componentOverrides?.disclaimer}
+      />
     </div>
   );
 }
