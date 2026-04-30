@@ -44,6 +44,11 @@ export type CioPiaDisplayConfigs = {
   showFeedback?: boolean;
   mode?: CioPiaMode;
   type?: CioPiaType;
+  /**
+   * Show product carousels on non-last conversation entries. Defaults to true.
+   * The last entry always falls back to its own items when currentItems is not provided.
+   */
+  showPreviousItems?: boolean;
 };
 
 /**
@@ -81,6 +86,7 @@ export interface ConversationEntry {
   id: number;
   question: string;
   answer: string;
+  items?: Item[] | null;
 }
 
 /**

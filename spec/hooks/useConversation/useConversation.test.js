@@ -364,6 +364,86 @@ describe('Testing Hook: useConversation', () => {
       expect(result.current.conversationHistory[0].answer).toBe('First answer');
       expect(result.current.conversationHistory[1].answer).toBe('Second answer');
     });
+
+    it('syncs items into the latest conversation entry alongside the answer', () => {
+      const getAnswer = jest.fn();
+      const mockItems = [{ id: 'p1', name: 'Product 1', price: 10 }];
+      let pia = createMockPia({ answers: { getAnswer } });
+
+      const { result, rerender } = renderHook((props) => useConversation(props), {
+        initialProps: { pia, itemId: 'test-item', isConversation: true },
+      });
+
+      act(() => {
+        result.current.handleSubmitQuestion('What is this?');
+      });
+
+      expect(result.current.conversationHistory[0].items).toBeUndefined();
+
+      // Simulate answer with items arriving
+      pia = createMockPia({
+        answers: { getAnswer, data: { value: 'An answer' }, items: mockItems },
+      });
+      rerender({ pia, itemId: 'test-item', isConversation: true });
+
+      expect(result.current.conversationHistory[0].answer).toBe('An answer');
+      expect(result.current.conversationHistory[0].items).toEqual(mockItems);
+    });
+
+    it('preserves items from previous entries when new questions are asked', () => {
+      const getAnswer = jest.fn();
+      const firstItems = [{ id: 'pA', name: 'Product A', price: 10 }];
+      const secondItems = [{ id: 'pB', name: 'Product B', price: 20 }];
+      let pia = createMockPia({ answers: { getAnswer } });
+
+      const { result, rerender } = renderHook((props) => useConversation(props), {
+        initialProps: { pia, itemId: 'test-item', isConversation: true },
+      });
+
+      // First question and answer with items
+      act(() => {
+        result.current.handleSubmitQuestion('First question');
+      });
+      pia = createMockPia({
+        answers: { getAnswer, data: { value: 'First answer' }, items: firstItems },
+      });
+      rerender({ pia, itemId: 'test-item', isConversation: true });
+
+      // Second question and answer with different items
+      act(() => {
+        result.current.handleSubmitQuestion('Second question');
+      });
+      pia = createMockPia({
+        answers: { getAnswer, data: { value: 'Second answer' }, items: secondItems },
+      });
+      rerender({ pia, itemId: 'test-item', isConversation: true });
+
+      expect(result.current.conversationHistory).toHaveLength(2);
+      expect(result.current.conversationHistory[0].items).toEqual(firstItems);
+      expect(result.current.conversationHistory[1].items).toEqual(secondItems);
+    });
+
+    it('stores null items when answer arrives with no items', () => {
+      const getAnswer = jest.fn();
+      let pia = createMockPia({ answers: { getAnswer } });
+
+      const { result, rerender } = renderHook((props) => useConversation(props), {
+        initialProps: { pia, itemId: 'test-item', isConversation: true },
+      });
+
+      act(() => {
+        result.current.handleSubmitQuestion('What is this?');
+      });
+
+      expect(result.current.conversationHistory[0].items).toBeUndefined();
+
+      pia = createMockPia({
+        answers: { getAnswer, data: { value: 'An answer' }, items: null },
+      });
+      rerender({ pia, itemId: 'test-item', isConversation: true });
+
+      expect(result.current.conversationHistory[0].items).toBeNull();
+    });
   });
 
   describe('resetState', () => {
