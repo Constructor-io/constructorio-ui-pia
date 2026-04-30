@@ -34,7 +34,7 @@ export default function useConversation({
 
   const entryIdRef = useRef(0);
   const prevAnswerValueRef = useRef(answers.data?.value);
-  const prevItemsRef = useRef(answers.items);
+  const prevItemsRef = useRef<typeof answers.items>(undefined);
 
   const handleSubmitQuestion = useCallback(
     (question: string) => {
@@ -55,7 +55,7 @@ export default function useConversation({
     setDisplayedQuestions(suggestedQuestions.data);
     setConversationHistory([]);
     prevAnswerValueRef.current = undefined;
-    prevItemsRef.current = null;
+    prevItemsRef.current = undefined;
   }, [suggestedQuestions.data]);
 
   useEffect(() => {
@@ -63,7 +63,7 @@ export default function useConversation({
     setDisplayedQuestions([]);
     setConversationHistory([]);
     prevAnswerValueRef.current = undefined;
-    prevItemsRef.current = null;
+    prevItemsRef.current = undefined;
   }, [itemId]);
 
   useEffect(() => {
@@ -87,12 +87,12 @@ export default function useConversation({
       const updated = [...prev];
       updated[updated.length - 1] = {
         ...updated[updated.length - 1],
-        answer: answerValue,
+        ...(answerChanged ? { answer: answerValue } : {}),
         items: answers.items,
       };
       return updated;
     });
-  }, [isConversation, answers.data, answers.items]);
+  }, [isConversation, answers.data?.value, answers.items]);
 
   const currentAnswer = answers.data?.value ?? '';
   const currentItems = answers.items ?? null;
