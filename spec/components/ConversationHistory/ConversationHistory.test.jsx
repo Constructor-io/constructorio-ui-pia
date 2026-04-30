@@ -278,7 +278,7 @@ describe('ConversationHistory Component', () => {
     expect(carousels).toHaveLength(1);
   });
 
-  it('hides carousel on last entry when showPreviousItems is false and currentItems is null', () => {
+  it('currentItems null overrides entry.items on last entry', () => {
     const conversationHistory = [
       {
         id: 1,
@@ -301,11 +301,67 @@ describe('ConversationHistory Component', () => {
         {...baseProps}
         conversationHistory={conversationHistory}
         currentItems={null}
-        showPreviousItems={false}
       />,
     );
 
     expect(container.querySelector('[data-carousel]')).not.toBeInTheDocument();
+  });
+
+  it('falls back to entry.items on last entry when currentItems is not provided', () => {
+    const entryItems = [
+      {
+        id: 'item-1',
+        name: 'Saved Product',
+        url: 'https://example.com/saved',
+        imageUrl: 'https://example.com/saved.jpg',
+        price: 15,
+      },
+    ];
+    const conversationHistory = [
+      { id: 1, question: 'Last question', answer: 'Last answer', items: entryItems },
+    ];
+
+    const { container } = render(
+      <ConversationHistory {...baseProps} conversationHistory={conversationHistory} />,
+    );
+
+    const carousels = container.querySelectorAll('[data-carousel]');
+    expect(carousels).toHaveLength(1);
+  });
+
+  it('currentItems takes precedence over entry.items on last entry', () => {
+    const entryItems = [
+      {
+        id: 'item-old',
+        name: 'Old Product',
+        url: 'https://example.com/old',
+        imageUrl: 'https://example.com/old.jpg',
+        price: 5,
+      },
+    ];
+    const currentItems = [
+      {
+        id: 'item-new',
+        name: 'New Product',
+        url: 'https://example.com/new',
+        imageUrl: 'https://example.com/new.jpg',
+        price: 20,
+      },
+    ];
+    const conversationHistory = [
+      { id: 1, question: 'Last question', answer: 'Last answer', items: entryItems },
+    ];
+
+    render(
+      <ConversationHistory
+        {...baseProps}
+        conversationHistory={conversationHistory}
+        currentItems={currentItems}
+      />,
+    );
+
+    expect(screen.getByText('New Product')).toBeInTheDocument();
+    expect(screen.queryByText('Old Product')).not.toBeInTheDocument();
   });
 
   it('does not render carousel when currentItems is null', () => {

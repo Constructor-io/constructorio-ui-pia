@@ -1,7 +1,8 @@
-import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import PiaConversation from '../../../components/PiaConversation/PiaConversation';
+import PiaConversation, {
+  PiaConversationProps,
+} from '../../../components/PiaConversation/PiaConversation';
 import useCioPia from '../../../hooks/useCioPia';
 import useConversation from '../../../hooks/useConversation';
 import { DEMO_API_KEY, DEMO_ITEM_ID, MOCK_QUESTIONS } from '../../../constants';
@@ -20,7 +21,7 @@ type Story = StoryObj<typeof meta>;
 
 const mockQuestions = MOCK_QUESTIONS.slice(0, 3);
 
-function InteractiveWrapper() {
+function InteractiveWrapper(extraProps: Partial<PiaConversationProps> = {}) {
   const pia = useCioPia({ apiKey: DEMO_API_KEY, itemId: DEMO_ITEM_ID });
   const {
     conversationHistory,
@@ -39,6 +40,7 @@ function InteractiveWrapper() {
       currentItems={currentItems}
       displayedQuestions={displayedQuestions}
       handleSubmitQuestion={handleSubmitQuestion}
+      {...extraProps}
     />
   );
 }
@@ -117,32 +119,8 @@ export const WithFeedback: Story = {
   },
 };
 
-function WithoutPreviousItemsWrapper() {
-  const pia = useCioPia({ apiKey: DEMO_API_KEY, itemId: DEMO_ITEM_ID });
-  const {
-    conversationHistory,
-    displayedQuestions,
-    isLoading,
-    error,
-    currentItems,
-    handleSubmitQuestion,
-  } = useConversation({ pia, itemId: DEMO_ITEM_ID, isConversation: true });
-
-  return (
-    <PiaConversation
-      conversationHistory={conversationHistory}
-      isLoading={isLoading}
-      error={error}
-      currentItems={currentItems}
-      showPreviousItems={false}
-      displayedQuestions={displayedQuestions}
-      handleSubmitQuestion={handleSubmitQuestion}
-    />
-  );
-}
-
 export const WithoutPreviousItems = {
-  render: () => <WithoutPreviousItemsWrapper />,
+  render: () => <InteractiveWrapper showPreviousItems={false} />,
 };
 
 export const WithLearnMore: Story = {

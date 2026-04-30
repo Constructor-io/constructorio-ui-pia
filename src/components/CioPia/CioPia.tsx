@@ -66,7 +66,7 @@ export default function CioPia(props: CioPiaProps) {
     showFeedback,
     mode = 'default',
     type = 'inline',
-    showPreviousItems = true,
+    showPreviousItems,
   } = displayConfigs || {};
   const isConversation = mode === 'conversation' || type === 'modal';
 

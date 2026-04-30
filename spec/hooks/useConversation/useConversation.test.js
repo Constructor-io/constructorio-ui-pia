@@ -367,7 +367,7 @@ describe('Testing Hook: useConversation', () => {
 
     it('syncs items into the latest conversation entry alongside the answer', () => {
       const getAnswer = jest.fn();
-      const mockItems = [{ itemName: 'Product 1' }];
+      const mockItems = [{ id: 'p1', name: 'Product 1', price: 10 }];
       let pia = createMockPia({ answers: { getAnswer } });
 
       const { result, rerender } = renderHook((props) => useConversation(props), {
@@ -392,8 +392,8 @@ describe('Testing Hook: useConversation', () => {
 
     it('preserves items from previous entries when new questions are asked', () => {
       const getAnswer = jest.fn();
-      const firstItems = [{ itemName: 'Product A' }];
-      const secondItems = [{ itemName: 'Product B' }];
+      const firstItems = [{ id: 'pA', name: 'Product A', price: 10 }];
+      const secondItems = [{ id: 'pB', name: 'Product B', price: 20 }];
       let pia = createMockPia({ answers: { getAnswer } });
 
       const { result, rerender } = renderHook((props) => useConversation(props), {

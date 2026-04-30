@@ -19,7 +19,10 @@ export interface ConversationHistoryProps {
   error: Error | null;
   currentItems?: Item[] | null;
   showFeedback?: boolean;
-  /** Show product carousels from previous conversation entries. Defaults to true. */
+  /**
+   * Show product carousels on non-last conversation entries. Defaults to true.
+   * The last entry always falls back to its own items when currentItems is not provided.
+   */
   showPreviousItems?: boolean;
   learnMoreUrl?: string;
   translations?: Translations;
@@ -60,9 +63,9 @@ export default function ConversationHistory({
       aria-label='Conversation history'>
       {conversationHistory.map((entry, index) => {
         const isLast = index === conversationHistory.length - 1;
-        const entryItems = showPreviousItems ? entry.items : null;
-        const lastEntryItems = currentItems !== undefined ? currentItems : entryItems;
-        const carouselItems = isLast ? lastEntryItems : entryItems;
+        const previousEntryItems = showPreviousItems ? entry.items : null;
+        const latestEntryItems = currentItems !== undefined ? currentItems : entry.items;
+        const carouselItems = isLast ? latestEntryItems : previousEntryItems;
 
         return (
           <div key={entry.id} className='cio-pia-conversation-entry'>
