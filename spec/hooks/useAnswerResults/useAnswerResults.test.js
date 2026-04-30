@@ -257,7 +257,9 @@ describe('Testing Hook: useAnswerResults', () => {
     });
 
     expect(result.current.items).not.toBeNull();
-    expect(formatImageUrl).toHaveBeenCalledTimes(testTransformedItems.length);
+    expect(formatImageUrl).toHaveBeenCalledTimes(
+      mockResponseWithItemResults.item_results.response.results.length,
+    );
     result.current.items.forEach((item, index) => {
       const originalUrl = testTransformedItems[index].imageUrl;
       const expectedUrl = originalUrl.replace(/^https:\/\/[^/]+/, 'https://cdn.example.com');

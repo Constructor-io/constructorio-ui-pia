@@ -10,7 +10,6 @@ export interface UseAnswerResultsProps {
   threadId?: string;
   cioClient: MockConstructorIOClient;
   parameters?: Record<string, any>;
-  /** Define outside the component or wrap with useCallback to avoid unnecessary re-renders. */
   formatImageUrl?: Formatters['formatImageUrl'];
 }
 

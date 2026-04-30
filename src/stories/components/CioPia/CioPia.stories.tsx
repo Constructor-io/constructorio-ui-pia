@@ -14,6 +14,8 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const prependCdnBase = (url: string) => (url.startsWith('/') ? `https://example.com${url}` : url);
+
 export const Default: Story = {
   args: {
     apiKey: DEMO_API_KEY,
@@ -28,8 +30,6 @@ export const WithLimitedQuestions: Story = {
     suggestedQuestionsParameters: { numResults: 2 },
   },
 };
-
-const prependCdnBase = (url: string) => (url.startsWith('/') ? `https://example.com${url}` : url);
 
 export const WithFormatImageUrl: Story = {
   args: {
