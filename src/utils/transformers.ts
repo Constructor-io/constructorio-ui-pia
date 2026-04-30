@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { Nullable } from '@constructor-io/constructorio-client-javascript';
-import { Item, ApiItem } from '../types';
+import { Formatters, Item, ApiItem } from '../types';
 
 /**
  * Converts a raw ApiItem from the Get Answers API response into an Item object
@@ -8,7 +8,7 @@ import { Item, ApiItem } from '../types';
  */
 export function transformResultItem(
   resultItem: ApiItem,
-  formatImageUrl?: (url: string) => string,
+  formatImageUrl?: Formatters['formatImageUrl'],
 ): Nullable<Item> {
   const { value, matched_terms: matchedTerms, data, ...otherFields } = resultItem;
 

@@ -14,6 +14,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+// Define outside the component (or use useCallback) to avoid unnecessary re-renders.
 const prependCdnBase = (url: string) => (url.startsWith('/') ? `https://example.com${url}` : url);
 
 export const Default: Story = {

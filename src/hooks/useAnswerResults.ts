@@ -31,7 +31,7 @@ interface FetchAnswerResultsParams {
 
 const extractAndTransformItems = (
   data: Nullable<GetAnswerResultsResponse>,
-  formatImageUrl?: (url: string) => string,
+  formatImageUrl?: Formatters['formatImageUrl'],
 ): Array<Item> | null => {
   if (!data?.item_results?.response?.results) {
     return null;
