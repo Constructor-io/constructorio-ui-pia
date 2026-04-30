@@ -34,10 +34,14 @@ export function transformResultItem(
   } = data;
 
   // Skip formatting for absent or empty URLs; consumers should handle placeholders separately.
-  const formattedImageUrl =
-    formatImageUrl && imageUrl !== undefined && imageUrl !== ''
-      ? formatImageUrl(imageUrl)
-      : imageUrl;
+  let formattedImageUrl = imageUrl;
+  if (formatImageUrl && imageUrl) {
+    try {
+      formattedImageUrl = formatImageUrl(imageUrl);
+    } catch {
+      formattedImageUrl = imageUrl;
+    }
+  }
 
   return {
     id,

@@ -125,5 +125,16 @@ describe('Testing Transformers: transformResultItem', () => {
       expect(result!.imageUrl).toBe('');
       expect(formatImageUrl).not.toHaveBeenCalled();
     });
+
+    it('should fall back to original imageUrl when formatImageUrl throws', () => {
+      const formatImageUrl = () => {
+        throw new Error('formatter error');
+      };
+
+      const result = transformResultItem(testItem, formatImageUrl);
+
+      expect(result).not.toBeNull();
+      expect(result!.imageUrl).toBe(testItem.data.image_url);
+    });
   });
 });

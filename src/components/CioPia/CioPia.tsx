@@ -40,6 +40,7 @@ export interface CioPiaProps
   cioClient?: MockConstructorIOClient;
   displayConfigs?: CioPiaDisplayConfigs;
   callbacks?: Callbacks;
+  /** Define formatter functions outside the component or memoize to avoid unnecessary re-renders. */
   formatters?: Formatters;
   translations?: Translations;
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
