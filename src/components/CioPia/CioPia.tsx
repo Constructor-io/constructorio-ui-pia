@@ -65,26 +65,31 @@ export interface CioPiaProps
    *
    * `onProductCardClick: (item: Item) => void` — Called when a product card in the carousel is clicked.
    *
-   * `onFeedback: (type: 'up' | 'down') => void` —
+   * `onFeedback: (type: FeedbackType) => void` —
    * Called when the user submits positive or negative feedback on an answer.
    */
   callbacks?: Callbacks;
 
+  // Redeclared from IncludeComponentOverrides for Storybook autodocs.
   /**
    * Custom component overrides via reactNode or render props functions:
    *
-   * `reactNode: (props: CioPiaRenderProps) => ReactNode` — Override the entire CioPia component.
+   * `reactNode: (props: CioPiaRenderProps) => ReactNode` —
+   * Override the entire CioPia component.
    *
    * `carousel` — Override carousel sub-components (item, previous, next).
    *
-   * `answer: { reactNode: (props: { text }) => ReactNode }` — Override the answer display.
+   * `answer: { reactNode: (props: { text }) => ReactNode }` —
+   * Override the answer display.
    *
    * `suggestedQuestions: { reactNode: (props: { questions, onQuestionClick }) => ReactNode }` —
    * Override suggested questions.
    *
-   * `disclaimer: { reactNode: (props: { learnMoreUrl?, translations? }) => ReactNode }` — Override the disclaimer.
+   * `disclaimer: { reactNode: (props: { learnMoreUrl?, translations? }) => ReactNode }` —
+   * Override the disclaimer.
    *
-   * `feedback: { reactNode: (props: { translations?, onFeedback? }) => ReactNode }` — Override feedback controls.
+   * `feedback: { reactNode: (props: { translations?, onFeedback? }) => ReactNode }` —
+   * Override feedback controls.
    */
   componentOverrides?: CioPiaComponentOverrides;
 
@@ -106,6 +111,8 @@ export interface CioPiaProps
    * `'Ask anything'` — Input placeholder.
    *
    * `'Send'` — Send button label.
+   *
+   * `'AI-generated answers aim to help...'` — Disclaimer body text.
    *
    * `'Is this answer useful?'` — Feedback prompt.
    *
