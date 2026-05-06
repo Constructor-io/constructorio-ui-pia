@@ -39,7 +39,21 @@ export interface CioPiaProps
   variationId?: string;
   cioClient?: MockConstructorIOClient;
   displayConfigs?: CioPiaDisplayConfigs;
+
+  /**
+   * Callback handlers for user interactions:
+   *
+   * `onQuestionSubmit: (question: string) => void`
+   * Called when a question is submitted (via Enter key, Send button, or suggested question click).
+   *
+   * `onProductCardClick: (item: Item) => void`
+   * Called when a product card in the carousel is clicked.
+   *
+   * `onFeedback: (type: 'up' | 'down') => void`
+   * Called when the user submits positive or negative feedback on an answer.
+   */
   callbacks?: Callbacks;
+
   /** Define formatter functions outside the component or memoize to avoid unnecessary re-renders. */
   formatters?: Formatters;
   translations?: Translations;
@@ -90,7 +104,7 @@ export default function CioPia(props: CioPiaProps) {
     error,
     handleSubmitQuestion,
     resetState,
-  } = useConversation({ pia, itemId, isConversation });
+  } = useConversation({ pia, itemId, isConversation, callbacks });
 
   const renderProps: CioPiaRenderProps = {
     items: currentItems,

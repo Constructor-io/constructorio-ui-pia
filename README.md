@@ -99,6 +99,14 @@ The component supports multiple display modes via the `displayConfigs` prop:
 | `showPreviousItems` | `boolean` | `true` | Show product carousels from previous conversation entries |
 | `learnMoreUrl` | `string` | - | URL for the "Learn More" disclaimer link |
 
+**Callbacks:**
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `onQuestionSubmit` | `(question: string) => void` | Called when a question is submitted (via Enter key, Send button, or suggested question click) |
+| `onProductCardClick` | `(item: Item) => void` | Called when a product card in the carousel is clicked |
+| `onFeedback` | `(type: 'up' \| 'down') => void` | Called when the user submits positive or negative feedback on an answer |
+
 ### Using the JavaScript Bundle
 
 This is a framework-agnostic method that can be used in any JavaScript project. The `CioPia` function provides a simple interface to inject the PIA component into the provided `selector`.

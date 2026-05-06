@@ -66,7 +66,11 @@ export type Translations = {
 };
 
 export interface Callbacks {
+  /** Called when a question is submitted (via Enter key, Send button, or suggested question click). */
+  onQuestionSubmit?: (question: string) => void;
+  /** Called when a product card in the carousel is clicked. */
   onProductCardClick?: (item: Item) => void;
+  /** Called when the user submits positive or negative feedback on an answer. */
   onFeedback?: (type: FeedbackType) => void;
 }
 

@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ConversationEntry, Question, Item } from '../types';
+import { Callbacks, ConversationEntry, Question, Item } from '../types';
 import { UseCioPiaReturn } from './useCioPia';
 
 export interface UseConversationProps {
   pia: UseCioPiaReturn;
   itemId: string;
   isConversation: boolean;
+  callbacks?: Callbacks;
 }
 
 export interface UseConversationReturn {
@@ -24,6 +25,7 @@ export default function useConversation({
   pia,
   itemId,
   isConversation,
+  callbacks,
 }: UseConversationProps): UseConversationReturn {
   const { suggestedQuestions, answers } = pia;
   const { getAnswer } = answers;
@@ -37,6 +39,7 @@ export default function useConversation({
 
   const handleSubmitQuestion = useCallback(
     (question: string) => {
+      callbacks?.onQuestionSubmit?.(question);
       setCurrentQuestion(question);
       getAnswer(question);
 
@@ -46,7 +49,7 @@ export default function useConversation({
         setConversationHistory((prev) => [...prev, { id, question, answer: '' }]);
       }
     },
-    [getAnswer, isConversation],
+    [getAnswer, isConversation, callbacks],
   );
 
   const resetState = useCallback(() => {

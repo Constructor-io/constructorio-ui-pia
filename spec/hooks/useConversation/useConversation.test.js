@@ -65,6 +65,39 @@ describe('Testing Hook: useConversation', () => {
     expect(result.current.currentQuestion).toBe('What is this product?');
   });
 
+  it('calls callbacks.onQuestionSubmit when a question is submitted', () => {
+    const pia = createMockPia();
+    const onQuestionSubmit = jest.fn();
+    const { result } = renderHook(() =>
+      useConversation({
+        pia,
+        itemId: 'test-item',
+        isConversation: false,
+        callbacks: { onQuestionSubmit },
+      }),
+    );
+
+    act(() => {
+      result.current.handleSubmitQuestion('What is this product?');
+    });
+
+    expect(onQuestionSubmit).toHaveBeenCalledWith('What is this product?');
+    expect(onQuestionSubmit).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not throw when callbacks.onQuestionSubmit is not provided', () => {
+    const pia = createMockPia();
+    const { result } = renderHook(() =>
+      useConversation({ pia, itemId: 'test-item', isConversation: false, callbacks: {} }),
+    );
+
+    expect(() => {
+      act(() => {
+        result.current.handleSubmitQuestion('What is this product?');
+      });
+    }).not.toThrow();
+  });
+
   it('does not append to conversationHistory in default mode', () => {
     const pia = createMockPia();
     const { result } = renderHook(() =>
