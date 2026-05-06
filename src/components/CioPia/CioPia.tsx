@@ -77,19 +77,37 @@ export interface CioPiaProps
    * `reactNode: (props: CioPiaRenderProps) => ReactNode` —
    * Override the entire CioPia component.
    *
-   * `carousel` — Override carousel sub-components (item, previous, next).
-   *
-   * `answer: { reactNode: (props: { text }) => ReactNode }` —
+   * `answer: { reactNode: (props: AnswerRenderProps) => ReactNode }` —
    * Override the answer display.
    *
-   * `suggestedQuestions: { reactNode: (props: { questions, onQuestionClick }) => ReactNode }` —
+   * `suggestedQuestions: { reactNode: (props: SuggestedQuestionsRenderProps) => ReactNode }` —
    * Override suggested questions.
    *
-   * `disclaimer: { reactNode: (props: { learnMoreUrl?, translations? }) => ReactNode }` —
+   * `disclaimer: { reactNode: (props: DisclaimerRenderProps) => ReactNode }` —
    * Override the disclaimer.
    *
-   * `feedback: { reactNode: (props: { translations?, onFeedback? }) => ReactNode }` —
+   * `feedback: { reactNode: (props: FeedbackRenderProps) => ReactNode }` —
    * Override feedback controls.
+   *
+   * `carousel.reactNode: (props: CarouselRenderProps) => ReactNode` —
+   * Override the entire carousel.
+   *
+   * `carousel.content: { reactNode: (props: CarouselRenderProps) => ReactNode }` —
+   * Override carousel content area.
+   *
+   * `carousel.item: { reactNode: (props: CarouselItemRenderProps) => ReactNode }` —
+   * Override individual carousel items.
+   *
+   * `carousel.item.productCard` — Override product card sub-components
+   * (image, image.wishlistButton, image.badge, content, content.title,
+   * content.description, content.rating, content.price,
+   * footer, footer.addToCartButton, footer.tags).
+   *
+   * `carousel.previous: { reactNode: (props: CarouselRenderProps) => ReactNode }` —
+   * Override the previous navigation button.
+   *
+   * `carousel.next: { reactNode: (props: CarouselRenderProps) => ReactNode }` —
+   * Override the next navigation button.
    */
   componentOverrides?: CioPiaComponentOverrides;
 
@@ -112,7 +130,9 @@ export interface CioPiaProps
    *
    * `'Send'` — Send button label.
    *
-   * `'AI-generated answers aim to help...'` — Disclaimer body text.
+   * `'AI-generated answers aim to help, but they may occasionally miss details`
+   * `or be inaccurate. Double-check important information before purchasing.'` —
+   * Disclaimer body text.
    *
    * `'Is this answer useful?'` — Feedback prompt.
    *
