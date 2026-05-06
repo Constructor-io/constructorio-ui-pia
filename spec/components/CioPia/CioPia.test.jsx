@@ -310,6 +310,45 @@ describe('CioPia Component', () => {
   });
 
   describe('Callbacks Tests', () => {
+    it('calls onQuestionSubmit callback when a question is submitted via input', () => {
+      const mockOnQuestionSubmit = jest.fn();
+
+      const { getByRole } = render(
+        <CioPia {...mockProps} callbacks={{ onQuestionSubmit: mockOnQuestionSubmit }} />,
+      );
+
+      const input = getByRole('textbox');
+      fireEvent.change(input, { target: { value: testQuestion } });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+      expect(mockOnQuestionSubmit).toHaveBeenCalledWith(testQuestion);
+      expect(mockOnQuestionSubmit).toHaveBeenCalledTimes(1);
+    });
+
+    it('calls onQuestionSubmit callback when a suggested question is clicked', () => {
+      const mockOnQuestionSubmit = jest.fn();
+
+      const { getByText } = render(
+        <CioPia {...mockProps} callbacks={{ onQuestionSubmit: mockOnQuestionSubmit }} />,
+      );
+
+      fireEvent.click(getByText(mockSuggestedQuestions[0].value));
+
+      expect(mockOnQuestionSubmit).toHaveBeenCalledWith(mockSuggestedQuestions[0].value);
+      expect(mockOnQuestionSubmit).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not throw when onQuestionSubmit is not provided', () => {
+      const { getByRole } = render(<CioPia {...mockProps} callbacks={{}} />);
+
+      const input = getByRole('textbox');
+      fireEvent.change(input, { target: { value: testQuestion } });
+
+      expect(() => {
+        fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+      }).not.toThrow();
+    });
+
     it('uses default behavior when onProductCardClick callback is not provided', () => {
       mockUseCioPiaWithItems();
       const windowOpenSpy = jest.spyOn(window, 'open').mockImplementation(() => null);
