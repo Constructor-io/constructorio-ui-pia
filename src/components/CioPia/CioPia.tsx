@@ -32,31 +32,94 @@ export interface CioPiaProps
   extends
     IncludeRenderProps<CioPiaRenderProps>,
     IncludeComponentOverrides<CioPiaComponentOverrides> {
+  /** Your Constructor.io API key. */
   apiKey: string;
+  /** The product item ID to fetch insights for. */
   itemId: string;
-  /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000") */
+  /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000"). */
   threadId?: string;
+  /** Optional variation ID for the product. */
   variationId?: string;
+  /** Optional Constructor.io client instance. If not provided, one will be created internally. */
   cioClient?: MockConstructorIOClient;
+  /**
+   * Display configuration options:
+   *
+   * `mode: 'default' | 'conversation'` — Display mode. Defaults to `'default'`.
+   *
+   * `type: 'inline' | 'modal'` — Component type. Defaults to `'inline'`.
+   *
+   * `showFeedback: boolean` — Show feedback controls on answers.
+   *
+   * `showPreviousItems: boolean` — Show product carousels from previous conversation entries. Defaults to `true`.
+   *
+   * `learnMoreUrl: string` — URL for the "Learn More" disclaimer link.
+   */
   displayConfigs?: CioPiaDisplayConfigs;
 
   /**
    * Callback handlers for user interactions:
    *
-   * `onQuestionSubmit: (question: string) => void`
+   * `onQuestionSubmit: (question: string) => void` —
    * Called when a question is submitted (via Enter key, Send button, or suggested question click).
    *
-   * `onProductCardClick: (item: Item) => void`
-   * Called when a product card in the carousel is clicked.
+   * `onProductCardClick: (item: Item) => void` — Called when a product card in the carousel is clicked.
    *
-   * `onFeedback: (type: 'up' | 'down') => void`
+   * `onFeedback: (type: 'up' | 'down') => void` —
    * Called when the user submits positive or negative feedback on an answer.
    */
   callbacks?: Callbacks;
 
-  /** Define formatter functions outside the component or memoize to avoid unnecessary re-renders. */
+  /**
+   * Custom component overrides via reactNode or render props functions:
+   *
+   * `reactNode: (props: CioPiaRenderProps) => ReactNode` — Override the entire CioPia component.
+   *
+   * `carousel` — Override carousel sub-components (item, previous, next).
+   *
+   * `answer: { reactNode: (props: { text }) => ReactNode }` — Override the answer display.
+   *
+   * `suggestedQuestions: { reactNode: (props: { questions, onQuestionClick }) => ReactNode }` —
+   * Override suggested questions.
+   *
+   * `disclaimer: { reactNode: (props: { learnMoreUrl?, translations? }) => ReactNode }` — Override the disclaimer.
+   *
+   * `feedback: { reactNode: (props: { translations?, onFeedback? }) => ReactNode }` — Override feedback controls.
+   */
+  componentOverrides?: CioPiaComponentOverrides;
+
+  /**
+   * Formatter functions for transforming data before display.
+   * Define outside the component or memoize to avoid unnecessary re-renders.
+   *
+   * `formatImageUrl: (url: string) => string`
+   * Transforms image URLs before rendering (e.g., prepend a CDN base URL).
+   */
   formatters?: Formatters;
+
+  /**
+   * UI string translations for internationalization.
+   * All keys are optional — any non-provided translation falls back to English.
+   *
+   * `'Any questions about this product?'` — Title text.
+   *
+   * `'Ask anything'` — Input placeholder.
+   *
+   * `'Send'` — Send button label.
+   *
+   * `'Is this answer useful?'` — Feedback prompt.
+   *
+   * `'Learn More.'` — Disclaimer link text.
+   *
+   * `'Ask about this product'` — Modal title.
+   */
   translations?: Translations;
+
+  /**
+   * Parameters for the suggested questions request.
+   *
+   * `numResults: number` — Number of suggested questions to fetch.
+   */
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
 }
 

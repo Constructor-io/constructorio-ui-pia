@@ -9,6 +9,38 @@ const meta = {
     layout: 'centered',
   },
   tags: ['autodocs'],
+  argTypes: {
+    displayConfigs: {
+      table: {
+        type: { summary: 'CioPiaDisplayConfigs' },
+      },
+    },
+    callbacks: {
+      table: {
+        type: { summary: 'Callbacks' },
+      },
+    },
+    formatters: {
+      table: {
+        type: { summary: 'Formatters' },
+      },
+    },
+    translations: {
+      table: {
+        type: { summary: 'Translations' },
+      },
+    },
+    suggestedQuestionsParameters: {
+      table: {
+        type: { summary: 'SuggestedQuestionsParameters' },
+      },
+    },
+    componentOverrides: {
+      table: {
+        type: { summary: 'CioPiaComponentOverrides' },
+      },
+    },
+  },
 } satisfies Meta<typeof CioPia>;
 
 export default meta;
