@@ -10,6 +10,6 @@ export function sanitizeHtml(html: string): string {
 }
 
 export function renderMarkdown(content: string): string {
-  const html = marked.parse(content) as string;
+  const html = marked.parse(content, { async: false });
   return DOMPurify.sanitize(html, purifyConfig);
 }

@@ -64,15 +64,9 @@ export default function PiaCustomCarousel({
   }, [productClickHandler]);
 
   const mergedOverrides = useMemo((): CarouselOverrides<Item> => {
-    const customerDescriptionOverride = componentOverrides?.item?.productCard?.content?.description;
-
-    if (customerDescriptionOverride) {
+    if (componentOverrides?.item?.productCard?.content?.description) {
       return componentOverrides;
     }
-
-    const htmlDescriptionOverride = {
-      reactNode: HtmlDescription,
-    };
 
     return {
       ...componentOverrides,
@@ -82,7 +76,7 @@ export default function PiaCustomCarousel({
           ...componentOverrides?.item?.productCard,
           content: {
             ...componentOverrides?.item?.productCard?.content,
-            description: htmlDescriptionOverride,
+            description: { reactNode: HtmlDescription },
           },
         },
       },
