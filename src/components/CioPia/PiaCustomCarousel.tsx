@@ -63,7 +63,7 @@ export default function PiaCustomCarousel({
     };
   }, [productClickHandler]);
 
-  const mergedOverrides = useMemo((): CarouselOverrides<Item> | undefined => {
+  const mergedOverrides = useMemo((): CarouselOverrides<Item> => {
     const customerDescriptionOverride = componentOverrides?.item?.productCard?.content?.description;
 
     if (customerDescriptionOverride) {
