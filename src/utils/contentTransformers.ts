@@ -3,7 +3,6 @@ import { marked } from 'marked';
 
 const purifyConfig: DOMPurify.Config = {
   FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed', 'form'],
-  FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur'],
 };
 
 export function sanitizeHtml(html: string): string {
@@ -11,6 +10,6 @@ export function sanitizeHtml(html: string): string {
 }
 
 export function renderMarkdown(content: string): string {
-  const html = marked.parse(content, { async: false });
+  const html = marked.parse(content) as string;
   return DOMPurify.sanitize(html, purifyConfig);
 }

@@ -13,7 +13,7 @@ function HtmlDescription({ product }: { product: Item }) {
   return (
     <p
       className='cio-product-card-description'
-      // eslint-disable-next-line react/no-danger
+      // eslint-disable-next-line react/no-danger -- descriptions may contain HTML from catalog; sanitized via DOMPurify
       dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
     />
   );

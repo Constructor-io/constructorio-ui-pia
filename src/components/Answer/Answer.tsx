@@ -21,7 +21,7 @@ function Answer({ text, componentOverride }: AnswerProps) {
       <div
         className='cio-pia-answer'
         data-testid='answer-text'
-        // eslint-disable-next-line react/no-danger
+        // eslint-disable-next-line react/no-danger -- answers may contain markdown/HTML; sanitized via DOMPurify
         dangerouslySetInnerHTML={{ __html: renderMarkdown(text) }}
       />
     </RenderPropsWrapper>
