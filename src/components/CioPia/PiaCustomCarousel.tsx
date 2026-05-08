@@ -1,10 +1,23 @@
-import React, { useCallback, useRef, useEffect } from 'react';
+import React, { useCallback, useRef, useEffect, useMemo } from 'react';
 import {
   Carousel,
   CarouselOverrides,
   CIO_EVENTS,
 } from '@constructor-io/constructorio-ui-components';
 import { Callbacks, Item } from '../../types';
+import { sanitizeHtml } from '../../utils/contentTransformers';
+
+function HtmlDescription({ product }: { product: Item }) {
+  const { description } = product;
+  if (!description) return null;
+  return (
+    <p
+      className='cio-product-card-description'
+      // eslint-disable-next-line react/no-danger
+      dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
+    />
+  );
+}
 
 interface PiaCustomCarouselProps {
   items: Array<Item>;
@@ -50,6 +63,32 @@ export default function PiaCustomCarousel({
     };
   }, [productClickHandler]);
 
+  const mergedOverrides = useMemo((): CarouselOverrides<Item> | undefined => {
+    const customerDescriptionOverride = componentOverrides?.item?.productCard?.content?.description;
+
+    if (customerDescriptionOverride) {
+      return componentOverrides;
+    }
+
+    const htmlDescriptionOverride = {
+      reactNode: HtmlDescription,
+    };
+
+    return {
+      ...componentOverrides,
+      item: {
+        ...componentOverrides?.item,
+        productCard: {
+          ...componentOverrides?.item?.productCard,
+          content: {
+            ...componentOverrides?.item?.productCard?.content,
+            description: htmlDescriptionOverride,
+          },
+        },
+      },
+    };
+  }, [componentOverrides]);
+
   // If there are no items, do not render the carousel
   if (items.length === 0) {
     return null;
@@ -57,7 +96,7 @@ export default function PiaCustomCarousel({
 
   return (
     <div ref={wrapperRef}>
-      <Carousel items={items} componentOverrides={componentOverrides} />
+      <Carousel items={items} componentOverrides={mergedOverrides} />
     </div>
   );
 }
