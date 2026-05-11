@@ -171,6 +171,7 @@ export default function CioPia(props: CioPiaProps) {
     mode = 'default',
     type = 'inline',
     showPreviousItems,
+    disclaimerPosition = 'bottom',
   } = displayConfigs || {};
   const isConversation = mode === 'conversation' || type === 'modal';
 
@@ -215,6 +216,7 @@ export default function CioPia(props: CioPiaProps) {
     showFeedback,
     showPreviousItems,
     learnMoreUrl,
+    disclaimerPosition,
     translations,
     callbacks,
     componentOverrides,
@@ -238,6 +240,14 @@ export default function CioPia(props: CioPiaProps) {
 
   if (isConversation) return <PiaConversation {...conversationHistoryProps} />;
 
+  const disclaimer = (
+    <Disclaimer
+      learnMoreUrl={learnMoreUrl}
+      translations={translations}
+      componentOverride={componentOverrides?.disclaimer}
+    />
+  );
+
   // Default inline mode
   return (
     <div className='cio-pia-container' data-testid='cio-pia-container'>
@@ -259,6 +269,7 @@ export default function CioPia(props: CioPiaProps) {
           <>
             {currentAnswer && (
               <div className='cio-pia-answer-container'>
+                {disclaimerPosition === 'top' && disclaimer}
                 <Answer text={currentAnswer} componentOverride={componentOverrides?.answer} />
                 {currentItems && (
                   <PiaCustomCarousel
@@ -274,11 +285,7 @@ export default function CioPia(props: CioPiaProps) {
                     componentOverride={componentOverrides?.feedback}
                   />
                 )}
-                <Disclaimer
-                  learnMoreUrl={learnMoreUrl}
-                  translations={translations}
-                  componentOverride={componentOverrides?.disclaimer}
-                />
+                {disclaimerPosition === 'bottom' && disclaimer}
               </div>
             )}
 
