@@ -3,8 +3,9 @@ import '@testing-library/jest-dom';
 import { render, fireEvent, screen, within } from '@testing-library/react';
 import PiaModal from '../../../src/components/PiaConversation/PiaModal';
 
-const BASE_INPUT = '.cio-pia-container > .cio-pia-input-container input';
-const BASE_QUESTIONS = '.cio-pia-container > .cio-pia-suggested-questions-container';
+const BASE_INPUT = '.cio-pia-container .cio-pia-conversation-footer .cio-pia-input-container input';
+const BASE_QUESTIONS =
+  '.cio-pia-container .cio-pia-conversation-footer .cio-pia-suggested-questions-container';
 
 describe('PiaModal Component', () => {
   beforeEach(() => {
