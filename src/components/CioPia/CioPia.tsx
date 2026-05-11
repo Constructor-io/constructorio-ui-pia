@@ -134,14 +134,6 @@ export default function CioPia(props: CioPiaProps) {
     handleSubmitQuestion,
   };
 
-  const disclaimer = (
-    <Disclaimer
-      learnMoreUrl={learnMoreUrl}
-      translations={translations}
-      componentOverride={componentOverrides?.disclaimer}
-    />
-  );
-
   if (type === 'modal') {
     return (
       <PiaModal
@@ -157,6 +149,14 @@ export default function CioPia(props: CioPiaProps) {
   }
 
   if (isConversation) return <PiaConversation {...conversationHistoryProps} />;
+
+  const disclaimer = (
+    <Disclaimer
+      learnMoreUrl={learnMoreUrl}
+      translations={translations}
+      componentOverride={componentOverrides?.disclaimer}
+    />
+  );
 
   // Default inline mode
   return (
