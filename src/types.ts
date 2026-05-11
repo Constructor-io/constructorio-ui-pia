@@ -39,6 +39,8 @@ export interface CioPiaProviderProps {
 export type CioPiaMode = 'default' | 'conversation';
 export type CioPiaType = 'inline' | 'modal';
 
+export type DisclaimerPosition = 'top' | 'bottom';
+
 export type CioPiaDisplayConfigs = {
   learnMoreUrl?: string;
   showFeedback?: boolean;
@@ -49,6 +51,14 @@ export type CioPiaDisplayConfigs = {
    * The last entry always falls back to its own items when currentItems is not provided.
    */
   showPreviousItems?: boolean;
+  /**
+   * Position of the AI disclaimer message relative to the conversation content.
+   * - `'top'` — renders the disclaimer above the conversation history or answer.
+   * - `'bottom'` — renders the disclaimer below the conversation history or answer.
+   *
+   * @default 'bottom'
+   */
+  disclaimerPosition?: DisclaimerPosition;
 };
 
 /**

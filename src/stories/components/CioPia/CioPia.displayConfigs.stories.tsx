@@ -52,6 +52,16 @@ export const ConversationMode: Story = {
   },
 };
 
+export const DisclaimerPositionTop: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: DEMO_ITEM_ID,
+    displayConfigs: {
+      disclaimerPosition: 'top',
+    },
+  },
+};
+
 export const ModalType: Story = {
   args: {
     apiKey: DEMO_API_KEY,
