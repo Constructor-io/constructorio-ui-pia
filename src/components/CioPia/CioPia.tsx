@@ -42,111 +42,18 @@ export interface CioPiaProps
   variationId?: string;
   /** Optional Constructor.io client instance. If not provided, one will be created internally. */
   cioClient?: MockConstructorIOClient;
-  /**
-   * Display configuration options:
-   *
-   * `mode: 'default' | 'conversation'` — Display mode. Defaults to `'default'`.
-   *
-   * `type: 'inline' | 'modal'` — Component type. Defaults to `'inline'`.
-   *
-   * `showFeedback: boolean` — Show feedback controls on answers.
-   *
-   * `showPreviousItems: boolean` — Show product carousels from previous conversation entries. Defaults to `true`.
-   *
-   * `learnMoreUrl: string` — URL for the "Learn More" disclaimer link.
-   */
+  /** Display configuration options (mode, type, showFeedback, etc.). */
   displayConfigs?: CioPiaDisplayConfigs;
-
-  /**
-   * Callback handlers for user interactions:
-   *
-   * `onQuestionSubmit: (question: string) => void` —
-   * Called when a question is submitted (via Enter key, Send button, or suggested question click).
-   *
-   * `onProductCardClick: (item: Item) => void` — Called when a product card in the carousel is clicked.
-   *
-   * `onFeedback: (type: FeedbackType) => void` —
-   * Called when the user submits positive or negative feedback on an answer.
-   */
+  /** Callback handlers for user interactions (onQuestionSubmit, onProductCardClick, onFeedback). */
   callbacks?: Callbacks;
-
   // Redeclared from IncludeComponentOverrides for Storybook autodocs.
-  /**
-   * Custom component overrides via reactNode or render props functions:
-   *
-   * `reactNode: (props: CioPiaRenderProps) => ReactNode` —
-   * Override the entire CioPia component.
-   *
-   * `answer: { reactNode: (props: AnswerRenderProps) => ReactNode }` —
-   * Override the answer display.
-   *
-   * `suggestedQuestions: { reactNode: (props: SuggestedQuestionsRenderProps) => ReactNode }` —
-   * Override suggested questions.
-   *
-   * `disclaimer: { reactNode: (props: DisclaimerRenderProps) => ReactNode }` —
-   * Override the disclaimer.
-   *
-   * `feedback: { reactNode: (props: FeedbackRenderProps) => ReactNode }` —
-   * Override feedback controls.
-   *
-   * `carousel.reactNode: (props: CarouselRenderProps) => ReactNode` —
-   * Override the entire carousel.
-   *
-   * `carousel.content: { reactNode: (props: CarouselRenderProps) => ReactNode }` —
-   * Override carousel content area.
-   *
-   * `carousel.item: { reactNode: (props: CarouselItemRenderProps) => ReactNode }` —
-   * Override individual carousel items.
-   *
-   * `carousel.item.productCard` — Override product card sub-components
-   * (image, image.wishlistButton, image.badge, content, content.title,
-   * content.description, content.rating, content.price,
-   * footer, footer.addToCartButton, footer.tags).
-   *
-   * `carousel.previous: { reactNode: (props: CarouselRenderProps) => ReactNode }` —
-   * Override the previous navigation button.
-   *
-   * `carousel.next: { reactNode: (props: CarouselRenderProps) => ReactNode }` —
-   * Override the next navigation button.
-   */
+  /** Custom component overrides via reactNode or render props functions. */
   componentOverrides?: CioPiaComponentOverrides;
-
-  /**
-   * Formatter functions for transforming data before display.
-   * Define outside the component or memoize to avoid unnecessary re-renders.
-   *
-   * `formatImageUrl: (url: string) => string`
-   * Transforms image URLs before rendering (e.g., prepend a CDN base URL).
-   */
+  /** Formatter functions for transforming data before display. */
   formatters?: Formatters;
-
-  /**
-   * UI string translations for internationalization.
-   * All keys are optional — any non-provided translation falls back to English.
-   *
-   * `'Any questions about this product?'` — Title text.
-   *
-   * `'Ask anything'` — Input placeholder.
-   *
-   * `'Send'` — Send button label.
-   *
-   * `'AI-generated answers aim to help, but they may occasionally miss details`
-   * `or be inaccurate. Double-check important information before purchasing.'` —
-   * Disclaimer body text.
-   *
-   * `'Is this answer useful?'` — Feedback prompt.
-   *
-   * `'Learn More.'` — Disclaimer link text.
-   *
-   * `'Ask about this product'` — Modal title.
-   */
+  /** UI string translations for internationalization. */
   translations?: Translations;
-
-  /**
-   * Parameters for the suggested questions request.
-   *
-   * `numResults: number` — Number of suggested questions to fetch.
-   */
+  /** Parameters for the suggested questions request. */
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
 }
 
