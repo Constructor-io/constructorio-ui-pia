@@ -99,6 +99,39 @@ describe('PiaInlineAnswer Component', () => {
     });
   });
 
+  describe('Disclaimer position', () => {
+    it('renders disclaimer below the answer by default', () => {
+      const { container } = render(<PiaInlineAnswer {...defaultProps} />);
+
+      const answerContainer = container.querySelector('.cio-pia-answer-container');
+      const children = [...answerContainer.children];
+      const answerIndex = children.findIndex((el) => el.getAttribute('data-testid') === 'answer-text');
+      const disclaimerIndex = children.findIndex((el) => el.classList.contains('cio-pia-disclaimer'));
+
+      expect(disclaimerIndex).toBeGreaterThan(answerIndex);
+    });
+
+    it('renders disclaimer above the answer when disclaimerPosition is top', () => {
+      const { container } = render(<PiaInlineAnswer {...defaultProps} disclaimerPosition='top' />);
+
+      const answerContainer = container.querySelector('.cio-pia-answer-container');
+      const children = [...answerContainer.children];
+      const answerIndex = children.findIndex((el) => el.getAttribute('data-testid') === 'answer-text');
+      const disclaimerIndex = children.findIndex((el) => el.classList.contains('cio-pia-disclaimer'));
+
+      expect(disclaimerIndex).toBeLessThan(answerIndex);
+    });
+
+    it('does not render disclaimer at top when position is bottom', () => {
+      const { container } = render(<PiaInlineAnswer {...defaultProps} disclaimerPosition='bottom' />);
+
+      const answerContainer = container.querySelector('.cio-pia-answer-container');
+      const firstChild = answerContainer.children[0];
+
+      expect(firstChild.classList.contains('cio-pia-disclaimer')).toBe(false);
+    });
+  });
+
   describe('Component overrides', () => {
     it('renders custom answer via componentOverrides.answer', () => {
       render(
