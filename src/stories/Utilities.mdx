@@ -1,0 +1,94 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title='General/Utilities' />
+
+# Utilities
+
+The library exports utility functions for safely rendering HTML and Markdown content. These are used internally and are also available for use in custom component overrides.
+
+## `sanitizeHtml`
+
+Sanitizes an HTML string by stripping dangerous tags (`<script>`, `<style>`, `<iframe>`, `<object>`, `<embed>`, `<form>`) and unsafe attributes (event handlers like `onclick`, `onerror`, etc.). Safe HTML tags and attributes are preserved.
+
+```tsx
+import { sanitizeHtml } from '@constructor-io/constructorio-ui-pia';
+
+const clean = sanitizeHtml('<b>Safe</b><script>alert("xss")</script>');
+// Result: '<b>Safe</b>'
+```
+
+**Use case:** When you override the product card description and want to render HTML content from your catalog safely.
+
+```tsx
+<CioPia
+  componentOverrides={{
+    carousel: {
+      item: {
+        productCard: {
+          content: {
+            description: {
+              reactNode: ({ product }) => (
+                <p
+                  className="cio-product-card-description"
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.description || '') }}
+                />
+              ),
+            },
+          },
+        },
+      },
+    },
+  }}
+/>
+```
+
+## `renderMarkdown`
+
+Parses a Markdown (or HTML) string into sanitized HTML. Markdown syntax is converted to HTML elements, and the result is sanitized with the same rules as `sanitizeHtml`. Inline HTML within the Markdown is preserved (if safe).
+
+```tsx
+import { renderMarkdown } from '@constructor-io/constructorio-ui-pia';
+
+const html = renderMarkdown('**Bold** and [a link](https://example.com)');
+// Result: '<p><strong>Bold</strong> and <a href="https://example.com">a link</a></p>'
+```
+
+**Use case:** When you override the answer component and want to control Markdown rendering yourself.
+
+```tsx
+<CioPia
+  componentOverrides={{
+    answer: {
+      reactNode: ({ text }) => (
+        <div
+          className="cio-pia-answer"
+          dangerouslySetInnerHTML={{ __html: renderMarkdown(text) }}
+        />
+      ),
+    },
+  }}
+/>
+```
+
+## Default behavior
+
+<table>
+  <thead>
+    <tr>
+      <th>Content</th>
+      <th>Rendering pipeline</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Answers</td>
+      <td><code>renderMarkdown</code> (Markdown + HTML support, sanitized)</td>
+    </tr>
+    <tr>
+      <td>Product descriptions</td>
+      <td><code>sanitizeHtml</code> (HTML only, no Markdown parsing)</td>
+    </tr>
+  </tbody>
+</table>
+
+Both pipelines strip `<script>`, `<style>`, `<iframe>`, `<object>`, `<embed>`, and `<form>` tags, event handler attributes, and any unknown/non-standard HTML tags.

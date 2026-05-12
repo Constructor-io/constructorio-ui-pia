@@ -4,6 +4,7 @@ import {
   RenderPropsWrapper,
 } from '@constructor-io/constructorio-ui-components';
 import { AnswerRenderProps } from '../../types';
+import { renderMarkdown } from '../../utils/contentTransformers';
 
 interface AnswerProps {
   text: string;
@@ -17,9 +18,12 @@ function Answer({ text, componentOverride }: AnswerProps) {
 
   return (
     <RenderPropsWrapper props={{ text }} override={componentOverride?.reactNode}>
-      <div className='cio-pia-answer' data-testid='answer-text'>
-        {text}
-      </div>
+      <div
+        className='cio-pia-answer'
+        data-testid='answer-text'
+        // eslint-disable-next-line react/no-danger -- answers may contain markdown/HTML; sanitized via DOMPurify
+        dangerouslySetInnerHTML={{ __html: renderMarkdown(text) }}
+      />
     </RenderPropsWrapper>
   );
 }

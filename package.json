@@ -97,6 +97,7 @@
     "@storybook/testing-library": "^0.2.1",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
+    "@types/dompurify": "^3.0.5",
     "@types/jest": "^29.5.14",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
@@ -130,5 +131,9 @@
   "volta": {
     "node": "22.18.0",
     "npm": "10.9.3"
+  },
+  "dependencies": {
+    "dompurify": "^3.4.2",
+    "marked": "^15.0.12"
   }
 }
