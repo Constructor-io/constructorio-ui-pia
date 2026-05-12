@@ -16,12 +16,12 @@ export default function UseConversationExample(props: UseConversationExampleProp
   const cioClient = useCioPia({ apiKey: DEMO_API_KEY, itemId });
   const conversation = useConversation({ pia: cioClient, itemId, isConversation });
 
+  const { handleSubmitQuestion, resetState, ...displayData } = conversation;
+
   const handleAsk = () => {
-    conversation.handleSubmitQuestion(question);
+    handleSubmitQuestion(question);
     setSubmitted(true);
   };
-
-  const { handleSubmitQuestion, resetState, ...displayData } = conversation;
 
   return (
     <div style={{ width: '100%' }}>

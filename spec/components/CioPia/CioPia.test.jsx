@@ -4,7 +4,7 @@ import { render, screen, fireEvent, within } from '@testing-library/react';
 import { CIO_EVENTS } from '@constructor-io/constructorio-ui-components';
 import CioPia from '../../../src/components/CioPia/CioPia';
 import useCioPia from '../../../src/hooks/useCioPia';
-import { DEMO_QUESTION, DISCLAIMER_TEXT } from '../../../src/constants';
+import { DEMO_QUESTION } from '../../../src/constants';
 
 // Mock the useCioPia hook
 jest.mock('../../../src/hooks/useCioPia', () => jest.fn());
@@ -219,15 +219,6 @@ describe('CioPia Component', () => {
       expect(mockGetAnswer).toHaveBeenCalledWith(mockSuggestedQuestions[0].value);
     });
 
-    it('displays answer when available', () => {
-      mockUseCioPiaWithAnswerData();
-
-      const { getByText } = render(<CioPia {...mockProps} />);
-
-      expect(getByText(mockAnswerData.value)).toBeInTheDocument();
-      expect(getByText(DISCLAIMER_TEXT)).toBeInTheDocument();
-    });
-
     it('displays follow-up questions when available in answers data', () => {
       mockUseCioPiaWithAnswerData();
 
@@ -281,22 +272,6 @@ describe('CioPia Component', () => {
       mockAnswerData.follow_up_questions.forEach((question) => {
         expect(screen.getByText(question.value)).toBeInTheDocument();
       });
-    });
-
-    it('renders carousel with items when items are available', () => {
-      mockUseCioPiaWithItems();
-
-      render(<CioPia {...mockProps} />);
-
-      expect(document.querySelector(CAROUSEL_SELECTOR)).toBeInTheDocument();
-    });
-
-    it('does not render carousel when items array is empty', () => {
-      mockUseCioPiaWithItems([]);
-
-      render(<CioPia {...mockProps} />);
-
-      expect(document.querySelector(CAROUSEL_SELECTOR)).not.toBeInTheDocument();
     });
 
     it('does not render carousel when there is no answer yet', () => {
@@ -1035,25 +1010,6 @@ describe('CioPia Component', () => {
   });
 
   describe('Sub-component Overrides', () => {
-    it('renders custom Answer component via componentOverrides.answer', () => {
-      mockUseCioPia({ answerData: mockAnswerData });
-
-      render(
-        <CioPia
-          {...mockProps}
-          componentOverrides={{
-            answer: {
-              reactNode: ({ text }) => <div data-testid='custom-answer'>Custom: {text}</div>,
-            },
-          }}
-        />,
-      );
-
-      expect(screen.getByTestId('custom-answer')).toBeInTheDocument();
-      expect(screen.getByText(`Custom: ${mockAnswerData.value}`)).toBeInTheDocument();
-      expect(screen.queryByTestId('answer-text')).not.toBeInTheDocument();
-    });
-
     it('renders custom SuggestedQuestionsContainer via componentOverrides.suggestedQuestions', () => {
       render(
         <CioPia

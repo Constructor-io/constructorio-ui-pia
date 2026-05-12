@@ -4,11 +4,8 @@ import {
   IncludeRenderProps,
   RenderPropsWrapper,
 } from '@constructor-io/constructorio-ui-components';
-import Disclaimer from './Disclaimer';
 import Input from '../Input/Input';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
-import Answer from '../Answer/Answer';
-import Feedback from '../Feedback/Feedback';
 import MockConstructorIOClient from '../../hooks/mocks/MockConstructorIOClient';
 import useCioPia from '../../hooks/useCioPia';
 import useConversation from '../../hooks/useConversation';
@@ -24,7 +21,7 @@ import {
   Formatters,
 } from '../../types';
 import { translate } from '../../utils/translate';
-import PiaCustomCarousel from './PiaCustomCarousel';
+import PiaInlineAnswer from '../PiaInlineAnswer/PiaInlineAnswer';
 import PiaModal from '../PiaConversation/PiaModal';
 import PiaConversation from '../PiaConversation/PiaConversation';
 
@@ -147,14 +144,6 @@ export default function CioPia(props: CioPiaProps) {
 
   if (isConversation) return <PiaConversation {...conversationHistoryProps} />;
 
-  const disclaimer = (
-    <Disclaimer
-      learnMoreUrl={learnMoreUrl}
-      translations={translations}
-      componentOverride={componentOverrides?.disclaimer}
-    />
-  );
-
   // Default inline mode
   return (
     <div className='cio-pia-container' data-testid='cio-pia-container'>
@@ -175,25 +164,16 @@ export default function CioPia(props: CioPiaProps) {
         {!isLoading && !error && (
           <>
             {currentAnswer && (
-              <div className='cio-pia-answer-container'>
-                {disclaimerPosition === 'top' && disclaimer}
-                <Answer text={currentAnswer} componentOverride={componentOverrides?.answer} />
-                {currentItems && (
-                  <PiaCustomCarousel
-                    items={currentItems}
-                    componentOverrides={componentOverrides?.carousel}
-                    callbacks={callbacks}
-                  />
-                )}
-                {showFeedback && (
-                  <Feedback
-                    translations={translations}
-                    onFeedback={callbacks?.onFeedback}
-                    componentOverride={componentOverrides?.feedback}
-                  />
-                )}
-                {disclaimerPosition === 'bottom' && disclaimer}
-              </div>
+              <PiaInlineAnswer
+                currentAnswer={currentAnswer}
+                currentItems={currentItems}
+                showFeedback={showFeedback}
+                learnMoreUrl={learnMoreUrl}
+                disclaimerPosition={disclaimerPosition}
+                translations={translations}
+                callbacks={callbacks}
+                componentOverrides={componentOverrides}
+              />
             )}
 
             <SuggestedQuestionsContainer
