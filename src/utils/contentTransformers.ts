@@ -6,10 +6,12 @@ const purifyConfig: DOMPurify.Config = {
 };
 
 export function sanitizeHtml(html: string): string {
+  if (!html) return '';
   return DOMPurify.sanitize(html, purifyConfig);
 }
 
 export function renderMarkdown(content: string): string {
+  if (!content) return '';
   const html = marked.parse(content, { async: false });
   return DOMPurify.sanitize(html, purifyConfig);
 }

@@ -40,6 +40,11 @@ describe('sanitizeHtml', () => {
     expect(sanitizeHtml('')).toBe('');
   });
 
+  it('handles null and undefined gracefully', () => {
+    expect(sanitizeHtml(null as unknown as string)).toBe('');
+    expect(sanitizeHtml(undefined as unknown as string)).toBe('');
+  });
+
   it('handles plain text without modification', () => {
     const input = 'Just plain text with no HTML';
     expect(sanitizeHtml(input)).toBe(input);
@@ -93,5 +98,10 @@ describe('renderMarkdown', () => {
 
   it('handles empty string', () => {
     expect(renderMarkdown('')).toBe('');
+  });
+
+  it('handles null and undefined gracefully', () => {
+    expect(renderMarkdown(null as unknown as string)).toBe('');
+    expect(renderMarkdown(undefined as unknown as string)).toBe('');
   });
 });
