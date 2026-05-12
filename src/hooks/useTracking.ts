@@ -1,0 +1,114 @@
+import { useCallback, useMemo } from 'react';
+import MockConstructorIOClient from './mocks/MockConstructorIOClient';
+import { FeedbackType, Question, GetAnswerResultsResponse } from '../types';
+
+export interface UseTrackingProps {
+  cioClient?: MockConstructorIOClient;
+  itemId: string;
+  itemName: string;
+  variationId?: string;
+}
+
+export interface UseTrackingReturn {
+  trackView: (questions: Question[]) => void;
+  trackFocus: () => void;
+  trackQuestionClick: (question: string) => void;
+  trackQuestionSubmit: (question: string) => void;
+  trackAnswerView: (question: string, answerData: GetAnswerResultsResponse) => void;
+  trackAnswerFeedback: (feedbackType: FeedbackType, qnaResultId?: string) => void;
+}
+
+export default function useTracking({
+  cioClient,
+  itemId,
+  itemName,
+  variationId,
+}: UseTrackingProps): UseTrackingReturn {
+  const tracker = cioClient?.tracker;
+
+  const baseParams = useCallback(
+    () => ({
+      itemId,
+      itemName,
+      ...(variationId && { variationId }),
+    }),
+    [itemId, itemName, variationId],
+  );
+
+  const trackView = useCallback(
+    (questions: Question[]) => {
+      tracker?.trackProductInsightsAgentView({
+        ...baseParams(),
+        questions: questions.map((q) => ({ question: q.value })),
+      });
+    },
+    [tracker, baseParams],
+  );
+
+  const trackFocus = useCallback(() => {
+    tracker?.trackProductInsightsAgentFocus(baseParams());
+  }, [tracker, baseParams]);
+
+  const trackQuestionClick = useCallback(
+    (question: string) => {
+      tracker?.trackProductInsightsAgentQuestionClick({
+        ...baseParams(),
+        question,
+      });
+    },
+    [tracker, baseParams],
+  );
+
+  const trackQuestionSubmit = useCallback(
+    (question: string) => {
+      tracker?.trackProductInsightsAgentQuestionSubmit({
+        ...baseParams(),
+        question,
+      });
+    },
+    [tracker, baseParams],
+  );
+
+  const trackAnswerView = useCallback(
+    (question: string, answerData: GetAnswerResultsResponse) => {
+      tracker?.trackProductInsightsAgentAnswerView({
+        ...baseParams(),
+        question,
+        answerText: answerData.value,
+        qnaResultId: answerData.qna_result_id,
+      });
+    },
+    [tracker, baseParams],
+  );
+
+  const trackAnswerFeedback = useCallback(
+    (feedbackType: FeedbackType, qnaResultId?: string) => {
+      const feedbackLabel = feedbackType === FeedbackType.UP ? 'thumbs_up' : 'thumbs_down';
+      tracker?.trackProductInsightsAgentAnswerFeedback({
+        ...baseParams(),
+        feedbackLabel,
+        qnaResultId,
+      });
+    },
+    [tracker, baseParams],
+  );
+
+  return useMemo(
+    () => ({
+      trackView,
+      trackFocus,
+      trackQuestionClick,
+      trackQuestionSubmit,
+      trackAnswerView,
+      trackAnswerFeedback,
+    }),
+    [
+      trackView,
+      trackFocus,
+      trackQuestionClick,
+      trackQuestionSubmit,
+      trackAnswerView,
+      trackAnswerFeedback,
+    ],
+  );
+}

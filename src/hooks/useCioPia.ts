@@ -16,6 +16,7 @@ export interface UseCioPiaProps {
 }
 
 export interface UseCioPiaReturn {
+  cioClient: MockConstructorIOClient;
   suggestedQuestions: UseSuggestedQuestionsReturn;
   answers: UseAnswerResultsReturn;
 }
@@ -51,6 +52,7 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
   });
 
   return {
+    cioClient: client as MockConstructorIOClient,
     suggestedQuestions,
     answers,
   };

@@ -12,6 +12,7 @@ import Feedback from '../Feedback/Feedback';
 import MockConstructorIOClient from '../../hooks/mocks/MockConstructorIOClient';
 import useCioPia from '../../hooks/useCioPia';
 import useConversation from '../../hooks/useConversation';
+import useTracking from '../../hooks/useTracking';
 import ErrorBlock from '../Error/ErrorBlock';
 import LoadingSkeleton from '../LoadingSkeleton/LoadingSkeleton';
 import {
@@ -34,6 +35,7 @@ export interface CioPiaProps
     IncludeComponentOverrides<CioPiaComponentOverrides> {
   apiKey: string;
   itemId: string;
+  itemName: string;
   /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000") */
   threadId?: string;
   variationId?: string;
@@ -64,6 +66,7 @@ export default function CioPia(props: CioPiaProps) {
   const {
     apiKey,
     itemId,
+    itemName,
     threadId,
     variationId,
     cioClient,
@@ -95,6 +98,8 @@ export default function CioPia(props: CioPiaProps) {
     formatImageUrl: formatters?.formatImageUrl,
   });
 
+  const tracking = useTracking({ cioClient: pia.cioClient, itemId, itemName, variationId });
+
   const {
     currentQuestion,
     displayedQuestions,
@@ -104,8 +109,11 @@ export default function CioPia(props: CioPiaProps) {
     isLoading,
     error,
     handleSubmitQuestion,
+    handleQuestionClick,
+    containerFocusProps,
+    handleFeedback,
     resetState,
-  } = useConversation({ pia, itemId, isConversation, callbacks });
+  } = useConversation({ pia, itemId, isConversation, callbacks, tracking });
 
   const renderProps: CioPiaRenderProps = {
     items: currentItems,
@@ -132,6 +140,9 @@ export default function CioPia(props: CioPiaProps) {
     componentOverrides,
     displayedQuestions,
     handleSubmitQuestion,
+    handleQuestionClick,
+    containerFocusProps,
+    handleFeedback,
   };
 
   if (type === 'modal') {
@@ -139,6 +150,8 @@ export default function CioPia(props: CioPiaProps) {
       <PiaModal
         initialQuestions={pia.suggestedQuestions.data}
         handleSubmitQuestion={handleSubmitQuestion}
+        handleQuestionClick={handleQuestionClick}
+        containerFocusProps={containerFocusProps}
         isLoading={isLoading}
         componentOverrides={componentOverrides}
         translations={translations}
@@ -160,7 +173,7 @@ export default function CioPia(props: CioPiaProps) {
 
   // Default inline mode
   return (
-    <div className='cio-pia-container' data-testid='cio-pia-container'>
+    <div className='cio-pia-container' data-testid='cio-pia-container' {...containerFocusProps}>
       <RenderPropsWrapper props={renderProps} override={children || componentOverrides?.reactNode}>
         <p className='cio-pia-title' data-testid='cio-pia-title'>
           {translate('Any questions about this product?', translations)}
@@ -191,7 +204,10 @@ export default function CioPia(props: CioPiaProps) {
                 {showFeedback && (
                   <Feedback
                     translations={translations}
-                    onFeedback={callbacks?.onFeedback}
+                    onFeedback={(feedbackType) => {
+                      handleFeedback(feedbackType);
+                      callbacks?.onFeedback?.(feedbackType);
+                    }}
                     componentOverride={componentOverrides?.feedback}
                   />
                 )}
@@ -201,7 +217,7 @@ export default function CioPia(props: CioPiaProps) {
 
             <SuggestedQuestionsContainer
               questions={displayedQuestions}
-              onQuestionClick={handleSubmitQuestion}
+              onQuestionClick={handleQuestionClick}
               componentOverride={componentOverrides?.suggestedQuestions}
             />
           </>

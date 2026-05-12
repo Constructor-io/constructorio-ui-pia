@@ -3,6 +3,7 @@ import Input from '../Input/Input';
 import { translate } from '../../utils/translate';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import { Translations, Question, CioPiaComponentOverrides } from '../../types';
+import { ContainerFocusProps } from '../../hooks/useConversation';
 
 const OVERFLOW_HIDDEN_CLASS = 'cio-pia-modal-open';
 
@@ -20,6 +21,8 @@ function CloseIcon() {
 interface PiaModalProps {
   initialQuestions: Question[];
   handleSubmitQuestion: (question: string) => void;
+  handleQuestionClick?: (question: string) => void;
+  containerFocusProps?: ContainerFocusProps;
   isLoading: boolean;
   componentOverrides?: CioPiaComponentOverrides;
   translations?: Translations;
@@ -29,6 +32,8 @@ interface PiaModalProps {
 export default function PiaModal({
   initialQuestions,
   handleSubmitQuestion,
+  handleQuestionClick,
+  containerFocusProps,
   isLoading,
   componentOverrides,
   translations,
@@ -93,8 +98,20 @@ export default function PiaModal({
     [handleSubmitQuestion, openModal],
   );
 
+  const handleQuestionClicked = useCallback(
+    (question: string) => {
+      if (handleQuestionClick) {
+        handleQuestionClick(question);
+      } else {
+        handleSubmitQuestion(question);
+      }
+      openModal();
+    },
+    [handleQuestionClick, handleSubmitQuestion, openModal],
+  );
+
   return (
-    <div className='cio-pia-container' data-testid='cio-pia-container'>
+    <div className='cio-pia-container' data-testid='cio-pia-container' {...containerFocusProps}>
       <p className='cio-pia-title' data-testid='cio-pia-title'>
         {translate('Any questions about this product?', translations)}
       </p>
@@ -102,7 +119,7 @@ export default function PiaModal({
         {initialQuestions.length > 0 && (
           <SuggestedQuestionsContainer
             questions={initialQuestions}
-            onQuestionClick={handleQuestion}
+            onQuestionClick={handleQuestionClicked}
             componentOverride={componentOverrides?.suggestedQuestions}
           />
         )}

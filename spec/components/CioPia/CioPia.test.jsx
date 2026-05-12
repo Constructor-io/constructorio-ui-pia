@@ -37,6 +37,7 @@ function dispatchEventOnCarouselWrapper(container, product) {
 const mockProps = {
   apiKey: 'test-api-key',
   itemId: 'test-item-id',
+  itemName: 'Test Product',
   cioClient: { someClientMethod: jest.fn() },
 };
 
@@ -74,6 +75,7 @@ const mockGetAnswer = jest.fn();
 const mockGetSuggestedQuestions = jest.fn();
 
 const mockLoadingResponse = {
+  cioClient: mockCioClient,
   suggestedQuestions: {
     data: [],
     isLoading: true,
@@ -90,6 +92,7 @@ const mockLoadingResponse = {
 };
 
 const mockErrorResponse = {
+  cioClient: mockCioClient,
   suggestedQuestions: {
     data: [],
     isLoading: false,
@@ -108,6 +111,17 @@ const mockErrorResponse = {
 /**
  * Flexible mock helper for useCioPia hook
  */
+const mockTracker = {
+  trackProductInsightsAgentView: jest.fn(),
+  trackProductInsightsAgentFocus: jest.fn(),
+  trackProductInsightsAgentQuestionClick: jest.fn(),
+  trackProductInsightsAgentQuestionSubmit: jest.fn(),
+  trackProductInsightsAgentAnswerView: jest.fn(),
+  trackProductInsightsAgentAnswerFeedback: jest.fn(),
+};
+
+const mockCioClient = { tracker: mockTracker };
+
 function mockUseCioPia({
   questionsData = mockSuggestedQuestions,
   answerData = null,
@@ -118,6 +132,7 @@ function mockUseCioPia({
   answerError = null,
 } = {}) {
   useCioPia.mockImplementation(() => ({
+    cioClient: mockCioClient,
     suggestedQuestions: {
       data: questionsData,
       isLoading: questionIsLoading,
@@ -1024,7 +1039,8 @@ describe('CioPia Component', () => {
         expect(screen.getByText(question.value)).toBeInTheDocument();
       });
 
-      // Change itemId — displayedQuestions should reset to empty until new suggestions load
+      // Change itemId — in production, answer data resets when a new item is selected
+      mockUseCioPia({ answerData: null });
       rerender(<CioPia {...mockProps} itemId='item-2' />);
 
       // Follow-up questions from the previous item should be gone

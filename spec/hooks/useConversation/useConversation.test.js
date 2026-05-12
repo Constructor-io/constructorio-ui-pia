@@ -12,6 +12,15 @@ describe('Testing Hook: useConversation', () => {
 
   const mockAnswerValue = 'Sample answer to the given question';
 
+  const mockTracking = {
+    trackView: jest.fn(),
+    trackFocus: jest.fn(),
+    trackQuestionClick: jest.fn(),
+    trackQuestionSubmit: jest.fn(),
+    trackAnswerView: jest.fn(),
+    trackAnswerFeedback: jest.fn(),
+  };
+
   function createMockPia(overrides = {}) {
     return {
       suggestedQuestions: {
@@ -39,7 +48,7 @@ describe('Testing Hook: useConversation', () => {
   it('initializes with default state', () => {
     const pia = createMockPia();
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
 
     expect(result.current.currentQuestion).toBe('');
@@ -54,7 +63,7 @@ describe('Testing Hook: useConversation', () => {
   it('calls getAnswer and sets currentQuestion on handleSubmitQuestion', () => {
     const pia = createMockPia();
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
 
     act(() => {
@@ -101,7 +110,7 @@ describe('Testing Hook: useConversation', () => {
   it('does not append to conversationHistory in default mode', () => {
     const pia = createMockPia();
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
 
     act(() => {
@@ -114,7 +123,7 @@ describe('Testing Hook: useConversation', () => {
   it('appends to conversationHistory in conversation mode', () => {
     const pia = createMockPia();
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: true }),
+      useConversation({ pia, itemId: 'test-item', isConversation: true, tracking: mockTracking }),
     );
 
     act(() => {
@@ -129,7 +138,7 @@ describe('Testing Hook: useConversation', () => {
   it('appends multiple entries to conversationHistory', () => {
     const pia = createMockPia();
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: true }),
+      useConversation({ pia, itemId: 'test-item', isConversation: true, tracking: mockTracking }),
     );
 
     act(() => {
@@ -152,7 +161,7 @@ describe('Testing Hook: useConversation', () => {
     });
 
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
 
     expect(result.current.displayedQuestions).toEqual(testQuestions);
@@ -164,7 +173,7 @@ describe('Testing Hook: useConversation', () => {
     });
 
     const { result, rerender } = renderHook((props) => useConversation(props), {
-      initialProps: { pia, itemId: 'test-item', isConversation: false },
+      initialProps: { pia, itemId: 'test-item', isConversation: false, tracking: mockTracking },
     });
 
     expect(result.current.displayedQuestions).toEqual(testQuestions);
@@ -174,7 +183,7 @@ describe('Testing Hook: useConversation', () => {
       suggestedQuestions: { data: newQuestions },
     });
 
-    rerender({ pia, itemId: 'test-item', isConversation: false });
+    rerender({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking });
 
     expect(result.current.displayedQuestions).toEqual(newQuestions);
   });
@@ -188,7 +197,7 @@ describe('Testing Hook: useConversation', () => {
     });
 
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
 
     expect(result.current.displayedQuestions).toEqual(followUpQuestions);
@@ -200,7 +209,7 @@ describe('Testing Hook: useConversation', () => {
     });
 
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
 
     expect(result.current.currentAnswer).toBe(mockAnswerValue);
@@ -209,7 +218,7 @@ describe('Testing Hook: useConversation', () => {
   it('returns empty string for currentAnswer when answers.data is null', () => {
     const pia = createMockPia();
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
 
     expect(result.current.currentAnswer).toBe('');
@@ -222,7 +231,7 @@ describe('Testing Hook: useConversation', () => {
     });
 
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
 
     expect(result.current.currentItems).toEqual(mockItems);
@@ -231,7 +240,7 @@ describe('Testing Hook: useConversation', () => {
   it('returns null for currentItems when answers.items is null', () => {
     const pia = createMockPia();
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
 
     expect(result.current.currentItems).toBeNull();
@@ -243,7 +252,7 @@ describe('Testing Hook: useConversation', () => {
     });
 
     const { result: result1 } = renderHook(() =>
-      useConversation({ pia: piaAnswersLoading, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia: piaAnswersLoading, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
     expect(result1.current.isLoading).toBe(true);
 
@@ -252,7 +261,7 @@ describe('Testing Hook: useConversation', () => {
     });
 
     const { result: result2 } = renderHook(() =>
-      useConversation({ pia: piaSuggestionsLoading, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia: piaSuggestionsLoading, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
     expect(result2.current.isLoading).toBe(true);
   });
@@ -264,7 +273,7 @@ describe('Testing Hook: useConversation', () => {
     });
 
     const { result: result1 } = renderHook(() =>
-      useConversation({ pia: piaAnswersError, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia: piaAnswersError, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
     expect(result1.current.error).toBe(answersError);
 
@@ -274,7 +283,7 @@ describe('Testing Hook: useConversation', () => {
     });
 
     const { result: result2 } = renderHook(() =>
-      useConversation({ pia: piaSuggestionsError, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia: piaSuggestionsError, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
     expect(result2.current.error).toBe(suggestionsError);
   });
@@ -288,7 +297,7 @@ describe('Testing Hook: useConversation', () => {
     });
 
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
     expect(result.current.error).toBe(answersError);
   });
@@ -299,7 +308,7 @@ describe('Testing Hook: useConversation', () => {
       let pia = createMockPia({ answers: { getAnswer } });
 
       const { result, rerender } = renderHook((props) => useConversation(props), {
-        initialProps: { pia, itemId: 'test-item', isConversation: true },
+        initialProps: { pia, itemId: 'test-item', isConversation: true, tracking: mockTracking },
       });
 
       act(() => {
@@ -312,7 +321,7 @@ describe('Testing Hook: useConversation', () => {
       pia = createMockPia({
         answers: { getAnswer, data: { value: mockAnswerValue } },
       });
-      rerender({ pia, itemId: 'test-item', isConversation: true });
+      rerender({ pia, itemId: 'test-item', isConversation: true, tracking: mockTracking });
 
       expect(result.current.conversationHistory[0].answer).toBe(mockAnswerValue);
     });
@@ -322,7 +331,7 @@ describe('Testing Hook: useConversation', () => {
       let pia = createMockPia({ answers: { getAnswer } });
 
       const { result, rerender } = renderHook((props) => useConversation(props), {
-        initialProps: { pia, itemId: 'test-item', isConversation: false },
+        initialProps: { pia, itemId: 'test-item', isConversation: false, tracking: mockTracking },
       });
 
       act(() => {
@@ -332,7 +341,7 @@ describe('Testing Hook: useConversation', () => {
       pia = createMockPia({
         answers: { getAnswer, data: { value: mockAnswerValue } },
       });
-      rerender({ pia, itemId: 'test-item', isConversation: false });
+      rerender({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking });
 
       expect(result.current.conversationHistory).toEqual([]);
     });
@@ -344,7 +353,7 @@ describe('Testing Hook: useConversation', () => {
       });
 
       const { result, rerender } = renderHook((props) => useConversation(props), {
-        initialProps: { pia, itemId: 'test-item', isConversation: true },
+        initialProps: { pia, itemId: 'test-item', isConversation: true, tracking: mockTracking },
       });
 
       act(() => {
@@ -352,14 +361,14 @@ describe('Testing Hook: useConversation', () => {
       });
 
       // First sync
-      rerender({ pia, itemId: 'test-item', isConversation: true });
+      rerender({ pia, itemId: 'test-item', isConversation: true, tracking: mockTracking });
       const historyAfterFirst = result.current.conversationHistory;
 
       // Re-render with same answer value
       pia = createMockPia({
         answers: { getAnswer, data: { value: mockAnswerValue } },
       });
-      rerender({ pia, itemId: 'test-item', isConversation: true });
+      rerender({ pia, itemId: 'test-item', isConversation: true, tracking: mockTracking });
 
       // Should be the same reference (no unnecessary update)
       expect(result.current.conversationHistory).toEqual(historyAfterFirst);
@@ -370,7 +379,7 @@ describe('Testing Hook: useConversation', () => {
       let pia = createMockPia({ answers: { getAnswer } });
 
       const { result, rerender } = renderHook((props) => useConversation(props), {
-        initialProps: { pia, itemId: 'test-item', isConversation: true },
+        initialProps: { pia, itemId: 'test-item', isConversation: true, tracking: mockTracking },
       });
 
       act(() => {
@@ -381,7 +390,7 @@ describe('Testing Hook: useConversation', () => {
       pia = createMockPia({
         answers: { getAnswer, data: { value: 'First answer' } },
       });
-      rerender({ pia, itemId: 'test-item', isConversation: true });
+      rerender({ pia, itemId: 'test-item', isConversation: true, tracking: mockTracking });
 
       act(() => {
         result.current.handleSubmitQuestion('Second question');
@@ -391,7 +400,7 @@ describe('Testing Hook: useConversation', () => {
       pia = createMockPia({
         answers: { getAnswer, data: { value: 'Second answer' } },
       });
-      rerender({ pia, itemId: 'test-item', isConversation: true });
+      rerender({ pia, itemId: 'test-item', isConversation: true, tracking: mockTracking });
 
       expect(result.current.conversationHistory).toHaveLength(2);
       expect(result.current.conversationHistory[0].answer).toBe('First answer');
@@ -404,7 +413,7 @@ describe('Testing Hook: useConversation', () => {
       let pia = createMockPia({ answers: { getAnswer } });
 
       const { result, rerender } = renderHook((props) => useConversation(props), {
-        initialProps: { pia, itemId: 'test-item', isConversation: true },
+        initialProps: { pia, itemId: 'test-item', isConversation: true, tracking: mockTracking },
       });
 
       act(() => {
@@ -417,7 +426,7 @@ describe('Testing Hook: useConversation', () => {
       pia = createMockPia({
         answers: { getAnswer, data: { value: 'An answer' }, items: mockItems },
       });
-      rerender({ pia, itemId: 'test-item', isConversation: true });
+      rerender({ pia, itemId: 'test-item', isConversation: true, tracking: mockTracking });
 
       expect(result.current.conversationHistory[0].answer).toBe('An answer');
       expect(result.current.conversationHistory[0].items).toEqual(mockItems);
@@ -430,7 +439,7 @@ describe('Testing Hook: useConversation', () => {
       let pia = createMockPia({ answers: { getAnswer } });
 
       const { result, rerender } = renderHook((props) => useConversation(props), {
-        initialProps: { pia, itemId: 'test-item', isConversation: true },
+        initialProps: { pia, itemId: 'test-item', isConversation: true, tracking: mockTracking },
       });
 
       // First question and answer with items
@@ -440,7 +449,7 @@ describe('Testing Hook: useConversation', () => {
       pia = createMockPia({
         answers: { getAnswer, data: { value: 'First answer' }, items: firstItems },
       });
-      rerender({ pia, itemId: 'test-item', isConversation: true });
+      rerender({ pia, itemId: 'test-item', isConversation: true, tracking: mockTracking });
 
       // Second question and answer with different items
       act(() => {
@@ -449,7 +458,7 @@ describe('Testing Hook: useConversation', () => {
       pia = createMockPia({
         answers: { getAnswer, data: { value: 'Second answer' }, items: secondItems },
       });
-      rerender({ pia, itemId: 'test-item', isConversation: true });
+      rerender({ pia, itemId: 'test-item', isConversation: true, tracking: mockTracking });
 
       expect(result.current.conversationHistory).toHaveLength(2);
       expect(result.current.conversationHistory[0].items).toEqual(firstItems);
@@ -461,7 +470,7 @@ describe('Testing Hook: useConversation', () => {
       let pia = createMockPia({ answers: { getAnswer } });
 
       const { result, rerender } = renderHook((props) => useConversation(props), {
-        initialProps: { pia, itemId: 'test-item', isConversation: true },
+        initialProps: { pia, itemId: 'test-item', isConversation: true, tracking: mockTracking },
       });
 
       act(() => {
@@ -473,7 +482,7 @@ describe('Testing Hook: useConversation', () => {
       pia = createMockPia({
         answers: { getAnswer, data: { value: 'An answer' }, items: null },
       });
-      rerender({ pia, itemId: 'test-item', isConversation: true });
+      rerender({ pia, itemId: 'test-item', isConversation: true, tracking: mockTracking });
 
       expect(result.current.conversationHistory[0].items).toBeNull();
     });
@@ -488,7 +497,7 @@ describe('Testing Hook: useConversation', () => {
       });
 
       const { result } = renderHook(() =>
-        useConversation({ pia, itemId: 'test-item', isConversation: true }),
+        useConversation({ pia, itemId: 'test-item', isConversation: true, tracking: mockTracking }),
       );
 
       act(() => {
@@ -517,7 +526,7 @@ describe('Testing Hook: useConversation', () => {
       });
 
       const { result, rerender } = renderHook((props) => useConversation(props), {
-        initialProps: { pia, itemId: 'item-1', isConversation: true },
+        initialProps: { pia, itemId: 'item-1', isConversation: true, tracking: mockTracking },
       });
 
       act(() => {
@@ -528,7 +537,7 @@ describe('Testing Hook: useConversation', () => {
       expect(result.current.conversationHistory).toHaveLength(1);
 
       // Change itemId
-      rerender({ pia, itemId: 'item-2', isConversation: true });
+      rerender({ pia, itemId: 'item-2', isConversation: true, tracking: mockTracking });
 
       expect(result.current.currentQuestion).toBe('');
       expect(result.current.conversationHistory).toEqual([]);
@@ -541,7 +550,7 @@ describe('Testing Hook: useConversation', () => {
       });
 
       const { result, rerender } = renderHook((props) => useConversation(props), {
-        initialProps: { pia, itemId: 'item-1', isConversation: false },
+        initialProps: { pia, itemId: 'item-1', isConversation: false, tracking: mockTracking },
       });
 
       expect(result.current.displayedQuestions).toEqual(testQuestions);
@@ -550,7 +559,7 @@ describe('Testing Hook: useConversation', () => {
       pia = createMockPia({
         suggestedQuestions: { data: newQuestions },
       });
-      rerender({ pia, itemId: 'item-2', isConversation: false });
+      rerender({ pia, itemId: 'item-2', isConversation: false, tracking: mockTracking });
 
       expect(result.current.displayedQuestions).toEqual(newQuestions);
     });

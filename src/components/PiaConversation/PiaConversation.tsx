@@ -3,7 +3,8 @@ import Input from '../Input/Input';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import SuggestedQuestionsSkeleton from '../SuggestedQuestionsContainer/SuggestedQuestionsSkeleton';
 import { translate } from '../../utils/translate';
-import { Question } from '../../types';
+import { FeedbackType, Question } from '../../types';
+import { ContainerFocusProps } from '../../hooks/useConversation';
 import ConversationHistory, {
   ConversationHistoryProps,
 } from '../ConversationHistory/ConversationHistory';
@@ -11,6 +12,9 @@ import ConversationHistory, {
 export interface PiaConversationProps extends ConversationHistoryProps {
   displayedQuestions: Question[];
   handleSubmitQuestion: (question: string) => void;
+  handleQuestionClick?: (question: string) => void;
+  containerFocusProps?: ContainerFocusProps;
+  handleFeedback?: (type: FeedbackType) => void;
 }
 
 export default function PiaConversation({
@@ -27,11 +31,17 @@ export default function PiaConversation({
   componentOverrides,
   displayedQuestions,
   handleSubmitQuestion,
+  handleQuestionClick,
+  containerFocusProps,
+  handleFeedback,
 }: PiaConversationProps) {
   const hasHistory = conversationHistory.length > 0;
 
   return (
-    <div className='cio-pia-container cio-pia-conversation' data-testid='cio-pia-container'>
+    <div
+      className='cio-pia-container cio-pia-conversation'
+      data-testid='cio-pia-container'
+      {...containerFocusProps}>
       {!hasHistory && (
         <p className='cio-pia-title' data-testid='cio-pia-title'>
           {translate('Any questions about this product?', translations)}
@@ -50,6 +60,7 @@ export default function PiaConversation({
         translations={translations}
         callbacks={callbacks}
         componentOverrides={componentOverrides}
+        handleFeedback={handleFeedback}
       />
 
       <div className='cio-pia-conversation-footer'>
@@ -57,7 +68,7 @@ export default function PiaConversation({
         {!isLoading && !error && (
           <SuggestedQuestionsContainer
             questions={displayedQuestions}
-            onQuestionClick={handleSubmitQuestion}
+            onQuestionClick={handleQuestionClick || handleSubmitQuestion}
             componentOverride={componentOverrides?.suggestedQuestions}
           />
         )}
