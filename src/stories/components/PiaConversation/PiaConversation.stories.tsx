@@ -124,6 +124,24 @@ export const WithoutPreviousItems = {
   render: () => <InteractiveWrapper showPreviousItems={false} />,
 };
 
+export const DisclaimerPositionTop: Story = {
+  args: {
+    conversationHistory: [
+      {
+        id: 1,
+        question: 'Is this bunk board suitable for a platform bed?',
+        answer:
+          'Yes, this bunk board is designed to work well with platform beds. It provides a solid, flat surface that supports your mattress evenly without the need for a box spring.',
+      },
+    ],
+    isLoading: false,
+    error: null,
+    disclaimerPosition: 'top',
+    displayedQuestions: mockQuestions,
+    handleSubmitQuestion: action('handleSubmitQuestion'),
+  },
+};
+
 export const WithLearnMore: Story = {
   args: {
     conversationHistory: [

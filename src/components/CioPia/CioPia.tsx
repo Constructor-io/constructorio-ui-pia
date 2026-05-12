@@ -78,6 +78,7 @@ export default function CioPia(props: CioPiaProps) {
     mode = 'default',
     type = 'inline',
     showPreviousItems,
+    disclaimerPosition = 'bottom',
   } = displayConfigs || {};
   const isConversation = mode === 'conversation' || type === 'modal';
 
@@ -122,6 +123,7 @@ export default function CioPia(props: CioPiaProps) {
     showFeedback,
     showPreviousItems,
     learnMoreUrl,
+    disclaimerPosition,
     translations,
     callbacks,
     componentOverrides,
@@ -170,6 +172,7 @@ export default function CioPia(props: CioPiaProps) {
                 currentItems={currentItems}
                 showFeedback={showFeedback}
                 learnMoreUrl={learnMoreUrl}
+                disclaimerPosition={disclaimerPosition}
                 translations={translations}
                 callbacks={callbacks}
                 componentOverrides={componentOverrides}

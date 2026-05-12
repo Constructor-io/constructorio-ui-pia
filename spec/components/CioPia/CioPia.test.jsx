@@ -1065,5 +1065,68 @@ describe('CioPia Component', () => {
       expect(mockGetAnswer).toHaveBeenCalledWith(mockSuggestedQuestions[0].value);
     });
 
+    it('renders custom Disclaimer via componentOverrides.disclaimer', () => {
+      mockUseCioPia({ answerData: mockAnswerData });
+
+      render(
+        <CioPia
+          {...mockProps}
+          componentOverrides={{
+            disclaimer: {
+              reactNode: () => <div data-testid='custom-disclaimer'>Custom Disclaimer Text</div>,
+            },
+          }}
+        />,
+      );
+
+      expect(screen.getByTestId('custom-disclaimer')).toBeInTheDocument();
+      expect(screen.getByText('Custom Disclaimer Text')).toBeInTheDocument();
+      expect(screen.queryByText(/AI-generated/)).not.toBeInTheDocument();
+    });
+
+    it('renders disclaimer after answer by default in inline mode', () => {
+      mockUseCioPia({ answerData: mockAnswerData });
+
+      const { container } = render(<CioPia {...mockProps} />);
+
+      const answerContainer = container.querySelector('.cio-pia-answer-container');
+      const children = Array.from(answerContainer.children);
+      const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
+      const answerIndex = children.findIndex((el) => el.matches('.cio-pia-answer'));
+      expect(disclaimerIndex).toBeGreaterThan(answerIndex);
+    });
+
+    it('renders disclaimer before answer when disclaimerPosition is top in inline mode', () => {
+      mockUseCioPia({ answerData: mockAnswerData });
+
+      const { container } = render(
+        <CioPia {...mockProps} displayConfigs={{ disclaimerPosition: 'top' }} />,
+      );
+
+      const answerContainer = container.querySelector('.cio-pia-answer-container');
+      const children = Array.from(answerContainer.children);
+      const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
+      const answerIndex = children.findIndex((el) => el.matches('.cio-pia-answer'));
+      expect(disclaimerIndex).toBeLessThan(answerIndex);
+    });
+
+    it('renders custom Feedback via componentOverrides.feedback with showFeedback enabled', () => {
+      mockUseCioPia({ answerData: mockAnswerData });
+
+      render(
+        <CioPia
+          {...mockProps}
+          displayConfigs={{ showFeedback: true }}
+          componentOverrides={{
+            feedback: {
+              reactNode: () => <div data-testid='custom-feedback'>Custom Feedback Widget</div>,
+            },
+          }}
+        />,
+      );
+
+      expect(screen.getByTestId('custom-feedback')).toBeInTheDocument();
+      expect(screen.getByText('Custom Feedback Widget')).toBeInTheDocument();
+    });
   });
 });

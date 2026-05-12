@@ -21,6 +21,7 @@ export default function PiaConversation({
   showFeedback,
   showPreviousItems,
   learnMoreUrl,
+  disclaimerPosition,
   translations,
   callbacks,
   componentOverrides,
@@ -45,6 +46,7 @@ export default function PiaConversation({
         showFeedback={showFeedback}
         showPreviousItems={showPreviousItems}
         learnMoreUrl={learnMoreUrl}
+        disclaimerPosition={disclaimerPosition}
         translations={translations}
         callbacks={callbacks}
         componentOverrides={componentOverrides}
