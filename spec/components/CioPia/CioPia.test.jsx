@@ -1128,6 +1128,32 @@ describe('CioPia Component', () => {
       expect(screen.queryByText(/AI-generated/)).not.toBeInTheDocument();
     });
 
+    it('renders disclaimer after answer by default in inline mode', () => {
+      mockUseCioPia({ answerData: mockAnswerData });
+
+      const { container } = render(<CioPia {...mockProps} />);
+
+      const answerContainer = container.querySelector('.cio-pia-answer-container');
+      const children = Array.from(answerContainer.children);
+      const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
+      const answerIndex = children.findIndex((el) => el.matches('.cio-pia-answer'));
+      expect(disclaimerIndex).toBeGreaterThan(answerIndex);
+    });
+
+    it('renders disclaimer before answer when disclaimerPosition is top in inline mode', () => {
+      mockUseCioPia({ answerData: mockAnswerData });
+
+      const { container } = render(
+        <CioPia {...mockProps} displayConfigs={{ disclaimerPosition: 'top' }} />,
+      );
+
+      const answerContainer = container.querySelector('.cio-pia-answer-container');
+      const children = Array.from(answerContainer.children);
+      const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
+      const answerIndex = children.findIndex((el) => el.matches('.cio-pia-answer'));
+      expect(disclaimerIndex).toBeLessThan(answerIndex);
+    });
+
     it('renders custom Feedback via componentOverrides.feedback with showFeedback enabled', () => {
       mockUseCioPia({ answerData: mockAnswerData });
 

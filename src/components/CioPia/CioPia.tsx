@@ -32,31 +32,28 @@ export interface CioPiaProps
   extends
     IncludeRenderProps<CioPiaRenderProps>,
     IncludeComponentOverrides<CioPiaComponentOverrides> {
+  /** Your Constructor.io API key. */
   apiKey: string;
+  /** The product item ID to fetch insights for. */
   itemId: string;
-  /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000") */
+  /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000"). */
   threadId?: string;
+  /** Optional variation ID for the product. */
   variationId?: string;
+  /** Optional Constructor.io client instance. If not provided, one will be created internally. */
   cioClient?: MockConstructorIOClient;
+  /** Display configuration options (mode, type, showFeedback, etc.). */
   displayConfigs?: CioPiaDisplayConfigs;
-
-  /**
-   * Callback handlers for user interactions:
-   *
-   * `onQuestionSubmit: (question: string) => void`
-   * Called when a question is submitted (via Enter key, Send button, or suggested question click).
-   *
-   * `onProductCardClick: (item: Item) => void`
-   * Called when a product card in the carousel is clicked.
-   *
-   * `onFeedback: (type: 'up' | 'down') => void`
-   * Called when the user submits positive or negative feedback on an answer.
-   */
+  /** Callback handlers for user interactions (onQuestionSubmit, onProductCardClick, onFeedback). */
   callbacks?: Callbacks;
-
-  /** Define formatter functions outside the component or memoize to avoid unnecessary re-renders. */
+  // Redeclared from IncludeComponentOverrides for Storybook autodocs.
+  /** Custom component overrides via reactNode or render props functions. */
+  componentOverrides?: CioPiaComponentOverrides;
+  /** Formatter functions for transforming data before display. */
   formatters?: Formatters;
+  /** UI string translations for internationalization. */
   translations?: Translations;
+  /** Parameters for the suggested questions request. */
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
 }
 
@@ -81,6 +78,7 @@ export default function CioPia(props: CioPiaProps) {
     mode = 'default',
     type = 'inline',
     showPreviousItems,
+    disclaimerPosition = 'bottom',
   } = displayConfigs || {};
   const isConversation = mode === 'conversation' || type === 'modal';
 
@@ -125,6 +123,7 @@ export default function CioPia(props: CioPiaProps) {
     showFeedback,
     showPreviousItems,
     learnMoreUrl,
+    disclaimerPosition,
     translations,
     callbacks,
     componentOverrides,
@@ -148,6 +147,14 @@ export default function CioPia(props: CioPiaProps) {
 
   if (isConversation) return <PiaConversation {...conversationHistoryProps} />;
 
+  const disclaimer = (
+    <Disclaimer
+      learnMoreUrl={learnMoreUrl}
+      translations={translations}
+      componentOverride={componentOverrides?.disclaimer}
+    />
+  );
+
   // Default inline mode
   return (
     <div className='cio-pia-container' data-testid='cio-pia-container'>
@@ -169,6 +176,7 @@ export default function CioPia(props: CioPiaProps) {
           <>
             {currentAnswer && (
               <div className='cio-pia-answer-container'>
+                {disclaimerPosition === 'top' && disclaimer}
                 <Answer text={currentAnswer} componentOverride={componentOverrides?.answer} />
                 {currentItems && (
                   <PiaCustomCarousel
@@ -184,11 +192,7 @@ export default function CioPia(props: CioPiaProps) {
                     componentOverride={componentOverrides?.feedback}
                   />
                 )}
-                <Disclaimer
-                  learnMoreUrl={learnMoreUrl}
-                  translations={translations}
-                  componentOverride={componentOverrides?.disclaimer}
-                />
+                {disclaimerPosition === 'bottom' && disclaimer}
               </div>
             )}
 

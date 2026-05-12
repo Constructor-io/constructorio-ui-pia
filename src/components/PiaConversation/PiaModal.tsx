@@ -98,15 +98,21 @@ export default function PiaModal({
       <p className='cio-pia-title' data-testid='cio-pia-title'>
         {translate('Any questions about this product?', translations)}
       </p>
-      <Input onSubmit={handleQuestion} disabled={isLoading || isOpen} translations={translations} />
+      <div className='cio-pia-conversation-footer'>
+        {initialQuestions.length > 0 && (
+          <SuggestedQuestionsContainer
+            questions={initialQuestions}
+            onQuestionClick={handleQuestion}
+            componentOverride={componentOverrides?.suggestedQuestions}
+          />
+        )}
 
-      {initialQuestions.length > 0 && (
-        <SuggestedQuestionsContainer
-          questions={initialQuestions}
-          onQuestionClick={handleQuestion}
-          componentOverride={componentOverrides?.suggestedQuestions}
+        <Input
+          onSubmit={handleQuestion}
+          disabled={isLoading || isOpen}
+          translations={translations}
         />
-      )}
+      </div>
 
       <dialog ref={dialogRef} className='cio-pia-modal' aria-labelledby='cio-pia-modal-title'>
         <div className='cio-pia-modal-content'>
