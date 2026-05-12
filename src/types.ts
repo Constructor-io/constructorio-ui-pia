@@ -137,8 +137,8 @@ export interface FeedbackRenderProps {
 }
 
 /**
- * Component overrides for CioPia
- * Allows customization of sub-components via reactNode or render props functions
+ * Component overrides for CioPia.
+ * Allows customization of sub-components via reactNode or render props functions.
  */
 export interface CioPiaComponentOverrides extends ComponentOverrideProps<CioPiaRenderProps> {
   carousel?: CarouselOverrides<Item>;
