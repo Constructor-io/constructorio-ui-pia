@@ -3,12 +3,17 @@ import {
   CarouselOverrides,
   ComponentOverrideProps,
 } from '@constructor-io/constructorio-ui-components';
+import ConstructorIOClient from '@constructor-io/constructorio-client-javascript';
 import {
   ConstructorClientOptions,
   Nullable,
 } from '@constructor-io/constructorio-client-javascript';
-import { Question } from './hooks/mocks/types';
-import MockConstructorIOClient from './hooks/mocks/MockConstructorIOClient';
+import {
+  PiaQuestion as Question,
+  PiaSuggestedQuestionsResponse as QuestionResponse,
+  PiaAnswerResultsResponse as GetAnswerResultsResponse,
+  PiaSuggestedQuestionsParameters as SuggestedQuestionsParameters,
+} from '@constructor-io/constructorio-client-javascript/lib/types/pia';
 
 export enum FeedbackType {
   UP = 'up',
@@ -16,7 +21,7 @@ export enum FeedbackType {
 }
 
 export interface PiaContextValue {
-  cioClient: Nullable<MockConstructorIOClient>;
+  cioClient: Nullable<ConstructorIOClient>;
   cioClientOptions: CioClientOptions;
   setCioClientOptions: React.Dispatch<CioClientOptions>;
   itemId: string;
@@ -33,7 +38,7 @@ export interface CioPiaProviderProps {
   variationId?: string;
   /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000") */
   threadId?: string;
-  cioClient?: Nullable<MockConstructorIOClient>;
+  cioClient?: Nullable<ConstructorIOClient>;
 }
 
 export type CioPiaMode = 'default' | 'conversation';
@@ -137,8 +142,8 @@ export interface FeedbackRenderProps {
 }
 
 /**
- * Component overrides for CioPia
- * Allows customization of sub-components via reactNode or render props functions
+ * Component overrides for CioPia.
+ * Allows customization of sub-components via reactNode or render props functions.
  */
 export interface CioPiaComponentOverrides extends ComponentOverrideProps<CioPiaRenderProps> {
   carousel?: CarouselOverrides<Item>;
@@ -148,4 +153,4 @@ export interface CioPiaComponentOverrides extends ComponentOverrideProps<CioPiaR
   feedback?: ComponentOverrideProps<FeedbackRenderProps>;
 }
 
-export * from './hooks/mocks/types';
+export type { Question, QuestionResponse, GetAnswerResultsResponse, SuggestedQuestionsParameters };

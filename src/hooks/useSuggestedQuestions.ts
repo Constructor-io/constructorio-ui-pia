@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
+import ConstructorIOClient from '@constructor-io/constructorio-client-javascript';
 import { Question, QuestionResponse, SuggestedQuestionsParameters } from '../types';
-import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 
 export interface UseSuggestedQuestionsProps {
   itemId: string;
   variationId?: string;
   threadId?: string;
-  cioClient?: MockConstructorIOClient;
+  cioClient?: ConstructorIOClient;
   parameters?: SuggestedQuestionsParameters;
 }
 
@@ -18,7 +18,7 @@ export interface UseSuggestedQuestionsReturn {
 }
 
 interface FetchSuggestedQuestionsParams {
-  client: MockConstructorIOClient;
+  client: ConstructorIOClient;
   itemId: string;
   variationId?: string;
   threadId?: string;
@@ -32,11 +32,10 @@ const fetchSuggestedQuestions = async ({
   threadId,
   parameters,
 }: FetchSuggestedQuestionsParams) => {
-  const response: QuestionResponse = await client.agent.getSuggestedQuestions({
-    itemId,
-    variationId,
+  const response: QuestionResponse = await client.pia.getSuggestedQuestions(itemId, {
     threadId,
-    parameters,
+    variationId,
+    numResults: parameters?.numResults,
   });
 
   return response.questions;

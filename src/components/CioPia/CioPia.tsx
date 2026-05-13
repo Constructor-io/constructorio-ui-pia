@@ -4,12 +4,9 @@ import {
   IncludeRenderProps,
   RenderPropsWrapper,
 } from '@constructor-io/constructorio-ui-components';
-import Disclaimer from './Disclaimer';
 import Input from '../Input/Input';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
-import Answer from '../Answer/Answer';
-import Feedback from '../Feedback/Feedback';
-import MockConstructorIOClient from '../../hooks/mocks/MockConstructorIOClient';
+import ConstructorIOClient from '@constructor-io/constructorio-client-javascript';
 import useCioPia from '../../hooks/useCioPia';
 import useConversation from '../../hooks/useConversation';
 import useTracking from '../../hooks/useTracking';
@@ -25,7 +22,7 @@ import {
   Formatters,
 } from '../../types';
 import { translate } from '../../utils/translate';
-import PiaCustomCarousel from './PiaCustomCarousel';
+import PiaInlineAnswer from '../PiaInlineAnswer/PiaInlineAnswer';
 import PiaModal from '../PiaConversation/PiaModal';
 import PiaConversation from '../PiaConversation/PiaConversation';
 
@@ -33,32 +30,29 @@ export interface CioPiaProps
   extends
     IncludeRenderProps<CioPiaRenderProps>,
     IncludeComponentOverrides<CioPiaComponentOverrides> {
+  /** Your Constructor.io API key. */
   apiKey: string;
+  /** The product item ID to fetch insights for. */
   itemId: string;
   itemName: string;
-  /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000") */
+  /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000"). */
   threadId?: string;
+  /** Optional variation ID for the product. */
   variationId?: string;
-  cioClient?: MockConstructorIOClient;
+  /** Optional Constructor.io client instance. If not provided, one will be created internally. */
+  cioClient?: ConstructorIOClient;
+  /** Display configuration options (mode, type, showFeedback, etc.). */
   displayConfigs?: CioPiaDisplayConfigs;
-
-  /**
-   * Callback handlers for user interactions:
-   *
-   * `onQuestionSubmit: (question: string) => void`
-   * Called when a question is submitted (via Enter key, Send button, or suggested question click).
-   *
-   * `onProductCardClick: (item: Item) => void`
-   * Called when a product card in the carousel is clicked.
-   *
-   * `onFeedback: (type: 'up' | 'down') => void`
-   * Called when the user submits positive or negative feedback on an answer.
-   */
+  /** Callback handlers for user interactions (onQuestionSubmit, onProductCardClick, onFeedback). */
   callbacks?: Callbacks;
-
-  /** Define formatter functions outside the component or memoize to avoid unnecessary re-renders. */
+  // Redeclared from IncludeComponentOverrides for Storybook autodocs.
+  /** Custom component overrides via reactNode or render props functions. */
+  componentOverrides?: CioPiaComponentOverrides;
+  /** Formatter functions for transforming data before display. */
   formatters?: Formatters;
+  /** UI string translations for internationalization. */
   translations?: Translations;
+  /** Parameters for the suggested questions request. */
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
 }
 
@@ -163,14 +157,6 @@ export default function CioPia(props: CioPiaProps) {
 
   if (isConversation) return <PiaConversation {...conversationHistoryProps} />;
 
-  const disclaimer = (
-    <Disclaimer
-      learnMoreUrl={learnMoreUrl}
-      translations={translations}
-      componentOverride={componentOverrides?.disclaimer}
-    />
-  );
-
   // Default inline mode
   return (
     <div className='cio-pia-container' data-testid='cio-pia-container' {...containerFocusProps}>
@@ -191,28 +177,17 @@ export default function CioPia(props: CioPiaProps) {
         {!isLoading && !error && (
           <>
             {currentAnswer && (
-              <div className='cio-pia-answer-container'>
-                {disclaimerPosition === 'top' && disclaimer}
-                <Answer text={currentAnswer} componentOverride={componentOverrides?.answer} />
-                {currentItems && (
-                  <PiaCustomCarousel
-                    items={currentItems}
-                    componentOverrides={componentOverrides?.carousel}
-                    callbacks={callbacks}
-                  />
-                )}
-                {showFeedback && (
-                  <Feedback
-                    translations={translations}
-                    onFeedback={(feedbackType) => {
-                      handleFeedback(feedbackType);
-                      callbacks?.onFeedback?.(feedbackType);
-                    }}
-                    componentOverride={componentOverrides?.feedback}
-                  />
-                )}
-                {disclaimerPosition === 'bottom' && disclaimer}
-              </div>
+              <PiaInlineAnswer
+                currentAnswer={currentAnswer}
+                currentItems={currentItems}
+                showFeedback={showFeedback}
+                learnMoreUrl={learnMoreUrl}
+                disclaimerPosition={disclaimerPosition}
+                translations={translations}
+                callbacks={callbacks}
+                componentOverrides={componentOverrides}
+                onFeedback={handleFeedback}
+              />
             )}
 
             <SuggestedQuestionsContainer

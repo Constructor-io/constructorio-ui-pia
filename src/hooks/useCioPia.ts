@@ -1,5 +1,5 @@
+import ConstructorIOClient from '@constructor-io/constructorio-client-javascript';
 import { Formatters, SuggestedQuestionsParameters } from '../types';
-import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 import useAnswerResults, { UseAnswerResultsReturn } from './useAnswerResults';
 import useCioClient from './useCioClient';
 import useSuggestedQuestions, { UseSuggestedQuestionsReturn } from './useSuggestedQuestions';
@@ -9,14 +9,14 @@ export interface UseCioPiaProps {
   itemId: string;
   variationId?: string;
   threadId?: string;
-  cioClient?: MockConstructorIOClient;
+  cioClient?: ConstructorIOClient;
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
   /** Define outside the component or wrap with useCallback to avoid unnecessary re-renders. */
   formatImageUrl?: Formatters['formatImageUrl'];
 }
 
 export interface UseCioPiaReturn {
-  cioClient: MockConstructorIOClient;
+  cioClient: ConstructorIOClient;
   suggestedQuestions: UseSuggestedQuestionsReturn;
   answers: UseAnswerResultsReturn;
 }
@@ -33,13 +33,13 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
   } = props;
 
   const defaultClient = useCioClient({ apiKey });
-  const client = providedClient || defaultClient;
+  const client = (providedClient || defaultClient) as ConstructorIOClient;
 
   const suggestedQuestions = useSuggestedQuestions({
     itemId,
     variationId,
     threadId,
-    cioClient: client as MockConstructorIOClient,
+    cioClient: client,
     parameters: suggestedQuestionsParameters,
   });
 
@@ -47,12 +47,12 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     itemId,
     variationId,
     threadId,
-    cioClient: client as MockConstructorIOClient,
+    cioClient: client,
     formatImageUrl,
   });
 
   return {
-    cioClient: client as MockConstructorIOClient,
+    cioClient: client,
     suggestedQuestions,
     answers,
   };

@@ -19,7 +19,6 @@ const defaultTranslations: Translations = {
  * @param translations - Optional user-provided translations object
  * @returns The translated string or the original word if no translation exists
  */
-// eslint-disable-next-line import/prefer-default-export
 export const translate = (word: string, translations?: Translations): string => {
   if (translations && translations[word as keyof Translations] !== undefined) {
     return translations[word as keyof Translations] as string;

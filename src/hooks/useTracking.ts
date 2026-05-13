@@ -1,16 +1,23 @@
 import { useCallback, useMemo } from 'react';
-import MockConstructorIOClient from './mocks/MockConstructorIOClient';
+import ConstructorIOClient from '@constructor-io/constructorio-client-javascript';
 import { FeedbackType, Question, GetAnswerResultsResponse } from '../types';
 
+export interface TimeSpan {
+  start: string;
+  end: string;
+}
+
 export interface UseTrackingProps {
-  cioClient?: MockConstructorIOClient;
+  cioClient?: ConstructorIOClient;
   itemId: string;
   itemName: string;
   variationId?: string;
 }
 
 export interface UseTrackingReturn {
+  trackViews: (questions: Question[], viewTimespans: TimeSpan[]) => void;
   trackView: (questions: Question[]) => void;
+  trackOutOfView: () => void;
   trackFocus: () => void;
   trackQuestionClick: (question: string) => void;
   trackQuestionSubmit: (question: string) => void;
@@ -26,7 +33,7 @@ export default function useTracking({
 }: UseTrackingProps): UseTrackingReturn {
   const tracker = cioClient?.tracker;
 
-  const baseParams = useCallback(
+  const baseParams = useMemo(
     () => ({
       itemId,
       itemName,
@@ -35,24 +42,44 @@ export default function useTracking({
     [itemId, itemName, variationId],
   );
 
+  const mapQuestions = useCallback(
+    (questions: Question[]) => questions.map((q) => ({ question: q.value })),
+    [],
+  );
+
+  const trackViews = useCallback(
+    (questions: Question[], viewTimespans: TimeSpan[]) => {
+      tracker?.trackProductInsightsAgentViews({
+        ...baseParams,
+        questions: mapQuestions(questions),
+        viewTimespans,
+      });
+    },
+    [tracker, baseParams, mapQuestions],
+  );
+
   const trackView = useCallback(
     (questions: Question[]) => {
       tracker?.trackProductInsightsAgentView({
-        ...baseParams(),
-        questions: questions.map((q) => ({ question: q.value })),
+        ...baseParams,
+        questions: mapQuestions(questions),
       });
     },
-    [tracker, baseParams],
+    [tracker, baseParams, mapQuestions],
   );
 
+  const trackOutOfView = useCallback(() => {
+    tracker?.trackProductInsightsAgentOutOfView(baseParams);
+  }, [tracker, baseParams]);
+
   const trackFocus = useCallback(() => {
-    tracker?.trackProductInsightsAgentFocus(baseParams());
+    tracker?.trackProductInsightsAgentFocus(baseParams);
   }, [tracker, baseParams]);
 
   const trackQuestionClick = useCallback(
     (question: string) => {
       tracker?.trackProductInsightsAgentQuestionClick({
-        ...baseParams(),
+        ...baseParams,
         question,
       });
     },
@@ -62,7 +89,7 @@ export default function useTracking({
   const trackQuestionSubmit = useCallback(
     (question: string) => {
       tracker?.trackProductInsightsAgentQuestionSubmit({
-        ...baseParams(),
+        ...baseParams,
         question,
       });
     },
@@ -72,7 +99,7 @@ export default function useTracking({
   const trackAnswerView = useCallback(
     (question: string, answerData: GetAnswerResultsResponse) => {
       tracker?.trackProductInsightsAgentAnswerView({
-        ...baseParams(),
+        ...baseParams,
         question,
         answerText: answerData.value,
         qnaResultId: answerData.qna_result_id,
@@ -85,7 +112,7 @@ export default function useTracking({
     (feedbackType: FeedbackType, qnaResultId?: string) => {
       const feedbackLabel = feedbackType === FeedbackType.UP ? 'thumbs_up' : 'thumbs_down';
       tracker?.trackProductInsightsAgentAnswerFeedback({
-        ...baseParams(),
+        ...baseParams,
         feedbackLabel,
         qnaResultId,
       });
@@ -95,7 +122,9 @@ export default function useTracking({
 
   return useMemo(
     () => ({
+      trackViews,
       trackView,
+      trackOutOfView,
       trackFocus,
       trackQuestionClick,
       trackQuestionSubmit,
@@ -103,7 +132,9 @@ export default function useTracking({
       trackAnswerFeedback,
     }),
     [
+      trackViews,
       trackView,
+      trackOutOfView,
       trackFocus,
       trackQuestionClick,
       trackQuestionSubmit,
