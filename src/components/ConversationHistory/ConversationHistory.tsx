@@ -116,10 +116,7 @@ export default function ConversationHistory({
                   {isLast && showFeedback && (
                     <Feedback
                       translations={translations}
-                      onFeedback={(feedbackType) => {
-                        handleFeedback?.(feedbackType);
-                        callbacks?.onFeedback?.(feedbackType);
-                      }}
+                      onFeedback={handleFeedback}
                       componentOverride={componentOverrides?.feedback}
                     />
                   )}

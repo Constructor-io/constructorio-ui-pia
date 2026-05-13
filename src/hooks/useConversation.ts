@@ -11,8 +11,12 @@ export interface UseConversationProps {
   tracking: UseTrackingReturn;
 }
 
-export interface ContainerFocusProps {
+export interface ContainerClickProps {
   onClick: () => void;
+}
+
+export interface InputFocusProps {
+  onFocus: () => void;
 }
 
 export interface UseConversationReturn {
@@ -25,7 +29,8 @@ export interface UseConversationReturn {
   error: Error | null;
   handleSubmitQuestion: (question: string) => void;
   handleQuestionClick: (question: string) => void;
-  containerFocusProps: ContainerFocusProps;
+  containerClickProps: ContainerClickProps;
+  inputFocusProps: InputFocusProps;
   handleFeedback: (type: FeedbackType) => void;
   resetState: () => void;
 }
@@ -49,16 +54,20 @@ export default function useConversation({
   const entryIdRef = useRef(0);
   const prevAnswerValueRef = useRef(answers.data?.value);
   const currentQuestionRef = useRef(currentQuestion);
+  const trackingRef = useRef(tracking);
+
+  useEffect(() => {
+    trackingRef.current = tracking;
+  }, [tracking]);
 
   // --- Handlers ---
 
-  const handleSubmitQuestion = useCallback(
+  const submitQuestion = useCallback(
     (question: string) => {
       callbacks?.onQuestionSubmit?.(question);
       setCurrentQuestion(question);
       currentQuestionRef.current = question;
       getAnswer(question);
-      tracking.trackQuestionSubmit(question);
 
       if (isConversation) {
         entryIdRef.current += 1;
@@ -66,22 +75,30 @@ export default function useConversation({
         setConversationHistory((prev) => [...prev, { id, question, answer: '' }]);
       }
     },
-    [getAnswer, isConversation, callbacks, tracking],
+    [getAnswer, isConversation, callbacks],
+  );
+
+  const handleSubmitQuestion = useCallback(
+    (question: string) => {
+      trackingRef.current.trackQuestionSubmit(question);
+      submitQuestion(question);
+    },
+    [submitQuestion],
   );
 
   const handleQuestionClick = useCallback(
     (question: string) => {
-      tracking.trackQuestionClick(question);
-      handleSubmitQuestion(question);
+      trackingRef.current.trackQuestionClick(question);
+      submitQuestion(question);
     },
-    [tracking, handleSubmitQuestion],
+    [submitQuestion],
   );
 
   const handleFeedback = useCallback(
     (type: FeedbackType) => {
-      tracking.trackAnswerFeedback(type, answers.data?.qna_result_id);
+      trackingRef.current.trackAnswerFeedback(type, answers.data?.qna_result_id);
     },
-    [tracking, answers.data?.qna_result_id],
+    [answers.data?.qna_result_id],
   );
 
   const resetState = useCallback(() => {
@@ -98,14 +115,16 @@ export default function useConversation({
 
   const handleContainerClick = useCallback(() => {
     clickedInsideRef.current = true;
+  }, []);
+
+  const handleInputFocus = useCallback(() => {
     if (!focusedRef.current) {
       focusedRef.current = true;
-      tracking.trackFocus();
+      trackingRef.current.trackFocus();
     }
-  }, [tracking]);
+  }, []);
 
   // Reset focus state when user clicks outside the container
-  // Implemented in such a manner to not cause multiple focus events
   useEffect(() => {
     const onDocumentClick = () => {
       if (clickedInsideRef.current) {
@@ -118,8 +137,12 @@ export default function useConversation({
     return () => document.removeEventListener('click', onDocumentClick);
   }, []);
 
-  const containerFocusProps: ContainerFocusProps = {
+  const containerClickProps: ContainerClickProps = {
     onClick: handleContainerClick,
+  };
+
+  const inputFocusProps: InputFocusProps = {
+    onFocus: handleInputFocus,
   };
 
   // --- Effects ---
@@ -133,21 +156,18 @@ export default function useConversation({
     focusedRef.current = false;
   }, [itemId]);
 
-  // Sync displayed questions from API and track initial view
+  // Sync displayed questions from API
   useEffect(() => {
     setDisplayedQuestions(suggestedQuestions.data);
-    if (suggestedQuestions.data.length > 0) {
-      tracking.trackView(suggestedQuestions.data);
-    }
-  }, [suggestedQuestions.data, tracking]);
+  }, [suggestedQuestions.data]);
 
   // Replace displayed questions with follow-ups and track answer view
   useEffect(() => {
     if (answers.data?.follow_up_questions) setDisplayedQuestions(answers.data.follow_up_questions);
     if (answers.data && currentQuestionRef.current) {
-      tracking.trackAnswerView(currentQuestionRef.current, answers.data);
+      trackingRef.current.trackAnswerView(currentQuestionRef.current, answers.data);
     }
-  }, [answers.data, tracking]);
+  }, [answers.data]);
 
   // Sync answer and items into the latest conversation history entry
   useEffect(() => {
@@ -184,7 +204,8 @@ export default function useConversation({
     error,
     handleSubmitQuestion,
     handleQuestionClick,
-    containerFocusProps,
+    containerClickProps,
+    inputFocusProps,
     handleFeedback,
     resetState,
   };

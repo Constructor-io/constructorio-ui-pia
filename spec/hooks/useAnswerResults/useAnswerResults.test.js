@@ -5,7 +5,7 @@ import { testGetAnswersApiResponse, testTransformedItems } from '../../localExam
 
 describe('Testing Hook: useAnswerResults', () => {
   const mockClient = {
-    agent: {
+    pia: {
       getAnswerResults: jest.fn(),
     },
   };
@@ -28,7 +28,7 @@ describe('Testing Hook: useAnswerResults', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockClient.agent.getAnswerResults.mockResolvedValue(mockResponse);
+    mockClient.pia.getAnswerResults.mockResolvedValue(mockResponse);
   });
 
   it('initializes with default state', () => {
@@ -38,7 +38,7 @@ describe('Testing Hook: useAnswerResults', () => {
     expect(result.current.data).toBe(null);
     expect(result.current.items).toBe(null);
     expect(result.current.error).toBe(null);
-    expect(mockClient.agent.getAnswerResults).not.toHaveBeenCalled();
+    expect(mockClient.pia.getAnswerResults).not.toHaveBeenCalled();
   });
 
   it('fetches and returns answer results when getAnswer is called', async () => {
@@ -60,12 +60,11 @@ describe('Testing Hook: useAnswerResults', () => {
       });
     });
 
-    expect(mockClient.agent.getAnswerResults).toHaveBeenCalledWith({
-      itemId: testProps.itemId,
-      threadId: undefined,
-      variationId: undefined,
-      question: testQuestion,
-    });
+    expect(mockClient.pia.getAnswerResults).toHaveBeenCalledWith(
+      testProps.itemId,
+      testQuestion,
+      { threadId: undefined, variationId: undefined },
+    );
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toEqual(mockResponse);
     expect(result.current.error).toBe(null);
@@ -73,7 +72,7 @@ describe('Testing Hook: useAnswerResults', () => {
   });
 
   it('fetches and transforms answer results with item_results when available', async () => {
-    mockClient.agent.getAnswerResults.mockResolvedValue(mockResponseWithItemResults);
+    mockClient.pia.getAnswerResults.mockResolvedValue(mockResponseWithItemResults);
 
     const { result } = renderHook(() => useAnswerResults(testProps));
     act(() => {
@@ -100,7 +99,7 @@ describe('Testing Hook: useAnswerResults', () => {
 
   it('handles errors when fetching answer results', async () => {
     const errorMessage = 'Failed to fetch';
-    mockClient.agent.getAnswerResults.mockRejectedValue(new Error(errorMessage));
+    mockClient.pia.getAnswerResults.mockRejectedValue(new Error(errorMessage));
 
     const { result } = renderHook(() => useAnswerResults(testProps));
     act(() => {
@@ -134,7 +133,7 @@ describe('Testing Hook: useAnswerResults', () => {
       });
     });
 
-    mockClient.agent.getAnswerResults.mockClear();
+    mockClient.pia.getAnswerResults.mockClear();
 
     // Call getAnswer again
     act(() => {
@@ -149,7 +148,7 @@ describe('Testing Hook: useAnswerResults', () => {
       });
     });
 
-    expect(mockClient.agent.getAnswerResults).toHaveBeenCalledTimes(1);
+    expect(mockClient.pia.getAnswerResults).toHaveBeenCalledTimes(1);
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toEqual(mockResponse);
   });
@@ -169,7 +168,7 @@ describe('Testing Hook: useAnswerResults', () => {
       });
     });
 
-    mockClient.agent.getAnswerResults.mockClear();
+    mockClient.pia.getAnswerResults.mockClear();
 
     const newProps = {
       ...testProps,
@@ -189,12 +188,11 @@ describe('Testing Hook: useAnswerResults', () => {
       });
     });
 
-    expect(mockClient.agent.getAnswerResults).toHaveBeenCalledWith({
-      itemId: newProps.itemId,
-      threadId: undefined,
-      variationId: undefined,
-      question: newQuestion,
-    });
+    expect(mockClient.pia.getAnswerResults).toHaveBeenCalledWith(
+      newProps.itemId,
+      newQuestion,
+      { threadId: undefined, variationId: undefined },
+    );
   });
 
   it('passes threadId and variationId to getAnswerResults', async () => {
@@ -217,12 +215,11 @@ describe('Testing Hook: useAnswerResults', () => {
       });
     });
 
-    expect(mockClient.agent.getAnswerResults).toHaveBeenCalledWith({
-      itemId: propsWithIds.itemId,
-      threadId: 'test-thread-id',
-      variationId: 'test-variation-id',
-      question: testQuestion,
-    });
+    expect(mockClient.pia.getAnswerResults).toHaveBeenCalledWith(
+      propsWithIds.itemId,
+      testQuestion,
+      { threadId: 'test-thread-id', variationId: 'test-variation-id' },
+    );
     expect(result.current.data).toEqual(mockResponse);
   });
 
@@ -233,11 +230,11 @@ describe('Testing Hook: useAnswerResults', () => {
       result.current.getAnswer(testQuestion);
     });
 
-    expect(mockClient.agent.getAnswerResults).not.toHaveBeenCalled();
+    expect(mockClient.pia.getAnswerResults).not.toHaveBeenCalled();
   });
 
   it('applies formatImageUrl to transformed items when provided', async () => {
-    mockClient.agent.getAnswerResults.mockResolvedValue(mockResponseWithItemResults);
+    mockClient.pia.getAnswerResults.mockResolvedValue(mockResponseWithItemResults);
     const formatImageUrl = jest.fn((url) =>
       url.replace(/^https:\/\/[^/]+/, 'https://cdn.example.com'),
     );
@@ -268,7 +265,7 @@ describe('Testing Hook: useAnswerResults', () => {
   });
 
   it('does not modify image URLs when formatImageUrl is not provided', async () => {
-    mockClient.agent.getAnswerResults.mockResolvedValue(mockResponseWithItemResults);
+    mockClient.pia.getAnswerResults.mockResolvedValue(mockResponseWithItemResults);
 
     const { result } = renderHook(() => useAnswerResults(testProps));
 

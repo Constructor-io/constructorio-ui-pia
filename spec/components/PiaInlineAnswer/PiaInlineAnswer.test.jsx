@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import PiaInlineAnswer from '../../../src/components/PiaInlineAnswer/PiaInlineAnswer';
 import { DISCLAIMER_TEXT } from '../../../src/constants';
@@ -81,6 +81,32 @@ describe('PiaInlineAnswer Component', () => {
       render(<PiaInlineAnswer {...defaultProps} showFeedback />);
 
       expect(screen.getByText('Is this answer useful?')).toBeInTheDocument();
+    });
+
+    it('calls onFeedback prop when feedback button is clicked', () => {
+      const onFeedback = jest.fn();
+      render(<PiaInlineAnswer {...defaultProps} showFeedback onFeedback={onFeedback} />);
+
+      fireEvent.click(screen.getByLabelText('thumbs up'));
+
+      expect(onFeedback).toHaveBeenCalledWith('up');
+      expect(onFeedback).toHaveBeenCalledTimes(1);
+    });
+
+    it('falls back to callbacks.onFeedback when onFeedback prop is not provided', () => {
+      const callbackFeedback = jest.fn();
+      render(
+        <PiaInlineAnswer
+          {...defaultProps}
+          showFeedback
+          callbacks={{ onFeedback: callbackFeedback }}
+        />,
+      );
+
+      fireEvent.click(screen.getByLabelText('thumbs down'));
+
+      expect(callbackFeedback).toHaveBeenCalledWith('down');
+      expect(callbackFeedback).toHaveBeenCalledTimes(1);
     });
   });
 

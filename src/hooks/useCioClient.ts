@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
-import ConstructorIOClient from '@constructor-io/constructorio-client-javascript';
-import {
+import ConstructorIOClient, {
   ConstructorClientOptions,
   Nullable,
 } from '@constructor-io/constructorio-client-javascript';

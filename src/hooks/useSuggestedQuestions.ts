@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import ConstructorIOClient from '@constructor-io/constructorio-client-javascript';
-import { Question, QuestionResponse, SuggestedQuestionsParameters } from '../types';
+import { Question, SuggestedQuestionsParameters } from '../types';
 
 export interface UseSuggestedQuestionsProps {
   itemId: string;
@@ -32,7 +32,7 @@ const fetchSuggestedQuestions = async ({
   threadId,
   parameters,
 }: FetchSuggestedQuestionsParams) => {
-  const response: QuestionResponse = await client.pia.getSuggestedQuestions(itemId, {
+  const response = await client.pia.getSuggestedQuestions(itemId, {
     threadId,
     variationId,
     numResults: parameters?.numResults,

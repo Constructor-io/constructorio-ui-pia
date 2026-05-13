@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react';
-import ConstructorIOClient from '@constructor-io/constructorio-client-javascript';
-import { Nullable } from '@constructor-io/constructorio-client-javascript';
+import ConstructorIOClient, { Nullable } from '@constructor-io/constructorio-client-javascript';
 import { Formatters, Item, GetAnswerResultsResponse } from '../types';
 import { transformResultItem } from '../utils/transformers';
 

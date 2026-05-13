@@ -3,7 +3,7 @@ import Input from '../Input/Input';
 import { translate } from '../../utils/translate';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import { Translations, Question, CioPiaComponentOverrides } from '../../types';
-import { ContainerFocusProps } from '../../hooks/useConversation';
+import { ContainerClickProps } from '../../hooks/useConversation';
 
 const OVERFLOW_HIDDEN_CLASS = 'cio-pia-modal-open';
 
@@ -22,10 +22,12 @@ interface PiaModalProps {
   initialQuestions: Question[];
   handleSubmitQuestion: (question: string) => void;
   handleQuestionClick?: (question: string) => void;
-  containerFocusProps?: ContainerFocusProps;
+  containerClickProps?: ContainerClickProps;
+  containerRef?: React.RefObject<HTMLDivElement | null>;
   isLoading: boolean;
   componentOverrides?: CioPiaComponentOverrides;
   translations?: Translations;
+  onInputFocus?: () => void;
   onClose?: () => void;
 }
 
@@ -33,10 +35,12 @@ export default function PiaModal({
   initialQuestions,
   handleSubmitQuestion,
   handleQuestionClick,
-  containerFocusProps,
+  containerClickProps,
+  containerRef,
   isLoading,
   componentOverrides,
   translations,
+  onInputFocus,
   onClose,
   children,
 }: PropsWithChildren<PiaModalProps>) {
@@ -111,7 +115,11 @@ export default function PiaModal({
   );
 
   return (
-    <div className='cio-pia-container' data-testid='cio-pia-container' {...containerFocusProps}>
+    <div
+      ref={containerRef}
+      className='cio-pia-container'
+      data-testid='cio-pia-container'
+      {...containerClickProps}>
       <p className='cio-pia-title' data-testid='cio-pia-title'>
         {translate('Any questions about this product?', translations)}
       </p>
@@ -126,6 +134,7 @@ export default function PiaModal({
 
         <Input
           onSubmit={handleQuestion}
+          onFocus={onInputFocus}
           disabled={isLoading || isOpen}
           translations={translations}
         />

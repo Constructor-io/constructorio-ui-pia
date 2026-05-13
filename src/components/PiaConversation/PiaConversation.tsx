@@ -4,7 +4,7 @@ import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/Suggeste
 import SuggestedQuestionsSkeleton from '../SuggestedQuestionsContainer/SuggestedQuestionsSkeleton';
 import { translate } from '../../utils/translate';
 import { FeedbackType, Question } from '../../types';
-import { ContainerFocusProps } from '../../hooks/useConversation';
+import { ContainerClickProps } from '../../hooks/useConversation';
 import ConversationHistory, {
   ConversationHistoryProps,
 } from '../ConversationHistory/ConversationHistory';
@@ -13,8 +13,10 @@ export interface PiaConversationProps extends ConversationHistoryProps {
   displayedQuestions: Question[];
   handleSubmitQuestion: (question: string) => void;
   handleQuestionClick?: (question: string) => void;
-  containerFocusProps?: ContainerFocusProps;
+  containerClickProps?: ContainerClickProps;
+  containerRef?: React.RefObject<HTMLDivElement | null>;
   handleFeedback?: (type: FeedbackType) => void;
+  onInputFocus?: () => void;
 }
 
 export default function PiaConversation({
@@ -32,16 +34,19 @@ export default function PiaConversation({
   displayedQuestions,
   handleSubmitQuestion,
   handleQuestionClick,
-  containerFocusProps,
+  containerClickProps,
+  containerRef,
   handleFeedback,
+  onInputFocus,
 }: PiaConversationProps) {
   const hasHistory = conversationHistory.length > 0;
 
   return (
     <div
+      ref={containerRef}
       className='cio-pia-container cio-pia-conversation'
       data-testid='cio-pia-container'
-      {...containerFocusProps}>
+      {...containerClickProps}>
       {!hasHistory && (
         <p className='cio-pia-title' data-testid='cio-pia-title'>
           {translate('Any questions about this product?', translations)}
@@ -72,7 +77,12 @@ export default function PiaConversation({
             componentOverride={componentOverrides?.suggestedQuestions}
           />
         )}
-        <Input onSubmit={handleSubmitQuestion} disabled={isLoading} translations={translations} />
+        <Input
+          onSubmit={handleSubmitQuestion}
+          onFocus={onInputFocus}
+          disabled={isLoading}
+          translations={translations}
+        />
       </div>
     </div>
   );

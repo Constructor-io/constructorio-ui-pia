@@ -35,7 +35,8 @@ describe('Testing Hook: useCioClient', () => {
     expect(client.options.apiKey).toBe('xx');
     expect(client.options.version).toBe(`cio-ui-pia-${version}`);
     expect(client.search).not.toBeUndefined();
-    expect(client.agent).not.toBeUndefined();
+    expect(client.pia).not.toBeUndefined();
+    expect(client.tracker).not.toBeUndefined();
   });
 
   it('returns a client with options set', () => {
@@ -58,7 +59,7 @@ describe('Testing Hook: useCioClient', () => {
     });
 
     const client = result.current;
-    expect(client.options).toEqual({
+    expect(client.options).toMatchObject({
       apiKey: key,
       ...clientOptions,
     });

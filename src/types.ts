@@ -3,17 +3,21 @@ import {
   CarouselOverrides,
   ComponentOverrideProps,
 } from '@constructor-io/constructorio-ui-components';
-import ConstructorIOClient from '@constructor-io/constructorio-client-javascript';
-import {
+import ConstructorIOClient, {
   ConstructorClientOptions,
   Nullable,
+  PiaQuestion,
+  PiaSuggestedQuestionsParameters,
+  PiaAnswerResultsResponse,
+  PiaAnswerItemResults,
+  Item as CioItem,
 } from '@constructor-io/constructorio-client-javascript';
-import {
-  PiaQuestion as Question,
-  PiaSuggestedQuestionsResponse as QuestionResponse,
-  PiaAnswerResultsResponse as GetAnswerResultsResponse,
-  PiaSuggestedQuestionsParameters as SuggestedQuestionsParameters,
-} from '@constructor-io/constructorio-client-javascript/lib/types/pia';
+
+export type Question = PiaQuestion;
+export type SuggestedQuestionsParameters = Pick<PiaSuggestedQuestionsParameters, 'numResults'>;
+export type GetAnswerResultsResponse = PiaAnswerResultsResponse;
+export type AnswerItemResults = PiaAnswerItemResults;
+export type ApiItem = CioItem;
 
 export enum FeedbackType {
   UP = 'up',
@@ -152,5 +156,3 @@ export interface CioPiaComponentOverrides extends ComponentOverrideProps<CioPiaR
   disclaimer?: ComponentOverrideProps<DisclaimerRenderProps>;
   feedback?: ComponentOverrideProps<FeedbackRenderProps>;
 }
-
-export type { Question, QuestionResponse, GetAnswerResultsResponse, SuggestedQuestionsParameters };

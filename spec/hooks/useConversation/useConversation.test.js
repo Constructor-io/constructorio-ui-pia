@@ -1,5 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
 import useConversation from '../../../src/hooks/useConversation';
+import { FeedbackType } from '../../../src/types';
+import createMockTracking from '../../__mocks__/createMockTracking';
 
 describe('Testing Hook: useConversation', () => {
   const testQuestions = [
@@ -12,14 +14,7 @@ describe('Testing Hook: useConversation', () => {
 
   const mockAnswerValue = 'Sample answer to the given question';
 
-  const mockTracking = {
-    trackView: jest.fn(),
-    trackFocus: jest.fn(),
-    trackQuestionClick: jest.fn(),
-    trackQuestionSubmit: jest.fn(),
-    trackAnswerView: jest.fn(),
-    trackAnswerFeedback: jest.fn(),
-  };
+  const mockTracking = createMockTracking();
 
   function createMockPia(overrides = {}) {
     return {
@@ -83,6 +78,7 @@ describe('Testing Hook: useConversation', () => {
         itemId: 'test-item',
         isConversation: false,
         callbacks: { onQuestionSubmit },
+        tracking: mockTracking,
       }),
     );
 
@@ -97,7 +93,7 @@ describe('Testing Hook: useConversation', () => {
   it('does not throw when callbacks.onQuestionSubmit is not provided', () => {
     const pia = createMockPia();
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: false, callbacks: {} }),
+      useConversation({ pia, itemId: 'test-item', isConversation: false, callbacks: {}, tracking: mockTracking }),
     );
 
     expect(() => {
@@ -562,6 +558,142 @@ describe('Testing Hook: useConversation', () => {
       rerender({ pia, itemId: 'item-2', isConversation: false, tracking: mockTracking });
 
       expect(result.current.displayedQuestions).toEqual(newQuestions);
+    });
+  });
+
+  describe('tracking', () => {
+    it('fires trackQuestionSubmit when a question is submitted', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
+      );
+
+      act(() => {
+        result.current.handleSubmitQuestion('What is this?');
+      });
+
+      expect(mockTracking.trackQuestionSubmit).toHaveBeenCalledWith('What is this?');
+      expect(mockTracking.trackQuestionSubmit).toHaveBeenCalledTimes(1);
+    });
+
+    it('fires trackQuestionClick (not trackQuestionSubmit) on question click', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
+      );
+
+      act(() => {
+        result.current.handleQuestionClick('Suggested question');
+      });
+
+      expect(mockTracking.trackQuestionClick).toHaveBeenCalledWith('Suggested question');
+      expect(mockTracking.trackQuestionSubmit).not.toHaveBeenCalled();
+    });
+
+    it('fires trackAnswerView when answer data arrives', () => {
+      const getAnswer = jest.fn();
+      let pia = createMockPia({ answers: { getAnswer } });
+
+      const { result, rerender } = renderHook((props) => useConversation(props), {
+        initialProps: { pia, itemId: 'test-item', isConversation: false, tracking: mockTracking },
+      });
+
+      act(() => {
+        result.current.handleSubmitQuestion('What is this?');
+      });
+
+      const answerData = { value: 'The answer', qna_result_id: 'qna-123' };
+      pia = createMockPia({ answers: { getAnswer, data: answerData } });
+      rerender({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking });
+
+      expect(mockTracking.trackAnswerView).toHaveBeenCalledWith('What is this?', answerData);
+    });
+
+    it('does not fire trackAnswerView when no question was submitted', () => {
+      const pia = createMockPia({
+        answers: { data: { value: 'Some answer', qna_result_id: 'qna-1' } },
+      });
+
+      renderHook(() =>
+        useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
+      );
+
+      expect(mockTracking.trackAnswerView).not.toHaveBeenCalled();
+    });
+
+    it('fires trackAnswerFeedback via handleFeedback', () => {
+      const pia = createMockPia({
+        answers: { data: { value: 'Answer', qna_result_id: 'qna-456' } },
+      });
+
+      const { result } = renderHook(() =>
+        useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
+      );
+
+      act(() => {
+        result.current.handleFeedback(FeedbackType.UP);
+      });
+
+      expect(mockTracking.trackAnswerFeedback).toHaveBeenCalledWith(FeedbackType.UP, 'qna-456');
+    });
+
+    it('fires trackFocus on first input focus', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
+      );
+
+      act(() => {
+        result.current.inputFocusProps.onFocus();
+      });
+
+      expect(mockTracking.trackFocus).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not fire trackFocus on subsequent input focuses without clicking outside', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
+      );
+
+      act(() => {
+        result.current.inputFocusProps.onFocus();
+      });
+      act(() => {
+        result.current.inputFocusProps.onFocus();
+      });
+
+      expect(mockTracking.trackFocus).toHaveBeenCalledTimes(1);
+    });
+
+    it('fires trackFocus again after clicking outside and then focusing input again', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
+      );
+
+      // First input focus — fires trackFocus
+      act(() => {
+        result.current.containerClickProps.onClick();
+        result.current.inputFocusProps.onFocus();
+      });
+      expect(mockTracking.trackFocus).toHaveBeenCalledTimes(1);
+
+      // Document click propagates — sees clickedInsideRef = true, clears it (no focus reset)
+      act(() => {
+        document.dispatchEvent(new Event('click', { bubbles: true }));
+      });
+
+      // Another document click WITHOUT container click — resets focusedRef
+      act(() => {
+        document.dispatchEvent(new Event('click', { bubbles: true }));
+      });
+
+      // Focus input again — should fire trackFocus a second time
+      act(() => {
+        result.current.inputFocusProps.onFocus();
+      });
+      expect(mockTracking.trackFocus).toHaveBeenCalledTimes(2);
     });
   });
 });
