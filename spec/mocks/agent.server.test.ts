@@ -49,7 +49,7 @@ describe('Testing Mocks: Agent', () => {
       });
 
       await expect(
-        clientWithoutUrl.agent.getSuggestedQuestions({ itemId: undefined }),
+        clientWithoutUrl.agent.getSuggestedQuestions({ itemId: undefined as any }),
       ).rejects.toThrow('Item ID is required');
     });
   });
@@ -109,7 +109,7 @@ describe('Testing Mocks: Agent', () => {
 
       await expect(
         clientWithoutUrl.agent.getAnswerResults({
-          itemId: undefined,
+          itemId: undefined as any,
           question: DEMO_QUESTION,
         }),
       ).rejects.toThrow('Item ID is required');
@@ -125,7 +125,7 @@ describe('Testing Mocks: Agent', () => {
       await expect(
         clientWithoutUrl.agent.getAnswerResults({
           itemId: DEMO_ITEM_ID,
-          question: undefined,
+          question: undefined as any,
         }),
       ).rejects.toThrow('Question is required');
     });

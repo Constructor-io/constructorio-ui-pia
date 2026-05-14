@@ -22,7 +22,7 @@ jest.mock('@constructor-io/constructorio-ui-components', () => ({
 
 const mockItems = [
   { id: '1', name: 'Product 1', description: '<b>Bold</b> description' },
-  { id: '2', name: 'Product 2', description: null },
+  { id: '2', name: 'Product 2', description: undefined },
   { id: '3', name: 'Product 3', description: 'Plain text' },
 ];
 
@@ -33,10 +33,10 @@ describe('PiaCustomCarousel', () => {
       const item1 = getByTestId('carousel-item-1');
       const description = item1.querySelector('.cio-product-card-description');
       expect(description).toBeInTheDocument();
-      expect(description.innerHTML).toBe('<b>Bold</b> description');
+      expect(description!.innerHTML).toBe('<b>Bold</b> description');
     });
 
-    it('does not render description when product description is null', () => {
+    it('does not render description when product description is undefined', () => {
       const { getByTestId } = render(<PiaCustomCarousel items={mockItems} />);
       const item2 = getByTestId('carousel-item-2');
       expect(item2.querySelector('.cio-product-card-description')).not.toBeInTheDocument();
@@ -50,7 +50,7 @@ describe('PiaCustomCarousel', () => {
       const description = getByTestId('carousel-item-1').querySelector(
         '.cio-product-card-description',
       );
-      expect(description.innerHTML).toBe('<p>Safe</p>');
+      expect(description!.innerHTML).toBe('<p>Safe</p>');
     });
 
     it('preserves user-provided description override', () => {
@@ -96,7 +96,7 @@ describe('PiaCustomCarousel', () => {
         <PiaCustomCarousel items={mockItems} componentOverrides={overrides} />,
       );
 
-      const parsed = JSON.parse(getByTestId('mock-carousel').getAttribute('data-overrides'));
+      const parsed = JSON.parse(getByTestId('mock-carousel').getAttribute('data-overrides')!);
       expect(parsed.item.productCard.content.title).toBeDefined();
       expect(parsed.item.productCard.content.description).toBeDefined();
     });

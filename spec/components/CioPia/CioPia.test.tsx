@@ -6,6 +6,8 @@ import CioPia, { CioPiaProps } from '../../../src/components/CioPia/CioPia';
 import useCioPia from '../../../src/hooks/useCioPia';
 import { DEMO_QUESTION } from '../../../src/constants';
 import { createMockCioClient } from '../../helpers/mockCioClient';
+import { GetAnswerResultsResponse } from '../../../src/hooks/mocks/types';
+import { Item } from '../../../src/types';
 
 jest.mock('../../../src/hooks/useCioPia', () => jest.fn());
 
@@ -50,7 +52,8 @@ const mockSuggestedQuestions = [
   { value: 'Suggested question 3?' },
 ];
 
-const mockAnswerData = {
+const mockAnswerData: GetAnswerResultsResponse = {
+  qna_result_id: 'test-id',
   value: 'This is a test answer',
   follow_up_questions: [{ value: 'Follow-up question 1' }, { value: 'Follow-up question 2' }],
 };
@@ -118,6 +121,14 @@ function mockUseCioPia({
   answerIsLoading = false,
   questionsError = null,
   answerError = null,
+}: {
+  questionsData?: { value: string }[];
+  answerData?: GetAnswerResultsResponse | null;
+  items?: Item[] | null;
+  questionIsLoading?: boolean;
+  answerIsLoading?: boolean;
+  questionsError?: Error | null;
+  answerError?: Error | null;
 } = {}) {
   mockUseCioPiaHook.mockImplementation(() => ({
     suggestedQuestions: {
@@ -226,7 +237,7 @@ describe('CioPia Component', () => {
 
       const { getByText } = render(<CioPia {...mockProps} />);
 
-      mockAnswerData.follow_up_questions.forEach((question) => {
+      mockAnswerData.follow_up_questions!.forEach((question) => {
         expect(getByText(question.value)).toBeInTheDocument();
       });
     });
@@ -271,7 +282,7 @@ describe('CioPia Component', () => {
 
       rerender(<CioPia {...mockProps} />);
 
-      mockAnswerData.follow_up_questions.forEach((question) => {
+      mockAnswerData.follow_up_questions!.forEach((question) => {
         expect(screen.getByText(question.value)).toBeInTheDocument();
       });
     });
@@ -997,7 +1008,7 @@ describe('CioPia Component', () => {
       const { rerender } = render(<CioPia {...mockProps} itemId='item-1' />);
 
       // Follow-up questions should be displayed
-      mockAnswerData.follow_up_questions.forEach((question) => {
+      mockAnswerData.follow_up_questions!.forEach((question) => {
         expect(screen.getByText(question.value)).toBeInTheDocument();
       });
 
@@ -1005,7 +1016,7 @@ describe('CioPia Component', () => {
       rerender(<CioPia {...mockProps} itemId='item-2' />);
 
       // Follow-up questions from the previous item should be gone
-      mockAnswerData.follow_up_questions.forEach((question) => {
+      mockAnswerData.follow_up_questions!.forEach((question) => {
         expect(screen.queryByText(question.value)).not.toBeInTheDocument();
       });
     });
@@ -1092,7 +1103,7 @@ describe('CioPia Component', () => {
       const { container } = render(<CioPia {...mockProps} />);
 
       const answerContainer = container.querySelector('.cio-pia-answer-container');
-      const children = Array.from(answerContainer.children);
+      const children = Array.from(answerContainer!.children);
       const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
       const answerIndex = children.findIndex((el) => el.matches('.cio-pia-answer'));
       expect(disclaimerIndex).toBeGreaterThan(answerIndex);
@@ -1106,7 +1117,7 @@ describe('CioPia Component', () => {
       );
 
       const answerContainer = container.querySelector('.cio-pia-answer-container');
-      const children = Array.from(answerContainer.children);
+      const children = Array.from(answerContainer!.children);
       const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
       const answerIndex = children.findIndex((el) => el.matches('.cio-pia-answer'));
       expect(disclaimerIndex).toBeLessThan(answerIndex);

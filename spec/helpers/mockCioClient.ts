@@ -1,23 +1,23 @@
 import MockConstructorIOClient from '../../src/hooks/mocks/MockConstructorIOClient';
+import MockAgent from '../../src/hooks/mocks/agent';
 
-interface MockAgentMethods {
-  getSuggestedQuestions: jest.Mock;
-  getAnswerResults: jest.Mock;
-}
+type MockedAgent = {
+  [K in keyof MockAgent]: MockAgent[K] extends (...args: infer A) => infer R
+    ? jest.MockedFunction<(...args: A) => R>
+    : MockAgent[K];
+};
 
-type TestMockClient = MockConstructorIOClient & { agent: MockAgentMethods };
+export type TestMockClient = Omit<MockConstructorIOClient, 'agent'> & { agent: MockedAgent };
 
-export function createMockCioClient(): TestMockClient {
-  return {
-    options: {},
-    search: {},
-    browse: {},
-    recommendations: {},
-    tracker: {},
-    quizzes: {},
-    agent: {
-      getSuggestedQuestions: jest.fn(),
-      getAnswerResults: jest.fn(),
-    },
-  } as unknown as TestMockClient;
+const TEST_API_KEY = 'test-api-key';
+
+export function createMockCioClient(apiKey = TEST_API_KEY): TestMockClient {
+  const client = new MockConstructorIOClient({
+    apiKey,
+    sendTrackingEvents: false,
+    fetch: jest.fn(),
+  });
+  jest.spyOn(client.agent, 'getSuggestedQuestions').mockResolvedValue({ questions: [] });
+  jest.spyOn(client.agent, 'getAnswerResults').mockResolvedValue({ qna_result_id: '', value: '' });
+  return client as unknown as TestMockClient;
 }

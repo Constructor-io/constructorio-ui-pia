@@ -66,7 +66,7 @@ describe('Testing Hook: useAnswerResults', () => {
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toEqual(mockResponse);
     expect(result.current.error).toBe(null);
-    expect(result.current.data.item_results).toBeUndefined();
+    expect(result.current.data!.item_results).toBeUndefined();
   });
 
   it('fetches and transforms answer results with item_results when available', async () => {
@@ -115,7 +115,7 @@ describe('Testing Hook: useAnswerResults', () => {
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toBe(null);
     expect(result.current.error).toBeInstanceOf(Error);
-    expect(result.current.error.message).toBe(errorMessage);
+    expect(result.current.error!.message).toBe(errorMessage);
   });
 
   it('refetch data when getAnswer is called again', async () => {
@@ -224,7 +224,7 @@ describe('Testing Hook: useAnswerResults', () => {
   });
 
   it('does not fetch if cioClient is not provided', () => {
-    const { result } = renderHook(() => useAnswerResults({ ...testProps, cioClient: undefined }));
+    const { result } = renderHook(() => useAnswerResults({ ...testProps, cioClient: undefined as any }));
 
     act(() => {
       result.current.getAnswer(testQuestion);
@@ -257,7 +257,7 @@ describe('Testing Hook: useAnswerResults', () => {
     expect(formatImageUrl).toHaveBeenCalledTimes(
       mockResponseWithItemResults.item_results.response.results.length,
     );
-    result.current.items.forEach((item, index) => {
+    result.current.items!.forEach((item, index) => {
       const originalUrl = testTransformedItems[index].imageUrl;
       const expectedUrl = originalUrl.replace(/^https:\/\/[^/]+/, 'https://cdn.example.com');
       expect(item.imageUrl).toBe(expectedUrl);

@@ -25,7 +25,7 @@ describe('SuggestedQuestion Component', () => {
 
   it('calls onClick when clicked', () => {
     const { queryByRole } = render(<SuggestedQuestion {...defaultProps} />);
-    fireEvent.click(queryByRole('button'));
+    fireEvent.click(queryByRole('button')!);
     expect(defaultProps.onClick).toHaveBeenCalledTimes(1);
   });
 });

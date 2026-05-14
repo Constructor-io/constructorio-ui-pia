@@ -1,5 +1,14 @@
 import { renderHook, act } from '@testing-library/react';
 import useConversation from '../../../src/hooks/useConversation';
+import { UseCioPiaReturn } from '../../../src/hooks/useCioPia';
+import { GetAnswerResultsResponse } from '../../../src/hooks/mocks/types';
+
+interface MockPiaOverrides {
+  suggestedQuestions?: Partial<UseCioPiaReturn['suggestedQuestions']>;
+  answers?: Partial<Omit<UseCioPiaReturn['answers'], 'data'>> & {
+    data?: Partial<GetAnswerResultsResponse> | null;
+  };
+}
 
 describe('Testing Hook: useConversation', () => {
   const testQuestions = [
@@ -12,7 +21,8 @@ describe('Testing Hook: useConversation', () => {
 
   const mockAnswerValue = 'Sample answer to the given question';
 
-  function createMockPia(overrides: any = {}) {
+  function createMockPia(overrides: MockPiaOverrides = {}): UseCioPiaReturn {
+    const { data: answerData, ...restAnswers } = overrides.answers || {};
     return {
       suggestedQuestions: {
         data: [],
@@ -22,12 +32,12 @@ describe('Testing Hook: useConversation', () => {
         ...overrides.suggestedQuestions,
       },
       answers: {
-        data: null,
+        data: answerData ? { qna_result_id: 'test-id', value: '', ...answerData } : null,
         items: null,
         isLoading: false,
         error: null,
         getAnswer: jest.fn(),
-        ...overrides.answers,
+        ...restAnswers,
       },
     };
   }
@@ -216,7 +226,7 @@ describe('Testing Hook: useConversation', () => {
   });
 
   it('derives currentItems from answers.items', () => {
-    const mockItems = [{ itemName: 'Product 1' }];
+    const mockItems = [{ id: '1', name: 'Product 1' }];
     const pia = createMockPia({
       answers: { items: mockItems },
     });

@@ -30,7 +30,7 @@ describe('Testing Hook: useCioClient', () => {
       },
     });
 
-    const client = result.current;
+    const client = result.current!;
     expect(client).not.toBeUndefined();
     expect(client.options).not.toBeUndefined();
     expect(client.options.apiKey).toBe('xx');
@@ -58,7 +58,7 @@ describe('Testing Hook: useCioClient', () => {
       initialProps: { apiKey: key, options: clientOptions },
     });
 
-    const client = result.current;
+    const client = result.current!;
     expect(client.options).toEqual({
       apiKey: key,
       ...clientOptions,

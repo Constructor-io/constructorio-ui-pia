@@ -76,7 +76,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toEqual([]);
     expect(result.current.error).toBeInstanceOf(Error);
-    expect(result.current.error.message).toBe('Mock error');
+    expect(result.current.error!.message).toBe('Mock error');
     expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledWith({
       itemId: testItemId,
       variationId: undefined,
@@ -315,7 +315,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     rerender({
       itemId: testItemId,
       cioClient: mockClient,
-      parameters: undefined,
+      parameters: undefined as any,
     });
     expect(result.current.isLoading).toBe(true);
 
