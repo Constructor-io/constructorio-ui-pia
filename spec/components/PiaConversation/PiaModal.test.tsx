@@ -41,7 +41,7 @@ describe('PiaModal Component', () => {
 
       expect(container.querySelector(BASE_INPUT)).toBeInTheDocument();
 
-      const baseQuestions = container.querySelector(BASE_QUESTIONS);
+      const baseQuestions = container.querySelector(BASE_QUESTIONS) as HTMLElement;
       mockSuggestedQuestions.forEach((question) => {
         expect(within(baseQuestions).getByText(question.value)).toBeInTheDocument();
       });
@@ -84,7 +84,7 @@ describe('PiaModal Component', () => {
     it('opens modal when suggested question is clicked', () => {
       const { container } = render(<PiaModal {...defaultProps} />);
 
-      const baseQuestions = container.querySelector(BASE_QUESTIONS);
+      const baseQuestions = container.querySelector(BASE_QUESTIONS) as HTMLElement;
       const firstQuestion = within(baseQuestions).getByText(mockSuggestedQuestions[0].value);
       fireEvent.click(firstQuestion);
 

@@ -2,12 +2,14 @@ import React from 'react';
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { CIO_EVENTS } from '@constructor-io/constructorio-ui-components';
-import CioPia from '../../../src/components/CioPia/CioPia';
+import CioPia, { CioPiaProps } from '../../../src/components/CioPia/CioPia';
 import useCioPia from '../../../src/hooks/useCioPia';
 import { DEMO_QUESTION } from '../../../src/constants';
+import { createMockCioClient } from '../../helpers/mockCioClient';
 
-// Mock the useCioPia hook
 jest.mock('../../../src/hooks/useCioPia', () => jest.fn());
+
+const mockUseCioPiaHook = useCioPia as jest.MockedFunction<typeof useCioPia>;
 
 const CAROUSEL_SELECTOR = '[data-carousel]';
 
@@ -34,10 +36,10 @@ function dispatchEventOnCarouselWrapper(container, product) {
   return true;
 }
 
-const mockProps = {
+const mockProps: CioPiaProps = {
   apiKey: 'test-api-key',
   itemId: 'test-item-id',
-  cioClient: { someClientMethod: jest.fn() },
+  cioClient: createMockCioClient(),
 };
 
 const testQuestion = DEMO_QUESTION;
@@ -117,7 +119,7 @@ function mockUseCioPia({
   questionsError = null,
   answerError = null,
 } = {}) {
-  useCioPia.mockImplementation(() => ({
+  mockUseCioPiaHook.mockImplementation(() => ({
     suggestedQuestions: {
       data: questionsData,
       isLoading: questionIsLoading,
@@ -230,7 +232,7 @@ describe('CioPia Component', () => {
     });
 
     it('displays loading state when loading', () => {
-      useCioPia.mockReturnValue(mockLoadingResponse);
+      mockUseCioPiaHook.mockReturnValue(mockLoadingResponse);
 
       const { getByTestId } = render(<CioPia {...mockProps} />);
 
@@ -238,7 +240,7 @@ describe('CioPia Component', () => {
     });
 
     it('displays error message when there is an error', () => {
-      useCioPia.mockReturnValue(mockErrorResponse);
+      mockUseCioPiaHook.mockReturnValue(mockErrorResponse);
 
       const { getByTestId } = render(<CioPia {...mockProps} />);
 
@@ -526,7 +528,7 @@ describe('CioPia Component', () => {
     });
 
     it('handles events when no items have url property', () => {
-      const itemsWithoutUrl = [
+      const itemsWithoutUrl: any[] = [
         {
           id: 'item-1',
           name: 'Product 1',
@@ -722,7 +724,7 @@ describe('CioPia Component', () => {
     });
 
     it('passes isLoading state to render props function', () => {
-      useCioPia.mockReturnValue(mockLoadingResponse);
+      mockUseCioPiaHook.mockReturnValue(mockLoadingResponse);
 
       render(
         <CioPia {...mockProps}>
@@ -738,7 +740,7 @@ describe('CioPia Component', () => {
     });
 
     it('passes error state to render props function', () => {
-      useCioPia.mockReturnValue(mockErrorResponse);
+      mockUseCioPiaHook.mockReturnValue(mockErrorResponse);
 
       render(
         <CioPia {...mockProps}>
@@ -931,7 +933,7 @@ describe('CioPia Component', () => {
         <CioPia {...mockProps} displayConfigs={{ mode: 'conversation' }} />,
       );
 
-      const footer = container.querySelector('.cio-pia-conversation-footer');
+      const footer = container.querySelector('.cio-pia-conversation-footer') as HTMLElement;
       expect(footer).toBeInTheDocument();
       expect(within(footer).getByRole('textbox')).toBeInTheDocument();
       mockSuggestedQuestions.forEach((question) => {

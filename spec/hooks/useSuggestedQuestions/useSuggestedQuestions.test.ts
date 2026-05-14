@@ -1,5 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
 import useSuggestedQuestions from '../../../src/hooks/useSuggestedQuestions';
+import { createMockCioClient } from '../../helpers/mockCioClient';
 
 const testItemId = 'test-item-id';
 const newTestItemId = 'new-test-item-id';
@@ -15,11 +16,7 @@ const newTestQuestions = [
 ];
 
 describe('Testing Hook: useSuggestedQuestions', () => {
-  const mockClient = {
-    agent: {
-      getSuggestedQuestions: jest.fn(),
-    },
-  };
+  const mockClient = createMockCioClient();
 
   beforeEach(() => {
     jest.clearAllMocks();

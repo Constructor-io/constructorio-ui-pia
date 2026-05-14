@@ -113,9 +113,18 @@ export default tseslint.config(
     },
   },
   {
-    files: ['spec/**/*.jsx'],
+    files: ['spec/**/*.{js,jsx,ts,tsx}'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        ...globals.jest,
+      },
+    },
     rules: {
       'react/prop-types': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
     },
   },
   ...storybook.configs['flat/recommended'],

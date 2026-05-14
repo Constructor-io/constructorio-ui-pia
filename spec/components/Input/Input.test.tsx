@@ -42,7 +42,7 @@ describe('Input Component', () => {
 
   it('handles text input', () => {
     const { queryByRole } = render(<Input onSubmit={mockSubmit} />);
-    const input = queryByRole('textbox');
+    const input = queryByRole('textbox') as HTMLInputElement;
     fireEvent.change(input, { target: { value: 'test input' } });
     expect(input.value).toBe('test input');
   });

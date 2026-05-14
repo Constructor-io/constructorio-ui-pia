@@ -1,17 +1,18 @@
 import { renderHook } from '@testing-library/react';
 import useCioClient from '../../../src/hooks/useCioClient';
 import version from '../../../src/version';
+import { createMockCioClient } from '../../helpers/mockCioClient';
 
 describe('Testing Hook: useCioClient', () => {
   it('throws error if Api Key not provided', () => {
     const spy = jest.spyOn(console, 'error');
     spy.mockImplementation(() => {});
-    expect(() => renderHook(() => useCioClient())).toThrow();
+    expect(() => renderHook(() => useCioClient({}))).toThrow();
     spy.mockRestore();
   });
 
   it('returns client when custom client is provided', () => {
-    const mockClient = { tracker: () => {} };
+    const mockClient = createMockCioClient();
     const { result } = renderHook(({ cioClient }) => useCioClient({ cioClient }), {
       initialProps: { cioClient: mockClient },
     });

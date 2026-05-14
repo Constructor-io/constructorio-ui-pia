@@ -2,13 +2,10 @@ import { renderHook, act } from '@testing-library/react';
 import useAnswerResults from '../../../src/hooks/useAnswerResults';
 import { DEMO_QUESTION } from '../../../src/constants';
 import { testGetAnswersApiResponse, testTransformedItems } from '../../localExamples';
+import { createMockCioClient } from '../../helpers/mockCioClient';
 
 describe('Testing Hook: useAnswerResults', () => {
-  const mockClient = {
-    agent: {
-      getAnswerResults: jest.fn(),
-    },
-  };
+  const mockClient = createMockCioClient();
 
   // Use mock response without item_results by default
   const mockResponse = {

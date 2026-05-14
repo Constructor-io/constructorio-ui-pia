@@ -12,7 +12,7 @@ describe('Testing Hook: useConversation', () => {
 
   const mockAnswerValue = 'Sample answer to the given question';
 
-  function createMockPia(overrides = {}) {
+  function createMockPia(overrides: any = {}) {
     return {
       suggestedQuestions: {
         data: [],
