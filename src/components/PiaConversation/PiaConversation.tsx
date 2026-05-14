@@ -18,6 +18,7 @@ export default function PiaConversation({
   isLoading,
   error,
   currentItems,
+  currentResponse,
   showFeedback,
   showPreviousItems,
   learnMoreUrl,
@@ -43,6 +44,7 @@ export default function PiaConversation({
         isLoading={isLoading}
         error={error}
         currentItems={currentItems}
+        currentResponse={currentResponse}
         showFeedback={showFeedback}
         showPreviousItems={showPreviousItems}
         learnMoreUrl={learnMoreUrl}

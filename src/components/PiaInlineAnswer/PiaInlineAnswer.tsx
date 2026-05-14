@@ -7,12 +7,15 @@ import {
   Callbacks,
   CioPiaComponentOverrides,
   DisclaimerPosition,
+  GetAnswerResultsResponse,
   Translations,
   Item,
 } from '../../types';
 
 interface PiaInlineAnswerProps {
   currentAnswer: string;
+  currentQuestion: string;
+  currentResponse: GetAnswerResultsResponse;
   currentItems: Item[] | null;
   showFeedback?: boolean;
   learnMoreUrl?: string;
@@ -24,6 +27,8 @@ interface PiaInlineAnswerProps {
 
 export default function PiaInlineAnswer({
   currentAnswer,
+  currentQuestion,
+  currentResponse,
   currentItems,
   showFeedback,
   learnMoreUrl,
@@ -54,7 +59,7 @@ export default function PiaInlineAnswer({
       {showFeedback && (
         <Feedback
           translations={translations}
-          onFeedback={callbacks?.onFeedback}
+          onFeedback={(type) => callbacks?.onFeedback?.(type, currentQuestion, currentResponse)}
           componentOverride={componentOverrides?.feedback}
         />
       )}

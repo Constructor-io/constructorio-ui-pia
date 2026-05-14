@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Callbacks, ConversationEntry, Question, Item } from '../types';
+import { Callbacks, ConversationEntry, GetAnswerResultsResponse, Question, Item } from '../types';
 import { UseCioPiaReturn } from './useCioPia';
 
 export interface UseConversationProps {
@@ -14,6 +14,7 @@ export interface UseConversationReturn {
   displayedQuestions: Question[];
   conversationHistory: ConversationEntry[];
   currentAnswer: string;
+  currentResponse: GetAnswerResultsResponse | null;
   currentItems: Item[] | null;
   isLoading: boolean;
   error: Error | null;
@@ -86,12 +87,14 @@ export default function useConversation({
         ...updated[updated.length - 1],
         answer: answerValue,
         items: answers.items,
+        response: answers.data,
       };
       return updated;
     });
   }, [isConversation, answers.data, answers.items]);
 
   const currentAnswer = answers.data?.value ?? '';
+  const currentResponse = answers.data ?? null;
   const currentItems = answers.items ?? null;
   const error = answers.error || suggestedQuestions.error;
   const isLoading = answers.isLoading || suggestedQuestions.isLoading;
@@ -101,6 +104,7 @@ export default function useConversation({
     displayedQuestions,
     conversationHistory,
     currentAnswer,
+    currentResponse,
     currentItems,
     isLoading,
     error,

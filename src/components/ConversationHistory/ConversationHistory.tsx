@@ -7,6 +7,7 @@ import LoadingSkeleton from '../LoadingSkeleton/LoadingSkeleton';
 import PiaCustomCarousel from '../CioPia/PiaCustomCarousel';
 import {
   ConversationEntry,
+  GetAnswerResultsResponse,
   Translations,
   Item,
   Callbacks,
@@ -25,6 +26,7 @@ export interface ConversationHistoryProps {
    * - `Item[]`: shows these items, overriding entry.items
    */
   currentItems?: Item[] | null;
+  currentResponse?: GetAnswerResultsResponse | null;
   showFeedback?: boolean;
   /**
    * Show product carousels on non-last conversation entries. Defaults to true.
@@ -43,6 +45,7 @@ export default function ConversationHistory({
   isLoading,
   error,
   currentItems,
+  currentResponse,
   showFeedback,
   showPreviousItems = true,
   learnMoreUrl,
@@ -85,6 +88,7 @@ export default function ConversationHistory({
           const previousEntryItems = showPreviousItems ? entry.items : null;
           const latestEntryItems = currentItems !== undefined ? currentItems : entry.items;
           const carouselItems = isLast ? latestEntryItems : previousEntryItems;
+          const feedbackResponse = isLast ? currentResponse || entry.response : entry.response;
 
           return (
             <div key={entry.id} className='cio-pia-conversation-entry'>
@@ -110,10 +114,12 @@ export default function ConversationHistory({
                       callbacks={callbacks}
                     />
                   )}
-                  {isLast && showFeedback && (
+                  {isLast && showFeedback && feedbackResponse && (
                     <Feedback
                       translations={translations}
-                      onFeedback={callbacks?.onFeedback}
+                      onFeedback={(type) =>
+                        callbacks?.onFeedback?.(type, entry.question, feedbackResponse)
+                      }
                       componentOverride={componentOverrides?.feedback}
                     />
                   )}

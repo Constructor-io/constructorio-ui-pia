@@ -98,13 +98,14 @@ describe('ConversationHistory Component', () => {
   });
 
   it('shows feedback on the last entry only when showFeedback is true', () => {
+    const mockResponse = { qna_result_id: 'id-2', value: 'Last answer' };
     const conversationHistory = [
-      { id: 1, question: 'First question', answer: 'First answer' },
-      { id: 2, question: 'Last question', answer: 'Last answer' },
+      { id: 1, question: 'First question', answer: 'First answer', response: { qna_result_id: 'id-1', value: 'First answer' } },
+      { id: 2, question: 'Last question', answer: 'Last answer', response: mockResponse },
     ];
 
     render(
-      <ConversationHistory {...baseProps} conversationHistory={conversationHistory} showFeedback />,
+      <ConversationHistory {...baseProps} conversationHistory={conversationHistory} currentResponse={mockResponse} showFeedback />,
     );
 
     // Feedback should only appear once (on the last entry)
@@ -113,14 +114,15 @@ describe('ConversationHistory Component', () => {
   });
 
   it('does not show feedback on non-last entries that have answers', () => {
+    const mockResponse = { qna_result_id: 'id-3', value: 'Last answer' };
     const conversationHistory = [
-      { id: 1, question: 'First question', answer: 'First answer' },
-      { id: 2, question: 'Second question', answer: 'Second answer' },
-      { id: 3, question: 'Last question', answer: 'Last answer' },
+      { id: 1, question: 'First question', answer: 'First answer', response: { qna_result_id: 'id-1', value: 'First answer' } },
+      { id: 2, question: 'Second question', answer: 'Second answer', response: { qna_result_id: 'id-2', value: 'Second answer' } },
+      { id: 3, question: 'Last question', answer: 'Last answer', response: mockResponse },
     ];
 
     render(
-      <ConversationHistory {...baseProps} conversationHistory={conversationHistory} showFeedback />,
+      <ConversationHistory {...baseProps} conversationHistory={conversationHistory} currentResponse={mockResponse} showFeedback />,
     );
 
     // Only the last entry should have feedback

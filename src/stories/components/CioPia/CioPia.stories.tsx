@@ -36,7 +36,7 @@ const meta = {
         '',
         '`onProductCardClick: (item: Item) => void` — Called when a product card in the carousel is clicked.',
         '',
-        '`onFeedback: (type: FeedbackType) => void` — Called when the user submits positive or negative feedback on an answer.',
+        '`onFeedback: (type: FeedbackType, question: string, response: GetAnswerResultsResponse) => void` — Called when the user submits positive or negative feedback on an answer.',
       ].join('\n'),
       table: { type: { summary: 'Callbacks' } },
     },

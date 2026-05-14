@@ -94,6 +94,7 @@ export default function CioPia(props: CioPiaProps) {
     displayedQuestions,
     conversationHistory,
     currentAnswer,
+    currentResponse,
     currentItems,
     isLoading,
     error,
@@ -117,6 +118,7 @@ export default function CioPia(props: CioPiaProps) {
     isLoading,
     error,
     currentItems,
+    currentResponse,
     showFeedback,
     showPreviousItems,
     learnMoreUrl,
@@ -166,6 +168,8 @@ export default function CioPia(props: CioPiaProps) {
             {currentAnswer && (
               <PiaInlineAnswer
                 currentAnswer={currentAnswer}
+                currentQuestion={currentQuestion}
+                currentResponse={currentResponse!}
                 currentItems={currentItems}
                 showFeedback={showFeedback}
                 learnMoreUrl={learnMoreUrl}
