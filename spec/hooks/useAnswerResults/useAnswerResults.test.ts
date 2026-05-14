@@ -224,7 +224,8 @@ describe('Testing Hook: useAnswerResults', () => {
   });
 
   it('does not fetch if cioClient is not provided', () => {
-    const { result } = renderHook(() => useAnswerResults({ ...testProps, cioClient: undefined as any }));
+    // @ts-expect-error testing behavior when cioClient is not provided
+    const { result } = renderHook(() => useAnswerResults({ ...testProps, cioClient: undefined }));
 
     act(() => {
       result.current.getAnswer(testQuestion);

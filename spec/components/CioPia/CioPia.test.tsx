@@ -157,7 +157,7 @@ function mockUseCioPiaWithAnswerData() {
 /**
  * Helper: Questions, answer data, and items available
  */
-function mockUseCioPiaWithItems(items = mockItems) {
+function mockUseCioPiaWithItems(items: Item[] = mockItems) {
   mockUseCioPia({ answerData: mockAnswerData, items });
 }
 
@@ -539,7 +539,7 @@ describe('CioPia Component', () => {
     });
 
     it('handles events when no items have url property', () => {
-      const itemsWithoutUrl: any[] = [
+      const itemsWithoutUrl: Item[] = [
         {
           id: 'item-1',
           name: 'Product 1',

@@ -49,7 +49,8 @@ describe('Testing Mocks: Agent', () => {
       });
 
       await expect(
-        clientWithoutUrl.agent.getSuggestedQuestions({ itemId: undefined as any }),
+        // @ts-expect-error testing missing required field
+        clientWithoutUrl.agent.getSuggestedQuestions({ itemId: undefined }),
       ).rejects.toThrow('Item ID is required');
     });
   });
@@ -109,7 +110,8 @@ describe('Testing Mocks: Agent', () => {
 
       await expect(
         clientWithoutUrl.agent.getAnswerResults({
-          itemId: undefined as any,
+          // @ts-expect-error testing missing required field
+          itemId: undefined,
           question: DEMO_QUESTION,
         }),
       ).rejects.toThrow('Item ID is required');
@@ -125,7 +127,8 @@ describe('Testing Mocks: Agent', () => {
       await expect(
         clientWithoutUrl.agent.getAnswerResults({
           itemId: DEMO_ITEM_ID,
-          question: undefined as any,
+          // @ts-expect-error testing missing required field
+          question: undefined,
         }),
       ).rejects.toThrow('Question is required');
     });

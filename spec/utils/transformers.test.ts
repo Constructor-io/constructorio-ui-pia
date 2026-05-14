@@ -57,7 +57,7 @@ describe('Testing Transformers: transformResultItem', () => {
       value: undefined,
     };
 
-    expect(transformResultItem(item as any)).toBeNull();
+    expect(transformResultItem(item)).toBeNull();
   });
 
   it('should return null if data is an empty object', () => {
@@ -65,7 +65,7 @@ describe('Testing Transformers: transformResultItem', () => {
       ...testItem,
       data: {},
     };
-    expect(transformResultItem(item as any)).toBeNull();
+    expect(transformResultItem(item)).toBeNull();
   });
 
   it('should return null if data is not an object', () => {
@@ -73,7 +73,7 @@ describe('Testing Transformers: transformResultItem', () => {
       ...testItem,
       data: 'not-an-object',
     };
-    expect(transformResultItem(item as any)).toBeNull();
+    expect(transformResultItem(item)).toBeNull();
   });
 
   describe('formatImageUrl callback', () => {
@@ -105,7 +105,7 @@ describe('Testing Transformers: transformResultItem', () => {
         data: dataWithoutImage,
       };
 
-      const result = transformResultItem(itemWithoutImage as any, formatImageUrl);
+      const result = transformResultItem(itemWithoutImage, formatImageUrl);
 
       expect(result).not.toBeNull();
       expect(result!.imageUrl).toBeUndefined();
@@ -119,7 +119,7 @@ describe('Testing Transformers: transformResultItem', () => {
         data: { ...testItem.data, image_url: '' },
       };
 
-      const result = transformResultItem(itemWithEmptyImageUrl as any, formatImageUrl);
+      const result = transformResultItem(itemWithEmptyImageUrl, formatImageUrl);
 
       expect(result).not.toBeNull();
       expect(result!.imageUrl).toBe('');

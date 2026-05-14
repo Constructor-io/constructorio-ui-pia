@@ -296,13 +296,16 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       .mockResolvedValueOnce({ questions: newTestQuestions });
     const initialParameters = { numResults: 3 };
 
-    const { result, rerender } = renderHook((props) => useSuggestedQuestions(props), {
-      initialProps: {
-        itemId: testItemId,
-        cioClient: mockClient,
-        parameters: initialParameters,
+    const { result, rerender } = renderHook(
+      (props: Parameters<typeof useSuggestedQuestions>[0]) => useSuggestedQuestions(props),
+      {
+        initialProps: {
+          itemId: testItemId,
+          cioClient: mockClient,
+          parameters: initialParameters,
+        },
       },
-    });
+    );
 
     await act(async () => {
       await new Promise((resolve) => {
@@ -315,7 +318,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     rerender({
       itemId: testItemId,
       cioClient: mockClient,
-      parameters: undefined as any,
+      parameters: undefined,
     });
     expect(result.current.isLoading).toBe(true);
 

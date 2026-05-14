@@ -124,7 +124,6 @@ export default tseslint.config(
     rules: {
       'react/prop-types': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
     },
   },
   ...storybook.configs['flat/recommended'],

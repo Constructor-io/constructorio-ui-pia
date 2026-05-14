@@ -18,6 +18,7 @@ export function createMockCioClient(apiKey = TEST_API_KEY): TestMockClient {
     fetch: jest.fn(),
   });
   jest.spyOn(client.agent, 'getSuggestedQuestions').mockResolvedValue({ questions: [] });
-  jest.spyOn(client.agent, 'getAnswerResults').mockResolvedValue({ qna_result_id: '', value: '' });
+  jest.spyOn(client.agent, 'getAnswerResults').mockResolvedValue({ qna_result_id: 'mock-id', value: '' });
+  // Cast needed because jest.spyOn changes method types at runtime but TS still sees original signatures
   return client as unknown as TestMockClient;
 }
