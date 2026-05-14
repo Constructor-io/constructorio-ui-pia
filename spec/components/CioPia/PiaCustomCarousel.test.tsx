@@ -72,8 +72,8 @@ describe('PiaCustomCarousel', () => {
         <PiaCustomCarousel items={mockItems} componentOverrides={overrides} />,
       );
 
-      const customDescs = getAllByTestId('custom-desc');
-      expect(customDescs[0]).toHaveTextContent('Product 1');
+      const customDescriptions = getAllByTestId('custom-desc');
+      expect(customDescriptions[0]).toHaveTextContent('Product 1');
       expect(
         getByTestId('carousel-item-1').querySelector('.cio-product-card-description'),
       ).not.toBeInTheDocument();

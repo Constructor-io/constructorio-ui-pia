@@ -243,7 +243,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     });
   });
 
-  it('refetches when parameters change', async () => {
+  it('fetches again when parameters change', async () => {
     mockClient.agent.getSuggestedQuestions
       .mockResolvedValueOnce({ questions: testQuestions })
       .mockResolvedValueOnce({ questions: newTestQuestions });
@@ -290,7 +290,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     });
   });
 
-  it('refetches when parameters are removed', async () => {
+  it('fetches again when parameters are removed', async () => {
     mockClient.agent.getSuggestedQuestions
       .mockResolvedValueOnce({ questions: testQuestions })
       .mockResolvedValueOnce({ questions: newTestQuestions });
