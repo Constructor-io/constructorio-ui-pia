@@ -9,6 +9,8 @@ This page covers how to integrate the PIA library, how product results work, wha
 
 ## Getting Started
 
+&nbsp;
+
 ### 1. Install the package
 
 ```bash
@@ -62,9 +64,9 @@ const piaCallbacks = {
       productName: item.name,
       price: item.price,
     });
-    // Navigate to product page manually — auto-navigation to item.url
+    // Navigate manually — auto-navigation to item.url
     // is disabled when onProductCardClick is provided.
-    if (item.url) window.location.href = item.url;
+    if (item.url) window.open(item.url, '_blank', 'noopener,noreferrer');
   },
   onFeedback: (type) => {
     analytics.track('PIA Feedback', { type });
@@ -113,56 +115,56 @@ Submit the question **"What alternative products are available for this item?"**
 
 The library handles the entire data pipeline — from question submission to product card rendering:
 
-<div style={{ display: 'flex', flexDirection: 'column', gap: '4px', margin: '24px 0', fontFamily: 'system-ui, sans-serif', fontSize: '14px' }}>
-  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-    <div style={{ padding: '10px 16px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px', minWidth: '220px', textAlign: 'center' }}>
+<div className="cio-flow-diagram">
+  <div className="flow-step">
+    <div className="flow-box flow-box--consumer">
       <strong>User submits a question</strong>
     </div>
     <span style={{ color: '#6b7280' }}>→</span>
-    <code style={{ fontSize: '12px', color: '#059669' }}>callbacks.onQuestionSubmit(question)</code>
+    <code className="flow-callback">callbacks.onQuestionSubmit(question)</code>
   </div>
-  <div style={{ marginLeft: '110px', color: '#9ca3af' }}>↓</div>
-  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-    <div style={{ padding: '10px 16px', background: '#f5f3ff', border: '1px solid #ddd6fe', borderRadius: '8px', minWidth: '220px', textAlign: 'center' }}>
-      <strong>Library calls PIA API</strong><br /><span style={{ fontSize: '12px', color: '#6b7280' }}>GET /v1/item_questions/{'{'} question {'}'}/answer</span>
+  <div className="flow-arrow">↓</div>
+  <div className="flow-step">
+    <div className="flow-box flow-box--internal">
+      <strong>Library calls PIA API</strong><br /><span className="flow-box-subtitle">GET /v1/item_questions/{'{question}'}/answer</span>
     </div>
-    <span style={{ fontSize: '12px', color: '#9ca3af', fontStyle: 'italic' }}>internal</span>
+    <span className="flow-label">internal</span>
   </div>
-  <div style={{ marginLeft: '110px', color: '#9ca3af' }}>↓</div>
-  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-    <div style={{ padding: '10px 16px', background: '#f5f3ff', border: '1px solid #ddd6fe', borderRadius: '8px', minWidth: '220px', textAlign: 'center' }}>
-      <strong>API returns results</strong><br /><span style={{ fontSize: '12px', color: '#6b7280' }}>item_results.response.results[]</span>
+  <div className="flow-arrow">↓</div>
+  <div className="flow-step">
+    <div className="flow-box flow-box--internal">
+      <strong>API returns results</strong><br /><span className="flow-box-subtitle">item_results.response.results[]</span>
     </div>
-    <span style={{ fontSize: '12px', color: '#9ca3af', fontStyle: 'italic' }}>internal</span>
+    <span className="flow-label">internal</span>
   </div>
-  <div style={{ marginLeft: '110px', color: '#9ca3af' }}>↓</div>
-  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-    <div style={{ padding: '10px 16px', background: '#f5f3ff', border: '1px solid #ddd6fe', borderRadius: '8px', minWidth: '220px', textAlign: 'center' }}>
-      <strong>Transform to Item[]</strong><br /><span style={{ fontSize: '12px', color: '#6b7280' }}>snake_case → camelCase</span>
+  <div className="flow-arrow">↓</div>
+  <div className="flow-step">
+    <div className="flow-box flow-box--internal">
+      <strong>Transform to Item[]</strong><br /><span className="flow-box-subtitle">snake_case → camelCase</span>
     </div>
-    <span style={{ fontSize: '12px', color: '#9ca3af', fontStyle: 'italic' }}>internal</span>
+    <span className="flow-label">internal</span>
   </div>
-  <div style={{ marginLeft: '110px', color: '#9ca3af' }}>↓</div>
-  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-    <div style={{ padding: '10px 16px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px', minWidth: '220px', textAlign: 'center' }}>
-      <strong>Render Carousel</strong><br /><span style={{ fontSize: '12px', color: '#6b7280' }}>Product cards displayed</span>
+  <div className="flow-arrow">↓</div>
+  <div className="flow-step">
+    <div className="flow-box flow-box--output">
+      <strong>Render Carousel</strong><br /><span className="flow-box-subtitle">Product cards displayed</span>
     </div>
-    <span style={{ fontSize: '12px', color: '#9ca3af', fontStyle: 'italic' }}>automatic</span>
+    <span className="flow-label">automatic</span>
   </div>
-  <div style={{ marginLeft: '110px', color: '#9ca3af' }}>↓</div>
-  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-    <div style={{ padding: '10px 16px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px', minWidth: '220px', textAlign: 'center' }}>
+  <div className="flow-arrow">↓</div>
+  <div className="flow-step">
+    <div className="flow-box flow-box--consumer">
       <strong>User clicks a product card</strong>
     </div>
     <span style={{ color: '#6b7280' }}>→</span>
-    <code style={{ fontSize: '12px', color: '#059669' }}>callbacks.onProductCardClick(item)</code>
+    <code className="flow-callback">callbacks.onProductCardClick(item)</code>
   </div>
 </div>
 
-<div style={{ display: 'flex', gap: '16px', margin: '16px 0', fontSize: '12px' }}>
-  <span><span style={{ display: 'inline-block', width: '12px', height: '12px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '3px', marginRight: '4px', verticalAlign: 'middle' }}></span> Consumer callback</span>
-  <span><span style={{ display: 'inline-block', width: '12px', height: '12px', background: '#f5f3ff', border: '1px solid #ddd6fe', borderRadius: '3px', marginRight: '4px', verticalAlign: 'middle' }}></span> Internal (library handles)</span>
-  <span><span style={{ display: 'inline-block', width: '12px', height: '12px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '3px', marginRight: '4px', verticalAlign: 'middle' }}></span> UI output</span>
+<div className="cio-flow-legend" style={{ marginTop: '32px' }}>
+  <span><span className="legend-swatch legend-swatch--consumer"></span> Consumer callback</span>
+  <span><span className="legend-swatch legend-swatch--internal"></span> Internal (library handles)</span>
+  <span><span className="legend-swatch legend-swatch--output"></span> UI output</span>
 </div>
 
 ---

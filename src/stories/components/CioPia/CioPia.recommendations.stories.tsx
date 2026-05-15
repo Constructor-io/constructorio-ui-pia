@@ -4,6 +4,7 @@ import CioPia from '../../../components/CioPia/CioPia';
 import { DEMO_API_KEY, DEMO_ITEM_ID } from '../../../constants';
 import type { Item } from '../../../types';
 import { FeedbackType } from '../../../types';
+import { prependCdnBase } from '../../utils';
 
 const meta = {
   title: 'General/Integration Guide/Examples',
@@ -52,49 +53,6 @@ export const WithAllCallbacks: Story = {
   displayConfigs={{ showFeedback: true }}
   callbacks={{
     onQuestionSubmit: (question) => {
-      console.log('Question submitted:', question);
-    },
-    onProductCardClick: (item) => {
-      console.log('Product clicked:', item.id, item.name);
-    },
-    onFeedback: (type) => {
-      console.log('Feedback submitted:', type); // 'up' | 'down'
-    },
-  }}
-/>`,
-      },
-    },
-  },
-};
-
-export const WithTrackingExample: Story = {
-  args: {
-    apiKey: DEMO_API_KEY,
-    itemId: DEMO_ITEM_ID,
-    displayConfigs: {
-      showFeedback: true,
-    },
-    callbacks: {
-      onQuestionSubmit: (question: string) => {
-        console.log('[Analytics] Question submitted:', question);
-      },
-      onProductCardClick: (item: Item) => {
-        console.log('[Analytics] Product clicked:', item.id, item.name);
-      },
-      onFeedback: (type: FeedbackType) => {
-        console.log('[Analytics] Feedback:', type);
-      },
-    },
-  },
-  parameters: {
-    docs: {
-      source: {
-        code: `<CioPia
-  apiKey="YOUR_API_KEY"
-  itemId="YOUR_ITEM_ID"
-  displayConfigs={{ showFeedback: true }}
-  callbacks={{
-    onQuestionSubmit: (question) => {
       analytics.track('PIA Question Submitted', { question });
     },
     onProductCardClick: (item) => {
@@ -103,6 +61,7 @@ export const WithTrackingExample: Story = {
         name: item.name,
         price: item.price,
       });
+      if (item.url) window.open(item.url, '_blank', 'noopener,noreferrer');
     },
     onFeedback: (type) => {
       analytics.track('PIA Feedback', { type });
@@ -184,8 +143,6 @@ export const CustomProductCardWithTracking: Story = {
     },
   },
 };
-
-const prependCdnBase = (url: string) => (url.startsWith('/') ? `https://example.com${url}` : url);
 
 export const WithFormatterAndTracking: Story = {
   args: {

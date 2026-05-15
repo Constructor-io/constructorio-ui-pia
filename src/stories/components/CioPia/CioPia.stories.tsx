@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import CioPia from '../../../components/CioPia/CioPia';
 import { DEMO_API_KEY, DEMO_ITEM_ID } from '../../../constants';
+import { prependCdnBase } from '../../utils';
 
 const meta = {
   title: 'Components/CioPia',
@@ -90,8 +91,6 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Define outside the component (or use useCallback) to avoid unnecessary re-renders.
-const prependCdnBase = (url: string) => (url.startsWith('/') ? `https://example.com${url}` : url);
 
 export const Default: Story = {
   args: {
