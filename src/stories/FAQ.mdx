@@ -1,0 +1,51 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title='General/FAQ' />
+
+# FAQ
+
+## What happens if the API returns no product results?
+
+The carousel simply does not render — no empty state, no placeholder. Only the AI answer and follow-up questions are shown.
+
+## Does Constructor track analytics automatically?
+
+Yes. The library sets `sendTrackingEvents: true` internally, which enables Constructor's beacon-based tracking (impressions, sessions). This works automatically — no configuration needed from your side.
+
+The `callbacks` prop (`onQuestionSubmit`, `onProductCardClick`, `onFeedback`) is for **your own** analytics (GA4, Segment, etc.) — it does not affect Constructor's internal tracking.
+
+
+
+## What happens when the API request fails?
+
+The library renders an `ErrorBlock` component with the error message and a retry button. The user can click retry to re-submit the last question.
+
+## What does the user see while waiting for a response?
+
+A loading skeleton animation is displayed while the API call is in progress. It disappears once the answer is received or an error occurs.
+
+## How do I customize styles without `componentOverrides`?
+
+The library exposes CSS custom properties on `.cio-pia-container`:
+
+```css
+.cio-pia-container {
+  --cio-pia-chat-question-bg: #f0f0f5;
+  --cio-pia-chat-answer-bg: #f8f8fa;
+  --cio-pia-conversation-max-height: 600px;
+  --cio-pia-modal-height: 80vh;
+  --cio-pia-modal-max-width: 640px;
+  --cio-pia-modal-min-width: 320px;
+}
+```
+
+Override them in your own CSS:
+
+```css
+.cio-pia-container {
+  --cio-pia-chat-question-bg: #e8f4fd;
+  --cio-pia-conversation-max-height: 400px;
+}
+```
+
+All sub-components use BEM-style class names prefixed with `cio-` that you can target directly.

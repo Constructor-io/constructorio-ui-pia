@@ -1,0 +1,348 @@
+import { Meta, Canvas, Markdown } from '@storybook/blocks';
+import * as RecommendationsStories from './CioPia.recommendations.stories';
+
+<Meta title='General/Integration Guide' />
+
+# Integration Guide
+
+This page covers how to integrate the PIA library, how product results work, what data it exposes, and how to wire up analytics tracking.
+
+## Getting Started
+
+### 1. Install the package
+
+```bash
+npm install @constructor-io/constructorio-ui-pia
+```
+
+### 2. Import styles
+
+Import once in your app's entry point (e.g., `App.tsx`, `_app.tsx`, or `main.tsx`):
+
+```jsx
+import '@constructor-io/constructorio-ui-pia/styles.css';
+```
+
+### 3. Render the component
+
+Place `<CioPia>` on your Product Detail Page (PDP) where you want the Q&A widget to appear. The only required props are `apiKey` and `itemId` of the current product:
+
+```jsx
+import { CioPia } from '@constructor-io/constructorio-ui-pia';
+
+export default function ProductPage({ itemId }) {
+  return (
+    <div>
+      {/* ...product info, images, price, etc. */}
+
+      <CioPia
+        apiKey="YOUR_API_KEY"
+        itemId={itemId}
+      />
+    </div>
+  );
+}
+```
+
+This renders the full PIA experience: suggested questions, AI answers, and product recommendations.
+
+### 4. Add tracking
+
+```jsx
+import { CioPia } from '@constructor-io/constructorio-ui-pia';
+import '@constructor-io/constructorio-ui-pia/styles.css';
+
+const piaCallbacks = {
+  onQuestionSubmit: (question) => {
+    analytics.track('PIA Question Submitted', { question });
+  },
+  onProductCardClick: (item) => {
+    analytics.track('PIA Product Clicked', {
+      productId: item.id,
+      productName: item.name,
+      price: item.price,
+    });
+    // Navigate to product page manually — auto-navigation to item.url
+    // is disabled when onProductCardClick is provided.
+    if (item.url) window.location.href = item.url;
+  },
+  onFeedback: (type) => {
+    analytics.track('PIA Feedback', { type });
+  },
+};
+
+export default function ProductPage({ itemId }) {
+  return (
+    <CioPia
+      apiKey="YOUR_API_KEY"
+      itemId={itemId}
+      displayConfigs={{ showFeedback: true }}
+      callbacks={piaCallbacks}
+    />
+  );
+}
+```
+
+### 5. Enable conversation mode (optional)
+
+```jsx
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId={itemId}
+  displayConfigs={{
+    mode: 'conversation',
+    showFeedback: true,
+  }}
+  callbacks={piaCallbacks}
+/>
+```
+
+See [PiaConversation](?path=/docs/components-piaconversation--docs) for a live example and [Display Configs](?path=/docs/components-ciopia-displayconfigs--docs) for all available display options.
+
+---
+
+## Try It: Product Results
+
+Submit the question **"What alternative products are available for this item?"** in the example below to see the answer with a product carousel:
+
+<Canvas of={RecommendationsStories.Default} />
+
+> Not all questions return product results. The carousel only appears when the AI response includes relevant products.
+
+## How Results Work
+
+The library handles the entire data pipeline — from question submission to product card rendering:
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '4px', margin: '24px 0', fontFamily: 'system-ui, sans-serif', fontSize: '14px' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ padding: '10px 16px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px', minWidth: '220px', textAlign: 'center' }}>
+      <strong>User submits a question</strong>
+    </div>
+    <span style={{ color: '#6b7280' }}>→</span>
+    <code style={{ fontSize: '12px', color: '#059669' }}>callbacks.onQuestionSubmit(question)</code>
+  </div>
+  <div style={{ marginLeft: '110px', color: '#9ca3af' }}>↓</div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ padding: '10px 16px', background: '#f5f3ff', border: '1px solid #ddd6fe', borderRadius: '8px', minWidth: '220px', textAlign: 'center' }}>
+      <strong>Library calls PIA API</strong><br /><span style={{ fontSize: '12px', color: '#6b7280' }}>GET /v1/item_questions/{'{'} question {'}'}/answer</span>
+    </div>
+    <span style={{ fontSize: '12px', color: '#9ca3af', fontStyle: 'italic' }}>internal</span>
+  </div>
+  <div style={{ marginLeft: '110px', color: '#9ca3af' }}>↓</div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ padding: '10px 16px', background: '#f5f3ff', border: '1px solid #ddd6fe', borderRadius: '8px', minWidth: '220px', textAlign: 'center' }}>
+      <strong>API returns results</strong><br /><span style={{ fontSize: '12px', color: '#6b7280' }}>item_results.response.results[]</span>
+    </div>
+    <span style={{ fontSize: '12px', color: '#9ca3af', fontStyle: 'italic' }}>internal</span>
+  </div>
+  <div style={{ marginLeft: '110px', color: '#9ca3af' }}>↓</div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ padding: '10px 16px', background: '#f5f3ff', border: '1px solid #ddd6fe', borderRadius: '8px', minWidth: '220px', textAlign: 'center' }}>
+      <strong>Transform to Item[]</strong><br /><span style={{ fontSize: '12px', color: '#6b7280' }}>snake_case → camelCase</span>
+    </div>
+    <span style={{ fontSize: '12px', color: '#9ca3af', fontStyle: 'italic' }}>internal</span>
+  </div>
+  <div style={{ marginLeft: '110px', color: '#9ca3af' }}>↓</div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ padding: '10px 16px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px', minWidth: '220px', textAlign: 'center' }}>
+      <strong>Render Carousel</strong><br /><span style={{ fontSize: '12px', color: '#6b7280' }}>Product cards displayed</span>
+    </div>
+    <span style={{ fontSize: '12px', color: '#9ca3af', fontStyle: 'italic' }}>automatic</span>
+  </div>
+  <div style={{ marginLeft: '110px', color: '#9ca3af' }}>↓</div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ padding: '10px 16px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px', minWidth: '220px', textAlign: 'center' }}>
+      <strong>User clicks a product card</strong>
+    </div>
+    <span style={{ color: '#6b7280' }}>→</span>
+    <code style={{ fontSize: '12px', color: '#059669' }}>callbacks.onProductCardClick(item)</code>
+  </div>
+</div>
+
+<div style={{ display: 'flex', gap: '16px', margin: '16px 0', fontSize: '12px' }}>
+  <span><span style={{ display: 'inline-block', width: '12px', height: '12px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '3px', marginRight: '4px', verticalAlign: 'middle' }}></span> Consumer callback</span>
+  <span><span style={{ display: 'inline-block', width: '12px', height: '12px', background: '#f5f3ff', border: '1px solid #ddd6fe', borderRadius: '3px', marginRight: '4px', verticalAlign: 'middle' }}></span> Internal (library handles)</span>
+  <span><span style={{ display: 'inline-block', width: '12px', height: '12px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '3px', marginRight: '4px', verticalAlign: 'middle' }}></span> UI output</span>
+</div>
+
+---
+
+### The `Item` Data Shape
+
+Each product card receives an `Item` object with the following fields:
+
+```typescript
+interface Item {
+  // Core identity
+  id: string;
+  name: string;
+  variationId?: string;
+
+  // Display
+  imageUrl?: string;
+  description?: string;
+  price?: string | number;
+  salePrice?: string | number;
+  rating?: string | number;
+  reviewsCount?: string | number;
+
+  // Navigation
+  url?: string;
+
+  // Search relevance
+  matchedTerms?: string[];
+
+  // Any additional catalog metadata
+  data?: Record<string, any>;
+  [key: string]: any;
+}
+```
+
+## Events & Callbacks
+
+The library does **not** call any analytics or tracking APIs directly. Instead, it exposes three callbacks via the `callbacks` prop. Consumers implement their own tracking logic inside these callbacks.
+
+<Markdown>
+{`
+| Callback | Signature | When it fires |
+|----------|-----------|---------------|
+| \`onQuestionSubmit\` | \`(question: string) => void\` | User submits a question (Enter key, Send button, or suggested question click) |
+| \`onProductCardClick\` | \`(item: Item) => void\` | User clicks any product card in the recommendation carousel |
+| \`onFeedback\` | \`(type: 'up' \\| 'down') => void\` | User clicks thumbs up or thumbs down (requires \`showFeedback: true\`) |
+`}
+</Markdown>
+
+Try submitting a question in the interactive example below, then click a product card or give feedback to trigger the corresponding callbacks:
+
+<Canvas of={RecommendationsStories.WithAllCallbacks} />
+
+To verify callbacks are working, open your browser's DevTools console. Here is a basic implementation that logs all events:
+
+```jsx
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId="YOUR_ITEM_ID"
+  displayConfigs={{ showFeedback: true }}
+  callbacks={{
+    onQuestionSubmit: (question) => {
+      console.log('Question submitted:', question);
+    },
+    onProductCardClick: (item) => {
+      console.log('Product clicked:', item.id, item.name);
+    },
+    onFeedback: (type) => {
+      console.log('Feedback submitted:', type); // 'up' | 'down'
+    },
+  }}
+/>
+```
+
+> **Important:** When `onProductCardClick` is provided, the library will **not** navigate to `item.url` automatically. The consumer fully owns click behavior — including navigation. If `onProductCardClick` is not provided, clicking a card opens `item.url` in a new tab by default.
+
+## Tracking Integration
+
+The `callbacks` prop accepts any function, so you can plug in your own analytics library. Here is an example with Google Analytics 4:
+
+```jsx
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId="YOUR_ITEM_ID"
+  displayConfigs={{ showFeedback: true }}
+  callbacks={{
+    onQuestionSubmit: (question) => {
+      window.gtag('event', 'pia_question_submit', {
+        question_text: question,
+        item_id: 'YOUR_ITEM_ID',
+      });
+    },
+    onProductCardClick: (item) => {
+      window.gtag('event', 'select_item', {
+        item_list_name: 'PIA Recommendations',
+        items: [{ item_id: item.id, item_name: item.name, price: item.price }],
+      });
+      if (item.url) window.open(item.url, '_blank', 'noopener,noreferrer');
+    },
+    onFeedback: (type) => {
+      window.gtag('event', 'pia_feedback', { feedback_type: type });
+    },
+  }}
+/>
+```
+
+### Memoizing Callbacks
+
+Since `callbacks` is an object prop, define handlers outside the component or wrap them in `useMemo` / `useCallback` to avoid unnecessary re-renders:
+
+```jsx
+// Define outside the component (or memoize)
+const piaCallbacks = {
+  onProductCardClick: (item) => {
+    analytics.track('Product Clicked', { id: item.id });
+    if (item.url) window.open(item.url, '_blank', 'noopener,noreferrer');
+  },
+};
+
+export default function ProductPage({ itemId }) {
+  return <CioPia apiKey="YOUR_API_KEY" itemId={itemId} callbacks={piaCallbacks} />;
+}
+```
+
+## Customizing Product Cards
+
+The carousel supports full customization via `componentOverrides.carousel`. Custom product cards work together with the `onProductCardClick` callback — the click event still fires from the underlying `<Carousel>` component.
+
+Submit **"What alternative products are available for this item?"** to see the custom product cards:
+
+<Canvas of={RecommendationsStories.CustomProductCardWithTracking} />
+
+```jsx
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId="YOUR_ITEM_ID"
+  callbacks={{
+    onProductCardClick: (item) => {
+      analytics.track('Product Clicked', { id: item.id, name: item.name });
+      if (item.url) window.open(item.url, '_blank', 'noopener,noreferrer');
+    },
+  }}
+  componentOverrides={{
+    carousel: {
+      item: {
+        reactNode: ({ item }) => (
+          <div className="my-product-card">
+            {item?.imageUrl && <img src={item.imageUrl} alt={item?.name} />}
+            <p>{item?.name}</p>
+            {item?.price && <span>${item.price}</span>}
+          </div>
+        ),
+      },
+    },
+  }}
+/>
+```
+
+## Image URL Formatting
+
+Use `formatters.formatImageUrl` to transform image URLs before rendering (e.g., prepend a CDN base). This works alongside tracking callbacks:
+
+```jsx
+// Define outside the component to avoid unnecessary re-renders
+const formatImageUrl = (url) =>
+  url.startsWith('/') ? `https://cdn.example.com${url}` : url;
+
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId="YOUR_ITEM_ID"
+  formatters={{ formatImageUrl }}
+  callbacks={{
+    onProductCardClick: (item) => {
+      analytics.track('Product Clicked', { id: item.id });
+    },
+  }}
+/>
+```
+
+---
+
+For more details on error handling, styling, and other topics see the [FAQ](?path=/docs/general-faq--docs).
+
