@@ -18,11 +18,11 @@ The `callbacks` prop (`onQuestionSubmit`, `onProductCardClick`, `onFeedback`) is
 
 ## What happens when the API request fails?
 
-The library renders an `ErrorBlock` component with the error message and a retry button. The user can click retry to re-submit the last question.
+The library renders an [`ErrorBlock`](?path=/docs/components-errorblock--docs) component with the error message and a retry button. The user can click retry to re-submit the last question.
 
 ## What does the user see while waiting for a response?
 
-A loading skeleton animation is displayed while the API call is in progress. It disappears once the answer is received or an error occurs.
+A loading skeleton animation is displayed while the API call is in progress. It disappears once the answer is received or an error occurs. You can see it in action in the [`CioPia`](?path=/docs/components-ciopia--docs) component — submit any question to observe the skeleton state.
 
 ## How do I customize styles without `componentOverrides`?
 
