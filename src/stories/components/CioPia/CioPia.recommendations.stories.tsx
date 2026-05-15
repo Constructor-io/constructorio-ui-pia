@@ -2,9 +2,11 @@ import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import CioPia from '../../../components/CioPia/CioPia';
 import { DEMO_API_KEY, DEMO_ITEM_ID } from '../../../constants';
+import type { Item } from '../../../types';
+import { FeedbackType } from '../../../types';
 
 const meta = {
-  title: 'General/Integration Guide',
+  title: 'General/Integration Guide/Examples',
   component: CioPia,
   parameters: {
     layout: 'centered',
@@ -33,10 +35,10 @@ export const WithAllCallbacks: Story = {
       onQuestionSubmit: (question: string) => {
         console.log('Question submitted:', question);
       },
-      onProductCardClick: (item: any) => {
+      onProductCardClick: (item: Item) => {
         console.log('Product clicked:', item.id, item.name);
       },
-      onFeedback: (type: string) => {
+      onFeedback: (type: FeedbackType) => {
         console.log('Feedback submitted:', type);
       },
     },
@@ -76,10 +78,10 @@ export const WithTrackingExample: Story = {
       onQuestionSubmit: (question: string) => {
         console.log('[Analytics] Question submitted:', question);
       },
-      onProductCardClick: (item: any) => {
+      onProductCardClick: (item: Item) => {
         console.log('[Analytics] Product clicked:', item.id, item.name);
       },
-      onFeedback: (type: string) => {
+      onFeedback: (type: FeedbackType) => {
         console.log('[Analytics] Feedback:', type);
       },
     },
@@ -117,7 +119,7 @@ export const CustomProductCardWithTracking: Story = {
     apiKey: DEMO_API_KEY,
     itemId: DEMO_ITEM_ID,
     callbacks: {
-      onProductCardClick: (item: any) => {
+      onProductCardClick: (item: Item) => {
         console.log('Product clicked:', item.id, item.name);
       },
     },
@@ -161,7 +163,7 @@ export const CustomProductCardWithTracking: Story = {
   callbacks={{
     onProductCardClick: (item) => {
       analytics.track('Product Clicked', { id: item.id, name: item.name });
-      window.open(item.url, '_blank', 'noopener,noreferrer');
+      if (item.url) window.open(item.url, '_blank', 'noopener,noreferrer');
     },
   }}
   componentOverrides={{
@@ -193,7 +195,7 @@ export const WithFormatterAndTracking: Story = {
       formatImageUrl: prependCdnBase,
     },
     callbacks: {
-      onProductCardClick: (item: any) => {
+      onProductCardClick: (item: Item) => {
         console.log('Product clicked:', item.id);
       },
     },

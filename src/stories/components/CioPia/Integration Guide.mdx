@@ -172,29 +172,27 @@ The library handles the entire data pipeline — from question submission to pro
 Each product card receives an `Item` object with the following fields:
 
 ```typescript
-interface Item {
-  // Core identity
+// Item extends Product (from @constructor-io/constructorio-ui-components)
+// and Record<string, any> for additional catalog metadata.
+
+// Fields inherited from Product:
+interface Product {
   id: string;
   name: string;
   variationId?: string;
-
-  // Display
-  imageUrl?: string;
   description?: string;
+  imageUrl?: string;
   price?: string | number;
   salePrice?: string | number;
   rating?: string | number;
   reviewsCount?: string | number;
+  tags?: string[];
+}
 
-  // Navigation
+// PIA-specific fields:
+interface Item extends Product, Record<string, any> {
   url?: string;
-
-  // Search relevance
   matchedTerms?: string[];
-
-  // Any additional catalog metadata
-  data?: Record<string, any>;
-  [key: string]: any;
 }
 ```
 
