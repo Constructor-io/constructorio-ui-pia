@@ -43,7 +43,7 @@ const meta = {
     componentOverrides: {
       description: [
         'Custom component overrides via reactNode or render props functions.',
-        'See [ComponentOverrides](/?path=/docs/components-ciopia-componentoverrides--docs) for live examples and the full override hierarchy.',
+        'See [ComponentOverrides](./?path=/docs/components-ciopia-componentoverrides--docs) for live examples and the full override hierarchy.',
       ].join('\n'),
       table: { type: { summary: 'CioPiaComponentOverrides' } },
     },
