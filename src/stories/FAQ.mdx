@@ -10,7 +10,7 @@ The carousel simply does not render — no empty state, no placeholder. Only the
 
 ## Does Constructor track analytics automatically?
 
-Yes. The library sets `sendTrackingEvents: true` internally, which enables Constructor's beacon-based tracking (impressions, sessions). This works automatically — no configuration needed from your side.
+Yes. The library sets `sendTrackingEvents: true` internally (see [`useCioClient.ts`](https://github.com/Constructor-io/constructorio-ui-pia/blob/main/src/hooks/useCioClient.ts)), which enables Constructor's beacon-based tracking (impressions, sessions). This works automatically — no configuration needed from your side.
 
 The `callbacks` prop (`onQuestionSubmit`, `onProductCardClick`, `onFeedback`) is for **your own** analytics (GA4, Segment, etc.) — it does not affect Constructor's internal tracking.
 

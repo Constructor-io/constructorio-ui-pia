@@ -2,8 +2,6 @@ import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import CioPia from '../../../components/CioPia/CioPia';
 import { DEMO_API_KEY, DEMO_ITEM_ID } from '../../../constants';
-import type { Item } from '../../../types';
-import { FeedbackType } from '../../../types';
 import { prependCdnBase } from '../../utils';
 
 const meta = {
@@ -12,7 +10,7 @@ const meta = {
   parameters: {
     layout: 'centered',
   },
-  tags: [],
+  tags: ['!autodocs'],
 } satisfies Meta<typeof CioPia>;
 
 export default meta;
@@ -33,13 +31,13 @@ export const WithAllCallbacks: Story = {
       showFeedback: true,
     },
     callbacks: {
-      onQuestionSubmit: (question: string) => {
+      onQuestionSubmit: (question) => {
         console.log('Question submitted:', question);
       },
-      onProductCardClick: (item: Item) => {
+      onProductCardClick: (item) => {
         console.log('Product clicked:', item.id, item.name);
       },
-      onFeedback: (type: FeedbackType) => {
+      onFeedback: (type) => {
         console.log('Feedback submitted:', type);
       },
     },
@@ -78,7 +76,7 @@ export const CustomProductCardWithTracking: Story = {
     apiKey: DEMO_API_KEY,
     itemId: DEMO_ITEM_ID,
     callbacks: {
-      onProductCardClick: (item: Item) => {
+      onProductCardClick: (item) => {
         console.log('Product clicked:', item.id, item.name);
       },
     },
@@ -152,7 +150,7 @@ export const WithFormatterAndTracking: Story = {
       formatImageUrl: prependCdnBase,
     },
     callbacks: {
-      onProductCardClick: (item: Item) => {
+      onProductCardClick: (item) => {
         console.log('Product clicked:', item.id);
       },
     },

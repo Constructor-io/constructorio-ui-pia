@@ -126,7 +126,7 @@ The library handles the entire data pipeline — from question submission to pro
   <div className="flow-arrow">↓</div>
   <div className="flow-step">
     <div className="flow-box flow-box--internal">
-      <strong>Library calls PIA API</strong><br /><span className="flow-box-subtitle">GET /v1/item_questions/{'{question}'}/answer</span>
+      <strong>Library calls PIA API</strong><br /><span className="flow-box-subtitle">Sends question to Constructor PIA API</span>
     </div>
     <span className="flow-label">internal</span>
   </div>
@@ -246,13 +246,13 @@ The `callbacks` prop accepts any function, so you can plug in your own analytics
 ```jsx
 <CioPia
   apiKey="YOUR_API_KEY"
-  itemId="YOUR_ITEM_ID"
+  itemId={itemId}
   displayConfigs={{ showFeedback: true }}
   callbacks={{
     onQuestionSubmit: (question) => {
       window.gtag('event', 'pia_question_submit', {
         question_text: question,
-        item_id: 'YOUR_ITEM_ID',
+        item_id: itemId,
       });
     },
     onProductCardClick: (item) => {
