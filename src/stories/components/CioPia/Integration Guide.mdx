@@ -17,13 +17,15 @@ This page covers how to integrate the PIA library, how product results work, wha
 npm install @constructor-io/constructorio-ui-pia
 ```
 
-### 2. Import styles
+### 2. Import styles (optional)
 
-Import once in your app's entry point (e.g., `App.tsx`, `_app.tsx`, or `main.tsx`):
+The library ships with default styles. Import once in your app's entry point (e.g., `App.tsx`, `_app.tsx`, or `main.tsx`) if you want to use them:
 
 ```jsx
 import '@constructor-io/constructorio-ui-pia/styles.css';
 ```
+
+> You can skip this step if you provide your own styles or use component overrides for full custom rendering.
 
 ### 3. Render the component
 
@@ -48,7 +50,11 @@ export default function ProductPage({ itemId }) {
 
 This renders the full PIA experience: suggested questions, AI answers, and product recommendations.
 
-### 4. Add tracking
+### 4. Add tracking (optional)
+
+The library **automatically tracks usage events** (e.g., question submissions, impressions) via the underlying Constructor.io client — these are visible in your [Constructor Dashboard](https://dashboard.constructor.io) with no extra code required.
+
+Additionally, the library exposes **callbacks** so you can hook into user interactions for your own analytics (Google Analytics, Segment, etc.):
 
 ```jsx
 import { CioPia } from '@constructor-io/constructorio-ui-pia';
@@ -113,9 +119,27 @@ Submit the question **"What alternative products are available for this item?"**
 
 ## How Results Work
 
-The library handles the entire data pipeline — from question submission to product card rendering:
+The library handles the entire data pipeline — from loading suggested questions to rendering product cards:
+
+1. When the component mounts, it **fetches suggested questions** for the given `itemId` and displays them as clickable chips.
+2. The user either clicks a suggested question or types their own, then submits.
+3. The library sends the question to the PIA API and streams back the AI answer along with any product recommendations.
 
 <div className="cio-flow-diagram">
+  <div className="flow-step">
+    <div className="flow-box flow-box--internal">
+      <strong>Fetch suggested questions</strong><br /><span className="flow-box-subtitle">GET suggested questions for itemId</span>
+    </div>
+    <span className="flow-label">automatic on mount</span>
+  </div>
+  <div className="flow-arrow">↓</div>
+  <div className="flow-step">
+    <div className="flow-box flow-box--output">
+      <strong>Display suggested questions</strong><br /><span className="flow-box-subtitle">Clickable chips shown to user</span>
+    </div>
+    <span className="flow-label">UI output</span>
+  </div>
+  <div className="flow-arrow">↓</div>
   <div className="flow-step">
     <div className="flow-box flow-box--consumer">
       <strong>User submits a question</strong>
@@ -200,7 +224,9 @@ interface Item extends Product, Record<string, any> {
 
 ## Events & Callbacks
 
-The library does **not** call any analytics or tracking APIs directly. Instead, it exposes three callbacks via the `callbacks` prop. Consumers implement their own tracking logic inside these callbacks.
+The library automatically sends usage events to the Constructor.io analytics backend (visible in your [Constructor Dashboard](https://dashboard.constructor.io)). No extra configuration is needed for this built-in tracking.
+
+For your own analytics needs, the library exposes three callbacks via the `callbacks` prop. Use these to integrate with any third-party analytics provider (Google Analytics, Segment, Amplitude, etc.):
 
 <Markdown>
 {`
@@ -290,6 +316,8 @@ export default function ProductPage({ itemId }) {
 ## Customizing Product Cards
 
 The carousel supports full customization via `componentOverrides.carousel`. Custom product cards work together with the `onProductCardClick` callback — the click event still fires from the underlying `<Carousel>` component.
+
+For a complete list of overridable components (suggested questions, answer container, carousel items, and more), see the [Component Overrides](?path=/docs/components-ciopia-componentoverrides--docs) page.
 
 Submit **"What alternative products are available for this item?"** to see the custom product cards:
 
