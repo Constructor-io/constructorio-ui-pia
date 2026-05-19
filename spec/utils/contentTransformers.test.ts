@@ -91,8 +91,7 @@ describe('renderMarkdown', () => {
 
   it('converts single newlines to line breaks', () => {
     const input = 'Line one\nLine two';
-    const result = renderMarkdown(input);
-    expect(result).toContain('<br>');
+    expect(renderMarkdown(input)).toBe('<p>Line one<br>Line two</p>\n');
   });
 
   it('handles content with newlines as paragraph breaks', () => {
