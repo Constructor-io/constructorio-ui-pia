@@ -42,7 +42,7 @@ describe('Testing Transformers: transformResultItem', () => {
   });
 
   it('should return null if data.id is undefined', () => {
-    const { id, ...rest } = testItem.data;
+    const { id: _id, ...rest } = testItem.data;
     const item = {
       ...testItem,
       data: { ...rest },
@@ -99,7 +99,7 @@ describe('Testing Transformers: transformResultItem', () => {
 
     it('should not call formatImageUrl when image_url is undefined', () => {
       const formatImageUrl = jest.fn((url: string) => `https://cdn.example.com${url}`);
-      const { image_url, ...dataWithoutImage } = testItem.data;
+      const { image_url: _image_url, ...dataWithoutImage } = testItem.data;
       const itemWithoutImage = {
         ...testItem,
         data: dataWithoutImage,

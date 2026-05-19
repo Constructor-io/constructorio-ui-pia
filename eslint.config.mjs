@@ -123,7 +123,7 @@ export default tseslint.config(
     },
     rules: {
       'react/prop-types': 'off',
-      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     },
   },
   ...storybook.configs['flat/recommended'],

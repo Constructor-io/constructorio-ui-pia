@@ -15,7 +15,7 @@ const mockUseCioPiaHook = useCioPia as jest.MockedFunction<typeof useCioPia>;
 
 const CAROUSEL_SELECTOR = '[data-carousel]';
 
-function dispatchProductCardClickEvent(element, product) {
+function dispatchProductCardClickEvent(element: HTMLElement, product: Item) {
   const event = new CustomEvent(CIO_EVENTS.productCard.click, {
     detail: { product },
     bubbles: true,
@@ -23,13 +23,13 @@ function dispatchProductCardClickEvent(element, product) {
   element.dispatchEvent(event);
 }
 
-function getCarouselWrapper(container) {
+function getCarouselWrapper(container: HTMLElement) {
   const carousel = container.querySelector(CAROUSEL_SELECTOR);
   return carousel?.parentElement;
 }
 
 // Returns true if event was dispatched, false if wrapper not found
-function dispatchEventOnCarouselWrapper(container, product) {
+function dispatchEventOnCarouselWrapper(container: HTMLElement, product: Item) {
   const wrapper = getCarouselWrapper(container);
   if (!wrapper) return false;
 
