@@ -12,7 +12,7 @@ import MockAgent from './agent';
 import version from '../../version';
 
 class MockConstructorIOClient {
-  private options: ConstructorClientOptions;
+  public options: ConstructorClientOptions;
 
   public search: Search;
 

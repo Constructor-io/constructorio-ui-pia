@@ -103,7 +103,7 @@ describe('PiaInlineAnswer Component', () => {
     it('renders disclaimer below the answer by default', () => {
       const { container } = render(<PiaInlineAnswer {...defaultProps} />);
 
-      const answerContainer = container.querySelector('.cio-pia-answer-container');
+      const answerContainer = container.querySelector('.cio-pia-answer-container')!;
       const children = [...answerContainer.children];
       const answerIndex = children.findIndex((el) => el.getAttribute('data-testid') === 'answer-text');
       const disclaimerIndex = children.findIndex((el) => el.classList.contains('cio-pia-disclaimer'));
@@ -114,7 +114,7 @@ describe('PiaInlineAnswer Component', () => {
     it('renders disclaimer above the answer when disclaimerPosition is top', () => {
       const { container } = render(<PiaInlineAnswer {...defaultProps} disclaimerPosition='top' />);
 
-      const answerContainer = container.querySelector('.cio-pia-answer-container');
+      const answerContainer = container.querySelector('.cio-pia-answer-container')!;
       const children = [...answerContainer.children];
       const answerIndex = children.findIndex((el) => el.getAttribute('data-testid') === 'answer-text');
       const disclaimerIndex = children.findIndex((el) => el.classList.contains('cio-pia-disclaimer'));
@@ -125,7 +125,7 @@ describe('PiaInlineAnswer Component', () => {
     it('does not render disclaimer at top when position is bottom', () => {
       const { container } = render(<PiaInlineAnswer {...defaultProps} disclaimerPosition='bottom' />);
 
-      const answerContainer = container.querySelector('.cio-pia-answer-container');
+      const answerContainer = container.querySelector('.cio-pia-answer-container')!;
       const firstChild = answerContainer.children[0];
 
       expect(firstChild.classList.contains('cio-pia-disclaimer')).toBe(false);

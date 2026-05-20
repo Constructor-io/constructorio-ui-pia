@@ -1,5 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
 import useSuggestedQuestions from '../../../src/hooks/useSuggestedQuestions';
+import { createMockCioClient } from '../../helpers/mockCioClient';
 
 const testItemId = 'test-item-id';
 const newTestItemId = 'new-test-item-id';
@@ -15,11 +16,7 @@ const newTestQuestions = [
 ];
 
 describe('Testing Hook: useSuggestedQuestions', () => {
-  const mockClient = {
-    agent: {
-      getSuggestedQuestions: jest.fn(),
-    },
-  };
+  const mockClient = createMockCioClient();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -79,7 +76,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toEqual([]);
     expect(result.current.error).toBeInstanceOf(Error);
-    expect(result.current.error.message).toBe('Mock error');
+    expect(result.current.error!.message).toBe('Mock error');
     expect(mockClient.agent.getSuggestedQuestions).toHaveBeenCalledWith({
       itemId: testItemId,
       variationId: undefined,
@@ -246,7 +243,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     });
   });
 
-  it('refetches when parameters change', async () => {
+  it('fetches again when parameters change', async () => {
     mockClient.agent.getSuggestedQuestions
       .mockResolvedValueOnce({ questions: testQuestions })
       .mockResolvedValueOnce({ questions: newTestQuestions });
@@ -293,19 +290,22 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     });
   });
 
-  it('refetches when parameters are removed', async () => {
+  it('fetches again when parameters are removed', async () => {
     mockClient.agent.getSuggestedQuestions
       .mockResolvedValueOnce({ questions: testQuestions })
       .mockResolvedValueOnce({ questions: newTestQuestions });
     const initialParameters = { numResults: 3 };
 
-    const { result, rerender } = renderHook((props) => useSuggestedQuestions(props), {
-      initialProps: {
-        itemId: testItemId,
-        cioClient: mockClient,
-        parameters: initialParameters,
+    const { result, rerender } = renderHook(
+      (props: Parameters<typeof useSuggestedQuestions>[0]) => useSuggestedQuestions(props),
+      {
+        initialProps: {
+          itemId: testItemId,
+          cioClient: mockClient,
+          parameters: initialParameters,
+        },
       },
-    });
+    );
 
     await act(async () => {
       await new Promise((resolve) => {
