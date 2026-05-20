@@ -2,6 +2,7 @@ import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Feedback from '../../../src/components/Feedback/Feedback';
+import { FeedbackRenderProps, FeedbackType } from '../../../src/types';
 
 describe('Feedback Component', () => {
   const onFeedback = jest.fn();
@@ -53,8 +54,8 @@ describe('Feedback Component', () => {
     });
 
     it('calls onFeedback when rendering through override', () => {
-      const renderPropsOverride = ({ onFeedback: onFeedbackOverride }) => (
-        <button type='button' onClick={() => onFeedbackOverride('up')}>
+      const renderPropsOverride = ({ onFeedback: onFeedbackOverride }: FeedbackRenderProps) => (
+        <button type='button' onClick={() => onFeedbackOverride!(FeedbackType.UP)}>
           Custom Upvote
         </button>
       );
@@ -75,8 +76,8 @@ describe('Feedback Component', () => {
     const thumbsDown = getByLabelText('thumbs down');
 
     // Both should render unselected SVGs (fill #0F1324 with opacity 0.6)
-    expect(thumbsUp.querySelector('path').getAttribute('fill')).toBe('#0F1324');
-    expect(thumbsDown.querySelector('path').getAttribute('fill')).toBe('#0F1324');
+    expect(thumbsUp.querySelector('path')?.getAttribute('fill')).toBe('#0F1324');
+    expect(thumbsDown.querySelector('path')?.getAttribute('fill')).toBe('#0F1324');
   });
 
   it('selects thumbs up when clicked', () => {
@@ -85,7 +86,7 @@ describe('Feedback Component', () => {
     const thumbsUp = getByLabelText('thumbs up');
     fireEvent.click(thumbsUp);
 
-    expect(thumbsUp.querySelector('path').getAttribute('fill')).toBe('#4CAF50');
+    expect(thumbsUp.querySelector('path')!.getAttribute('fill')).toBe('#4CAF50');
   });
 
   it('selects thumbs down when clicked', () => {
@@ -94,7 +95,7 @@ describe('Feedback Component', () => {
     const thumbsDown = getByLabelText('thumbs down');
     fireEvent.click(thumbsDown);
 
-    expect(thumbsDown.querySelector('path').getAttribute('fill')).toBe('#F44336');
+    expect(thumbsDown.querySelector('path')!.getAttribute('fill')).toBe('#F44336');
   });
 
   it('switches selection when clicking the other button', () => {
@@ -104,10 +105,10 @@ describe('Feedback Component', () => {
     const thumbsDown = getByLabelText('thumbs down');
 
     fireEvent.click(thumbsUp);
-    expect(thumbsUp.querySelector('path').getAttribute('fill')).toBe('#4CAF50');
+    expect(thumbsUp.querySelector('path')!.getAttribute('fill')).toBe('#4CAF50');
 
     fireEvent.click(thumbsDown);
-    expect(thumbsDown.querySelector('path').getAttribute('fill')).toBe('#F44336');
-    expect(thumbsUp.querySelector('path').getAttribute('fill')).toBe('#0F1324');
+    expect(thumbsDown.querySelector('path')!.getAttribute('fill')).toBe('#F44336');
+    expect(thumbsUp.querySelector('path')!.getAttribute('fill')).toBe('#0F1324');
   });
 });

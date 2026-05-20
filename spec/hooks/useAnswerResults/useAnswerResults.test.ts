@@ -2,13 +2,10 @@ import { renderHook, act } from '@testing-library/react';
 import useAnswerResults from '../../../src/hooks/useAnswerResults';
 import { DEMO_QUESTION } from '../../../src/constants';
 import { testGetAnswersApiResponse, testTransformedItems } from '../../localExamples';
+import { createMockCioClient } from '../../helpers/mockCioClient';
 
 describe('Testing Hook: useAnswerResults', () => {
-  const mockClient = {
-    agent: {
-      getAnswerResults: jest.fn(),
-    },
-  };
+  const mockClient = createMockCioClient();
 
   // Use mock response without item_results by default
   const mockResponse = {
@@ -69,7 +66,7 @@ describe('Testing Hook: useAnswerResults', () => {
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toEqual(mockResponse);
     expect(result.current.error).toBe(null);
-    expect(result.current.data.item_results).toBeUndefined();
+    expect(result.current.data!.item_results).toBeUndefined();
   });
 
   it('fetches and transforms answer results with item_results when available', async () => {
@@ -118,7 +115,7 @@ describe('Testing Hook: useAnswerResults', () => {
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toBe(null);
     expect(result.current.error).toBeInstanceOf(Error);
-    expect(result.current.error.message).toBe(errorMessage);
+    expect(result.current.error!.message).toBe(errorMessage);
   });
 
   it('refetch data when getAnswer is called again', async () => {
@@ -227,6 +224,7 @@ describe('Testing Hook: useAnswerResults', () => {
   });
 
   it('does not fetch if cioClient is not provided', () => {
+    // @ts-expect-error testing behavior when cioClient is not provided
     const { result } = renderHook(() => useAnswerResults({ ...testProps, cioClient: undefined }));
 
     act(() => {
@@ -260,7 +258,7 @@ describe('Testing Hook: useAnswerResults', () => {
     expect(formatImageUrl).toHaveBeenCalledTimes(
       mockResponseWithItemResults.item_results.response.results.length,
     );
-    result.current.items.forEach((item, index) => {
+    result.current.items!.forEach((item, index) => {
       const originalUrl = testTransformedItems[index].imageUrl;
       const expectedUrl = originalUrl.replace(/^https:\/\/[^/]+/, 'https://cdn.example.com');
       expect(item.imageUrl).toBe(expectedUrl);
