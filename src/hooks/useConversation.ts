@@ -129,17 +129,19 @@ export default function useConversation({
     const qnaResultId = answers.data?.qna_result_id;
 
     if (isConversation) {
-      if (conversationHistory.length === 0) return;
-      const updated = [...conversationHistory];
-      updated[updated.length - 1] = {
-        ...updated[updated.length - 1],
-        answer: answerValue,
-        items: answers.items,
-        threadId: answerThreadId,
-        qnaResultId,
-      };
-      setConversationHistory(updated);
-      callbacksRef.current?.onAnswer?.(updated, contextRef.current);
+      setConversationHistory((prev) => {
+        if (prev.length === 0) return prev;
+        const updated = [...prev];
+        updated[updated.length - 1] = {
+          ...updated[updated.length - 1],
+          answer: answerValue,
+          items: answers.items,
+          threadId: answerThreadId,
+          qnaResultId,
+        };
+        callbacksRef.current?.onAnswer?.(updated, contextRef.current);
+        return updated;
+      });
     } else {
       const entry: ConversationEntry = {
         id: entryIdRef.current,
@@ -152,7 +154,7 @@ export default function useConversation({
       };
       callbacksRef.current?.onAnswer?.([entry], contextRef.current);
     }
-  }, [isConversation, answers.data, answers.items, conversationHistory]);
+  }, [isConversation, answers.data, answers.items]);
 
   const currentAnswer = answers.data?.value ?? '';
   const currentItems = answers.items ?? null;
