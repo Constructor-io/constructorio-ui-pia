@@ -50,8 +50,8 @@ export default function useConversation({
   const prevAnswerValueRef = useRef(answers.data?.value);
   const callbacksRef = useRef(callbacks);
   const contextRef = useRef(context);
-  const pendingOnAnswerRef = useRef(false);
   const lastQuestionRef = useRef<string>('');
+  const lastSourceRef = useRef<QuestionSource>('user');
 
   useEffect(() => {
     callbacksRef.current = callbacks;
@@ -60,8 +60,6 @@ export default function useConversation({
   useEffect(() => {
     contextRef.current = context;
   }, [context]);
-
-  const lastSourceRef = useRef<QuestionSource>('user');
 
   const submitQuestion = useCallback(
     (question: string, source: QuestionSource) => {
@@ -127,7 +125,7 @@ export default function useConversation({
     if (answerValue === prevAnswerValueRef.current) return;
     prevAnswerValueRef.current = answerValue;
 
-    const threadId = answers.data?.thread_id;
+    const answerThreadId = answers.data?.thread_id;
     const qnaResultId = answers.data?.qna_result_id;
 
     if (isConversation) {
@@ -138,12 +136,12 @@ export default function useConversation({
           ...updated[updated.length - 1],
           answer: answerValue,
           items: answers.items,
-          threadId,
+          threadId: answerThreadId,
           qnaResultId,
         };
+        callbacksRef.current?.onAnswer?.(updated, contextRef.current);
         return updated;
       });
-      pendingOnAnswerRef.current = true;
     } else {
       const entry: ConversationEntry = {
         id: entryIdRef.current,
@@ -151,20 +149,12 @@ export default function useConversation({
         answer: answerValue,
         source: lastSourceRef.current,
         items: answers.items,
-        threadId,
+        threadId: answerThreadId,
         qnaResultId,
       };
       callbacksRef.current?.onAnswer?.([entry], contextRef.current);
     }
   }, [isConversation, answers.data, answers.items]);
-
-  useEffect(() => {
-    if (!pendingOnAnswerRef.current || conversationHistory.length === 0) return;
-    const lastEntry = conversationHistory[conversationHistory.length - 1];
-    if (!lastEntry.answer) return;
-    pendingOnAnswerRef.current = false;
-    callbacksRef.current?.onAnswer?.(conversationHistory, contextRef.current);
-  }, [conversationHistory]);
 
   const currentAnswer = answers.data?.value ?? '';
   const currentItems = answers.items ?? null;

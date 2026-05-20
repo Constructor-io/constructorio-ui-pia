@@ -28,6 +28,12 @@ export default function useViewportCallbacks({
     contextRef.current = context;
   }, [context]);
 
+  useEffect(() => {
+    return () => {
+      observerRef.current?.disconnect();
+    };
+  }, []);
+
   const containerRef = useCallback((node: HTMLDivElement | null) => {
     if (observerRef.current) {
       observerRef.current.disconnect();
@@ -35,6 +41,9 @@ export default function useViewportCallbacks({
     }
 
     if (!node) return;
+
+    hasBeenVisibleRef.current = false;
+    hasFiredOutOfViewRef.current = false;
 
     const observer = new IntersectionObserver(
       ([entry]) => {

@@ -47,6 +47,12 @@ describe('Testing Hook: useViewportCallbacks', () => {
     }).not.toThrow();
   });
 
+  it('does not throw when intersection fires with no callbacks', () => {
+    renderAndAttach({ context: mockContext });
+    expect(() => observeCallback([{ isIntersecting: true }])).not.toThrow();
+    expect(() => observeCallback([{ isIntersecting: false }])).not.toThrow();
+  });
+
   it('does not call onOutOfView on initial non-intersection', () => {
     const onView = jest.fn();
     const onOutOfView = jest.fn();
@@ -126,5 +132,34 @@ describe('Testing Hook: useViewportCallbacks', () => {
       result.current.containerRef(secondElement);
     });
     expect(mockDisconnect).toHaveBeenCalledTimes(1);
+  });
+
+  it('resets visibility flags when ref receives a new node', () => {
+    const onView = jest.fn();
+    const onOutOfView = jest.fn();
+    const { result } = renderHook(() =>
+      useViewportCallbacks({ callbacks: { onView, onOutOfView }, context: mockContext }),
+    );
+
+    const firstElement = document.createElement('div');
+    act(() => {
+      result.current.containerRef(firstElement);
+    });
+
+    observeCallback([{ isIntersecting: true }]);
+    observeCallback([{ isIntersecting: false }]);
+    expect(onView).toHaveBeenCalledTimes(1);
+    expect(onOutOfView).toHaveBeenCalledTimes(1);
+
+    const secondElement = document.createElement('div');
+    act(() => {
+      result.current.containerRef(secondElement);
+    });
+
+    observeCallback([{ isIntersecting: true }]);
+    expect(onView).toHaveBeenCalledTimes(2);
+
+    observeCallback([{ isIntersecting: false }]);
+    expect(onOutOfView).toHaveBeenCalledTimes(2);
   });
 });
