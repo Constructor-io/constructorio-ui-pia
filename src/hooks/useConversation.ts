@@ -19,6 +19,7 @@ export interface UseConversationProps {
 
 export interface UseConversationReturn {
   currentQuestion: string;
+  currentSource: QuestionSource;
   displayedQuestions: Question[];
   conversationHistory: ConversationEntry[];
   currentAnswer: string;
@@ -45,6 +46,7 @@ export default function useConversation({
   const context: PiaCallbackContext = useMemo(() => ({ itemId, threadId }), [itemId, threadId]);
 
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
+  const [currentSource, setCurrentSource] = useState<QuestionSource>('user');
   const [displayedQuestions, setDisplayedQuestions] = useState<Question[]>([]);
   const [conversationHistory, setConversationHistory] = useState<ConversationEntry[]>([]);
 
@@ -68,6 +70,7 @@ export default function useConversation({
       lastSourceRef.current = source;
       lastQuestionRef.current = question;
       setCurrentQuestion(question);
+      setCurrentSource(source);
       getAnswer(question);
 
       if (isConversation) {
@@ -168,6 +171,7 @@ export default function useConversation({
 
   return {
     currentQuestion,
+    currentSource,
     displayedQuestions,
     conversationHistory,
     currentAnswer,

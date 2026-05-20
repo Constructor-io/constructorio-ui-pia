@@ -92,6 +92,7 @@ export default function CioPia(props: CioPiaProps) {
 
   const {
     currentQuestion,
+    currentSource,
     displayedQuestions,
     conversationHistory,
     currentAnswer,
@@ -125,6 +126,7 @@ export default function CioPia(props: CioPiaProps) {
     error,
     currentItems,
     currentResponse,
+    context,
     showFeedback,
     showPreviousItems,
     learnMoreUrl,
@@ -182,8 +184,10 @@ export default function CioPia(props: CioPiaProps) {
               <PiaInlineAnswer
                 currentAnswer={currentAnswer}
                 currentQuestion={currentQuestion}
-                currentResponse={currentResponse!}
+                currentResponse={currentResponse}
+                currentSource={currentSource}
                 currentItems={currentItems}
+                context={context}
                 showFeedback={showFeedback}
                 learnMoreUrl={learnMoreUrl}
                 disclaimerPosition={disclaimerPosition}

@@ -92,7 +92,7 @@ export interface Callbacks {
   /** Called when a product card in the carousel is clicked. */
   onProductCardClick?: (item: Item) => void;
   /** Called when the user submits positive or negative feedback on an answer. */
-  onFeedback?: (type: FeedbackType, question: string, response: GetAnswerResultsResponse) => void;
+  onFeedback?: (type: FeedbackType, entry: ConversationEntry, context: PiaCallbackContext) => void;
   /** Called when a new answer is received. Passes the full conversation history. */
   onAnswer?: (history: ConversationEntry[], context: PiaCallbackContext) => void;
   /** Called when the user focuses the input field. */

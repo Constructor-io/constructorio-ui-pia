@@ -8,6 +8,7 @@ import PiaCustomCarousel from '../CioPia/PiaCustomCarousel';
 import {
   ConversationEntry,
   GetAnswerResultsResponse,
+  PiaCallbackContext,
   Translations,
   Item,
   Callbacks,
@@ -27,6 +28,7 @@ export interface ConversationHistoryProps {
    */
   currentItems?: Item[] | null;
   currentResponse?: GetAnswerResultsResponse | null;
+  context: PiaCallbackContext;
   showFeedback?: boolean;
   /**
    * Show product carousels on non-last conversation entries. Defaults to true.
@@ -46,6 +48,7 @@ export default function ConversationHistory({
   error,
   currentItems,
   currentResponse,
+  context,
   showFeedback,
   showPreviousItems = true,
   learnMoreUrl,
@@ -117,9 +120,7 @@ export default function ConversationHistory({
                   {isLast && showFeedback && feedbackResponse && (
                     <Feedback
                       translations={translations}
-                      onFeedback={(type) =>
-                        callbacks?.onFeedback?.(type, entry.question, feedbackResponse)
-                      }
+                      onFeedback={(type) => callbacks?.onFeedback?.(type, entry, context)}
                       componentOverride={componentOverrides?.feedback}
                     />
                   )}

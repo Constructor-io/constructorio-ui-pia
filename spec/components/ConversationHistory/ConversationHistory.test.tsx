@@ -1,14 +1,22 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react';
 import ConversationHistory from '../../../src/components/ConversationHistory/ConversationHistory';
 import { DISCLAIMER_TEXT } from '../../../src/constants';
+import { ConversationEntry } from '../../../src/types';
+
+type EntryInput = Omit<ConversationEntry, 'source'> & { source?: ConversationEntry['source'] };
+
+function entries(...items: EntryInput[]): ConversationEntry[] {
+  return items.map((item) => ({ source: 'user', ...item }));
+}
 
 describe('ConversationHistory Component', () => {
   const baseProps = {
-    conversationHistory: [],
+    conversationHistory: [] as ConversationEntry[],
     isLoading: false,
     error: null,
+    context: { itemId: 'test-item', threadId: 'test-thread' },
   };
 
   beforeEach(() => {
@@ -24,10 +32,10 @@ describe('ConversationHistory Component', () => {
   });
 
   it('renders all conversation entries with question and answer', () => {
-    const conversationHistory = [
+    const conversationHistory = entries(
       { id: 1, question: 'What is this product?', answer: 'It is a rug.' },
       { id: 2, question: 'What material is it?', answer: 'It is made of wool.' },
-    ];
+    );
 
     render(<ConversationHistory {...baseProps} conversationHistory={conversationHistory} />);
 
@@ -38,10 +46,10 @@ describe('ConversationHistory Component', () => {
   });
 
   it('shows loading skeleton on the last entry only when loading', () => {
-    const conversationHistory = [
+    const conversationHistory = entries(
       { id: 1, question: 'First question', answer: 'First answer' },
       { id: 2, question: 'Last question', answer: '' },
-    ];
+    );
 
     render(
       <ConversationHistory {...baseProps} conversationHistory={conversationHistory} isLoading />,
@@ -51,10 +59,10 @@ describe('ConversationHistory Component', () => {
   });
 
   it('does not show loading skeleton on non-last entries', () => {
-    const conversationHistory = [
+    const conversationHistory = entries(
       { id: 1, question: 'First question', answer: 'First answer' },
       { id: 2, question: 'Last question', answer: '' },
-    ];
+    );
 
     render(
       <ConversationHistory {...baseProps} conversationHistory={conversationHistory} isLoading />,
@@ -64,10 +72,10 @@ describe('ConversationHistory Component', () => {
   });
 
   it('shows error block on the last entry only when error and not loading', () => {
-    const conversationHistory = [
+    const conversationHistory = entries(
       { id: 1, question: 'First question', answer: 'First answer' },
       { id: 2, question: 'Last question', answer: '' },
-    ];
+    );
 
     render(
       <ConversationHistory
@@ -83,7 +91,7 @@ describe('ConversationHistory Component', () => {
   });
 
   it('does not show error block when loading even if error exists', () => {
-    const conversationHistory = [{ id: 1, question: 'Last question', answer: '' }];
+    const conversationHistory = entries({ id: 1, question: 'Last question', answer: '' });
 
     render(
       <ConversationHistory
@@ -99,42 +107,40 @@ describe('ConversationHistory Component', () => {
 
   it('shows feedback on the last entry only when showFeedback is true', () => {
     const mockResponse = { qna_result_id: 'id-2', value: 'Last answer' };
-    const conversationHistory = [
+    const conversationHistory = entries(
       { id: 1, question: 'First question', answer: 'First answer', response: { qna_result_id: 'id-1', value: 'First answer' } },
       { id: 2, question: 'Last question', answer: 'Last answer', response: mockResponse },
-    ];
+    );
 
     render(
       <ConversationHistory {...baseProps} conversationHistory={conversationHistory} currentResponse={mockResponse} showFeedback />,
     );
 
-    // Feedback should only appear once (on the last entry)
     const feedbackElements = document.querySelectorAll('.cio-pia-feedback-container');
     expect(feedbackElements).toHaveLength(1);
   });
 
   it('does not show feedback on non-last entries that have answers', () => {
     const mockResponse = { qna_result_id: 'id-3', value: 'Last answer' };
-    const conversationHistory = [
+    const conversationHistory = entries(
       { id: 1, question: 'First question', answer: 'First answer', response: { qna_result_id: 'id-1', value: 'First answer' } },
       { id: 2, question: 'Second question', answer: 'Second answer', response: { qna_result_id: 'id-2', value: 'Second answer' } },
       { id: 3, question: 'Last question', answer: 'Last answer', response: mockResponse },
-    ];
+    );
 
     render(
       <ConversationHistory {...baseProps} conversationHistory={conversationHistory} currentResponse={mockResponse} showFeedback />,
     );
 
-    // Only the last entry should have feedback
     const feedbackElements = document.querySelectorAll('.cio-pia-feedback-container');
     expect(feedbackElements).toHaveLength(1);
   });
 
   it('shows disclaimer on the last entry when it has an answer', () => {
-    const conversationHistory = [
+    const conversationHistory = entries(
       { id: 1, question: 'First question', answer: 'First answer' },
       { id: 2, question: 'Last question', answer: 'Last answer' },
-    ];
+    );
 
     render(<ConversationHistory {...baseProps} conversationHistory={conversationHistory} />);
 
@@ -142,22 +148,21 @@ describe('ConversationHistory Component', () => {
   });
 
   it('does not show disclaimer on non-last entries', () => {
-    const conversationHistory = [
+    const conversationHistory = entries(
       { id: 1, question: 'First question', answer: 'First answer' },
       { id: 2, question: 'Last question', answer: 'Last answer' },
-    ];
+    );
 
     render(<ConversationHistory {...baseProps} conversationHistory={conversationHistory} />);
 
-    // Disclaimer appears exactly once (on the last entry only)
     expect(screen.getAllByText(DISCLAIMER_TEXT)).toHaveLength(1);
   });
 
   it('renders carousel on the last entry only when currentItems are provided', () => {
-    const conversationHistory = [
+    const conversationHistory = entries(
       { id: 1, question: 'First question', answer: 'First answer' },
       { id: 2, question: 'Last question', answer: 'Last answer' },
-    ];
+    );
     const currentItems = [
       {
         id: 'item-1',
@@ -199,10 +204,10 @@ describe('ConversationHistory Component', () => {
         price: 10,
       },
     ];
-    const conversationHistory = [
+    const conversationHistory = entries(
       { id: 1, question: 'First question', answer: 'First answer', items: previousItems },
       { id: 2, question: 'Last question', answer: 'Last answer' },
-    ];
+    );
 
     const { container } = render(
       <ConversationHistory
@@ -226,10 +231,10 @@ describe('ConversationHistory Component', () => {
         price: 10,
       },
     ];
-    const conversationHistory = [
+    const conversationHistory = entries(
       { id: 1, question: 'First question', answer: 'First answer' },
       { id: 2, question: 'Last question', answer: 'Last answer' },
-    ];
+    );
 
     const { container } = render(
       <ConversationHistory
@@ -262,10 +267,10 @@ describe('ConversationHistory Component', () => {
         price: 10,
       },
     ];
-    const conversationHistory = [
+    const conversationHistory = entries(
       { id: 1, question: 'First question', answer: 'First answer', items: previousItems },
       { id: 2, question: 'Last question', answer: 'Last answer' },
-    ];
+    );
 
     const { container } = render(
       <ConversationHistory
@@ -281,22 +286,20 @@ describe('ConversationHistory Component', () => {
   });
 
   it('does not render carousel when currentItems is null even if entry has items', () => {
-    const conversationHistory = [
-      {
-        id: 1,
-        question: 'Q',
-        answer: 'A',
-        items: [
-          {
-            id: 'x',
-            name: 'P',
-            url: '/',
-            imageUrl: '/img.jpg',
-            price: 1,
-          },
-        ],
-      },
-    ];
+    const conversationHistory = entries({
+      id: 1,
+      question: 'Q',
+      answer: 'A',
+      items: [
+        {
+          id: 'x',
+          name: 'P',
+          url: '/',
+          imageUrl: '/img.jpg',
+          price: 1,
+        },
+      ],
+    });
 
     const { container } = render(
       <ConversationHistory
@@ -319,9 +322,9 @@ describe('ConversationHistory Component', () => {
         price: 15,
       },
     ];
-    const conversationHistory = [
+    const conversationHistory = entries(
       { id: 1, question: 'Last question', answer: 'Last answer', items: entryItems },
-    ];
+    );
 
     const { container } = render(
       <ConversationHistory {...baseProps} conversationHistory={conversationHistory} />,
@@ -350,9 +353,9 @@ describe('ConversationHistory Component', () => {
         price: 20,
       },
     ];
-    const conversationHistory = [
+    const conversationHistory = entries(
       { id: 1, question: 'Last question', answer: 'Last answer', items: entryItems },
-    ];
+    );
 
     render(
       <ConversationHistory
@@ -367,9 +370,9 @@ describe('ConversationHistory Component', () => {
   });
 
   describe('disclaimerPosition', () => {
-    const conversationHistory = [
+    const conversationHistory = entries(
       { id: 1, question: 'First question', answer: 'First answer' },
-    ];
+    );
 
     it('renders disclaimer after conversation entries by default', () => {
       const { container } = render(
@@ -422,8 +425,36 @@ describe('ConversationHistory Component', () => {
     });
   });
 
+  it('calls onFeedback with type, entry, and context', () => {
+    const mockOnFeedback = jest.fn();
+    const mockResponse = { qna_result_id: 'id-1', value: 'Last answer' };
+    const conversationHistory = entries(
+      { id: 1, question: 'Last question', answer: 'Last answer', response: mockResponse },
+    );
+
+    render(
+      <ConversationHistory
+        {...baseProps}
+        conversationHistory={conversationHistory}
+        currentResponse={mockResponse}
+        showFeedback
+        callbacks={{ onFeedback: mockOnFeedback }}
+      />,
+    );
+
+    fireEvent.click(screen.getByLabelText('thumbs up'));
+
+    expect(mockOnFeedback).toHaveBeenCalledWith(
+      'up',
+      conversationHistory[0],
+      baseProps.context,
+    );
+  });
+
   it('does not show feedback on last entry when showFeedback is false or not provided', () => {
-    const conversationHistory = [{ id: 1, question: 'Last question', answer: 'Last answer' }];
+    const conversationHistory = entries(
+      { id: 1, question: 'Last question', answer: 'Last answer' },
+    );
 
     render(<ConversationHistory {...baseProps} conversationHistory={conversationHistory} />);
 

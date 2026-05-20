@@ -22,6 +22,7 @@ export default function PiaConversation({
   error,
   currentItems,
   currentResponse,
+  context,
   showFeedback,
   showPreviousItems,
   learnMoreUrl,
@@ -54,6 +55,7 @@ export default function PiaConversation({
         error={error}
         currentItems={currentItems}
         currentResponse={currentResponse}
+        context={context}
         showFeedback={showFeedback}
         showPreviousItems={showPreviousItems}
         learnMoreUrl={learnMoreUrl}
