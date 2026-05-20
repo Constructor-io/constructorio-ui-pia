@@ -12,6 +12,6 @@ export function sanitizeHtml(html: string): string {
 
 export function renderMarkdown(content: string): string {
   if (!content) return '';
-  const html = marked.parse(content, { async: false });
+  const html = marked.parse(content, { async: false, breaks: true });
   return DOMPurify.sanitize(html, purifyConfig);
 }

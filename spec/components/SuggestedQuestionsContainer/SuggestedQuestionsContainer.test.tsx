@@ -3,10 +3,6 @@ import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import SuggestedQuestionsContainer from '../../../src/components/SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import { MOCK_QUESTIONS } from '../../../src/constants';
-import useSuggestedQuestions from '../../../src/hooks/useSuggestedQuestions';
-
-// Mock useSuggestedQuestions hook
-jest.mock('../../../src/hooks/useSuggestedQuestions', () => jest.fn());
 
 describe('SuggestedQuestionsContainer Component', () => {
   const defaultProps = {
@@ -15,12 +11,6 @@ describe('SuggestedQuestionsContainer Component', () => {
   };
 
   beforeEach(() => {
-    useSuggestedQuestions.mockReturnValue({
-      questions: MOCK_QUESTIONS,
-      error: null,
-      refetch: jest.fn(),
-    });
-
     defaultProps.onQuestionClick.mockClear();
   });
 

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import CioPia from '../../../components/CioPia/CioPia';
 import { DEMO_API_KEY, DEMO_ITEM_ID } from '../../../constants';
+import { prependCdnBase } from '../../utils';
 
 const meta = {
   title: 'Components/CioPia',
@@ -30,20 +31,30 @@ const meta = {
     },
     callbacks: {
       description: [
-        'Callback handlers for user interactions:',
+        'Callback handlers for user interactions.',
         '',
-        '`onQuestionSubmit: (question: string) => void` — Called when a question is submitted (via Enter key, Send button, or suggested question click).',
+        '`context` is `{ itemId: string, threadId: string }` — identifies the product and conversation session.',
+        '',
+        "`onQuestionSubmit: (question, context, source) => void` — Called when a question is submitted. `source` is `'user'` (typed) or `'suggestion'` (clicked).",
+        '',
+        '`onAnswer: (history, context) => void` — Called when a new answer is received. Passes the full conversation history.',
         '',
         '`onProductCardClick: (item: Item) => void` — Called when a product card in the carousel is clicked.',
         '',
         '`onFeedback: (type: FeedbackType, question: string, response: GetAnswerResultsResponse) => void` — Called when the user submits positive or negative feedback on an answer.',
+        '',
+        '`onFocus: (context) => void` — Called when the user focuses the input field.',
+        '',
+        '`onView: (context) => void` — Called when the widget enters the viewport.',
+        '',
+        '`onOutOfView: (context) => void` — Called when the widget leaves the viewport.',
       ].join('\n'),
       table: { type: { summary: 'Callbacks' } },
     },
     componentOverrides: {
       description: [
         'Custom component overrides via reactNode or render props functions.',
-        'See [ComponentOverrides](/?path=/docs/components-ciopia-componentoverrides--docs) for live examples and the full override hierarchy.',
+        'See [ComponentOverrides](./?path=/docs/components-ciopia-componentoverrides--docs) for live examples and the full override hierarchy.',
       ].join('\n'),
       table: { type: { summary: 'CioPiaComponentOverrides' } },
     },
@@ -89,9 +100,6 @@ const meta = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
-
-// Define outside the component (or use useCallback) to avoid unnecessary re-renders.
-const prependCdnBase = (url: string) => (url.startsWith('/') ? `https://example.com${url}` : url);
 
 export const Default: Story = {
   args: {

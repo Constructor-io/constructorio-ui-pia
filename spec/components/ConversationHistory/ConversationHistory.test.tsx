@@ -376,7 +376,7 @@ describe('ConversationHistory Component', () => {
         <ConversationHistory {...baseProps} conversationHistory={conversationHistory} />,
       );
 
-      const history = container.querySelector('.cio-pia-conversation-history');
+      const history = container.querySelector('.cio-pia-conversation-history')!;
       const children = Array.from(history.children);
       const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
       const entriesIndex = children.findIndex((el) =>
@@ -394,7 +394,7 @@ describe('ConversationHistory Component', () => {
         />,
       );
 
-      const history = container.querySelector('.cio-pia-conversation-history');
+      const history = container.querySelector('.cio-pia-conversation-history')!;
       const children = Array.from(history.children);
       const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
       const entriesIndex = children.findIndex((el) =>
@@ -412,7 +412,7 @@ describe('ConversationHistory Component', () => {
         />,
       );
 
-      const history = container.querySelector('.cio-pia-conversation-history');
+      const history = container.querySelector('.cio-pia-conversation-history')!;
       const children = Array.from(history.children);
       const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
       const entriesIndex = children.findIndex((el) =>
