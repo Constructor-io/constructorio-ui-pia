@@ -110,3 +110,92 @@ div.badge-wrapper code {
   background: #d8e8fd;
   color: #3c70bf;
 }
+
+.cio-flow-diagram {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 24px 0 0;
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+}
+
+.cio-flow-diagram .flow-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cio-flow-diagram .flow-box {
+  padding: 10px 16px;
+  border-radius: 8px;
+  min-width: 220px;
+  text-align: center;
+}
+
+.cio-flow-diagram .flow-box--consumer {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+
+.cio-flow-diagram .flow-box--internal {
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+}
+
+.cio-flow-diagram .flow-box--output {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+.cio-flow-diagram .flow-arrow {
+  margin-left: 110px;
+  color: #9ca3af;
+}
+
+.cio-flow-diagram .flow-label {
+  font-size: 12px;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.cio-flow-diagram .flow-callback {
+  font-size: 12px;
+  color: #059669;
+}
+
+.cio-flow-diagram .flow-box-subtitle {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.cio-flow-legend {
+  display: flex;
+  gap: 16px;
+  margin: 32px 0 16px;
+  font-size: 12px;
+}
+
+.cio-flow-legend .legend-swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.cio-flow-legend .legend-swatch--consumer {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+
+.cio-flow-legend .legend-swatch--internal {
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+}
+
+.cio-flow-legend .legend-swatch--output {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
