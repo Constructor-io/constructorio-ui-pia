@@ -75,10 +75,12 @@ const mockItems = [
   },
 ];
 
+const mockGeneratedThreadId = 'mock-generated-thread-id';
 const mockGetAnswer = jest.fn();
 const mockGetSuggestedQuestions = jest.fn();
 
 const mockLoadingResponse = {
+  threadId: mockGeneratedThreadId,
   suggestedQuestions: {
     data: [],
     isLoading: true,
@@ -95,6 +97,7 @@ const mockLoadingResponse = {
 };
 
 const mockErrorResponse = {
+  threadId: mockGeneratedThreadId,
   suggestedQuestions: {
     data: [],
     isLoading: false,
@@ -131,6 +134,7 @@ function mockUseCioPia({
   answerError?: Error | null;
 } = {}) {
   mockUseCioPiaHook.mockImplementation(() => ({
+    threadId: mockGeneratedThreadId,
     suggestedQuestions: {
       data: questionsData,
       isLoading: questionIsLoading,
@@ -204,7 +208,7 @@ describe('CioPia Component', () => {
     });
 
     it('passes formatImageUrl from formatters to useCioPia', () => {
-      const formatImageUrl = (url) => `https://cdn.example.com${url}`;
+      const formatImageUrl = (url: string) => `https://cdn.example.com${url}`;
 
       render(<CioPia {...mockProps} formatters={{ formatImageUrl }} />);
 
@@ -298,7 +302,7 @@ describe('CioPia Component', () => {
   });
 
   describe('Callbacks Tests', () => {
-    it('calls onQuestionSubmit callback when a question is submitted via input', () => {
+    it('calls onQuestionSubmit callback with user source when a question is submitted via input', () => {
       const mockOnQuestionSubmit = jest.fn();
 
       const { getByRole } = render(
@@ -309,11 +313,15 @@ describe('CioPia Component', () => {
       fireEvent.change(input, { target: { value: testQuestion } });
       fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
 
-      expect(mockOnQuestionSubmit).toHaveBeenCalledWith(testQuestion);
+      expect(mockOnQuestionSubmit).toHaveBeenCalledWith(
+        testQuestion,
+        { itemId: mockProps.itemId, threadId: mockGeneratedThreadId },
+        'user',
+      );
       expect(mockOnQuestionSubmit).toHaveBeenCalledTimes(1);
     });
 
-    it('calls onQuestionSubmit callback when a suggested question is clicked', () => {
+    it('calls onQuestionSubmit callback with suggestion source when a suggested question is clicked', () => {
       const mockOnQuestionSubmit = jest.fn();
 
       const { getByText } = render(
@@ -322,7 +330,11 @@ describe('CioPia Component', () => {
 
       fireEvent.click(getByText(mockSuggestedQuestions[0].value));
 
-      expect(mockOnQuestionSubmit).toHaveBeenCalledWith(mockSuggestedQuestions[0].value);
+      expect(mockOnQuestionSubmit).toHaveBeenCalledWith(
+        mockSuggestedQuestions[0].value,
+        { itemId: mockProps.itemId, threadId: mockGeneratedThreadId },
+        'suggestion',
+      );
       expect(mockOnQuestionSubmit).toHaveBeenCalledTimes(1);
     });
 

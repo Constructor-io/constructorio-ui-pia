@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Formatters, SuggestedQuestionsParameters } from '../types';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 import useAnswerResults, { UseAnswerResultsReturn } from './useAnswerResults';
@@ -16,6 +17,7 @@ export interface UseCioPiaProps {
 }
 
 export interface UseCioPiaReturn {
+  threadId: string;
   suggestedQuestions: UseSuggestedQuestionsReturn;
   answers: UseAnswerResultsReturn;
 }
@@ -25,11 +27,14 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     apiKey,
     itemId,
     variationId,
-    threadId,
+    threadId: providedThreadId,
     cioClient: providedClient,
     suggestedQuestionsParameters,
     formatImageUrl,
   } = props;
+
+  const [generatedThreadId] = useState(() => crypto.randomUUID());
+  const threadId = providedThreadId || generatedThreadId;
 
   const defaultClient = useCioClient({ apiKey });
   const client = providedClient || defaultClient;
@@ -51,6 +56,7 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
   });
 
   return {
+    threadId,
     suggestedQuestions,
     answers,
   };

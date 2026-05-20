@@ -75,13 +75,32 @@ export type Translations = {
   'Ask about this product'?: string;
 };
 
+export type QuestionSource = 'user' | 'suggestion';
+
+export interface PiaCallbackContext {
+  itemId: string;
+  threadId: string;
+}
+
 export interface Callbacks {
-  /** Called when a question is submitted (via Enter key, Send button, or suggested question click). */
-  onQuestionSubmit?: (question: string) => void;
+  /** Called when a question is submitted (typed or suggested question clicked). */
+  onQuestionSubmit?: (
+    question: string,
+    context: PiaCallbackContext,
+    source: QuestionSource,
+  ) => void;
   /** Called when a product card in the carousel is clicked. */
   onProductCardClick?: (item: Item) => void;
   /** Called when the user submits positive or negative feedback on an answer. */
   onFeedback?: (type: FeedbackType) => void;
+  /** Called when a new answer is received. Passes the full conversation history. */
+  onAnswer?: (history: ConversationEntry[], context: PiaCallbackContext) => void;
+  /** Called when the user focuses the input field. */
+  onFocus?: (context: PiaCallbackContext) => void;
+  /** Called when the widget enters the viewport. */
+  onView?: (context: PiaCallbackContext) => void;
+  /** Called when the widget leaves the viewport. */
+  onOutOfView?: (context: PiaCallbackContext) => void;
 }
 
 /** Formatter functions for transforming data before display. */
@@ -100,7 +119,10 @@ export interface ConversationEntry {
   id: number;
   question: string;
   answer: string;
+  source: QuestionSource;
   items?: Item[] | null;
+  threadId?: string;
+  qnaResultId?: string;
 }
 
 /**

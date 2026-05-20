@@ -4,6 +4,7 @@ import { UseCioPiaReturn } from '../../../src/hooks/useCioPia';
 import { GetAnswerResultsResponse } from '../../../src/hooks/mocks/types';
 
 interface MockPiaOverrides {
+  threadId?: string;
   suggestedQuestions?: Partial<UseCioPiaReturn['suggestedQuestions']>;
   answers?: Partial<Omit<UseCioPiaReturn['answers'], 'data'>> & {
     data?: Partial<GetAnswerResultsResponse> | null;
@@ -21,9 +22,12 @@ describe('Testing Hook: useConversation', () => {
 
   const mockAnswerValue = 'Sample answer to the given question';
 
+  const mockThreadId = 'mock-thread-id';
+
   function createMockPia(overrides: MockPiaOverrides = {}): UseCioPiaReturn {
     const { data: answerData, ...restAnswers } = overrides.answers || {};
     return {
+      threadId: overrides.threadId ?? mockThreadId,
       suggestedQuestions: {
         data: [],
         isLoading: false,
@@ -91,7 +95,11 @@ describe('Testing Hook: useConversation', () => {
       result.current.handleSubmitQuestion('What is this product?');
     });
 
-    expect(onQuestionSubmit).toHaveBeenCalledWith('What is this product?');
+    expect(onQuestionSubmit).toHaveBeenCalledWith(
+      'What is this product?',
+      { itemId: 'test-item', threadId: mockThreadId },
+      'user',
+    );
     expect(onQuestionSubmit).toHaveBeenCalledTimes(1);
   });
 
@@ -132,7 +140,7 @@ describe('Testing Hook: useConversation', () => {
     });
 
     expect(result.current.conversationHistory).toEqual([
-      { id: 1, question: 'What is this product?', answer: '' },
+      { id: 1, question: 'What is this product?', answer: '', source: 'user' },
     ]);
   });
 
@@ -563,6 +571,297 @@ describe('Testing Hook: useConversation', () => {
       rerender({ pia, itemId: 'item-2', isConversation: false });
 
       expect(result.current.displayedQuestions).toEqual(newQuestions);
+    });
+  });
+
+  describe('handleQuestionClick', () => {
+    it('calls callbacks.onQuestionSubmit with suggestion source when a suggested question is clicked', () => {
+      const pia = createMockPia();
+      const onQuestionSubmit = jest.fn();
+      const { result } = renderHook(() =>
+        useConversation({
+          pia,
+          itemId: 'test-item',
+          isConversation: false,
+          callbacks: { onQuestionSubmit },
+        }),
+      );
+
+      act(() => {
+        result.current.handleQuestionClick('Suggested question?');
+      });
+
+      expect(onQuestionSubmit).toHaveBeenCalledWith(
+        'Suggested question?',
+        { itemId: 'test-item', threadId: mockThreadId },
+        'suggestion',
+      );
+      expect(onQuestionSubmit).toHaveBeenCalledTimes(1);
+    });
+
+    it('calls getAnswer when a suggested question is clicked', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({ pia, itemId: 'test-item', isConversation: false }),
+      );
+
+      act(() => {
+        result.current.handleQuestionClick('Suggested question?');
+      });
+
+      expect(pia.answers.getAnswer).toHaveBeenCalledWith('Suggested question?');
+    });
+
+    it('sets source to suggestion in conversation history', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({ pia, itemId: 'test-item', isConversation: true }),
+      );
+
+      act(() => {
+        result.current.handleQuestionClick('Suggested question?');
+      });
+
+      expect(result.current.conversationHistory[0].source).toBe('suggestion');
+    });
+  });
+
+  describe('handleInputFocus', () => {
+    it('calls callbacks.onFocus with context when input is focused', () => {
+      const pia = createMockPia();
+      const onFocus = jest.fn();
+      const { result } = renderHook(() =>
+        useConversation({
+          pia,
+          itemId: 'test-item',
+          isConversation: false,
+          callbacks: { onFocus },
+        }),
+      );
+
+      act(() => {
+        result.current.handleInputFocus();
+      });
+
+      expect(onFocus).toHaveBeenCalledWith({ itemId: 'test-item', threadId: mockThreadId });
+      expect(onFocus).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not throw when callbacks.onFocus is not provided', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({ pia, itemId: 'test-item', isConversation: false, callbacks: {} }),
+      );
+
+      expect(() => {
+        act(() => {
+          result.current.handleInputFocus();
+        });
+      }).not.toThrow();
+    });
+  });
+
+  describe('onAnswer callback', () => {
+    it('calls onAnswer with conversation history in conversation mode', () => {
+      const getAnswer = jest.fn();
+      const onAnswer = jest.fn();
+      let pia = createMockPia({ answers: { getAnswer } });
+
+      const { result, rerender } = renderHook((props) => useConversation(props), {
+        initialProps: {
+          pia,
+          itemId: 'test-item',
+          isConversation: true,
+          callbacks: { onAnswer },
+        },
+      });
+
+      act(() => {
+        result.current.handleSubmitQuestion('What is this?');
+      });
+
+      pia = createMockPia({
+        answers: {
+          getAnswer,
+          data: {
+            value: mockAnswerValue,
+            thread_id: 'thread-123',
+            qna_result_id: 'qna-456',
+          },
+          items: [{ id: 'p1', name: 'Product 1' }],
+        },
+      });
+      rerender({
+        pia,
+        itemId: 'test-item',
+        isConversation: true,
+        callbacks: { onAnswer },
+      });
+
+      expect(onAnswer).toHaveBeenCalledTimes(1);
+      expect(onAnswer).toHaveBeenCalledWith(
+        [
+          expect.objectContaining({
+            question: 'What is this?',
+            answer: mockAnswerValue,
+            threadId: 'thread-123',
+            qnaResultId: 'qna-456',
+          }),
+        ],
+        { itemId: 'test-item', threadId: mockThreadId },
+      );
+    });
+
+    it('calls onAnswer with a single entry in inline mode', () => {
+      const getAnswer = jest.fn();
+      const onAnswer = jest.fn();
+      let pia = createMockPia({ answers: { getAnswer } });
+
+      const { result, rerender } = renderHook((props) => useConversation(props), {
+        initialProps: {
+          pia,
+          itemId: 'test-item',
+          isConversation: false,
+          callbacks: { onAnswer },
+        },
+      });
+
+      act(() => {
+        result.current.handleSubmitQuestion('What is this?');
+      });
+
+      pia = createMockPia({
+        answers: {
+          getAnswer,
+          data: {
+            value: mockAnswerValue,
+            thread_id: 'thread-abc',
+            qna_result_id: 'qna-def',
+          },
+        },
+      });
+      rerender({
+        pia,
+        itemId: 'test-item',
+        isConversation: false,
+        callbacks: { onAnswer },
+      });
+
+      expect(onAnswer).toHaveBeenCalledTimes(1);
+      expect(onAnswer).toHaveBeenCalledWith(
+        [
+          expect.objectContaining({
+            question: 'What is this?',
+            answer: mockAnswerValue,
+            threadId: 'thread-abc',
+            qnaResultId: 'qna-def',
+          }),
+        ],
+        { itemId: 'test-item', threadId: mockThreadId },
+      );
+    });
+
+    it('does not call onAnswer when no answer data is present', () => {
+      const onAnswer = jest.fn();
+      const pia = createMockPia();
+
+      renderHook(() =>
+        useConversation({
+          pia,
+          itemId: 'test-item',
+          isConversation: false,
+          callbacks: { onAnswer },
+        }),
+      );
+
+      expect(onAnswer).not.toHaveBeenCalled();
+    });
+
+    it('includes items in the onAnswer callback data', () => {
+      const getAnswer = jest.fn();
+      const onAnswer = jest.fn();
+      const mockItems = [{ id: 'p1', name: 'Product 1' }];
+      let pia = createMockPia({ answers: { getAnswer } });
+
+      const { result, rerender } = renderHook((props) => useConversation(props), {
+        initialProps: {
+          pia,
+          itemId: 'test-item',
+          isConversation: false,
+          callbacks: { onAnswer },
+        },
+      });
+
+      act(() => {
+        result.current.handleSubmitQuestion('What is this?');
+      });
+
+      pia = createMockPia({
+        answers: {
+          getAnswer,
+          data: { value: 'Answer', qna_result_id: 'qna-1' },
+          items: mockItems,
+        },
+      });
+      rerender({
+        pia,
+        itemId: 'test-item',
+        isConversation: false,
+        callbacks: { onAnswer },
+      });
+
+      expect(onAnswer).toHaveBeenCalledWith([expect.objectContaining({ items: mockItems })], {
+        itemId: 'test-item',
+        threadId: mockThreadId,
+      });
+    });
+
+    it('fires onAnswer correctly after resetState clears history', () => {
+      const getAnswer = jest.fn();
+      const onAnswer = jest.fn();
+      let pia = createMockPia({ answers: { getAnswer } });
+
+      const { result, rerender } = renderHook((props) => useConversation(props), {
+        initialProps: {
+          pia,
+          itemId: 'test-item',
+          isConversation: true,
+          callbacks: { onAnswer },
+        },
+      });
+
+      // First question + answer
+      act(() => {
+        result.current.handleSubmitQuestion('First question');
+      });
+      pia = createMockPia({
+        answers: { getAnswer, data: { value: 'First answer', qna_result_id: 'qna-1' } },
+      });
+      rerender({ pia, itemId: 'test-item', isConversation: true, callbacks: { onAnswer } });
+      expect(onAnswer).toHaveBeenCalledTimes(1);
+
+      // Reset state (simulating modal close or item change)
+      act(() => {
+        result.current.resetState();
+      });
+
+      // Second question + answer after reset
+      pia = createMockPia({ answers: { getAnswer } });
+      rerender({ pia, itemId: 'test-item', isConversation: true, callbacks: { onAnswer } });
+
+      act(() => {
+        result.current.handleSubmitQuestion('Second question');
+      });
+      pia = createMockPia({
+        answers: { getAnswer, data: { value: 'Second answer', qna_result_id: 'qna-2' } },
+      });
+      rerender({ pia, itemId: 'test-item', isConversation: true, callbacks: { onAnswer } });
+
+      expect(onAnswer).toHaveBeenCalledTimes(2);
+      expect(onAnswer).toHaveBeenLastCalledWith(
+        [expect.objectContaining({ question: 'Second question', answer: 'Second answer' })],
+        { itemId: 'test-item', threadId: mockThreadId },
+      );
     });
   });
 });
