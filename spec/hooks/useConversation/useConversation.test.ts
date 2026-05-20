@@ -815,5 +815,53 @@ describe('Testing Hook: useConversation', () => {
         threadId: mockThreadId,
       });
     });
+
+    it('fires onAnswer correctly after resetState clears history', () => {
+      const getAnswer = jest.fn();
+      const onAnswer = jest.fn();
+      let pia = createMockPia({ answers: { getAnswer } });
+
+      const { result, rerender } = renderHook((props) => useConversation(props), {
+        initialProps: {
+          pia,
+          itemId: 'test-item',
+          isConversation: true,
+          callbacks: { onAnswer },
+        },
+      });
+
+      // First question + answer
+      act(() => {
+        result.current.handleSubmitQuestion('First question');
+      });
+      pia = createMockPia({
+        answers: { getAnswer, data: { value: 'First answer', qna_result_id: 'qna-1' } },
+      });
+      rerender({ pia, itemId: 'test-item', isConversation: true, callbacks: { onAnswer } });
+      expect(onAnswer).toHaveBeenCalledTimes(1);
+
+      // Reset state (simulating modal close or item change)
+      act(() => {
+        result.current.resetState();
+      });
+
+      // Second question + answer after reset
+      pia = createMockPia({ answers: { getAnswer } });
+      rerender({ pia, itemId: 'test-item', isConversation: true, callbacks: { onAnswer } });
+
+      act(() => {
+        result.current.handleSubmitQuestion('Second question');
+      });
+      pia = createMockPia({
+        answers: { getAnswer, data: { value: 'Second answer', qna_result_id: 'qna-2' } },
+      });
+      rerender({ pia, itemId: 'test-item', isConversation: true, callbacks: { onAnswer } });
+
+      expect(onAnswer).toHaveBeenCalledTimes(2);
+      expect(onAnswer).toHaveBeenLastCalledWith(
+        [expect.objectContaining({ question: 'Second question', answer: 'Second answer' })],
+        { itemId: 'test-item', threadId: mockThreadId },
+      );
+    });
   });
 });

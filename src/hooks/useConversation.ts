@@ -52,7 +52,6 @@ export default function useConversation({
   const contextRef = useRef(context);
   const lastQuestionRef = useRef<string>('');
   const lastSourceRef = useRef<QuestionSource>('user');
-  const pendingOnAnswerRef = useRef<ConversationEntry[] | null>(null);
 
   useEffect(() => {
     callbacksRef.current = callbacks;
@@ -130,19 +129,17 @@ export default function useConversation({
     const qnaResultId = answers.data?.qna_result_id;
 
     if (isConversation) {
-      setConversationHistory((prev) => {
-        if (prev.length === 0) return prev;
-        const updated = [...prev];
-        updated[updated.length - 1] = {
-          ...updated[updated.length - 1],
-          answer: answerValue,
-          items: answers.items,
-          threadId: answerThreadId,
-          qnaResultId,
-        };
-        pendingOnAnswerRef.current = updated;
-        return updated;
-      });
+      if (conversationHistory.length === 0) return;
+      const updated = [...conversationHistory];
+      updated[updated.length - 1] = {
+        ...updated[updated.length - 1],
+        answer: answerValue,
+        items: answers.items,
+        threadId: answerThreadId,
+        qnaResultId,
+      };
+      setConversationHistory(updated);
+      callbacksRef.current?.onAnswer?.(updated, contextRef.current);
     } else {
       const entry: ConversationEntry = {
         id: entryIdRef.current,
@@ -155,14 +152,7 @@ export default function useConversation({
       };
       callbacksRef.current?.onAnswer?.([entry], contextRef.current);
     }
-  }, [isConversation, answers.data, answers.items]);
-
-  useEffect(() => {
-    if (!pendingOnAnswerRef.current) return;
-    const history = pendingOnAnswerRef.current;
-    pendingOnAnswerRef.current = null;
-    callbacksRef.current?.onAnswer?.(history, contextRef.current);
-  }, [conversationHistory]);
+  }, [isConversation, answers.data, answers.items, conversationHistory]);
 
   const currentAnswer = answers.data?.value ?? '';
   const currentItems = answers.items ?? null;
