@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   IncludeComponentOverrides,
   IncludeRenderProps,
@@ -98,17 +98,14 @@ export default function CioPia(props: CioPiaProps) {
     currentItems,
     isLoading,
     error,
+    context,
     handleSubmitQuestion,
     handleQuestionClick,
     handleInputFocus,
     resetState,
   } = useConversation({ pia, itemId, isConversation, callbacks });
 
-  const callbackContext = useMemo(
-    () => ({ itemId, threadId: pia.threadId }),
-    [itemId, pia.threadId],
-  );
-  const { containerRef } = useViewportCallbacks({ callbacks, context: callbackContext });
+  const { containerRef } = useViewportCallbacks({ callbacks, context });
 
   const renderProps: CioPiaRenderProps = {
     items: currentItems,

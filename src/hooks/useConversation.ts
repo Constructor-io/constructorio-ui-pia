@@ -24,6 +24,7 @@ export interface UseConversationReturn {
   currentItems: Item[] | null;
   isLoading: boolean;
   error: Error | null;
+  context: PiaCallbackContext;
   handleSubmitQuestion: (question: string) => void;
   handleQuestionClick: (question: string) => void;
   handleInputFocus: () => void;
@@ -50,6 +51,7 @@ export default function useConversation({
   const callbacksRef = useRef(callbacks);
   const contextRef = useRef(context);
   const pendingOnAnswerRef = useRef(false);
+  const lastQuestionRef = useRef<string>('');
 
   useEffect(() => {
     callbacksRef.current = callbacks;
@@ -64,6 +66,7 @@ export default function useConversation({
   const submitQuestion = useCallback(
     (question: string, source: QuestionSource) => {
       lastSourceRef.current = source;
+      lastQuestionRef.current = question;
       setCurrentQuestion(question);
       getAnswer(question);
 
@@ -78,23 +81,23 @@ export default function useConversation({
 
   const handleSubmitQuestion = useCallback(
     (question: string) => {
-      callbacksRef.current?.onQuestionSubmit?.(question, context, 'user');
+      callbacksRef.current?.onQuestionSubmit?.(question, contextRef.current, 'user');
       submitQuestion(question, 'user');
     },
-    [submitQuestion, context],
+    [submitQuestion],
   );
 
   const handleQuestionClick = useCallback(
     (question: string) => {
-      callbacksRef.current?.onQuestionSubmit?.(question, context, 'suggestion');
+      callbacksRef.current?.onQuestionSubmit?.(question, contextRef.current, 'suggestion');
       submitQuestion(question, 'suggestion');
     },
-    [submitQuestion, context],
+    [submitQuestion],
   );
 
   const handleInputFocus = useCallback(() => {
-    callbacksRef.current?.onFocus?.(context);
-  }, [context]);
+    callbacksRef.current?.onFocus?.(contextRef.current);
+  }, []);
 
   const resetState = useCallback(() => {
     setCurrentQuestion('');
@@ -144,7 +147,7 @@ export default function useConversation({
     } else {
       const entry: ConversationEntry = {
         id: entryIdRef.current,
-        question: currentQuestion,
+        question: lastQuestionRef.current,
         answer: answerValue,
         source: lastSourceRef.current,
         items: answers.items,
@@ -153,7 +156,7 @@ export default function useConversation({
       };
       callbacksRef.current?.onAnswer?.([entry], contextRef.current);
     }
-  }, [isConversation, answers.data, answers.items, currentQuestion]);
+  }, [isConversation, answers.data, answers.items]);
 
   useEffect(() => {
     if (!pendingOnAnswerRef.current || conversationHistory.length === 0) return;
@@ -176,6 +179,7 @@ export default function useConversation({
     currentItems,
     isLoading,
     error,
+    context,
     handleSubmitQuestion,
     handleQuestionClick,
     handleInputFocus,
