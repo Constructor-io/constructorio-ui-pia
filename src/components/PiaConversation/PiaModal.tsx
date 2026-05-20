@@ -20,18 +20,24 @@ function CloseIcon() {
 interface PiaModalProps {
   initialQuestions: Question[];
   handleSubmitQuestion: (question: string) => void;
+  handleQuestionClick: (question: string) => void;
+  containerRef?: (node: HTMLDivElement | null) => void;
   isLoading: boolean;
   componentOverrides?: CioPiaComponentOverrides;
   translations?: Translations;
+  onInputFocus?: () => void;
   onClose?: () => void;
 }
 
 export default function PiaModal({
   initialQuestions,
   handleSubmitQuestion,
+  handleQuestionClick,
+  containerRef,
   isLoading,
   componentOverrides,
   translations,
+  onInputFocus,
   onClose,
   children,
 }: PropsWithChildren<PiaModalProps>) {
@@ -93,8 +99,16 @@ export default function PiaModal({
     [handleSubmitQuestion, openModal],
   );
 
+  const handleQuestionClicked = useCallback(
+    (question: string) => {
+      handleQuestionClick(question);
+      openModal();
+    },
+    [handleQuestionClick, openModal],
+  );
+
   return (
-    <div className='cio-pia-container' data-testid='cio-pia-container'>
+    <div ref={containerRef} className='cio-pia-container' data-testid='cio-pia-container'>
       <p className='cio-pia-title' data-testid='cio-pia-title'>
         {translate('Any questions about this product?', translations)}
       </p>
@@ -102,13 +116,14 @@ export default function PiaModal({
         {initialQuestions.length > 0 && (
           <SuggestedQuestionsContainer
             questions={initialQuestions}
-            onQuestionClick={handleQuestion}
+            onQuestionClick={handleQuestionClicked}
             componentOverride={componentOverrides?.suggestedQuestions}
           />
         )}
 
         <Input
           onSubmit={handleQuestion}
+          onFocus={onInputFocus}
           disabled={isLoading || isOpen}
           translations={translations}
         />

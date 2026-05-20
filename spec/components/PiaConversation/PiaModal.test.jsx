@@ -20,11 +20,13 @@ describe('PiaModal Component', () => {
   ];
 
   const mockHandleSubmitQuestion = jest.fn();
+  const mockHandleQuestionClick = jest.fn();
   const mockOnClose = jest.fn();
 
   const defaultProps = {
     initialQuestions: mockSuggestedQuestions,
     handleSubmitQuestion: mockHandleSubmitQuestion,
+    handleQuestionClick: mockHandleQuestionClick,
     isLoading: false,
     onClose: mockOnClose,
     children: <div data-testid='dialog-content'>Dialog Content</div>,

@@ -8,6 +8,7 @@ interface InputProps {
   /** @deprecated Use the `translations` prop instead. */
   placeholder?: string;
   onSubmit: (value: string) => void;
+  onFocus?: () => void;
   translations?: Translations;
 }
 
@@ -30,6 +31,7 @@ function Input({
   placeholder,
   disabled = false,
   onSubmit,
+  onFocus,
   translations,
 }: InputProps) {
   const [value, setValue] = useState(providedValue || '');
@@ -67,6 +69,7 @@ function Input({
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleSubmitOnEnter}
+        onFocus={onFocus}
         placeholder={resolvedPlaceholder}
         disabled={disabled}
         className='cio-pia-input'

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   IncludeComponentOverrides,
   IncludeRenderProps,
@@ -9,6 +9,7 @@ import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/Suggeste
 import MockConstructorIOClient from '../../hooks/mocks/MockConstructorIOClient';
 import useCioPia from '../../hooks/useCioPia';
 import useConversation from '../../hooks/useConversation';
+import useViewportCallbacks from '../../hooks/useViewportCallbacks';
 import ErrorBlock from '../Error/ErrorBlock';
 import LoadingSkeleton from '../LoadingSkeleton/LoadingSkeleton';
 import {
@@ -98,8 +99,16 @@ export default function CioPia(props: CioPiaProps) {
     isLoading,
     error,
     handleSubmitQuestion,
+    handleQuestionClick,
+    handleInputFocus,
     resetState,
   } = useConversation({ pia, itemId, isConversation, callbacks });
+
+  const callbackContext = useMemo(
+    () => ({ itemId, threadId: pia.threadId }),
+    [itemId, pia.threadId],
+  );
+  const { containerRef } = useViewportCallbacks({ callbacks, context: callbackContext });
 
   const renderProps: CioPiaRenderProps = {
     items: currentItems,
@@ -126,6 +135,9 @@ export default function CioPia(props: CioPiaProps) {
     componentOverrides,
     displayedQuestions,
     handleSubmitQuestion,
+    handleQuestionClick,
+    containerRef,
+    onInputFocus: handleInputFocus,
   };
 
   if (type === 'modal') {
@@ -133,9 +145,12 @@ export default function CioPia(props: CioPiaProps) {
       <PiaModal
         initialQuestions={pia.suggestedQuestions.data}
         handleSubmitQuestion={handleSubmitQuestion}
+        handleQuestionClick={handleQuestionClick}
+        containerRef={containerRef}
         isLoading={isLoading}
         componentOverrides={componentOverrides}
         translations={translations}
+        onInputFocus={handleInputFocus}
         onClose={resetState}>
         <PiaConversation {...conversationHistoryProps} />
       </PiaModal>
@@ -146,13 +161,14 @@ export default function CioPia(props: CioPiaProps) {
 
   // Default inline mode
   return (
-    <div className='cio-pia-container' data-testid='cio-pia-container'>
+    <div ref={containerRef} className='cio-pia-container' data-testid='cio-pia-container'>
       <RenderPropsWrapper props={renderProps} override={children || componentOverrides?.reactNode}>
         <p className='cio-pia-title' data-testid='cio-pia-title'>
           {translate('Any questions about this product?', translations)}
         </p>
         <Input
           onSubmit={handleSubmitQuestion}
+          onFocus={handleInputFocus}
           value={currentQuestion}
           translations={translations}
         />
@@ -178,7 +194,7 @@ export default function CioPia(props: CioPiaProps) {
 
             <SuggestedQuestionsContainer
               questions={displayedQuestions}
-              onQuestionClick={handleSubmitQuestion}
+              onQuestionClick={handleQuestionClick}
               componentOverride={componentOverrides?.suggestedQuestions}
             />
           </>
