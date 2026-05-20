@@ -52,7 +52,7 @@ This renders the full PIA experience: suggested questions, AI answers, and produ
 
 ### 4. Add tracking (optional)
 
-The library **automatically tracks usage events** (e.g., question submissions, impressions) via the underlying Constructor.io client — these are visible in your [Constructor Dashboard](https://dashboard.constructor.io) with no extra code required.
+The library **automatically tracks usage events** (e.g., question submissions, impressions) via the underlying Constructor.io client — these are visible in your Constructor Dashboard with no extra code required.
 
 Additionally, the library exposes **callbacks** so you can hook into user interactions for your own analytics (Google Analytics, Segment, etc.):
 
@@ -224,9 +224,9 @@ interface Item extends Product, Record<string, any> {
 
 ## Events & Callbacks
 
-The library automatically sends usage events to the Constructor.io analytics backend (visible in your [Constructor Dashboard](https://dashboard.constructor.io)). No extra configuration is needed for this built-in tracking.
+The library automatically sends usage events to the Constructor.io analytics backend (visible in your Constructor Dashboard). No extra configuration is needed for this built-in tracking.
 
-For your own analytics needs, the library exposes three callbacks via the `callbacks` prop. Use these to integrate with any third-party analytics provider (Google Analytics, Segment, Amplitude, etc.):
+For your own analytics needs, the library exposes a number of callbacks via the `callbacks` prop. You can find more on the [CioPia API reference](?path=/docs/components-ciopia--docs). Use these to integrate with any third-party analytics provider (Google Analytics, Segment, Amplitude, etc.):
 
 <Markdown>
 {`
