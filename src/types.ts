@@ -86,8 +86,8 @@ export interface Callbacks {
   /** Called when a question is submitted (typed or suggested question clicked). */
   onQuestionSubmit?: (
     question: string,
-    context: PiaCallbackContext,
-    source: QuestionSource,
+    context?: PiaCallbackContext,
+    source?: QuestionSource,
   ) => void;
   /** Called when a product card in the carousel is clicked. */
   onProductCardClick?: (item: Item) => void;

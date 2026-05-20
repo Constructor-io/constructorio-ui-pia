@@ -52,6 +52,7 @@ export default function useConversation({
   const contextRef = useRef(context);
   const lastQuestionRef = useRef<string>('');
   const lastSourceRef = useRef<QuestionSource>('user');
+  const pendingOnAnswerRef = useRef<ConversationEntry[] | null>(null);
 
   useEffect(() => {
     callbacksRef.current = callbacks;
@@ -139,7 +140,7 @@ export default function useConversation({
           threadId: answerThreadId,
           qnaResultId,
         };
-        callbacksRef.current?.onAnswer?.(updated, contextRef.current);
+        pendingOnAnswerRef.current = updated;
         return updated;
       });
     } else {
@@ -155,6 +156,13 @@ export default function useConversation({
       callbacksRef.current?.onAnswer?.([entry], contextRef.current);
     }
   }, [isConversation, answers.data, answers.items]);
+
+  useEffect(() => {
+    if (!pendingOnAnswerRef.current) return;
+    const history = pendingOnAnswerRef.current;
+    pendingOnAnswerRef.current = null;
+    callbacksRef.current?.onAnswer?.(history, contextRef.current);
+  }, [conversationHistory]);
 
   const currentAnswer = answers.data?.value ?? '';
   const currentItems = answers.items ?? null;
