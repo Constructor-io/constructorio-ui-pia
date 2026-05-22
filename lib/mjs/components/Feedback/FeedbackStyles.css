@@ -1,0 +1,31 @@
+.cio-pia-feedback-container {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  height: 20px;
+  gap: 8px;
+}
+
+.cio-pia-feedback-text {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: -0.5%;
+  color: rgba(15, 19, 36, 0.7);
+}
+
+.cio-pia-feedback-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  background: none;
+  border: 0px;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.2s ease;
+  position: relative;
+}
+
+.cio-pia-feedback-button:hover {
+  opacity: 0.8;
+}

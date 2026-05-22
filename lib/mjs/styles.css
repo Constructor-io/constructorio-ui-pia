@@ -1,0 +1,26 @@
+@import '@constructor-io/constructorio-ui-components/styles.css';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap');
+@import './components/SuggestedQuestion/SuggestedQuestionStyles.css';
+@import './components/SuggestedQuestionsContainer/SuggestedQuestionsContainerStyles.css';
+@import './components/Input/InputStyles.css';
+@import './components/Feedback/FeedbackStyles.css';
+@import './components/Answer/AnswerStyles.css';
+@import './components/Error/ErrorStyles.css';
+@import './components/LoadingSkeleton/LoadingSkeletonStyles.css';
+@import './components/CioPia/CioPiaStyles.css';
+@import './components/ConversationHistory/ConversationHistoryStyles.css';
+@import './components/PiaConversation/PiaConversationStyles.css';
+
+.cio-pia-container {
+  font-family: 'Inter', sans-serif;
+  --cio-pia-chat-question-bg: #f0f0f5;
+  --cio-pia-chat-answer-bg: #f8f8fa;
+  --cio-pia-conversation-max-height: 600px;
+  --cio-pia-modal-height: 80vh;
+  --cio-pia-modal-max-width: 640px;
+  --cio-pia-modal-min-width: 320px;
+}
+
+.cio-pia-container * {
+  font-family: inherit;
+}
