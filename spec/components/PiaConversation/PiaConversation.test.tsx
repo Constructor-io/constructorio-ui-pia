@@ -99,7 +99,7 @@ describe('PiaConversation Component', () => {
       const history = container.querySelector('.cio-pia-conversation-history')!;
       const children = Array.from(history.children);
       const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
-      const entriesIndex = children.findIndex((el) => el.matches('.cio-pia-conversation-entries'));
+      const entriesIndex = children.findIndex((el) => el.matches('.cio-pia-conversation-entry'));
       expect(disclaimerIndex).toBeGreaterThan(entriesIndex);
     });
 
@@ -115,7 +115,7 @@ describe('PiaConversation Component', () => {
       const history = container.querySelector('.cio-pia-conversation-history')!;
       const children = Array.from(history.children);
       const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
-      const entriesIndex = children.findIndex((el) => el.matches('.cio-pia-conversation-entries'));
+      const entriesIndex = children.findIndex((el) => el.matches('.cio-pia-conversation-entry'));
       expect(disclaimerIndex).toBeLessThan(entriesIndex);
     });
   });

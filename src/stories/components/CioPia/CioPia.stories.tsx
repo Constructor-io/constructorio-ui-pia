@@ -125,3 +125,68 @@ export const WithFormatImageUrl: Story = {
     },
   },
 };
+
+export const WithCheckout: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: DEMO_ITEM_ID,
+    checkoutProps: [
+      {
+        items: {
+          name: 'Demo Product',
+          amount: 49.99,
+          currencySign: '$',
+          quantity: 1,
+        },
+        session: {
+          clientSecret: 'cs_test_example',
+          publishableKey: 'pk_test_example',
+        },
+        triggerLabel: 'Buy Now',
+        displayMode: 'modal',
+      },
+    ],
+  },
+};
+
+export const WithCheckoutInline: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: DEMO_ITEM_ID,
+    checkoutProps: [
+      {
+        items: {
+          name: 'Demo Product',
+          amount: 29.99,
+          currencySign: '$',
+        },
+        session: {
+          clientSecret: 'cs_test_example',
+          publishableKey: 'pk_test_example',
+        },
+        triggerLabel: 'Purchase',
+        displayMode: 'inline',
+      },
+    ],
+  },
+};
+
+export const WithCheckoutCustomTrigger: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: DEMO_ITEM_ID,
+    checkoutProps: [
+      {
+        items: [
+          { name: 'Item A', amount: 19.99, currencySign: '$', quantity: 2 },
+          { name: 'Item B', amount: 9.99, currencySign: '$' },
+        ],
+        session: {
+          clientSecret: 'cs_test_example',
+          publishableKey: 'pk_test_example',
+        },
+        triggerWhen: (state) => state.conversationHistory.length >= 3 && !state.isLoading,
+      },
+    ],
+  },
+};

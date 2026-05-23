@@ -378,7 +378,7 @@ describe('ConversationHistory Component', () => {
       const children = Array.from(history.children);
       const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
       const entriesIndex = children.findIndex((el) =>
-        el.matches('.cio-pia-conversation-entries'),
+        el.matches('.cio-pia-conversation-entry'),
       );
       expect(disclaimerIndex).toBeGreaterThan(entriesIndex);
     });
@@ -396,7 +396,7 @@ describe('ConversationHistory Component', () => {
       const children = Array.from(history.children);
       const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
       const entriesIndex = children.findIndex((el) =>
-        el.matches('.cio-pia-conversation-entries'),
+        el.matches('.cio-pia-conversation-entry'),
       );
       expect(disclaimerIndex).toBeLessThan(entriesIndex);
     });
@@ -414,7 +414,7 @@ describe('ConversationHistory Component', () => {
       const children = Array.from(history.children);
       const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
       const entriesIndex = children.findIndex((el) =>
-        el.matches('.cio-pia-conversation-entries'),
+        el.matches('.cio-pia-conversation-entry'),
       );
       expect(disclaimerIndex).toBeGreaterThan(entriesIndex);
     });

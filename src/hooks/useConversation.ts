@@ -12,7 +12,7 @@ import { UseCioPiaReturn } from './useCioPia';
 export interface UseConversationProps {
   pia: UseCioPiaReturn;
   itemId: string;
-  isConversation: boolean;
+  isConversation?: boolean;
   callbacks?: Callbacks;
 }
 
@@ -34,7 +34,6 @@ export interface UseConversationReturn {
 export default function useConversation({
   pia,
   itemId,
-  isConversation,
   callbacks,
 }: UseConversationProps): UseConversationReturn {
   const { suggestedQuestions, answers, threadId } = pia;
@@ -68,13 +67,11 @@ export default function useConversation({
       setCurrentQuestion(question);
       getAnswer(question);
 
-      if (isConversation) {
-        entryIdRef.current += 1;
-        const id = entryIdRef.current;
-        setConversationHistory((prev) => [...prev, { id, question, answer: '', source }]);
-      }
+      entryIdRef.current += 1;
+      const id = entryIdRef.current;
+      setConversationHistory((prev) => [...prev, { id, question, answer: '', source }]);
     },
-    [getAnswer, isConversation],
+    [getAnswer],
   );
 
   const handleSubmitQuestion = useCallback(
@@ -101,6 +98,7 @@ export default function useConversation({
     setCurrentQuestion('');
     setDisplayedQuestions(suggestedQuestions.data);
     setConversationHistory([]);
+    entryIdRef.current = 0;
     prevAnswerValueRef.current = undefined;
   }, [suggestedQuestions.data]);
 
@@ -128,33 +126,20 @@ export default function useConversation({
     const answerThreadId = answers.data?.thread_id;
     const qnaResultId = answers.data?.qna_result_id;
 
-    if (isConversation) {
-      setConversationHistory((prev) => {
-        if (prev.length === 0) return prev;
-        const updated = [...prev];
-        updated[updated.length - 1] = {
-          ...updated[updated.length - 1],
-          answer: answerValue,
-          items: answers.items,
-          threadId: answerThreadId,
-          qnaResultId,
-        };
-        callbacksRef.current?.onAnswer?.(updated, contextRef.current);
-        return updated;
-      });
-    } else {
-      const entry: ConversationEntry = {
-        id: entryIdRef.current,
-        question: lastQuestionRef.current,
+    setConversationHistory((prev) => {
+      if (prev.length === 0) return prev;
+      const updated = [...prev];
+      updated[updated.length - 1] = {
+        ...updated[updated.length - 1],
         answer: answerValue,
-        source: lastSourceRef.current,
         items: answers.items,
         threadId: answerThreadId,
         qnaResultId,
       };
-      callbacksRef.current?.onAnswer?.([entry], contextRef.current);
-    }
-  }, [isConversation, answers.data, answers.items]);
+      callbacksRef.current?.onAnswer?.(updated, contextRef.current);
+      return updated;
+    });
+  }, [answers.data, answers.items]);
 
   const currentAnswer = answers.data?.value ?? '';
   const currentItems = answers.items ?? null;

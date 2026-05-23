@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Input from '../Input/Input';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import SuggestedQuestionsSkeleton from '../SuggestedQuestionsContainer/SuggestedQuestionsSkeleton';
@@ -14,6 +14,7 @@ export interface PiaConversationProps extends ConversationHistoryProps {
   handleQuestionClick: (question: string) => void;
   containerRef?: (node: HTMLDivElement | null) => void;
   onInputFocus?: () => void;
+  checkoutElement?: React.ReactNode;
 }
 
 export default function PiaConversation({
@@ -33,8 +34,21 @@ export default function PiaConversation({
   handleQuestionClick,
   containerRef,
   onInputFocus,
+  checkoutElement,
 }: PiaConversationProps) {
   const hasHistory = conversationHistory.length > 0;
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return undefined;
+
+    const frameId = requestAnimationFrame(() => {
+      container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+    });
+
+    return () => cancelAnimationFrame(frameId);
+  }, [conversationHistory, isLoading]);
 
   return (
     <div
@@ -47,19 +61,23 @@ export default function PiaConversation({
         </p>
       )}
 
-      <ConversationHistory
-        conversationHistory={conversationHistory}
-        isLoading={isLoading}
-        error={error}
-        currentItems={currentItems}
-        showFeedback={showFeedback}
-        showPreviousItems={showPreviousItems}
-        learnMoreUrl={learnMoreUrl}
-        disclaimerPosition={disclaimerPosition}
-        translations={translations}
-        callbacks={callbacks}
-        componentOverrides={componentOverrides}
-      />
+      <div ref={scrollContainerRef} className='cio-pia-conversation-body'>
+        <ConversationHistory
+          conversationHistory={conversationHistory}
+          isLoading={isLoading}
+          error={error}
+          currentItems={currentItems}
+          showFeedback={showFeedback}
+          showPreviousItems={showPreviousItems}
+          learnMoreUrl={learnMoreUrl}
+          disclaimerPosition={disclaimerPosition}
+          translations={translations}
+          callbacks={callbacks}
+          componentOverrides={componentOverrides}
+        />
+
+        {checkoutElement && <div className='cio-pia-conversation-checkout'>{checkoutElement}</div>}
+      </div>
 
       <div className='cio-pia-conversation-footer'>
         {isLoading && !error && <SuggestedQuestionsSkeleton />}

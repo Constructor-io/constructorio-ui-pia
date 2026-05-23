@@ -116,7 +116,7 @@ describe('Testing Hook: useConversation', () => {
     }).not.toThrow();
   });
 
-  it('does not append to conversationHistory in default mode', () => {
+  it('appends to conversationHistory in default mode', () => {
     const pia = createMockPia();
     const { result } = renderHook(() =>
       useConversation({ pia, itemId: 'test-item', isConversation: false }),
@@ -126,7 +126,9 @@ describe('Testing Hook: useConversation', () => {
       result.current.handleSubmitQuestion('What is this product?');
     });
 
-    expect(result.current.conversationHistory).toEqual([]);
+    expect(result.current.conversationHistory).toEqual([
+      { id: 1, question: 'What is this product?', answer: '', source: 'user' },
+    ]);
   });
 
   it('appends to conversationHistory in conversation mode', () => {
@@ -335,7 +337,7 @@ describe('Testing Hook: useConversation', () => {
       expect(result.current.conversationHistory[0].answer).toBe(mockAnswerValue);
     });
 
-    it('does not sync answer into history when not in conversation mode', () => {
+    it('syncs answer into history in default mode', () => {
       const getAnswer = jest.fn();
       let pia = createMockPia({ answers: { getAnswer } });
 
@@ -352,7 +354,17 @@ describe('Testing Hook: useConversation', () => {
       });
       rerender({ pia, itemId: 'test-item', isConversation: false });
 
-      expect(result.current.conversationHistory).toEqual([]);
+      expect(result.current.conversationHistory).toEqual([
+        {
+          id: 1,
+          question: 'What is this?',
+          answer: mockAnswerValue,
+          source: 'user',
+          items: null,
+          threadId: undefined,
+          qnaResultId: 'test-id',
+        },
+      ]);
     });
 
     it('does not sync when answer value has not changed', () => {
