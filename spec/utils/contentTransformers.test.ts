@@ -159,5 +159,11 @@ describe('renderMarkdown', () => {
       });
       expect(result).toContain('href="https://example.com"');
     });
+
+    it('falls back to default sanitization with empty patterns array', () => {
+      const input = '<a href="javascript:window.openChat()">Chat</a>';
+      const result = renderMarkdown(input, { allowedHrefPatterns: [] });
+      expect(result).not.toContain('javascript:');
+    });
   });
 });

@@ -20,16 +20,15 @@ export function renderMarkdown(content: string, options?: RenderMarkdownOptions)
 
   if (options?.allowedHrefPatterns?.length) {
     const patterns = options.allowedHrefPatterns;
-    DOMPurify.addHook('uponSanitizeAttribute', (node, event) => {
+    const purifier = DOMPurify(window);
+    purifier.addHook('uponSanitizeAttribute', (node, event) => {
       if (node.tagName === 'A' && event.attrName === 'href') {
         if (patterns.some((pattern) => pattern.test(event.attrValue))) {
           event.forceKeepAttr = true;
         }
       }
     });
-    const sanitized = DOMPurify.sanitize(html, purifyConfig);
-    DOMPurify.removeHook('uponSanitizeAttribute');
-    return sanitized;
+    return purifier.sanitize(html, purifyConfig);
   }
 
   return DOMPurify.sanitize(html, purifyConfig);
