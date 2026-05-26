@@ -109,4 +109,55 @@ describe('renderMarkdown', () => {
     expect(renderMarkdown(null as unknown as string)).toBe('');
     expect(renderMarkdown(undefined as unknown as string)).toBe('');
   });
+
+  describe('allowedHrefPatterns', () => {
+    it('strips javascript: href values by default', () => {
+      const input = '<a href="javascript:window.openChat()">Chat</a>';
+      const result = renderMarkdown(input);
+      expect(result).not.toContain('javascript:');
+      expect(result).toContain('>Chat</a>');
+    });
+
+    it('allows javascript: href values matching a pattern', () => {
+      const input = '<a href="javascript:window.openChat()">Chat</a>';
+      const result = renderMarkdown(input, {
+        allowedHrefPatterns: [/^javascript:window\.openChat\(\)$/],
+      });
+      expect(result).toContain('href="javascript:window.openChat()"');
+    });
+
+    it('still strips javascript: href values not matching any pattern', () => {
+      const input = '<a href="javascript:alert(document.cookie)">Evil</a>';
+      const result = renderMarkdown(input, {
+        allowedHrefPatterns: [/^javascript:window\.openChat\(\)$/],
+      });
+      expect(result).not.toContain('javascript:alert');
+    });
+
+    it('allows sms: href values matching a pattern', () => {
+      const input = '<a href="sms:+15551234567">Text us</a>';
+      const result = renderMarkdown(input, {
+        allowedHrefPatterns: [/^sms:/],
+      });
+      expect(result).toContain('href="sms:+15551234567"');
+    });
+
+    it('supports multiple patterns', () => {
+      const input =
+        '<a href="javascript:window.openChat()">Chat</a> <a href="sms:+15551234567">Text</a>';
+      const result = renderMarkdown(input, {
+        allowedHrefPatterns: [/^javascript:window\.openChat\(\)$/, /^sms:/],
+      });
+      expect(result).toContain('href="javascript:window.openChat()"');
+      expect(result).toContain('href="sms:+15551234567"');
+    });
+
+    it('does not affect normal https links', () => {
+      const input = '<a href="https://example.com">Link</a>';
+      const result = renderMarkdown(input, {
+        allowedHrefPatterns: [/^javascript:window\.openChat\(\)$/],
+      });
+      expect(result).toContain('href="https://example.com"');
+    });
+  });
 });
