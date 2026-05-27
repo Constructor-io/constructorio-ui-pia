@@ -8,7 +8,7 @@ export type { CioPiaProps } from './components/CioPia';
 
 // Utilities
 export { sanitizeHtml, renderMarkdown } from './utils/contentTransformers';
-export type { RenderMarkdownOptions } from './utils/contentTransformers';
+export type { RenderMarkdownOptions, SanitizeOptions } from './utils/contentTransformers';
 
 // Default
 export * from './types';

@@ -5,19 +5,30 @@ const purifyConfig: DOMPurify.Config = {
   FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed', 'form'],
 };
 
+export interface SanitizeOptions {
+  config: DOMPurify.Config;
+}
+
 /** Options for {@link renderMarkdown}. */
 export interface RenderMarkdownOptions {
   /**
-   * Patterns matched against each anchor `href` value. When a pattern matches,
-   * the href is kept even if DOMPurify would otherwise strip it (e.g. `javascript:` or `sms:` URIs).
-   *
-   * Only use narrow, anchored patterns for known application-controlled values.
-   * A broad pattern like `/^javascript:/` re-enables XSS via `javascript:` URIs.
+   * Override the default DOMPurify sanitization step.
+   * Called with an isolated DOMPurify instance, the parsed HTML string,
+   * and an options object containing the default config. Must return the sanitized HTML string.
    *
    * @example
-   * allowedHrefPatterns: [/^javascript:window\.openChat\(\)$/, /^sms:/]
+   * sanitize: (purifier, html, { config }) => {
+   *   purifier.addHook('uponSanitizeAttribute', (node, event) => {
+   *     if (node.tagName === 'A' && event.attrName === 'href') {
+   *       if (/^javascript:window\.openChat\(\)$/.test(event.attrValue)) {
+   *         event.forceKeepAttr = true;
+   *       }
+   *     }
+   *   });
+   *   return purifier.sanitize(html, config);
+   * }
    */
-  allowedHrefPatterns?: RegExp[];
+  sanitize?: (purifier: typeof DOMPurify, html: string, options: SanitizeOptions) => string;
 }
 
 export function sanitizeHtml(html: string): string {
@@ -29,17 +40,9 @@ export function renderMarkdown(content: string, options?: RenderMarkdownOptions)
   if (!content) return '';
   const html = marked.parse(content, { async: false, breaks: true });
 
-  if (options?.allowedHrefPatterns?.length) {
-    const patterns = options.allowedHrefPatterns;
+  if (options?.sanitize) {
     const purifier = DOMPurify(window);
-    purifier.addHook('uponSanitizeAttribute', (node, event) => {
-      if (node.tagName === 'A' && event.attrName === 'href') {
-        if (patterns.some((pattern) => pattern.test(event.attrValue))) {
-          event.forceKeepAttr = true;
-        }
-      }
-    });
-    return purifier.sanitize(html, purifyConfig);
+    return options.sanitize(purifier, html, { config: purifyConfig });
   }
 
   return DOMPurify.sanitize(html, purifyConfig);
