@@ -173,13 +173,15 @@ describe('renderMarkdown', () => {
     });
 
     it('allows overriding purify config to permit normally-forbidden tags', () => {
-      const input = '<form action="/submit"><input type="text"></form><p>Content</p>';
+      const input =
+        '<form action="/submit"><input type="text"></form><script>alert(1)</script><p>Content</p>';
       const result = renderMarkdown(input, {
         sanitize: (purifier, html, { config }) =>
           purifier.sanitize(html, { ...config, FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed'] }),
       });
       expect(result).toContain('<form action="/submit">');
       expect(result).toContain('<p>Content</p>');
+      expect(result).not.toContain('<script>');
     });
   });
 });

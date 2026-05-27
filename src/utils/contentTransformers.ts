@@ -42,7 +42,8 @@ export function renderMarkdown(content: string, options?: RenderMarkdownOptions)
 
   if (options?.sanitize) {
     const purifier = DOMPurify(window);
-    return options.sanitize(purifier, html, { config: purifyConfig });
+    const config = { ...purifyConfig, FORBID_TAGS: [...(purifyConfig.FORBID_TAGS ?? [])] };
+    return options.sanitize(purifier, html, { config });
   }
 
   return DOMPurify.sanitize(html, purifyConfig);
