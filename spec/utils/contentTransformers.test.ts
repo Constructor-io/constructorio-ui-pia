@@ -165,5 +165,13 @@ describe('renderMarkdown', () => {
       const result = renderMarkdown(input, { allowedHrefPatterns: [] });
       expect(result).not.toContain('javascript:');
     });
+
+    it('still strips data: href values when no pattern matches', () => {
+      const input = '<a href="data:text/html,<script>alert(1)</script>">Evil</a>';
+      const result = renderMarkdown(input, {
+        allowedHrefPatterns: [/^javascript:window\.openChat\(\)$/],
+      });
+      expect(result).not.toContain('data:text/html');
+    });
   });
 });

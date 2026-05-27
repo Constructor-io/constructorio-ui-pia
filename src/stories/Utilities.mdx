@@ -70,6 +70,42 @@ const html = renderMarkdown('**Bold** and [a link](https://example.com)');
 />
 ```
 
+### `allowedHrefPatterns`
+
+By default, `renderMarkdown` strips `javascript:`, `data:`, and other unsafe URI schemes from links. If your content includes anchors with custom schemes (e.g. `sms:`, `tel:`) or specific `javascript:` handlers, you can selectively allow them by passing an `allowedHrefPatterns` option with an array of `RegExp` patterns matched against each anchor's `href` value.
+
+```tsx
+import { renderMarkdown } from '@constructor-io/constructorio-ui-pia';
+
+const html = renderMarkdown(text, {
+  allowedHrefPatterns: [
+    /^javascript:window\.openChat\(\)$/,
+    /^sms:/,
+  ],
+});
+```
+
+Only use narrow, anchored patterns for known application-controlled values. A broad pattern like `/^javascript:/` re-enables XSS via `javascript:` URIs.
+
+```tsx
+<CioPia
+  componentOverrides={{
+    answer: {
+      reactNode: ({ text }) => (
+        <div
+          className="cio-pia-answer"
+          dangerouslySetInnerHTML={{
+            __html: renderMarkdown(text, {
+              allowedHrefPatterns: [/^javascript:window\.openChat\(\)$/, /^sms:/],
+            }),
+          }}
+        />
+      ),
+    },
+  }}
+/>
+```
+
 ## Default behavior
 
 <table>

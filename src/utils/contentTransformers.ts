@@ -5,7 +5,18 @@ const purifyConfig: DOMPurify.Config = {
   FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed', 'form'],
 };
 
+/** Options for {@link renderMarkdown}. */
 export interface RenderMarkdownOptions {
+  /**
+   * Patterns matched against each anchor `href` value. When a pattern matches,
+   * the href is kept even if DOMPurify would otherwise strip it (e.g. `javascript:` or `sms:` URIs).
+   *
+   * Only use narrow, anchored patterns for known application-controlled values.
+   * A broad pattern like `/^javascript:/` re-enables XSS via `javascript:` URIs.
+   *
+   * @example
+   * allowedHrefPatterns: [/^javascript:window\.openChat\(\)$/, /^sms:/]
+   */
   allowedHrefPatterns?: RegExp[];
 }
 
