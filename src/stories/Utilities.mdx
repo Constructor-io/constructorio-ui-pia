@@ -70,6 +70,69 @@ const html = renderMarkdown('**Bold** and [a link](https://example.com)');
 />
 ```
 
+### `sanitize`
+
+By default, `renderMarkdown` strips `javascript:`, `data:`, and other unsafe URI schemes from links. If your content includes anchors with custom schemes (e.g. `sms:`, `tel:`) or specific `javascript:` handlers, you can override the sanitization step by passing a `sanitize` callback. It receives an isolated DOMPurify instance, the parsed HTML string, and an options object containing the default config. It must return the sanitized HTML string.
+
+```tsx
+import { renderMarkdown } from '@constructor-io/constructorio-ui-pia';
+
+const html = renderMarkdown(text, {
+  sanitize: (purifier, html, { config }) => {
+    purifier.addHook('uponSanitizeAttribute', (node, event) => {
+      if (node.tagName === 'A' && event.attrName === 'href') {
+        if (/^javascript:window\.openChat\(\)$/.test(event.attrValue) || /^sms:/.test(event.attrValue)) {
+          event.forceKeepAttr = true;
+        }
+      }
+    });
+    return purifier.sanitize(html, config);
+  },
+});
+```
+
+Only use narrow, anchored patterns for known application-controlled values. A broad pattern like `/^javascript:/` re-enables XSS via `javascript:` URIs.
+
+You can also customize the sanitization config to allow or forbid specific tags:
+
+```tsx
+renderMarkdown(text, {
+  sanitize: (purifier, html, { config }) => {
+    return purifier.sanitize(html, { ...config, FORBID_TAGS: ['style', 'iframe'] });
+  },
+});
+```
+
+Full example with an answer override:
+
+```tsx
+<CioPia
+  componentOverrides={{
+    answer: {
+      reactNode: ({ text }) => (
+        <div
+          className="cio-pia-answer"
+          dangerouslySetInnerHTML={{
+            __html: renderMarkdown(text, {
+              sanitize: (purifier, html, { config }) => {
+                purifier.addHook('uponSanitizeAttribute', (node, event) => {
+                  if (node.tagName === 'A' && event.attrName === 'href') {
+                    if (/^javascript:window\.openChat\(\)$/.test(event.attrValue) || /^sms:/.test(event.attrValue)) {
+                      event.forceKeepAttr = true;
+                    }
+                  }
+                });
+                return purifier.sanitize(html, config);
+              },
+            }),
+          }}
+        />
+      ),
+    },
+  }}
+/>
+```
+
 ## Default behavior
 
 <table>

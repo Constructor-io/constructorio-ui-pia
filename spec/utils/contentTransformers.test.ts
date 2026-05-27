@@ -1,4 +1,5 @@
-import { sanitizeHtml, renderMarkdown } from '../../src/utils/contentTransformers';
+import DOMPurify from 'dompurify';
+import { sanitizeHtml, renderMarkdown, SanitizeOptions } from '../../src/utils/contentTransformers';
 
 describe('sanitizeHtml', () => {
   it('preserves safe HTML tags', () => {
@@ -108,5 +109,79 @@ describe('renderMarkdown', () => {
   it('handles null and undefined gracefully', () => {
     expect(renderMarkdown(null as unknown as string)).toBe('');
     expect(renderMarkdown(undefined as unknown as string)).toBe('');
+  });
+
+  describe('sanitize', () => {
+    const allowHrefPattern =
+      (pattern: RegExp) =>
+      (purifier: typeof DOMPurify, html: string, { config }: SanitizeOptions) => {
+        purifier.addHook('uponSanitizeAttribute', (node, event) => {
+          if (node.tagName === 'A' && event.attrName === 'href') {
+            if (pattern.test(event.attrValue)) {
+              event.forceKeepAttr = true;
+            }
+          }
+        });
+        return purifier.sanitize(html, config);
+      };
+
+    it('strips javascript: href values by default', () => {
+      const input = '<a href="javascript:window.openChat()">Chat</a>';
+      const result = renderMarkdown(input);
+      expect(result).not.toContain('javascript:');
+      expect(result).toContain('>Chat</a>');
+    });
+
+    it('allows javascript: href values via sanitize hook', () => {
+      const input = '<a href="javascript:window.openChat()">Chat</a>';
+      const result = renderMarkdown(input, {
+        sanitize: allowHrefPattern(/^javascript:window\.openChat\(\)$/),
+      });
+      expect(result).toContain('href="javascript:window.openChat()"');
+    });
+
+    it('still strips javascript: href values not matching the hook pattern', () => {
+      const input = '<a href="javascript:alert(document.cookie)">Evil</a>';
+      const result = renderMarkdown(input, {
+        sanitize: allowHrefPattern(/^javascript:window\.openChat\(\)$/),
+      });
+      expect(result).not.toContain('javascript:alert');
+    });
+
+    it('allows sms: href values via sanitize hook', () => {
+      const input = '<a href="sms:+15551234567">Text us</a>';
+      const result = renderMarkdown(input, {
+        sanitize: allowHrefPattern(/^sms:/),
+      });
+      expect(result).toContain('href="sms:+15551234567"');
+    });
+
+    it('does not affect normal https links', () => {
+      const input = '<a href="https://example.com">Link</a>';
+      const result = renderMarkdown(input, {
+        sanitize: allowHrefPattern(/^javascript:window\.openChat\(\)$/),
+      });
+      expect(result).toContain('href="https://example.com"');
+    });
+
+    it('still strips data: href values when hook does not match', () => {
+      const input = '<a href="data:text/html,<script>alert(1)</script>">Evil</a>';
+      const result = renderMarkdown(input, {
+        sanitize: allowHrefPattern(/^javascript:window\.openChat\(\)$/),
+      });
+      expect(result).not.toContain('data:text/html');
+    });
+
+    it('allows overriding purify config to permit normally-forbidden tags', () => {
+      const input =
+        '<form action="/submit"><input type="text"></form><script>alert(1)</script><p>Content</p>';
+      const result = renderMarkdown(input, {
+        sanitize: (purifier, html, { config }) =>
+          purifier.sanitize(html, { ...config, FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed'] }),
+      });
+      expect(result).toContain('<form action="/submit">');
+      expect(result).toContain('<p>Content</p>');
+      expect(result).not.toContain('<script>');
+    });
   });
 });
