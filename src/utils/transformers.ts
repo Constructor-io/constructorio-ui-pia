@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 import { Nullable } from '@constructor-io/constructorio-client-javascript';
 import { Formatters, Item, ApiItem } from '../types';
 

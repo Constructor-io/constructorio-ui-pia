@@ -5,3 +5,15 @@ HTMLDialogElement.prototype.showModal = jest.fn(function mock() {
 HTMLDialogElement.prototype.close = jest.fn(function mock() {
   this.removeAttribute('open');
 });
+
+global.IntersectionObserver = class IntersectionObserver {
+  constructor(callback) {
+    this.callback = callback;
+  }
+
+  observe() {}
+
+  unobserve() {}
+
+  disconnect() {}
+};

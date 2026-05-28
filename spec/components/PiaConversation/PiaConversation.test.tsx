@@ -88,6 +88,38 @@ describe('PiaConversation Component', () => {
     });
   });
 
+  describe('Disclaimer position', () => {
+    const conversationHistory = [{ id: 1, question: 'What is this?', answer: 'It is a product.' }];
+
+    it('renders disclaimer below conversation entries by default', () => {
+      const { container } = render(
+        <PiaConversation {...baseProps} conversationHistory={conversationHistory} />,
+      );
+
+      const history = container.querySelector('.cio-pia-conversation-history')!;
+      const children = Array.from(history.children);
+      const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
+      const entriesIndex = children.findIndex((el) => el.matches('.cio-pia-conversation-entries'));
+      expect(disclaimerIndex).toBeGreaterThan(entriesIndex);
+    });
+
+    it('renders disclaimer above conversation entries when disclaimerPosition is top', () => {
+      const { container } = render(
+        <PiaConversation
+          {...baseProps}
+          conversationHistory={conversationHistory}
+          disclaimerPosition='top'
+        />,
+      );
+
+      const history = container.querySelector('.cio-pia-conversation-history')!;
+      const children = Array.from(history.children);
+      const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
+      const entriesIndex = children.findIndex((el) => el.matches('.cio-pia-conversation-entries'));
+      expect(disclaimerIndex).toBeLessThan(entriesIndex);
+    });
+  });
+
   describe('Input submission', () => {
     it('calls handleSubmitQuestion when input is submitted via Enter key', () => {
       render(<PiaConversation {...baseProps} />);

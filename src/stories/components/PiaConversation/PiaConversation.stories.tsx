@@ -31,6 +31,7 @@ function InteractiveWrapper(extraProps: Partial<PiaConversationProps> = {}) {
     error,
     currentItems,
     handleSubmitQuestion,
+    handleQuestionClick,
   } = useConversation({ pia, itemId: DEMO_ITEM_ID, isConversation: true });
 
   return (
@@ -41,6 +42,7 @@ function InteractiveWrapper(extraProps: Partial<PiaConversationProps> = {}) {
       currentItems={currentItems}
       displayedQuestions={displayedQuestions}
       handleSubmitQuestion={handleSubmitQuestion}
+      handleQuestionClick={handleQuestionClick}
       {...extraProps}
     />
   );
@@ -70,6 +72,7 @@ export const WithConversation: Story = {
     error: null,
     displayedQuestions: mockQuestions,
     handleSubmitQuestion: action('handleSubmitQuestion'),
+    handleQuestionClick: action('handleQuestionClick'),
   },
 };
 
@@ -87,6 +90,7 @@ export const Loading: Story = {
     error: null,
     displayedQuestions: [],
     handleSubmitQuestion: action('handleSubmitQuestion'),
+    handleQuestionClick: action('handleQuestionClick'),
   },
 };
 
@@ -99,6 +103,7 @@ export const WithError: Story = {
     error: new Error('Failed to fetch answer. Please try again.'),
     displayedQuestions: [],
     handleSubmitQuestion: action('handleSubmitQuestion'),
+    handleQuestionClick: action('handleQuestionClick'),
   },
 };
 
@@ -117,11 +122,31 @@ export const WithFeedback: Story = {
     showFeedback: true,
     displayedQuestions: mockQuestions,
     handleSubmitQuestion: action('handleSubmitQuestion'),
+    handleQuestionClick: action('handleQuestionClick'),
   },
 };
 
 export const WithoutPreviousItems = {
   render: () => <InteractiveWrapper showPreviousItems={false} />,
+};
+
+export const DisclaimerPositionTop: Story = {
+  args: {
+    conversationHistory: [
+      {
+        id: 1,
+        question: 'Is this bunk board suitable for a platform bed?',
+        answer:
+          'Yes, this bunk board is designed to work well with platform beds. It provides a solid, flat surface that supports your mattress evenly without the need for a box spring.',
+      },
+    ],
+    isLoading: false,
+    error: null,
+    disclaimerPosition: 'top',
+    displayedQuestions: mockQuestions,
+    handleSubmitQuestion: action('handleSubmitQuestion'),
+    handleQuestionClick: action('handleQuestionClick'),
+  },
 };
 
 export const WithLearnMore: Story = {
@@ -139,5 +164,6 @@ export const WithLearnMore: Story = {
     learnMoreUrl: 'https://constructor.io/learn-more',
     displayedQuestions: mockQuestions,
     handleSubmitQuestion: action('handleSubmitQuestion'),
+    handleQuestionClick: action('handleQuestionClick'),
   },
 };
