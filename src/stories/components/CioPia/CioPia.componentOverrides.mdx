@@ -1,0 +1,211 @@
+import { Meta, Canvas, Markdown } from '@storybook/blocks';
+import * as OverridesStories from './CioPia.componentOverrides.stories';
+
+<Meta of={OverridesStories} />
+
+# Component Overrides
+
+The `componentOverrides` prop lets you replace any sub-component with your own custom React component using render props.
+
+Every override receives the same props as the default component, so you have full access to the data.
+
+## Override Hierarchy
+
+The full list of overridable components:
+
+<Markdown>
+{`
+| Path                              | Props Type                        | Description              |
+|-----------------------------------|-----------------------------------|--------------------------|
+| \`reactNode\`                       | \`CioPiaRenderProps\`               | Entire PIA component     |
+| \`answer.reactNode\`                | \`AnswerRenderProps\`               | Answer text display      |
+| \`suggestedQuestions.reactNode\`    | \`SuggestedQuestionsRenderProps\`   | Suggested questions list |
+| \`disclaimer.reactNode\`           | \`DisclaimerRenderProps\`           | Disclaimer text          |
+| \`feedback.reactNode\`             | \`FeedbackRenderProps\`             | Feedback controls        |
+| \`carousel.reactNode\`             | \`CarouselRenderProps\`             | Entire carousel          |
+| \`carousel.content.reactNode\`     | \`CarouselRenderProps\`             | Carousel content area    |
+| \`carousel.item.reactNode\`        | \`CarouselItemRenderProps\`         | Individual carousel item |
+| \`carousel.item.productCard\`      | \`ProductCardOverrides\`            | Product card sub-components |
+| \`carousel.previous.reactNode\`    | \`CarouselRenderProps\`             | Previous button          |
+| \`carousel.next.reactNode\`        | \`CarouselRenderProps\`             | Next button              |
+`}
+</Markdown>
+
+## Custom Answer
+
+Replace the answer display with your own component. Receives `{ text: string }`.
+
+By default, the answer component renders `text` using `renderMarkdown`, which parses Markdown and sanitizes the output with DOMPurify. When overriding, use `renderMarkdown` to preserve this behavior. You can also pass `sanitize` to customize DOMPurify's sanitization (e.g. allow specific URI schemes like `sms:` or `tel:`). See the [Utilities](?path=/docs/general-utilities--docs) page for details.
+
+<Canvas of={OverridesStories.CustomAnswer} />
+
+```jsx
+import { renderMarkdown } from '@constructor-io/constructorio-ui-pia';
+
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId="YOUR_ITEM_ID"
+  componentOverrides={{
+    answer: {
+      reactNode: ({ text }) => (
+        <div
+          className="cio-pia-answer"
+          dangerouslySetInnerHTML={{ __html: renderMarkdown(text) }}
+        />
+      ),
+    },
+  }}
+/>
+```
+
+## Custom Suggested Questions
+
+Replace the suggested questions list. Receives `{ questions, onQuestionClick }`.
+
+<Canvas of={OverridesStories.CustomSuggestedQuestions} />
+
+```jsx
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId="YOUR_ITEM_ID"
+  componentOverrides={{
+    suggestedQuestions: {
+      reactNode: ({ questions, onQuestionClick }) => (
+        <div className="my-questions">
+          {questions.map((q) => (
+            <button key={q.value} onClick={() => onQuestionClick(q.value)}>
+              {q.value}
+            </button>
+          ))}
+        </div>
+      ),
+    },
+  }}
+/>
+```
+
+## Custom Disclaimer
+
+Replace the disclaimer text. Receives `{ learnMoreUrl?, translations? }`.
+
+<Canvas of={OverridesStories.CustomDisclaimer} />
+
+```jsx
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId="YOUR_ITEM_ID"
+  displayConfigs={{ learnMoreUrl: 'https://example.com' }}
+  componentOverrides={{
+    disclaimer: {
+      reactNode: ({ learnMoreUrl }) => (
+        <p className="my-disclaimer">
+          Powered by AI. <a href={learnMoreUrl}>Learn more</a>
+        </p>
+      ),
+    },
+  }}
+/>
+```
+
+## Custom Feedback
+
+Replace the feedback controls. Receives `{ translations?, onFeedback? }`. Requires `showFeedback: true`.
+
+<Canvas of={OverridesStories.CustomFeedback} />
+
+```jsx
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId="YOUR_ITEM_ID"
+  displayConfigs={{ showFeedback: true }}
+  componentOverrides={{
+    feedback: {
+      reactNode: ({ onFeedback }) => (
+        <div>
+          <button onClick={() => onFeedback?.('up')}>Helpful</button>
+          <button onClick={() => onFeedback?.('down')}>Not helpful</button>
+        </div>
+      ),
+    },
+  }}
+/>
+```
+
+## Custom Carousel Item
+
+Replace individual product cards in the carousel. Receives `{ item, index, ...carouselProps }`.
+
+<Canvas of={OverridesStories.CustomCarouselItem} />
+
+```jsx
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId="YOUR_ITEM_ID"
+  componentOverrides={{
+    carousel: {
+      item: {
+        reactNode: ({ item }) => (
+          <div className="my-product-card">
+            <img src={item?.imageUrl} alt={item?.name} />
+            <p>{item?.name}</p>
+            <p>${item?.price}</p>
+          </div>
+        ),
+      },
+    },
+  }}
+/>
+```
+
+## Custom Carousel Navigation
+
+Replace the previous/next navigation buttons.
+
+<Canvas of={OverridesStories.CustomCarouselNavigation} />
+
+```jsx
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId="YOUR_ITEM_ID"
+  componentOverrides={{
+    carousel: {
+      previous: {
+        reactNode: () => <button className="my-prev">&#8592;</button>,
+      },
+      next: {
+        reactNode: () => <button className="my-next">&#8594;</button>,
+      },
+    },
+  }}
+/>
+```
+
+## Full Custom Layout
+
+Override the entire component using the top-level `reactNode`. Receives all render props: `{ items, isLoading, error, currentAnswer, currentQuestion, displayedQuestions, handleSubmitQuestion, conversationHistory }`.
+
+<Canvas of={OverridesStories.FullCustomLayout} />
+
+```jsx
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId="YOUR_ITEM_ID"
+  componentOverrides={{
+    reactNode: ({ currentAnswer, displayedQuestions, handleSubmitQuestion, isLoading, items }) => (
+      <div className="my-pia">
+        <h3>Ask about this product</h3>
+        {displayedQuestions.map((q) => (
+          <button key={q.value} onClick={() => handleSubmitQuestion(q.value)}>
+            {q.value}
+          </button>
+        ))}
+        {isLoading && <p>Thinking...</p>}
+        {currentAnswer && <p>{currentAnswer}</p>}
+        {items?.map((item) => (
+          <div key={item.id}>{item.name}</div>
+        ))}
+      </div>
+    ),
+  }}
+/>
+```

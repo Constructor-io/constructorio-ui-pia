@@ -49,14 +49,14 @@ describe('Testing Mocks: Agent', () => {
       });
 
       await expect(
+        // @ts-expect-error testing missing required field
         clientWithoutUrl.agent.getSuggestedQuestions({ itemId: undefined }),
       ).rejects.toThrow('Item ID is required');
     });
   });
 
   describe('getAnswerResults', () => {
-    // TODO: Re-enable when the new demo account has alternative product recommendations configured
-    it.skip('fetches answer given item_id and questions', async () => {
+    it('fetches answer given item_id and questions', async () => {
       // Verify structure of item_results and follow_up_questions for alternative products
       const result = await client.agent.getAnswerResults({
         itemId: DEMO_ITEM_ID,
@@ -83,7 +83,7 @@ describe('Testing Mocks: Agent', () => {
       expect(Array.isArray(result.follow_up_questions)).toBe(true);
       expect(result.follow_up_questions[0]).toHaveProperty('value');
       expect(typeof result.follow_up_questions[0].value).toBe('string');
-    }, 15000); // Adding a timeout here as the answer API might take longer to respond
+    }, 30000); // Answer API can take 15s+ to respond
 
     it('throws an error if no agentServiceUrl is provided', async () => {
       const clientWithoutUrl = new MockConstructorIOClient({
@@ -110,6 +110,7 @@ describe('Testing Mocks: Agent', () => {
 
       await expect(
         clientWithoutUrl.agent.getAnswerResults({
+          // @ts-expect-error testing missing required field
           itemId: undefined,
           question: DEMO_QUESTION,
         }),
@@ -126,6 +127,7 @@ describe('Testing Mocks: Agent', () => {
       await expect(
         clientWithoutUrl.agent.getAnswerResults({
           itemId: DEMO_ITEM_ID,
+          // @ts-expect-error testing missing required field
           question: undefined,
         }),
       ).rejects.toThrow('Question is required');

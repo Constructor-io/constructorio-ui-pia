@@ -42,7 +42,7 @@ describe('Testing Transformers: transformResultItem', () => {
   });
 
   it('should return null if data.id is undefined', () => {
-    const { id, ...rest } = testItem.data;
+    const { id: _id, ...rest } = testItem.data;
     const item = {
       ...testItem,
       data: { ...rest },
@@ -57,7 +57,7 @@ describe('Testing Transformers: transformResultItem', () => {
       value: undefined,
     };
 
-    expect(transformResultItem(item as any)).toBeNull();
+    expect(transformResultItem(item)).toBeNull();
   });
 
   it('should return null if data is an empty object', () => {
@@ -65,7 +65,7 @@ describe('Testing Transformers: transformResultItem', () => {
       ...testItem,
       data: {},
     };
-    expect(transformResultItem(item as any)).toBeNull();
+    expect(transformResultItem(item)).toBeNull();
   });
 
   it('should return null if data is not an object', () => {
@@ -73,7 +73,7 @@ describe('Testing Transformers: transformResultItem', () => {
       ...testItem,
       data: 'not-an-object',
     };
-    expect(transformResultItem(item as any)).toBeNull();
+    expect(transformResultItem(item)).toBeNull();
   });
 
   describe('formatImageUrl callback', () => {
@@ -99,13 +99,13 @@ describe('Testing Transformers: transformResultItem', () => {
 
     it('should not call formatImageUrl when image_url is undefined', () => {
       const formatImageUrl = jest.fn((url: string) => `https://cdn.example.com${url}`);
-      const { image_url, ...dataWithoutImage } = testItem.data;
+      const { image_url: _image_url, ...dataWithoutImage } = testItem.data;
       const itemWithoutImage = {
         ...testItem,
         data: dataWithoutImage,
       };
 
-      const result = transformResultItem(itemWithoutImage as any, formatImageUrl);
+      const result = transformResultItem(itemWithoutImage, formatImageUrl);
 
       expect(result).not.toBeNull();
       expect(result!.imageUrl).toBeUndefined();
@@ -119,7 +119,7 @@ describe('Testing Transformers: transformResultItem', () => {
         data: { ...testItem.data, image_url: '' },
       };
 
-      const result = transformResultItem(itemWithEmptyImageUrl as any, formatImageUrl);
+      const result = transformResultItem(itemWithEmptyImageUrl, formatImageUrl);
 
       expect(result).not.toBeNull();
       expect(result!.imageUrl).toBe('');
