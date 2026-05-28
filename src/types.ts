@@ -39,6 +39,8 @@ export interface CioPiaProviderProps {
 export type CioPiaMode = 'default' | 'conversation';
 export type CioPiaType = 'inline' | 'modal';
 
+export type DisclaimerPosition = 'top' | 'bottom';
+
 export type CioPiaDisplayConfigs = {
   learnMoreUrl?: string;
   showFeedback?: boolean;
@@ -49,6 +51,14 @@ export type CioPiaDisplayConfigs = {
    * The last entry always falls back to its own items when currentItems is not provided.
    */
   showPreviousItems?: boolean;
+  /**
+   * Position of the AI disclaimer message relative to the conversation content.
+   * - `'top'` — renders the disclaimer above the conversation history or answer.
+   * - `'bottom'` — renders the disclaimer below the conversation history or answer.
+   *
+   * @default 'bottom'
+   */
+  disclaimerPosition?: DisclaimerPosition;
 };
 
 /**
@@ -65,13 +75,32 @@ export type Translations = {
   'Ask about this product'?: string;
 };
 
+export type QuestionSource = 'user' | 'suggestion';
+
+export interface PiaCallbackContext {
+  itemId: string;
+  threadId: string;
+}
+
 export interface Callbacks {
-  /** Called when a question is submitted (via Enter key, Send button, or suggested question click). */
-  onQuestionSubmit?: (question: string) => void;
+  /** Called when a question is submitted (typed or suggested question clicked). */
+  onQuestionSubmit?: (
+    question: string,
+    context: PiaCallbackContext,
+    source: QuestionSource,
+  ) => void;
   /** Called when a product card in the carousel is clicked. */
   onProductCardClick?: (item: Item) => void;
   /** Called when the user submits positive or negative feedback on an answer. */
   onFeedback?: (type: FeedbackType) => void;
+  /** Called when a new answer is received. Passes the full conversation history. */
+  onAnswer?: (history: ConversationEntry[], context: PiaCallbackContext) => void;
+  /** Called when the user focuses the input field. */
+  onFocus?: (context: PiaCallbackContext) => void;
+  /** Called when the widget enters the viewport. */
+  onView?: (context: PiaCallbackContext) => void;
+  /** Called when the widget leaves the viewport. */
+  onOutOfView?: (context: PiaCallbackContext) => void;
 }
 
 /** Formatter functions for transforming data before display. */
@@ -90,7 +119,10 @@ export interface ConversationEntry {
   id: number;
   question: string;
   answer: string;
+  source: QuestionSource;
   items?: Item[] | null;
+  threadId?: string;
+  qnaResultId?: string;
 }
 
 /**
@@ -127,8 +159,8 @@ export interface FeedbackRenderProps {
 }
 
 /**
- * Component overrides for CioPia
- * Allows customization of sub-components via reactNode or render props functions
+ * Component overrides for CioPia.
+ * Allows customization of sub-components via reactNode or render props functions.
  */
 export interface CioPiaComponentOverrides extends ComponentOverrideProps<CioPiaRenderProps> {
   carousel?: CarouselOverrides<Item>;

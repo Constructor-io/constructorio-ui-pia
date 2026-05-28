@@ -11,6 +11,7 @@ import {
   Item,
   Callbacks,
   CioPiaComponentOverrides,
+  DisclaimerPosition,
 } from '../../types';
 
 export interface ConversationHistoryProps {
@@ -31,6 +32,7 @@ export interface ConversationHistoryProps {
    */
   showPreviousItems?: boolean;
   learnMoreUrl?: string;
+  disclaimerPosition?: DisclaimerPosition;
   translations?: Translations;
   callbacks?: Callbacks;
   componentOverrides?: CioPiaComponentOverrides;
@@ -44,6 +46,7 @@ export default function ConversationHistory({
   showFeedback,
   showPreviousItems = true,
   learnMoreUrl,
+  disclaimerPosition = 'bottom',
   translations,
   callbacks,
   componentOverrides,
@@ -61,8 +64,17 @@ export default function ConversationHistory({
     return () => cancelAnimationFrame(frameId);
   }, [conversationHistory, isLoading]);
 
+  const disclaimer = (
+    <Disclaimer
+      learnMoreUrl={learnMoreUrl}
+      translations={translations}
+      componentOverride={componentOverrides?.disclaimer}
+    />
+  );
+
   return (
     <div className='cio-pia-conversation-history'>
+      {disclaimerPosition === 'top' && disclaimer}
       <div
         ref={scrollContainerRef}
         className='cio-pia-conversation-entries'
@@ -111,11 +123,7 @@ export default function ConversationHistory({
           );
         })}
       </div>
-      <Disclaimer
-        learnMoreUrl={learnMoreUrl}
-        translations={translations}
-        componentOverride={componentOverrides?.disclaimer}
-      />
+      {disclaimerPosition === 'bottom' && disclaimer}
     </div>
   );
 }

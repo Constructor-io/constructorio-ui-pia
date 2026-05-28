@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Nullable } from '@constructor-io/constructorio-client-javascript';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 import { Formatters, Item, GetAnswerResultsResponse } from '../types';
@@ -73,9 +73,13 @@ export default function useAnswerResults({
   formatImageUrl,
 }: UseAnswerResultsProps): UseAnswerResultsReturn {
   const [answerResults, setAnswerResults] = useState<GetAnswerResultsResponse | null>(null);
-  const [items, setItems] = useState<Array<Item> | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
+
+  const items = useMemo(
+    () => extractAndTransformItems(answerResults, formatImageUrl),
+    [answerResults, formatImageUrl],
+  );
 
   const fetchResult = useCallback(
     (question: string) => {
@@ -87,19 +91,17 @@ export default function useAnswerResults({
       fetchAnswerResults({ client: cioClient, itemId, question, variationId, threadId })
         .then((fetchedAnswerResults) => {
           setAnswerResults(fetchedAnswerResults);
-          setItems(extractAndTransformItems(fetchedAnswerResults, formatImageUrl));
           setError(null);
         })
         .catch((err) => {
           setError(err instanceof Error ? err : new Error('Error fetching answer'));
           setAnswerResults(null);
-          setItems(null);
         })
         .finally(() => {
           setIsLoading(false);
         });
     },
-    [cioClient, itemId, variationId, threadId, formatImageUrl],
+    [cioClient, itemId, variationId, threadId],
   );
 
   return {

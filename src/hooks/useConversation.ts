@@ -1,5 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Callbacks, ConversationEntry, Question, Item } from '../types';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Callbacks,
+  ConversationEntry,
+  PiaCallbackContext,
+  Question,
+  QuestionSource,
+  Item,
+} from '../types';
 import { UseCioPiaReturn } from './useCioPia';
 
 export interface UseConversationProps {
@@ -17,7 +24,10 @@ export interface UseConversationReturn {
   currentItems: Item[] | null;
   isLoading: boolean;
   error: Error | null;
+  context: PiaCallbackContext;
   handleSubmitQuestion: (question: string) => void;
+  handleQuestionClick: (question: string) => void;
+  handleInputFocus: () => void;
   resetState: () => void;
 }
 
@@ -27,8 +37,10 @@ export default function useConversation({
   isConversation,
   callbacks,
 }: UseConversationProps): UseConversationReturn {
-  const { suggestedQuestions, answers } = pia;
+  const { suggestedQuestions, answers, threadId } = pia;
   const { getAnswer } = answers;
+
+  const context: PiaCallbackContext = useMemo(() => ({ itemId, threadId }), [itemId, threadId]);
 
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
   const [displayedQuestions, setDisplayedQuestions] = useState<Question[]>([]);
@@ -36,21 +48,54 @@ export default function useConversation({
 
   const entryIdRef = useRef(0);
   const prevAnswerValueRef = useRef(answers.data?.value);
+  const callbacksRef = useRef(callbacks);
+  const contextRef = useRef(context);
+  const lastQuestionRef = useRef<string>('');
+  const lastSourceRef = useRef<QuestionSource>('user');
 
-  const handleSubmitQuestion = useCallback(
-    (question: string) => {
-      callbacks?.onQuestionSubmit?.(question);
+  useEffect(() => {
+    callbacksRef.current = callbacks;
+  }, [callbacks]);
+
+  useEffect(() => {
+    contextRef.current = context;
+  }, [context]);
+
+  const submitQuestion = useCallback(
+    (question: string, source: QuestionSource) => {
+      lastSourceRef.current = source;
+      lastQuestionRef.current = question;
       setCurrentQuestion(question);
       getAnswer(question);
 
       if (isConversation) {
         entryIdRef.current += 1;
         const id = entryIdRef.current;
-        setConversationHistory((prev) => [...prev, { id, question, answer: '' }]);
+        setConversationHistory((prev) => [...prev, { id, question, answer: '', source }]);
       }
     },
-    [getAnswer, isConversation, callbacks],
+    [getAnswer, isConversation],
   );
+
+  const handleSubmitQuestion = useCallback(
+    (question: string) => {
+      callbacksRef.current?.onQuestionSubmit?.(question, contextRef.current, 'user');
+      submitQuestion(question, 'user');
+    },
+    [submitQuestion],
+  );
+
+  const handleQuestionClick = useCallback(
+    (question: string) => {
+      callbacksRef.current?.onQuestionSubmit?.(question, contextRef.current, 'suggestion');
+      submitQuestion(question, 'suggestion');
+    },
+    [submitQuestion],
+  );
+
+  const handleInputFocus = useCallback(() => {
+    callbacksRef.current?.onFocus?.(contextRef.current);
+  }, []);
 
   const resetState = useCallback(() => {
     setCurrentQuestion('');
@@ -76,19 +121,39 @@ export default function useConversation({
 
   useEffect(() => {
     const answerValue = answers.data?.value ?? '';
-    if (!isConversation || !answerValue) return;
+    if (!answerValue) return;
     if (answerValue === prevAnswerValueRef.current) return;
     prevAnswerValueRef.current = answerValue;
-    setConversationHistory((prev) => {
-      if (prev.length === 0) return prev;
-      const updated = [...prev];
-      updated[updated.length - 1] = {
-        ...updated[updated.length - 1],
+
+    const answerThreadId = answers.data?.thread_id;
+    const qnaResultId = answers.data?.qna_result_id;
+
+    if (isConversation) {
+      setConversationHistory((prev) => {
+        if (prev.length === 0) return prev;
+        const updated = [...prev];
+        updated[updated.length - 1] = {
+          ...updated[updated.length - 1],
+          answer: answerValue,
+          items: answers.items,
+          threadId: answerThreadId,
+          qnaResultId,
+        };
+        callbacksRef.current?.onAnswer?.(updated, contextRef.current);
+        return updated;
+      });
+    } else {
+      const entry: ConversationEntry = {
+        id: entryIdRef.current,
+        question: lastQuestionRef.current,
         answer: answerValue,
+        source: lastSourceRef.current,
         items: answers.items,
+        threadId: answerThreadId,
+        qnaResultId,
       };
-      return updated;
-    });
+      callbacksRef.current?.onAnswer?.([entry], contextRef.current);
+    }
   }, [isConversation, answers.data, answers.items]);
 
   const currentAnswer = answers.data?.value ?? '';
@@ -104,7 +169,10 @@ export default function useConversation({
     currentItems,
     isLoading,
     error,
+    context,
     handleSubmitQuestion,
+    handleQuestionClick,
+    handleInputFocus,
     resetState,
   };
 }

@@ -20,18 +20,24 @@ function CloseIcon() {
 interface PiaModalProps {
   initialQuestions: Question[];
   handleSubmitQuestion: (question: string) => void;
+  handleQuestionClick: (question: string) => void;
+  containerRef?: (node: HTMLDivElement | null) => void;
   isLoading: boolean;
   componentOverrides?: CioPiaComponentOverrides;
   translations?: Translations;
+  onInputFocus?: () => void;
   onClose?: () => void;
 }
 
 export default function PiaModal({
   initialQuestions,
   handleSubmitQuestion,
+  handleQuestionClick,
+  containerRef,
   isLoading,
   componentOverrides,
   translations,
+  onInputFocus,
   onClose,
   children,
 }: PropsWithChildren<PiaModalProps>) {
@@ -93,20 +99,35 @@ export default function PiaModal({
     [handleSubmitQuestion, openModal],
   );
 
+  const handleQuestionClicked = useCallback(
+    (question: string) => {
+      handleQuestionClick(question);
+      openModal();
+    },
+    [handleQuestionClick, openModal],
+  );
+
   return (
-    <div className='cio-pia-container' data-testid='cio-pia-container'>
+    <div ref={containerRef} className='cio-pia-container' data-testid='cio-pia-container'>
       <p className='cio-pia-title' data-testid='cio-pia-title'>
         {translate('Any questions about this product?', translations)}
       </p>
-      <Input onSubmit={handleQuestion} disabled={isLoading || isOpen} translations={translations} />
+      <div className='cio-pia-conversation-footer'>
+        {initialQuestions.length > 0 && (
+          <SuggestedQuestionsContainer
+            questions={initialQuestions}
+            onQuestionClick={handleQuestionClicked}
+            componentOverride={componentOverrides?.suggestedQuestions}
+          />
+        )}
 
-      {initialQuestions.length > 0 && (
-        <SuggestedQuestionsContainer
-          questions={initialQuestions}
-          onQuestionClick={handleQuestion}
-          componentOverride={componentOverrides?.suggestedQuestions}
+        <Input
+          onSubmit={handleQuestion}
+          onFocus={onInputFocus}
+          disabled={isLoading || isOpen}
+          translations={translations}
         />
-      )}
+      </div>
 
       <dialog ref={dialogRef} className='cio-pia-modal' aria-labelledby='cio-pia-modal-title'>
         <div className='cio-pia-modal-content'>

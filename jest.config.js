@@ -29,7 +29,7 @@ module.exports = {
       ...commonConfig,
       displayName: 'server',
       testEnvironment: 'node',
-      testMatch: ['**/**/*.server.test.(js|jsx)'],
+      testMatch: ['**/**/*.server.test.(js|jsx|ts|tsx)'],
       moduleNameMapper: {
         '\\.(svg|png|jpg|jpeg|gif)$': '<rootDir>/spec/__mocks__/fileMock.js',
         'embla-carousel-react': '<rootDir>/spec/__mocks__/embla-carousel-react.js',

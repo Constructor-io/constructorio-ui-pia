@@ -364,6 +364,62 @@ describe('ConversationHistory Component', () => {
     expect(screen.queryByText('Old Product')).not.toBeInTheDocument();
   });
 
+  describe('disclaimerPosition', () => {
+    const conversationHistory = [
+      { id: 1, question: 'First question', answer: 'First answer' },
+    ];
+
+    it('renders disclaimer after conversation entries by default', () => {
+      const { container } = render(
+        <ConversationHistory {...baseProps} conversationHistory={conversationHistory} />,
+      );
+
+      const history = container.querySelector('.cio-pia-conversation-history')!;
+      const children = Array.from(history.children);
+      const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
+      const entriesIndex = children.findIndex((el) =>
+        el.matches('.cio-pia-conversation-entries'),
+      );
+      expect(disclaimerIndex).toBeGreaterThan(entriesIndex);
+    });
+
+    it('renders disclaimer before conversation entries when disclaimerPosition is top', () => {
+      const { container } = render(
+        <ConversationHistory
+          {...baseProps}
+          conversationHistory={conversationHistory}
+          disclaimerPosition='top'
+        />,
+      );
+
+      const history = container.querySelector('.cio-pia-conversation-history')!;
+      const children = Array.from(history.children);
+      const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
+      const entriesIndex = children.findIndex((el) =>
+        el.matches('.cio-pia-conversation-entries'),
+      );
+      expect(disclaimerIndex).toBeLessThan(entriesIndex);
+    });
+
+    it('renders disclaimer after conversation entries when disclaimerPosition is bottom', () => {
+      const { container } = render(
+        <ConversationHistory
+          {...baseProps}
+          conversationHistory={conversationHistory}
+          disclaimerPosition='bottom'
+        />,
+      );
+
+      const history = container.querySelector('.cio-pia-conversation-history')!;
+      const children = Array.from(history.children);
+      const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
+      const entriesIndex = children.findIndex((el) =>
+        el.matches('.cio-pia-conversation-entries'),
+      );
+      expect(disclaimerIndex).toBeGreaterThan(entriesIndex);
+    });
+  });
+
   it('does not show feedback on last entry when showFeedback is false or not provided', () => {
     const conversationHistory = [{ id: 1, question: 'Last question', answer: 'Last answer' }];
 
