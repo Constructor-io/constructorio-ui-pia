@@ -45,7 +45,9 @@ function Input({
   const handleSubmit = () => {
     if (value.trim()) {
       onSubmit(value.trim());
-      setValue('');
+      if (value.trim() !== providedValue) {
+        setValue('');
+      }
     }
   };
 
