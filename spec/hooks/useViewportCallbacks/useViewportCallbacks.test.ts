@@ -2,8 +2,10 @@ import { renderHook, act } from '@testing-library/react';
 import useViewportCallbacks from '../../../src/hooks/useViewportCallbacks';
 import { UseViewportCallbacksProps } from '../../../src/hooks/useViewportCallbacks';
 
+declare let global: typeof globalThis;
+
 describe('Testing Hook: useViewportCallbacks', () => {
-  let observeCallback: (entries: Partial<IntersectionObserverEntry>[]) => void;
+  let observeCallback: ((entries: Partial<IntersectionObserverEntry>[]) => void) | undefined;
   let mockDisconnect: jest.Mock;
 
   const mockContext = { itemId: 'test-item', threadId: 'test-thread' };

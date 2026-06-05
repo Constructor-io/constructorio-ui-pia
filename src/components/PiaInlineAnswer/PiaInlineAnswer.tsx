@@ -6,14 +6,22 @@ import PiaCustomCarousel from '../CioPia/PiaCustomCarousel';
 import {
   Callbacks,
   CioPiaComponentOverrides,
+  ConversationEntry,
   DisclaimerPosition,
+  GetAnswerResultsResponse,
+  PiaCallbackContext,
+  QuestionSource,
   Translations,
   Item,
 } from '../../types';
 
 interface PiaInlineAnswerProps {
   currentAnswer: string;
+  currentQuestion: string;
+  currentResponse: GetAnswerResultsResponse | null;
+  currentSource: QuestionSource;
   currentItems: Item[] | null;
+  context: PiaCallbackContext;
   showFeedback?: boolean;
   learnMoreUrl?: string;
   disclaimerPosition?: DisclaimerPosition;
@@ -24,7 +32,11 @@ interface PiaInlineAnswerProps {
 
 export default function PiaInlineAnswer({
   currentAnswer,
+  currentQuestion,
+  currentResponse,
+  currentSource,
   currentItems,
+  context,
   showFeedback,
   learnMoreUrl,
   disclaimerPosition = 'bottom',
@@ -51,10 +63,21 @@ export default function PiaInlineAnswer({
           callbacks={callbacks}
         />
       )}
-      {showFeedback && (
+      {showFeedback && currentResponse && (
         <Feedback
           translations={translations}
-          onFeedback={callbacks?.onFeedback}
+          onFeedback={(type) => {
+            const entry: ConversationEntry = {
+              id: 0,
+              question: currentQuestion,
+              answer: currentAnswer,
+              source: currentSource,
+              items: currentItems,
+              response: currentResponse,
+              qnaResultId: currentResponse.qna_result_id,
+            };
+            callbacks?.onFeedback?.(type, entry, context);
+          }}
           componentOverride={componentOverrides?.feedback}
         />
       )}

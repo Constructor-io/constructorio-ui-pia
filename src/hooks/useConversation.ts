@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Callbacks,
   ConversationEntry,
+  GetAnswerResultsResponse,
   PiaCallbackContext,
   Question,
   QuestionSource,
@@ -18,9 +19,11 @@ export interface UseConversationProps {
 
 export interface UseConversationReturn {
   currentQuestion: string;
+  currentSource: QuestionSource;
   displayedQuestions: Question[];
   conversationHistory: ConversationEntry[];
   currentAnswer: string;
+  currentResponse: GetAnswerResultsResponse | null;
   currentItems: Item[] | null;
   isLoading: boolean;
   error: Error | null;
@@ -43,6 +46,7 @@ export default function useConversation({
   const context: PiaCallbackContext = useMemo(() => ({ itemId, threadId }), [itemId, threadId]);
 
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
+  const [currentSource, setCurrentSource] = useState<QuestionSource>('user');
   const [displayedQuestions, setDisplayedQuestions] = useState<Question[]>([]);
   const [conversationHistory, setConversationHistory] = useState<ConversationEntry[]>([]);
 
@@ -66,6 +70,7 @@ export default function useConversation({
       lastSourceRef.current = source;
       lastQuestionRef.current = question;
       setCurrentQuestion(question);
+      setCurrentSource(source);
       getAnswer(question);
 
       if (isConversation) {
@@ -136,6 +141,7 @@ export default function useConversation({
           ...updated[updated.length - 1],
           answer: answerValue,
           items: answers.items,
+          response: answers.data,
           threadId: answerThreadId,
           qnaResultId,
         };
@@ -149,6 +155,7 @@ export default function useConversation({
         answer: answerValue,
         source: lastSourceRef.current,
         items: answers.items,
+        response: answers.data,
         threadId: answerThreadId,
         qnaResultId,
       };
@@ -157,15 +164,18 @@ export default function useConversation({
   }, [isConversation, answers.data, answers.items]);
 
   const currentAnswer = answers.data?.value ?? '';
+  const currentResponse = answers.data ?? null;
   const currentItems = answers.items ?? null;
   const error = answers.error || suggestedQuestions.error;
   const isLoading = answers.isLoading || suggestedQuestions.isLoading;
 
   return {
     currentQuestion,
+    currentSource,
     displayedQuestions,
     conversationHistory,
     currentAnswer,
+    currentResponse,
     currentItems,
     isLoading,
     error,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import PiaInlineAnswer from '../../../src/components/PiaInlineAnswer/PiaInlineAnswer';
 import { DISCLAIMER_TEXT } from '../../../src/constants';
@@ -25,7 +25,11 @@ const mockItems = [
 
 const defaultProps = {
   currentAnswer: 'This is a test answer',
+  currentQuestion: 'What is this product?',
+  currentResponse: { qna_result_id: 'test-qna-id', value: 'This is a test answer' },
+  currentSource: 'user' as const,
   currentItems: null,
+  context: { itemId: 'test-item', threadId: 'test-thread' },
 };
 
 describe('PiaInlineAnswer Component', () => {
@@ -81,6 +85,34 @@ describe('PiaInlineAnswer Component', () => {
       render(<PiaInlineAnswer {...defaultProps} showFeedback />);
 
       expect(screen.getByText('Is this answer useful?')).toBeInTheDocument();
+    });
+
+    it('calls onFeedback with type, constructed entry, and context', () => {
+      const mockOnFeedback = jest.fn();
+
+      render(
+        <PiaInlineAnswer
+          {...defaultProps}
+          showFeedback
+          callbacks={{ onFeedback: mockOnFeedback }}
+        />,
+      );
+
+      fireEvent.click(screen.getByLabelText('thumbs down'));
+
+      expect(mockOnFeedback).toHaveBeenCalledWith(
+        'down',
+        {
+          id: 0,
+          question: defaultProps.currentQuestion,
+          answer: defaultProps.currentAnswer,
+          source: defaultProps.currentSource,
+          items: defaultProps.currentItems,
+          response: defaultProps.currentResponse,
+          qnaResultId: defaultProps.currentResponse.qna_result_id,
+        },
+        defaultProps.context,
+      );
     });
   });
 

@@ -62,7 +62,7 @@ export default function Feedback({ translations, onFeedback, componentOverride }
 
   return (
     <RenderPropsWrapper
-      props={{ translations, onFeedback }}
+      props={{ translations, onFeedback: handleFeedback }}
       override={componentOverride?.reactNode}>
       <div className='cio-pia-feedback-container'>
         <p className='cio-pia-feedback-text'>{translate('Is this answer useful?', translations)}</p>

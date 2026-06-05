@@ -11,13 +11,16 @@ describe('PiaConversation Component', () => {
   ];
 
   const mockHandleSubmitQuestion = jest.fn();
+  const mockHandleQuestionClick = jest.fn();
 
   const baseProps = {
     conversationHistory: [],
     isLoading: false,
     error: null,
+    context: { itemId: 'test-item', threadId: 'test-thread' },
     displayedQuestions: mockSuggestedQuestions,
     handleSubmitQuestion: mockHandleSubmitQuestion,
+    handleQuestionClick: mockHandleQuestionClick,
   };
 
   beforeEach(() => {
@@ -33,7 +36,7 @@ describe('PiaConversation Component', () => {
 
     it('hides title when there is conversation history', () => {
       const conversationHistory = [
-        { id: 1, question: 'What is this?', answer: 'It is a product.' },
+        { id: 1, question: 'What is this?', answer: 'It is a product.', source: 'user' as const },
       ];
 
       render(<PiaConversation {...baseProps} conversationHistory={conversationHistory} />);
@@ -89,7 +92,7 @@ describe('PiaConversation Component', () => {
   });
 
   describe('Disclaimer position', () => {
-    const conversationHistory = [{ id: 1, question: 'What is this?', answer: 'It is a product.' }];
+    const conversationHistory = [{ id: 1, question: 'What is this?', answer: 'It is a product.', source: 'user' as const }];
 
     it('renders disclaimer below conversation entries by default', () => {
       const { container } = render(

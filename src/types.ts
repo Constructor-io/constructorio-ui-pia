@@ -7,7 +7,7 @@ import {
   ConstructorClientOptions,
   Nullable,
 } from '@constructor-io/constructorio-client-javascript';
-import { Question } from './hooks/mocks/types';
+import { Question, GetAnswerResultsResponse } from './hooks/mocks/types';
 import MockConstructorIOClient from './hooks/mocks/MockConstructorIOClient';
 
 export enum FeedbackType {
@@ -92,7 +92,7 @@ export interface Callbacks {
   /** Called when a product card in the carousel is clicked. */
   onProductCardClick?: (item: Item) => void;
   /** Called when the user submits positive or negative feedback on an answer. */
-  onFeedback?: (type: FeedbackType) => void;
+  onFeedback?: (type: FeedbackType, entry: ConversationEntry, context: PiaCallbackContext) => void;
   /** Called when a new answer is received. Passes the full conversation history. */
   onAnswer?: (history: ConversationEntry[], context: PiaCallbackContext) => void;
   /** Called when the user focuses the input field. */
@@ -121,6 +121,7 @@ export interface ConversationEntry {
   answer: string;
   source: QuestionSource;
   items?: Item[] | null;
+  response?: GetAnswerResultsResponse | null;
   threadId?: string;
   qnaResultId?: string;
 }
