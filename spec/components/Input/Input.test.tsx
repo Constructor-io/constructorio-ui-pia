@@ -101,4 +101,29 @@ describe('Input Component', () => {
     expect(input).toBeDisabled();
     expect(button).toBeDisabled();
   });
+
+  it('retains value after submit when it matches providedValue (default mode)', () => {
+    const { queryByRole } = render(<Input onSubmit={mockSubmit} value='Does this come in blue?' />);
+    const input = queryByRole('textbox')! as HTMLInputElement;
+    const button = queryByRole('button')!;
+
+    expect(input.value).toBe('Does this come in blue?');
+
+    fireEvent.click(button);
+
+    expect(mockSubmit).toHaveBeenCalledWith('Does this come in blue?');
+    expect(input.value).toBe('Does this come in blue?');
+  });
+
+  it('clears value after submit when it differs from providedValue', () => {
+    const { queryByRole } = render(<Input onSubmit={mockSubmit} value='Does this come in blue?' />);
+    const input = queryByRole('textbox')! as HTMLInputElement;
+    const button = queryByRole('button')!;
+
+    fireEvent.change(input, { target: { value: 'A different question' } });
+    fireEvent.click(button);
+
+    expect(mockSubmit).toHaveBeenCalledWith('A different question');
+    expect(input.value).toBe('');
+  });
 });
