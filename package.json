@@ -69,8 +69,10 @@
   },
   "peerDependencies": {
     "@constructor-io/constructorio-client-javascript": "^2.71.1",
-    "@constructor-io/constructorio-ui-checkout": ">=0.1.0",
+    "@constructor-io/constructorio-ui-checkout": ">=1.2.0",
     "@constructor-io/constructorio-ui-components": "^1.4.0",
+    "@stripe/react-stripe-js": ">=6.6.0",
+    "@stripe/stripe-js": ">=9.3.1",
     "react": ">=16.12.0",
     "react-dom": ">=16.12.0",
     "tslib": "^2.4.0"
@@ -98,6 +100,8 @@
     "@storybook/test": "^8.6.4",
     "@storybook/test-runner": "^0.22.0",
     "@storybook/testing-library": "^0.2.1",
+    "@stripe/react-stripe-js": "^6.6.0",
+    "@stripe/stripe-js": "^9.3.1",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@types/dompurify": "^3.0.5",
