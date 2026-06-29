@@ -82,7 +82,7 @@
     "@babel/preset-react": "^7.23.3",
     "@babel/preset-typescript": "^7.23.3",
     "@chromatic-com/storybook": "^3.2.5",
-    "@constructor-io/constructorio-ui-checkout": "file:packages/constructor-io-constructorio-ui-checkout-1.1.0.tgz",
+    "@constructor-io/constructorio-ui-checkout": "file:packages/constructor-io-constructorio-ui-checkout-1.2.0.tgz",
     "@cspell/eslint-plugin": "^8.17.5",
     "@eslint/js": "^9.39.4",
     "@storybook/addon-a11y": "^8.6.4",
