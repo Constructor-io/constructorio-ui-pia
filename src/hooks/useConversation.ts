@@ -165,9 +165,9 @@ export default function useConversation({
   useEffect(() => {
     if (answers.data?.follow_up_questions) setDisplayedQuestions(answers.data.follow_up_questions);
     if (answers.data && currentQuestionRef.current) {
-      trackingRef.current.trackAnswerView(currentQuestionRef.current, answers.data);
+      trackingRef.current.trackAnswerView(currentQuestionRef.current, answers.data, answers.items);
     }
-  }, [answers.data]);
+  }, [answers.data, answers.items]);
 
   // Sync answer and items into the latest conversation history entry
   useEffect(() => {

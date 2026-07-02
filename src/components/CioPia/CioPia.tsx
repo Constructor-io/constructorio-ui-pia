@@ -65,7 +65,7 @@ export default function CioPia(props: CioPiaProps) {
     threadId,
     variationId,
     cioClient,
-    displayConfigs,
+    displayConfigs = {},
     componentOverrides,
     callbacks,
     formatters,
@@ -80,7 +80,7 @@ export default function CioPia(props: CioPiaProps) {
     type = 'inline',
     showPreviousItems,
     disclaimerPosition = 'bottom',
-  } = displayConfigs || {};
+  } = displayConfigs;
   const isConversation = mode === 'conversation' || type === 'modal';
 
   const pia = useCioPia({
@@ -93,7 +93,13 @@ export default function CioPia(props: CioPiaProps) {
     formatImageUrl: formatters?.formatImageUrl,
   });
 
-  const tracking = useTracking({ cioClient: pia.cioClient, itemId, itemName, variationId });
+  const tracking = useTracking({
+    cioClient: pia.cioClient,
+    itemId,
+    itemName,
+    variationId,
+    threadId,
+  });
 
   const {
     currentQuestion,
@@ -112,6 +118,8 @@ export default function CioPia(props: CioPiaProps) {
   } = useConversation({ pia, itemId, isConversation, callbacks, tracking });
 
   const { containerRef } = useViewportTracking({ tracking, questions: displayedQuestions });
+
+  const qnaResultId = pia.answers.data?.qna_result_id;
 
   const onFeedback = useCallback(
     (feedbackType: FeedbackType) => {
@@ -148,6 +156,8 @@ export default function CioPia(props: CioPiaProps) {
     handleSubmitQuestion,
     handleQuestionClick,
     handleFeedback: onFeedback,
+    onResultClick: tracking.trackResultClick,
+    qnaResultId: qnaResultId,
   };
 
   if (type === 'modal') {
@@ -199,31 +209,34 @@ export default function CioPia(props: CioPiaProps) {
 
         {isLoading && <LoadingSkeleton />}
 
-        {!isLoading && error && <ErrorBlock message={error?.message || 'Unexpected error'} />}
+        {!isLoading &&
+          (error ? (
+            <ErrorBlock message={error.message || 'Unexpected error'} />
+          ) : (
+            <>
+              {currentAnswer && (
+                <PiaInlineAnswer
+                  currentAnswer={currentAnswer}
+                  currentItems={currentItems}
+                  showFeedback={showFeedback}
+                  learnMoreUrl={learnMoreUrl}
+                  disclaimerPosition={disclaimerPosition}
+                  translations={translations}
+                  callbacks={callbacks}
+                  componentOverrides={componentOverrides}
+                  onFeedback={onFeedback}
+                  onResultClick={tracking.trackResultClick}
+                  qnaResultId={qnaResultId}
+                />
+              )}
 
-        {!isLoading && !error && (
-          <>
-            {currentAnswer && (
-              <PiaInlineAnswer
-                currentAnswer={currentAnswer}
-                currentItems={currentItems}
-                showFeedback={showFeedback}
-                learnMoreUrl={learnMoreUrl}
-                disclaimerPosition={disclaimerPosition}
-                translations={translations}
-                callbacks={callbacks}
-                componentOverrides={componentOverrides}
-                onFeedback={onFeedback}
+              <SuggestedQuestionsContainer
+                questions={displayedQuestions}
+                onQuestionClick={handleQuestionClick}
+                componentOverride={componentOverrides?.suggestedQuestions}
               />
-            )}
-
-            <SuggestedQuestionsContainer
-              questions={displayedQuestions}
-              onQuestionClick={handleQuestionClick}
-              componentOverride={componentOverrides?.suggestedQuestions}
-            />
-          </>
-        )}
+            </>
+          ))}
       </RenderPropsWrapper>
     </div>
   );

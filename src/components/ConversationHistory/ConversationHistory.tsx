@@ -38,6 +38,8 @@ export interface ConversationHistoryProps {
   callbacks?: Callbacks;
   componentOverrides?: CioPiaComponentOverrides;
   handleFeedback?: (type: FeedbackType) => void;
+  onResultClick?: (item: Item, position: number, qnaResultId?: string) => void;
+  qnaResultId?: string;
 }
 
 export default function ConversationHistory({
@@ -53,6 +55,8 @@ export default function ConversationHistory({
   callbacks,
   componentOverrides,
   handleFeedback,
+  onResultClick,
+  qnaResultId,
 }: ConversationHistoryProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -111,6 +115,8 @@ export default function ConversationHistory({
                       items={carouselItems}
                       componentOverrides={componentOverrides?.carousel}
                       callbacks={callbacks}
+                      onResultClick={onResultClick}
+                      qnaResultId={qnaResultId}
                     />
                   )}
                   {isLast && showFeedback && (

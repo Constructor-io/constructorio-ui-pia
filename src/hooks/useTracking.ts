@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import ConstructorIOClient from '@constructor-io/constructorio-client-javascript';
-import { FeedbackType, Question, GetAnswerResultsResponse } from '../types';
+import { FeedbackType, Item, Question, GetAnswerResultsResponse } from '../types';
 
 export interface TimeSpan {
   start: string;
@@ -12,6 +12,7 @@ export interface UseTrackingProps {
   itemId: string;
   itemName: string;
   variationId?: string;
+  threadId?: string;
 }
 
 export interface UseTrackingReturn {
@@ -21,8 +22,13 @@ export interface UseTrackingReturn {
   trackFocus: () => void;
   trackQuestionClick: (question: string) => void;
   trackQuestionSubmit: (question: string) => void;
-  trackAnswerView: (question: string, answerData: GetAnswerResultsResponse) => void;
+  trackAnswerView: (
+    question: string,
+    answerData: GetAnswerResultsResponse,
+    items?: Item[] | null,
+  ) => void;
   trackAnswerFeedback: (feedbackType: FeedbackType, qnaResultId?: string) => void;
+  trackResultClick: (clickedItem: Item, position: number, qnaResultId?: string) => void;
 }
 
 export default function useTracking({
@@ -30,6 +36,7 @@ export default function useTracking({
   itemId,
   itemName,
   variationId,
+  threadId,
 }: UseTrackingProps): UseTrackingReturn {
   const tracker = cioClient?.tracker;
 
@@ -38,8 +45,9 @@ export default function useTracking({
       itemId,
       itemName,
       ...(variationId && { variationId }),
+      ...(threadId && { threadId }),
     }),
-    [itemId, itemName, variationId],
+    [itemId, itemName, variationId, threadId],
   );
 
   const mapQuestions = useCallback(
@@ -97,12 +105,25 @@ export default function useTracking({
   );
 
   const trackAnswerView = useCallback(
-    (question: string, answerData: GetAnswerResultsResponse) => {
+    (question: string, answerData: GetAnswerResultsResponse, items?: Item[] | null) => {
       tracker?.trackProductInsightsAgentAnswerView({
         ...baseParams,
         question,
         answerText: answerData.value,
         qnaResultId: answerData.qna_result_id,
+        ...(items &&
+          items.length > 0 && {
+            items: items.map((item) => ({
+              itemId: item.id,
+              itemName: item.name,
+            })),
+          }),
+        ...(answerData.follow_up_questions &&
+          answerData.follow_up_questions.length > 0 && {
+            followUpQuestions: answerData.follow_up_questions.map((q) => ({
+              question: q.value,
+            })),
+          }),
       });
     },
     [tracker, baseParams],
@@ -120,6 +141,20 @@ export default function useTracking({
     [tracker, baseParams],
   );
 
+  const trackResultClick = useCallback(
+    (clickedItem: Item, position: number, qnaResultId?: string) => {
+      tracker?.trackProductInsightsAgentResultClick({
+        itemId: clickedItem.id,
+        itemName: clickedItem.name,
+        ...(clickedItem.variationId && { variationId: clickedItem.variationId }),
+        ...(qnaResultId && { qnaResultId }),
+        ...(threadId && { threadId }),
+        position,
+      });
+    },
+    [tracker, threadId],
+  );
+
   return useMemo(
     () => ({
       trackViews,
@@ -130,6 +165,7 @@ export default function useTracking({
       trackQuestionSubmit,
       trackAnswerView,
       trackAnswerFeedback,
+      trackResultClick,
     }),
     [
       trackViews,
@@ -140,6 +176,7 @@ export default function useTracking({
       trackQuestionSubmit,
       trackAnswerView,
       trackAnswerFeedback,
+      trackResultClick,
     ],
   );
 }

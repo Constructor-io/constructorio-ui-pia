@@ -8,5 +8,6 @@ export default function createMockTracking() {
     trackQuestionSubmit: jest.fn(),
     trackAnswerView: jest.fn(),
     trackAnswerFeedback: jest.fn(),
+    trackResultClick: jest.fn(),
   };
 }

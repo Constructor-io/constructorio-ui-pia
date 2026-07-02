@@ -606,7 +606,7 @@ describe('Testing Hook: useConversation', () => {
       pia = createMockPia({ answers: { getAnswer, data: answerData } });
       rerender({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking });
 
-      expect(mockTracking.trackAnswerView).toHaveBeenCalledWith('What is this?', answerData);
+      expect(mockTracking.trackAnswerView).toHaveBeenCalledWith('What is this?', answerData, null);
     });
 
     it('does not fire trackAnswerView when no question was submitted', () => {

@@ -118,6 +118,7 @@ const mockTracker = {
   trackProductInsightsAgentQuestionSubmit: jest.fn(),
   trackProductInsightsAgentAnswerView: jest.fn(),
   trackProductInsightsAgentAnswerFeedback: jest.fn(),
+  trackProductInsightsAgentResultClick: jest.fn(),
 };
 
 const mockCioClient = { tracker: mockTracker };
