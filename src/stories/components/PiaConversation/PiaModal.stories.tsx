@@ -15,6 +15,7 @@ const mockConversationHistory = [
     question: 'Is this bunk board suitable for a platform bed?',
     answer:
       'Yes, this bunk board is designed to work well with platform beds. It provides a solid, flat surface that supports your mattress evenly without the need for a box spring.',
+    source: 'user' as const,
   },
 ];
 
@@ -25,6 +26,7 @@ const mockConversationHistoryMultiple = [
     question: 'What sizes are available?',
     answer:
       'This bunk board is available in Twin, Full, Queen, and King sizes. Each size is designed to fit standard bed frame dimensions.',
+    source: 'user' as const,
   },
 ];
 
@@ -49,6 +51,7 @@ function InteractiveWrapper() {
     error,
     currentItems,
     handleSubmitQuestion,
+    handleQuestionClick,
     resetState,
   } = useConversation({ pia, itemId: DEMO_ITEM_ID, isConversation: true });
 
@@ -56,6 +59,7 @@ function InteractiveWrapper() {
     <PiaModal
       initialQuestions={pia.suggestedQuestions.data}
       handleSubmitQuestion={handleSubmitQuestion}
+      handleQuestionClick={handleQuestionClick}
       isLoading={isLoading}
       onClose={resetState}>
       <PiaConversation
@@ -65,6 +69,7 @@ function InteractiveWrapper() {
         currentItems={currentItems}
         displayedQuestions={displayedQuestions}
         handleSubmitQuestion={handleSubmitQuestion}
+        handleQuestionClick={handleQuestionClick}
       />
     </PiaModal>
   );
@@ -78,6 +83,7 @@ export const WithAnswer: Story = {
   args: {
     initialQuestions: mockQuestions,
     handleSubmitQuestion: action('handleSubmitQuestion'),
+    handleQuestionClick: action('handleQuestionClick'),
     isLoading: false,
   },
   render: (args) => (
@@ -88,6 +94,7 @@ export const WithAnswer: Story = {
         error={null}
         displayedQuestions={mockQuestions}
         handleSubmitQuestion={args.handleSubmitQuestion}
+        handleQuestionClick={args.handleQuestionClick!}
       />
     </PiaModal>
   ),
@@ -97,6 +104,7 @@ export const WithFeedback: Story = {
   args: {
     initialQuestions: mockQuestions,
     handleSubmitQuestion: action('handleSubmitQuestion'),
+    handleQuestionClick: action('handleQuestionClick'),
     isLoading: false,
   },
   render: (args) => (
@@ -108,6 +116,7 @@ export const WithFeedback: Story = {
         showFeedback
         displayedQuestions={mockQuestions}
         handleSubmitQuestion={args.handleSubmitQuestion}
+        handleQuestionClick={args.handleQuestionClick!}
       />
     </PiaModal>
   ),
@@ -117,6 +126,7 @@ export const WithLearnMore: Story = {
   args: {
     initialQuestions: mockQuestions,
     handleSubmitQuestion: action('handleSubmitQuestion'),
+    handleQuestionClick: action('handleQuestionClick'),
     isLoading: false,
   },
   render: (args) => (
@@ -128,6 +138,7 @@ export const WithLearnMore: Story = {
         learnMoreUrl='https://constructor.io/learn-more'
         displayedQuestions={mockQuestions}
         handleSubmitQuestion={args.handleSubmitQuestion}
+        handleQuestionClick={args.handleQuestionClick!}
       />
     </PiaModal>
   ),
@@ -137,6 +148,7 @@ export const MultipleConversations: Story = {
   args: {
     initialQuestions: mockQuestions,
     handleSubmitQuestion: action('handleSubmitQuestion'),
+    handleQuestionClick: action('handleQuestionClick'),
     isLoading: false,
   },
   render: (args) => (
@@ -148,6 +160,7 @@ export const MultipleConversations: Story = {
         showFeedback
         displayedQuestions={mockQuestions}
         handleSubmitQuestion={args.handleSubmitQuestion}
+        handleQuestionClick={args.handleQuestionClick!}
       />
     </PiaModal>
   ),

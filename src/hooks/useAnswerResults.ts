@@ -87,6 +87,7 @@ export default function useAnswerResults({
 
       setIsLoading(true);
       setError(null);
+      setAnswerResults(null);
 
       fetchAnswerResults({ client: cioClient, itemId, question, variationId, threadId })
         .then((fetchedAnswerResults) => {
