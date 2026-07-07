@@ -22,7 +22,8 @@ interface PiaCustomCarouselProps {
   items: Array<Item>;
   componentOverrides?: CarouselOverrides<Item>;
   callbacks?: Callbacks;
-  onResultClick?: (item: Item, position: number, qnaResultId?: string) => void;
+  onResultClick?: (item: Item, position: number, question: string, qnaResultId?: string) => void;
+  question?: string;
   qnaResultId?: string;
 }
 
@@ -31,6 +32,7 @@ export default function PiaCustomCarousel({
   componentOverrides,
   callbacks,
   onResultClick,
+  question,
   qnaResultId,
 }: PiaCustomCarouselProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -39,8 +41,8 @@ export default function PiaCustomCarousel({
   const productClickHandler = useCallback(
     (item: Item) => {
       const position = items.findIndex((i) => i.id === item.id);
-      if (onResultClick) {
-        onResultClick(item, position >= 0 ? position : 0, qnaResultId);
+      if (onResultClick && question) {
+        onResultClick(item, position >= 0 ? position : 0, question, qnaResultId);
       }
 
       const { onProductCardClick } = callbacks || {};
@@ -50,7 +52,7 @@ export default function PiaCustomCarousel({
         window.open(item.url, '_blank', 'noopener,noreferrer');
       }
     },
-    [callbacks, items, onResultClick, qnaResultId],
+    [callbacks, items, onResultClick, question, qnaResultId],
   );
 
   // Set up event listener for product card clicks

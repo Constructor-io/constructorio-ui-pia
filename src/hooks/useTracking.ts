@@ -28,7 +28,12 @@ export interface UseTrackingReturn {
     items?: Item[] | null,
   ) => void;
   trackAnswerFeedback: (feedbackType: FeedbackType, qnaResultId?: string) => void;
-  trackResultClick: (clickedItem: Item, position: number, qnaResultId?: string) => void;
+  trackResultClick: (
+    clickedItem: Item,
+    position: number,
+    question: string,
+    qnaResultId?: string,
+  ) => void;
 }
 
 export default function useTracking({
@@ -121,7 +126,7 @@ export default function useTracking({
         ...(answerData.follow_up_questions &&
           answerData.follow_up_questions.length > 0 && {
             followUpQuestions: answerData.follow_up_questions.map((q) => ({
-              question: q.value,
+              value: q.value,
             })),
           }),
       });
@@ -142,17 +147,21 @@ export default function useTracking({
   );
 
   const trackResultClick = useCallback(
-    (clickedItem: Item, position: number, qnaResultId?: string) => {
+    (clickedItem: Item, position: number, question: string, qnaResultId?: string) => {
       tracker?.trackProductInsightsAgentResultClick({
         itemId: clickedItem.id,
         itemName: clickedItem.name,
         ...(clickedItem.variationId && { variationId: clickedItem.variationId }),
+        question,
+        seedItemId: itemId,
+        seedItemName: itemName,
+        ...(variationId && { seedVariationId: variationId }),
         ...(qnaResultId && { qnaResultId }),
         ...(threadId && { threadId }),
         position,
       });
     },
-    [tracker, threadId],
+    [tracker, itemId, itemName, variationId, threadId],
   );
 
   return useMemo(

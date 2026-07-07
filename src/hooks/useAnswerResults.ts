@@ -55,10 +55,14 @@ const fetchAnswerResults = async ({
   variationId,
   threadId,
 }: FetchAnswerResultsParams) => {
-  const response: GetAnswerResultsResponse = await client.pia.getAnswerResults(itemId, question, {
-    threadId,
-    variationId,
-  });
+  const response: GetAnswerResultsResponse = await client.agent.pia.getAnswerResults(
+    itemId,
+    question,
+    {
+      threadId,
+      variationId,
+    },
+  );
   return response;
 };
 

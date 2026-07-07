@@ -251,6 +251,46 @@ describe('Testing Hook: useTracking', () => {
       const call = mockTracker.trackProductInsightsAgentAnswerView.mock.calls[0][0];
       expect(call).not.toHaveProperty('items');
     });
+
+    it('includes followUpQuestions when present in answerData', () => {
+      const { result } = renderHook(() => useTracking(baseProps));
+      const answerData = {
+        value: 'Answer',
+        qna_result_id: 'r-1',
+        follow_up_questions: [{ value: 'Follow up 1' }, { value: 'Follow up 2' }],
+      };
+
+      result.current.trackAnswerView('Question?', answerData);
+
+      expect(mockTracker.trackProductInsightsAgentAnswerView).toHaveBeenCalledWith({
+        itemId: 'test-item',
+        itemName: 'Test Product',
+        question: 'Question?',
+        answerText: 'Answer',
+        qnaResultId: 'r-1',
+        followUpQuestions: [{ value: 'Follow up 1' }, { value: 'Follow up 2' }],
+      });
+    });
+
+    it('omits followUpQuestions when not present in answerData', () => {
+      const { result } = renderHook(() => useTracking(baseProps));
+      const answerData = { value: 'Answer', qna_result_id: 'r-1' };
+
+      result.current.trackAnswerView('Question?', answerData);
+
+      const call = mockTracker.trackProductInsightsAgentAnswerView.mock.calls[0][0];
+      expect(call).not.toHaveProperty('followUpQuestions');
+    });
+
+    it('omits followUpQuestions when empty array', () => {
+      const { result } = renderHook(() => useTracking(baseProps));
+      const answerData = { value: 'Answer', qna_result_id: 'r-1', follow_up_questions: [] };
+
+      result.current.trackAnswerView('Question?', answerData);
+
+      const call = mockTracker.trackProductInsightsAgentAnswerView.mock.calls[0][0];
+      expect(call).not.toHaveProperty('followUpQuestions');
+    });
   });
 
   describe('trackAnswerFeedback', () => {
@@ -295,16 +335,19 @@ describe('Testing Hook: useTracking', () => {
   });
 
   describe('trackResultClick', () => {
-    it('sends clicked item details and position', () => {
+    it('sends clicked item details, position, question, and seed item fields', () => {
       const { result } = renderHook(() => useTracking(baseProps));
       const clickedItem = { id: 'rec-1', name: 'Recommended Product', variationId: 'v-1' };
 
-      result.current.trackResultClick(clickedItem, 2);
+      result.current.trackResultClick(clickedItem, 2, 'What color is it?');
 
       expect(mockTracker.trackProductInsightsAgentResultClick).toHaveBeenCalledWith({
         itemId: 'rec-1',
         itemName: 'Recommended Product',
         variationId: 'v-1',
+        question: 'What color is it?',
+        seedItemId: 'test-item',
+        seedItemName: 'Test Product',
         position: 2,
       });
     });
@@ -313,13 +356,16 @@ describe('Testing Hook: useTracking', () => {
       const { result } = renderHook(() => useTracking(baseProps));
       const clickedItem = { id: 'rec-2', name: 'Another Product' };
 
-      result.current.trackResultClick(clickedItem, 0);
+      result.current.trackResultClick(clickedItem, 0, 'Any alternatives?');
 
       const call = mockTracker.trackProductInsightsAgentResultClick.mock.calls[0][0];
       expect(call).not.toHaveProperty('variationId');
       expect(call).toEqual({
         itemId: 'rec-2',
         itemName: 'Another Product',
+        question: 'Any alternatives?',
+        seedItemId: 'test-item',
+        seedItemName: 'Test Product',
         position: 0,
       });
     });
@@ -330,13 +376,52 @@ describe('Testing Hook: useTracking', () => {
       );
       const clickedItem = { id: 'rec-1', name: 'Product' };
 
-      result.current.trackResultClick(clickedItem, 1);
+      result.current.trackResultClick(clickedItem, 1, 'Is it good?');
 
       expect(mockTracker.trackProductInsightsAgentResultClick).toHaveBeenCalledWith({
         itemId: 'rec-1',
         itemName: 'Product',
+        question: 'Is it good?',
+        seedItemId: 'test-item',
+        seedItemName: 'Test Product',
         threadId: 'thread-xyz',
         position: 1,
+      });
+    });
+
+    it('includes qnaResultId when provided', () => {
+      const { result } = renderHook(() => useTracking(baseProps));
+      const clickedItem = { id: 'rec-1', name: 'Product' };
+
+      result.current.trackResultClick(clickedItem, 0, 'Question?', 'result-abc');
+
+      expect(mockTracker.trackProductInsightsAgentResultClick).toHaveBeenCalledWith({
+        itemId: 'rec-1',
+        itemName: 'Product',
+        question: 'Question?',
+        seedItemId: 'test-item',
+        seedItemName: 'Test Product',
+        qnaResultId: 'result-abc',
+        position: 0,
+      });
+    });
+
+    it('includes seedVariationId when variationId prop is provided', () => {
+      const { result } = renderHook(() =>
+        useTracking({ ...baseProps, variationId: 'seed-var-1' }),
+      );
+      const clickedItem = { id: 'rec-1', name: 'Product' };
+
+      result.current.trackResultClick(clickedItem, 0, 'Question?');
+
+      expect(mockTracker.trackProductInsightsAgentResultClick).toHaveBeenCalledWith({
+        itemId: 'rec-1',
+        itemName: 'Product',
+        question: 'Question?',
+        seedItemId: 'test-item',
+        seedItemName: 'Test Product',
+        seedVariationId: 'seed-var-1',
+        position: 0,
       });
     });
   });
@@ -355,7 +440,7 @@ describe('Testing Hook: useTracking', () => {
       expect(() => result.current.trackQuestionSubmit('q')).not.toThrow();
       expect(() => result.current.trackAnswerView('q', { value: 'a', qna_result_id: 'r' })).not.toThrow();
       expect(() => result.current.trackAnswerFeedback(FeedbackType.UP)).not.toThrow();
-      expect(() => result.current.trackResultClick({ id: 'x', name: 'y' }, 0)).not.toThrow();
+      expect(() => result.current.trackResultClick({ id: 'x', name: 'y' }, 0, 'q')).not.toThrow();
     });
   });
 });

@@ -16,8 +16,10 @@ const newTestQuestions = [
 
 describe('Testing Hook: useSuggestedQuestions', () => {
   const mockClient = {
-    pia: {
-      getSuggestedQuestions: jest.fn(),
+    agent: {
+      pia: {
+        getSuggestedQuestions: jest.fn(),
+      },
     },
   };
 
@@ -26,7 +28,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
   });
 
   it('fetches and returns suggested questions', async () => {
-    mockClient.pia.getSuggestedQuestions.mockResolvedValueOnce({
+    mockClient.agent.pia.getSuggestedQuestions.mockResolvedValueOnce({
       questions: testQuestions,
     });
 
@@ -51,7 +53,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     expect(result.current.data).toEqual(testQuestions);
     expect(result.current.data.length).toBe(testQuestions.length);
     expect(result.current.error).toBeNull();
-    expect(mockClient.pia.getSuggestedQuestions).toHaveBeenCalledWith(testItemId, {
+    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(testItemId, {
       threadId: undefined,
       variationId: undefined,
       numResults: undefined,
@@ -60,7 +62,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
 
   it('handles errors when fetching questions fails', async () => {
     const mockError = new Error('Mock error');
-    mockClient.pia.getSuggestedQuestions.mockRejectedValueOnce(mockError);
+    mockClient.agent.pia.getSuggestedQuestions.mockRejectedValueOnce(mockError);
 
     const { result } = renderHook(() =>
       useSuggestedQuestions({
@@ -79,7 +81,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     expect(result.current.data).toEqual([]);
     expect(result.current.error).toBeInstanceOf(Error);
     expect(result.current.error.message).toBe('Mock error');
-    expect(mockClient.pia.getSuggestedQuestions).toHaveBeenCalledWith(testItemId, {
+    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(testItemId, {
       threadId: undefined,
       variationId: undefined,
       numResults: undefined,
@@ -87,7 +89,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
   });
 
   it('refetch questions when getSuggestedQuestions function is called', async () => {
-    mockClient.pia.getSuggestedQuestions.mockResolvedValueOnce({
+    mockClient.agent.pia.getSuggestedQuestions.mockResolvedValueOnce({
       questions: testQuestions,
     });
 
@@ -104,8 +106,8 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       });
     });
 
-    mockClient.pia.getSuggestedQuestions.mockClear();
-    mockClient.pia.getSuggestedQuestions.mockResolvedValueOnce({
+    mockClient.agent.pia.getSuggestedQuestions.mockClear();
+    mockClient.agent.pia.getSuggestedQuestions.mockResolvedValueOnce({
       questions: newTestQuestions,
     });
 
@@ -122,7 +124,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
 
     // Check state after refetch
     expect(result.current.data).toEqual(newTestQuestions);
-    expect(mockClient.pia.getSuggestedQuestions).toHaveBeenCalledTimes(1);
+    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledTimes(1);
   });
 
   it('does not fetch if no client provided', async () => {
@@ -135,11 +137,11 @@ describe('Testing Hook: useSuggestedQuestions', () => {
 
     expect(result.current.data).toEqual([]);
     expect(result.current.error).toBeNull();
-    expect(mockClient.pia.getSuggestedQuestions).not.toHaveBeenCalled();
+    expect(mockClient.agent.pia.getSuggestedQuestions).not.toHaveBeenCalled();
   });
 
   it('refetch when itemId changes', async () => {
-    mockClient.pia.getSuggestedQuestions
+    mockClient.agent.pia.getSuggestedQuestions
       .mockResolvedValueOnce({ questions: testQuestions })
       .mockResolvedValueOnce({ questions: newTestQuestions });
 
@@ -173,12 +175,12 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     });
 
     expect(result.current.data).toEqual(newTestQuestions);
-    expect(mockClient.pia.getSuggestedQuestions).toHaveBeenCalledWith(testItemId, {
+    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(testItemId, {
       threadId: undefined,
       variationId: undefined,
       numResults: undefined,
     });
-    expect(mockClient.pia.getSuggestedQuestions).toHaveBeenCalledWith(newTestItemId, {
+    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(newTestItemId, {
       threadId: undefined,
       variationId: undefined,
       numResults: undefined,
@@ -186,7 +188,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
   });
 
   it('passes threadId and variationId to getSuggestedQuestions', async () => {
-    mockClient.pia.getSuggestedQuestions.mockResolvedValueOnce({
+    mockClient.agent.pia.getSuggestedQuestions.mockResolvedValueOnce({
       questions: testQuestions,
     });
 
@@ -205,7 +207,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       });
     });
 
-    expect(mockClient.pia.getSuggestedQuestions).toHaveBeenCalledWith(testItemId, {
+    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(testItemId, {
       variationId: 'test-variation-id',
       threadId: 'test-thread-id',
       numResults: undefined,
@@ -214,7 +216,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
   });
 
   it('passes parameters to getSuggestedQuestions', async () => {
-    mockClient.pia.getSuggestedQuestions.mockResolvedValueOnce({
+    mockClient.agent.pia.getSuggestedQuestions.mockResolvedValueOnce({
       questions: testQuestions,
     });
     const parameters = { numResults: 2 };
@@ -233,7 +235,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       });
     });
 
-    expect(mockClient.pia.getSuggestedQuestions).toHaveBeenCalledWith(testItemId, {
+    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(testItemId, {
       threadId: undefined,
       variationId: undefined,
       numResults: 2,
@@ -241,7 +243,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
   });
 
   it('refetches when parameters change', async () => {
-    mockClient.pia.getSuggestedQuestions
+    mockClient.agent.pia.getSuggestedQuestions
       .mockResolvedValueOnce({ questions: testQuestions })
       .mockResolvedValueOnce({ questions: newTestQuestions });
     const initialParameters = { numResults: 3 };
@@ -278,8 +280,8 @@ describe('Testing Hook: useSuggestedQuestions', () => {
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toEqual(newTestQuestions);
-    expect(mockClient.pia.getSuggestedQuestions).toHaveBeenCalledTimes(2);
-    expect(mockClient.pia.getSuggestedQuestions).toHaveBeenLastCalledWith(testItemId, {
+    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledTimes(2);
+    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenLastCalledWith(testItemId, {
       threadId: undefined,
       variationId: undefined,
       numResults: 1,
@@ -287,7 +289,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
   });
 
   it('refetches when parameters are removed', async () => {
-    mockClient.pia.getSuggestedQuestions
+    mockClient.agent.pia.getSuggestedQuestions
       .mockResolvedValueOnce({ questions: testQuestions })
       .mockResolvedValueOnce({ questions: newTestQuestions });
     const initialParameters = { numResults: 3 };
@@ -323,8 +325,8 @@ describe('Testing Hook: useSuggestedQuestions', () => {
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toEqual(newTestQuestions);
-    expect(mockClient.pia.getSuggestedQuestions).toHaveBeenCalledTimes(2);
-    expect(mockClient.pia.getSuggestedQuestions).toHaveBeenLastCalledWith(testItemId, {
+    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledTimes(2);
+    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenLastCalledWith(testItemId, {
       threadId: undefined,
       variationId: undefined,
       numResults: undefined,

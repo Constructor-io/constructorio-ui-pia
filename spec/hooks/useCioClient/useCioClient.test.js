@@ -35,7 +35,7 @@ describe('Testing Hook: useCioClient', () => {
     expect(client.options.apiKey).toBe('xx');
     expect(client.options.version).toBe(`cio-ui-pia-${version}`);
     expect(client.search).not.toBeUndefined();
-    expect(client.pia).not.toBeUndefined();
+    expect(client.agent.pia).not.toBeUndefined();
     expect(client.tracker).not.toBeUndefined();
   });
 

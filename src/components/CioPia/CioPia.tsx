@@ -157,7 +157,7 @@ export default function CioPia(props: CioPiaProps) {
     handleQuestionClick,
     handleFeedback: onFeedback,
     onResultClick: tracking.trackResultClick,
-    qnaResultId: qnaResultId,
+    qnaResultId,
   };
 
   if (type === 'modal') {
@@ -226,6 +226,7 @@ export default function CioPia(props: CioPiaProps) {
                   componentOverrides={componentOverrides}
                   onFeedback={onFeedback}
                   onResultClick={tracking.trackResultClick}
+                  question={currentQuestion}
                   qnaResultId={qnaResultId}
                 />
               )}

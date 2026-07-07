@@ -19,7 +19,7 @@ describe('Testing PIA Module', () => {
 
   describe('getSuggestedQuestions', () => {
     it('fetches suggested questions given item_id', async () => {
-      const result = await client.pia.getSuggestedQuestions(DEMO_ITEM_ID);
+      const result = await client.agent.pia.getSuggestedQuestions(DEMO_ITEM_ID);
 
       expect(result).toBeDefined();
       expect(result.questions).toBeDefined();
@@ -29,7 +29,7 @@ describe('Testing PIA Module', () => {
     });
 
     it('throws an error if no item id is provided', async () => {
-      await expect(client.pia.getSuggestedQuestions(undefined)).rejects.toThrow(
+      await expect(client.agent.pia.getSuggestedQuestions(undefined)).rejects.toThrow(
         'itemId is a required parameter of type string',
       );
     });
@@ -38,7 +38,7 @@ describe('Testing PIA Module', () => {
   describe('getAnswerResults', () => {
     // TODO: Re-enable when the new demo account has alternative product recommendations configured
     it.skip('fetches answer given item_id and questions', async () => {
-      const result = await client.pia.getAnswerResults(
+      const result = await client.agent.pia.getAnswerResults(
         DEMO_ITEM_ID,
         DEMO_QUESTION_ALTERNATIVE_PRODUCTS,
       );
@@ -66,13 +66,13 @@ describe('Testing PIA Module', () => {
     }, 15000);
 
     it('throws an error if no item id is provided', async () => {
-      await expect(client.pia.getAnswerResults(undefined, DEMO_QUESTION)).rejects.toThrow(
+      await expect(client.agent.pia.getAnswerResults(undefined, DEMO_QUESTION)).rejects.toThrow(
         'itemId is a required parameter of type string',
       );
     });
 
     it('throws an error if no question is provided', async () => {
-      await expect(client.pia.getAnswerResults(DEMO_ITEM_ID, undefined)).rejects.toThrow(
+      await expect(client.agent.pia.getAnswerResults(DEMO_ITEM_ID, undefined)).rejects.toThrow(
         'question is a required parameter of type string',
       );
     });

@@ -22,7 +22,8 @@ interface PiaInlineAnswerProps {
   callbacks?: Callbacks;
   componentOverrides?: CioPiaComponentOverrides;
   onFeedback?: (type: FeedbackType) => void;
-  onResultClick?: (item: Item, position: number, qnaResultId?: string) => void;
+  onResultClick?: (item: Item, position: number, question: string, qnaResultId?: string) => void;
+  question?: string;
   qnaResultId?: string;
 }
 
@@ -37,6 +38,7 @@ export default function PiaInlineAnswer({
   componentOverrides,
   onFeedback,
   onResultClick,
+  question,
   qnaResultId,
 }: PiaInlineAnswerProps) {
   const disclaimer = (
@@ -57,6 +59,7 @@ export default function PiaInlineAnswer({
           componentOverrides={componentOverrides?.carousel}
           callbacks={callbacks}
           onResultClick={onResultClick}
+          question={question}
           qnaResultId={qnaResultId}
         />
       )}

@@ -32,7 +32,7 @@ const fetchSuggestedQuestions = async ({
   threadId,
   parameters,
 }: FetchSuggestedQuestionsParams) => {
-  const response = await client.pia.getSuggestedQuestions(itemId, {
+  const response = await client.agent.pia.getSuggestedQuestions(itemId, {
     threadId,
     variationId,
     numResults: parameters?.numResults,

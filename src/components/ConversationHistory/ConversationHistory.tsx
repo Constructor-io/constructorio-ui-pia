@@ -38,7 +38,7 @@ export interface ConversationHistoryProps {
   callbacks?: Callbacks;
   componentOverrides?: CioPiaComponentOverrides;
   handleFeedback?: (type: FeedbackType) => void;
-  onResultClick?: (item: Item, position: number, qnaResultId?: string) => void;
+  onResultClick?: (item: Item, position: number, question: string, qnaResultId?: string) => void;
   qnaResultId?: string;
 }
 
@@ -116,6 +116,7 @@ export default function ConversationHistory({
                       componentOverrides={componentOverrides?.carousel}
                       callbacks={callbacks}
                       onResultClick={onResultClick}
+                      question={entry.question}
                       qnaResultId={qnaResultId}
                     />
                   )}
