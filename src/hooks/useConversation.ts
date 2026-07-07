@@ -53,7 +53,7 @@ export default function useConversation({
 
   const entryIdRef = useRef(0);
   const prevAnswerValueRef = useRef(answers.data?.value);
-  const trackedAnswerIdRef = useRef<string | undefined>(undefined);
+  const hasTrackedCurrentAnswerRef = useRef(false);
   const answersRef = useRef(answers);
   const callbacksRef = useRef(callbacks);
   const contextRef = useRef(context);
@@ -81,6 +81,7 @@ export default function useConversation({
     (question: string, source: QuestionSource) => {
       lastSourceRef.current = source;
       lastQuestionRef.current = question;
+      hasTrackedCurrentAnswerRef.current = false;
       setCurrentQuestion(question);
       getAnswer(question);
 
@@ -141,9 +142,8 @@ export default function useConversation({
 
   useEffect(() => {
     if (answers.data?.follow_up_questions) setDisplayedQuestions(answers.data.follow_up_questions);
-    const qnaResultId = answers.data?.qna_result_id;
-    if (answers.data && lastQuestionRef.current && qnaResultId !== trackedAnswerIdRef.current) {
-      trackedAnswerIdRef.current = qnaResultId;
+    if (answers.data && lastQuestionRef.current && !hasTrackedCurrentAnswerRef.current) {
+      hasTrackedCurrentAnswerRef.current = true;
       trackingRef.current?.trackAnswerView(lastQuestionRef.current, answers.data, answers.items);
     }
   }, [answers.data, answers.items]);

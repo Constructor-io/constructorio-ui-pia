@@ -2,6 +2,7 @@ import { renderHook, act } from '@testing-library/react';
 import useConversation from '../../../src/hooks/useConversation';
 import { UseCioPiaReturn } from '../../../src/hooks/useCioPia';
 import { GetAnswerResultsResponse } from '../../../src/hooks/mocks/types';
+import { FeedbackType } from '../../../src/types';
 import createMockTracking from '../../__mocks__/createMockTracking';
 
 interface MockPiaOverrides {
@@ -28,6 +29,7 @@ describe('Testing Hook: useConversation', () => {
   function createMockPia(overrides: MockPiaOverrides = {}): UseCioPiaReturn {
     const { data: answerData, ...restAnswers } = overrides.answers || {};
     return {
+      cioClient: { tracker: {} as UseCioPiaReturn['cioClient']['tracker'] },
       threadId: overrides.threadId ?? mockThreadId,
       suggestedQuestions: {
         data: [],
@@ -919,10 +921,10 @@ describe('Testing Hook: useConversation', () => {
       );
 
       act(() => {
-        result.current.handleFeedback('up' as any);
+        result.current.handleFeedback(FeedbackType.UP);
       });
 
-      expect(mockTracking.trackAnswerFeedback).toHaveBeenCalledWith('up', 'result-123');
+      expect(mockTracking.trackAnswerFeedback).toHaveBeenCalledWith(FeedbackType.UP, 'result-123');
     });
 
     it('calls tracking.trackAnswerView when answer data arrives', () => {
@@ -965,10 +967,10 @@ describe('Testing Hook: useConversation', () => {
       );
 
       act(() => {
-        result.current.handleFeedback('up' as any);
+        result.current.handleFeedback(FeedbackType.UP);
       });
 
-      expect(onFeedback).toHaveBeenCalledWith('up');
+      expect(onFeedback).toHaveBeenCalledWith(FeedbackType.UP);
     });
   });
 });

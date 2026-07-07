@@ -26,9 +26,9 @@ export default function useViewportTracking({
   const trackingRef = useRef(tracking);
 
   useEffect(() => {
-    const hadQuestions = questionsRef.current.length > 0;
+    const questionsJustArrived = questionsRef.current.length === 0 && questions.length > 0;
     questionsRef.current = questions;
-    if (!hadQuestions && questions.length > 0 && entryTimeRef.current) {
+    if (questionsJustArrived && entryTimeRef.current) {
       trackingRef.current.trackView(questions);
     }
   }, [questions]);
@@ -37,6 +37,7 @@ export default function useViewportTracking({
     trackingRef.current = tracking;
   }, [tracking]);
 
+  // Stable: only reads refs
   const flush = useCallback(() => {
     if (entryTimeRef.current) {
       timespansRef.current.push({

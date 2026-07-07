@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react';
+// Tracker is only named-exported from the constructorio submodule, not the package root
 import { Tracker } from '@constructor-io/constructorio-client-javascript/lib/types/constructorio';
 import { FeedbackType, Item, Question, GetAnswerResultsResponse } from '../types';
 

@@ -1,16 +1,18 @@
 import React from 'react';
 import { render, act } from '@testing-library/react';
-import useViewportTracking from '../../../src/hooks/useViewportTracking';
+import useViewportTracking, {
+  UseViewportTrackingProps,
+} from '../../../src/hooks/useViewportTracking';
 import createMockTracking from '../../__mocks__/createMockTracking';
 
 describe('Testing Hook: useViewportTracking', () => {
-  let observerCallback;
-  let observerInstance;
+  let observerCallback: ((entries: IntersectionObserverEntry[]) => void) | null;
+  let observerInstance: { observe: jest.Mock; disconnect: jest.Mock } | null;
 
-  let mockTracking;
+  let mockTracking: ReturnType<typeof createMockTracking>;
   const testQuestions = [{ value: 'Question 1' }, { value: 'Question 2' }];
 
-  function TestComponent({ tracking, questions }) {
+  function TestComponent({ tracking, questions }: UseViewportTrackingProps) {
     const { containerRef } = useViewportTracking({ tracking, questions });
     return <div ref={containerRef} data-testid='viewport-target' />;
   }
