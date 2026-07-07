@@ -53,6 +53,8 @@ export default function useConversation({
 
   const entryIdRef = useRef(0);
   const prevAnswerValueRef = useRef(answers.data?.value);
+  const trackedAnswerIdRef = useRef<string | undefined>(undefined);
+  const answersRef = useRef(answers);
   const callbacksRef = useRef(callbacks);
   const contextRef = useRef(context);
   const trackingRef = useRef(tracking);
@@ -70,6 +72,10 @@ export default function useConversation({
   useEffect(() => {
     trackingRef.current = tracking;
   }, [tracking]);
+
+  useEffect(() => {
+    answersRef.current = answers;
+  }, [answers]);
 
   const submitQuestion = useCallback(
     (question: string, source: QuestionSource) => {
@@ -110,12 +116,9 @@ export default function useConversation({
     callbacksRef.current?.onFocus?.(contextRef.current);
   }, []);
 
-  const handleFeedback = useCallback(
-    (type: FeedbackType) => {
-      trackingRef.current?.trackAnswerFeedback(type, answers.data?.qna_result_id);
-    },
-    [answers.data?.qna_result_id],
-  );
+  const handleFeedback = useCallback((type: FeedbackType) => {
+    trackingRef.current?.trackAnswerFeedback(type, answersRef.current.data?.qna_result_id);
+  }, []);
 
   const resetState = useCallback(() => {
     setCurrentQuestion('');
@@ -137,7 +140,9 @@ export default function useConversation({
 
   useEffect(() => {
     if (answers.data?.follow_up_questions) setDisplayedQuestions(answers.data.follow_up_questions);
-    if (answers.data && lastQuestionRef.current) {
+    const qnaResultId = answers.data?.qna_result_id;
+    if (answers.data && lastQuestionRef.current && qnaResultId !== trackedAnswerIdRef.current) {
+      trackedAnswerIdRef.current = qnaResultId;
       trackingRef.current?.trackAnswerView(lastQuestionRef.current, answers.data, answers.items);
     }
   }, [answers.data, answers.items]);

@@ -10,14 +10,16 @@ export interface UseViewportTrackingProps {
 }
 
 export interface UseViewportTrackingReturn {
-  containerRef: React.RefObject<HTMLDivElement | null>;
+  containerRef: (node: HTMLDivElement | null) => void;
 }
 
 export default function useViewportTracking({
   tracking,
   questions,
 }: UseViewportTrackingProps): UseViewportTrackingReturn {
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  const nodeRef = useRef<HTMLDivElement | null>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timespansRef = useRef<TimeSpan[]>([]);
   const entryTimeRef = useRef<string | null>(null);
   const questionsRef = useRef<Question[]>(questions);
@@ -49,47 +51,75 @@ export default function useViewportTracking({
     }
   }, []);
 
-  useEffect(() => {
-    const element = containerRef.current;
-    if (!element) return undefined;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          entryTimeRef.current = new Date().toISOString();
-          if (questionsRef.current.length > 0) {
-            trackingRef.current.trackView(questionsRef.current);
+  const setupObserver = useCallback(
+    (element: HTMLDivElement) => {
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            entryTimeRef.current = new Date().toISOString();
+            if (questionsRef.current.length > 0) {
+              trackingRef.current.trackView(questionsRef.current);
+            }
+          } else if (entryTimeRef.current) {
+            timespansRef.current.push({
+              start: entryTimeRef.current,
+              end: new Date().toISOString(),
+            });
+            entryTimeRef.current = null;
+            trackingRef.current.trackOutOfView();
           }
-        } else if (entryTimeRef.current) {
-          timespansRef.current.push({
-            start: entryTimeRef.current,
-            end: new Date().toISOString(),
-          });
-          entryTimeRef.current = null;
-          trackingRef.current.trackOutOfView();
+        },
+        { threshold: 0.5 },
+      );
+
+      observer.observe(element);
+      observerRef.current = observer;
+
+      intervalRef.current = setInterval(flush, FLUSH_INTERVAL_MS);
+
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === 'hidden') {
+          flush();
         }
-      },
-      { threshold: 0.5 },
-    );
+      };
+      document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    observer.observe(element);
-
-    const intervalId = setInterval(flush, FLUSH_INTERVAL_MS);
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden') {
+      return () => {
+        observer.disconnect();
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
         flush();
+      };
+    },
+    [flush],
+  );
+
+  const cleanupRef = useRef<(() => void) | null>(null);
+
+  const containerRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (cleanupRef.current) {
+        cleanupRef.current();
+        cleanupRef.current = null;
+      }
+
+      nodeRef.current = node;
+
+      if (node) {
+        cleanupRef.current = setupObserver(node);
+      }
+    },
+    [setupObserver],
+  );
+
+  useEffect(() => {
+    return () => {
+      if (cleanupRef.current) {
+        cleanupRef.current();
+        cleanupRef.current = null;
       }
     };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      observer.disconnect();
-      clearInterval(intervalId);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      flush();
-    };
-  }, [flush]);
+  }, []);
 
   return { containerRef };
 }

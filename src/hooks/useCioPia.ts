@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Tracker } from '@constructor-io/constructorio-client-javascript/lib/types/constructorio';
 import { Formatters, SuggestedQuestionsParameters } from '../types';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 import useAnswerResults, { UseAnswerResultsReturn } from './useAnswerResults';
@@ -17,7 +18,7 @@ export interface UseCioPiaProps {
 }
 
 export interface UseCioPiaReturn {
-  cioClient: MockConstructorIOClient;
+  cioClient: { tracker: Tracker };
   threadId: string;
   suggestedQuestions: UseSuggestedQuestionsReturn;
   answers: UseAnswerResultsReturn;

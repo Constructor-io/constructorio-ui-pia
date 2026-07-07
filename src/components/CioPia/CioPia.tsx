@@ -129,10 +129,10 @@ export default function CioPia(props: CioPiaProps) {
 
   const containerRef = useCallback(
     (node: HTMLDivElement | null) => {
-      viewportContainerRef.current = node;
+      viewportContainerRef(node);
       callbackContainerRef(node);
     },
-    [callbackContainerRef],
+    [viewportContainerRef, callbackContainerRef],
   );
 
   const qnaResultId = pia.answers.data?.qna_result_id;

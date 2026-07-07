@@ -47,10 +47,11 @@ describe('Testing Hook: useConversation', () => {
     };
   }
 
-  const mockTracking = createMockTracking();
+  let mockTracking: ReturnType<typeof createMockTracking>;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockTracking = createMockTracking();
   });
 
   it('initializes with default state', () => {
