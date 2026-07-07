@@ -68,7 +68,7 @@
     "prepare": "husky"
   },
   "peerDependencies": {
-    "@constructor-io/constructorio-client-javascript": "^2.71.1",
+    "@constructor-io/constructorio-client-javascript": "^2.89.0",
     "@constructor-io/constructorio-ui-components": "^1.4.0",
     "react": ">=16.12.0",
     "react-dom": ">=16.12.0",
