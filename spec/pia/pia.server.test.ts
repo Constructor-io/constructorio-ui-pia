@@ -36,8 +36,7 @@ describe('Testing PIA Module', () => {
   });
 
   describe('getAnswerResults', () => {
-    // TODO: Re-enable when the new demo account has alternative product recommendations configured
-    it.skip('fetches answer given item_id and questions', async () => {
+    it('fetches answer given item_id and questions', async () => {
       const result = await client.agent.pia.getAnswerResults(
         DEMO_ITEM_ID,
         DEMO_QUESTION_ALTERNATIVE_PRODUCTS,

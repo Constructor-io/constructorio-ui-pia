@@ -20,11 +20,13 @@ describe('PiaModal Component', () => {
   ];
 
   const mockHandleSubmitQuestion = jest.fn();
+  const mockHandleQuestionClick = jest.fn();
   const mockOnClose = jest.fn();
 
   const defaultProps = {
     initialQuestions: mockSuggestedQuestions,
     handleSubmitQuestion: mockHandleSubmitQuestion,
+    handleQuestionClick: mockHandleQuestionClick,
     isLoading: false,
     onClose: mockOnClose,
     children: <div data-testid='dialog-content'>Dialog Content</div>,
@@ -41,7 +43,7 @@ describe('PiaModal Component', () => {
 
       expect(container.querySelector(BASE_INPUT)).toBeInTheDocument();
 
-      const baseQuestions = container.querySelector(BASE_QUESTIONS);
+      const baseQuestions = container.querySelector(BASE_QUESTIONS)! as HTMLElement;
       mockSuggestedQuestions.forEach((question) => {
         expect(within(baseQuestions).getByText(question.value)).toBeInTheDocument();
       });
@@ -62,7 +64,7 @@ describe('PiaModal Component', () => {
     it('input is disabled when modal is open', () => {
       const { container } = render(<PiaModal {...defaultProps} />);
 
-      const baseInput = container.querySelector(BASE_INPUT);
+      const baseInput = container.querySelector(BASE_INPUT)!;
       fireEvent.change(baseInput, { target: { value: 'What is this product?' } });
       fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
 
@@ -74,7 +76,7 @@ describe('PiaModal Component', () => {
     it('opens modal when question is submitted from base input', () => {
       const { container } = render(<PiaModal {...defaultProps} />);
 
-      const baseInput = container.querySelector(BASE_INPUT);
+      const baseInput = container.querySelector(BASE_INPUT)!;
       fireEvent.change(baseInput, { target: { value: 'What is this product?' } });
       fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
 
@@ -84,7 +86,7 @@ describe('PiaModal Component', () => {
     it('opens modal when suggested question is clicked', () => {
       const { container } = render(<PiaModal {...defaultProps} />);
 
-      const baseQuestions = container.querySelector(BASE_QUESTIONS);
+      const baseQuestions = container.querySelector(BASE_QUESTIONS)! as HTMLElement;
       const firstQuestion = within(baseQuestions).getByText(mockSuggestedQuestions[0].value);
       fireEvent.click(firstQuestion);
 
@@ -94,13 +96,13 @@ describe('PiaModal Component', () => {
     it('closes modal when close button is clicked', () => {
       const { container } = render(<PiaModal {...defaultProps} />);
 
-      const baseInput = container.querySelector(BASE_INPUT);
+      const baseInput = container.querySelector(BASE_INPUT)!;
       fireEvent.change(baseInput, { target: { value: 'What is this product?' } });
       fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
 
       expect(HTMLDialogElement.prototype.showModal).toHaveBeenCalled();
 
-      const dialog = container.querySelector('dialog');
+      const dialog = container.querySelector('dialog')!;
       const closeButton = within(dialog).getByRole('button', { name: 'Close', hidden: true });
       fireEvent.click(closeButton);
 
@@ -110,11 +112,11 @@ describe('PiaModal Component', () => {
     it('calls onClose when modal is closed', () => {
       const { container } = render(<PiaModal {...defaultProps} />);
 
-      const baseInput = container.querySelector(BASE_INPUT);
+      const baseInput = container.querySelector(BASE_INPUT)!;
       fireEvent.change(baseInput, { target: { value: 'What is this product?' } });
       fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
 
-      const dialog = container.querySelector('dialog');
+      const dialog = container.querySelector('dialog')!;
       const closeButton = within(dialog).getByRole('button', { name: 'Close', hidden: true });
       fireEvent.click(closeButton);
 
@@ -124,7 +126,7 @@ describe('PiaModal Component', () => {
     it('calls handleSubmitQuestion when question is submitted', () => {
       const { container } = render(<PiaModal {...defaultProps} />);
 
-      const baseInput = container.querySelector(BASE_INPUT);
+      const baseInput = container.querySelector(BASE_INPUT)!;
       fireEvent.change(baseInput, { target: { value: 'What is this product made of?' } });
       fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
 
@@ -136,7 +138,7 @@ describe('PiaModal Component', () => {
     it('renders children inside the dialog', () => {
       const { container } = render(<PiaModal {...defaultProps} />);
 
-      const dialog = container.querySelector('dialog');
+      const dialog = container.querySelector('dialog')!;
       expect(within(dialog).getByTestId('dialog-content')).toBeInTheDocument();
       expect(within(dialog).getByText('Dialog Content')).toBeInTheDocument();
     });
@@ -144,7 +146,7 @@ describe('PiaModal Component', () => {
     it('dialog has aria-labelledby pointing to the modal title', () => {
       const { container } = render(<PiaModal {...defaultProps} />);
 
-      const dialog = container.querySelector('dialog');
+      const dialog = container.querySelector('dialog')!;
       const labelledBy = dialog.getAttribute('aria-labelledby');
       expect(labelledBy).toMatch('cio-pia-modal-title');
 
@@ -165,7 +167,7 @@ describe('PiaModal Component', () => {
       const { container } = render(<PiaModal {...defaultProps} />);
 
       // Open modal
-      const baseInput = container.querySelector(BASE_INPUT);
+      const baseInput = container.querySelector(BASE_INPUT)!;
       fireEvent.change(baseInput, { target: { value: 'Follow up?' } });
       fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
 

@@ -2,16 +2,20 @@ import React from 'react';
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { CIO_EVENTS } from '@constructor-io/constructorio-ui-components';
-import CioPia from '../../../src/components/CioPia/CioPia';
+import CioPia, { CioPiaProps } from '../../../src/components/CioPia/CioPia';
 import useCioPia from '../../../src/hooks/useCioPia';
 import { DEMO_QUESTION } from '../../../src/constants';
+import { createMockCioClient } from '../../helpers/mockCioClient';
+import { GetAnswerResultsResponse } from '../../../src/hooks/mocks/types';
+import { Item } from '../../../src/types';
 
-// Mock the useCioPia hook
 jest.mock('../../../src/hooks/useCioPia', () => jest.fn());
+
+const mockUseCioPiaHook = useCioPia as jest.MockedFunction<typeof useCioPia>;
 
 const CAROUSEL_SELECTOR = '[data-carousel]';
 
-function dispatchProductCardClickEvent(element, product) {
+function dispatchProductCardClickEvent(element: HTMLElement, product: Item) {
   const event = new CustomEvent(CIO_EVENTS.productCard.click, {
     detail: { product },
     bubbles: true,
@@ -19,13 +23,13 @@ function dispatchProductCardClickEvent(element, product) {
   element.dispatchEvent(event);
 }
 
-function getCarouselWrapper(container) {
+function getCarouselWrapper(container: HTMLElement) {
   const carousel = container.querySelector(CAROUSEL_SELECTOR);
   return carousel?.parentElement;
 }
 
 // Returns true if event was dispatched, false if wrapper not found
-function dispatchEventOnCarouselWrapper(container, product) {
+function dispatchEventOnCarouselWrapper(container: HTMLElement, product: Item) {
   const wrapper = getCarouselWrapper(container);
   if (!wrapper) return false;
 
@@ -34,11 +38,10 @@ function dispatchEventOnCarouselWrapper(container, product) {
   return true;
 }
 
-const mockProps = {
+const mockProps: CioPiaProps = {
   apiKey: 'test-api-key',
   itemId: 'test-item-id',
-  itemName: 'Test Product',
-  cioClient: { someClientMethod: jest.fn() },
+  cioClient: createMockCioClient(),
 };
 
 const testQuestion = DEMO_QUESTION;
@@ -49,7 +52,8 @@ const mockSuggestedQuestions = [
   { value: 'Suggested question 3?' },
 ];
 
-const mockAnswerData = {
+const mockAnswerData: GetAnswerResultsResponse = {
+  qna_result_id: 'test-id',
   value: 'This is a test answer',
   follow_up_questions: [{ value: 'Follow-up question 1' }, { value: 'Follow-up question 2' }],
 };
@@ -71,11 +75,12 @@ const mockItems = [
   },
 ];
 
+const mockGeneratedThreadId = 'mock-generated-thread-id';
 const mockGetAnswer = jest.fn();
 const mockGetSuggestedQuestions = jest.fn();
 
 const mockLoadingResponse = {
-  cioClient: mockCioClient,
+  threadId: mockGeneratedThreadId,
   suggestedQuestions: {
     data: [],
     isLoading: true,
@@ -92,7 +97,7 @@ const mockLoadingResponse = {
 };
 
 const mockErrorResponse = {
-  cioClient: mockCioClient,
+  threadId: mockGeneratedThreadId,
   suggestedQuestions: {
     data: [],
     isLoading: false,
@@ -111,18 +116,6 @@ const mockErrorResponse = {
 /**
  * Flexible mock helper for useCioPia hook
  */
-const mockTracker = {
-  trackProductInsightsAgentView: jest.fn(),
-  trackProductInsightsAgentFocus: jest.fn(),
-  trackProductInsightsAgentQuestionClick: jest.fn(),
-  trackProductInsightsAgentQuestionSubmit: jest.fn(),
-  trackProductInsightsAgentAnswerView: jest.fn(),
-  trackProductInsightsAgentAnswerFeedback: jest.fn(),
-  trackProductInsightsAgentResultClick: jest.fn(),
-};
-
-const mockCioClient = { tracker: mockTracker };
-
 function mockUseCioPia({
   questionsData = mockSuggestedQuestions,
   answerData = null,
@@ -131,9 +124,17 @@ function mockUseCioPia({
   answerIsLoading = false,
   questionsError = null,
   answerError = null,
+}: {
+  questionsData?: { value: string }[];
+  answerData?: GetAnswerResultsResponse | null;
+  items?: Item[] | null;
+  questionIsLoading?: boolean;
+  answerIsLoading?: boolean;
+  questionsError?: Error | null;
+  answerError?: Error | null;
 } = {}) {
-  useCioPia.mockImplementation(() => ({
-    cioClient: mockCioClient,
+  mockUseCioPiaHook.mockImplementation(() => ({
+    threadId: mockGeneratedThreadId,
     suggestedQuestions: {
       data: questionsData,
       isLoading: questionIsLoading,
@@ -160,7 +161,7 @@ function mockUseCioPiaWithAnswerData() {
 /**
  * Helper: Questions, answer data, and items available
  */
-function mockUseCioPiaWithItems(items = mockItems) {
+function mockUseCioPiaWithItems(items: Item[] = mockItems) {
   mockUseCioPia({ answerData: mockAnswerData, items });
 }
 
@@ -207,7 +208,7 @@ describe('CioPia Component', () => {
     });
 
     it('passes formatImageUrl from formatters to useCioPia', () => {
-      const formatImageUrl = (url) => `https://cdn.example.com${url}`;
+      const formatImageUrl = (url: string) => `https://cdn.example.com${url}`;
 
       render(<CioPia {...mockProps} formatters={{ formatImageUrl }} />);
 
@@ -240,13 +241,13 @@ describe('CioPia Component', () => {
 
       const { getByText } = render(<CioPia {...mockProps} />);
 
-      mockAnswerData.follow_up_questions.forEach((question) => {
+      mockAnswerData.follow_up_questions!.forEach((question) => {
         expect(getByText(question.value)).toBeInTheDocument();
       });
     });
 
     it('displays loading state when loading', () => {
-      useCioPia.mockReturnValue(mockLoadingResponse);
+      mockUseCioPiaHook.mockReturnValue(mockLoadingResponse);
 
       const { getByTestId } = render(<CioPia {...mockProps} />);
 
@@ -254,7 +255,7 @@ describe('CioPia Component', () => {
     });
 
     it('displays error message when there is an error', () => {
-      useCioPia.mockReturnValue(mockErrorResponse);
+      mockUseCioPiaHook.mockReturnValue(mockErrorResponse);
 
       const { getByTestId } = render(<CioPia {...mockProps} />);
 
@@ -285,7 +286,7 @@ describe('CioPia Component', () => {
 
       rerender(<CioPia {...mockProps} />);
 
-      mockAnswerData.follow_up_questions.forEach((question) => {
+      mockAnswerData.follow_up_questions!.forEach((question) => {
         expect(screen.getByText(question.value)).toBeInTheDocument();
       });
     });
@@ -301,7 +302,7 @@ describe('CioPia Component', () => {
   });
 
   describe('Callbacks Tests', () => {
-    it('calls onQuestionSubmit callback when a question is submitted via input', () => {
+    it('calls onQuestionSubmit callback with user source when a question is submitted via input', () => {
       const mockOnQuestionSubmit = jest.fn();
 
       const { getByRole } = render(
@@ -312,11 +313,15 @@ describe('CioPia Component', () => {
       fireEvent.change(input, { target: { value: testQuestion } });
       fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
 
-      expect(mockOnQuestionSubmit).toHaveBeenCalledWith(testQuestion);
+      expect(mockOnQuestionSubmit).toHaveBeenCalledWith(
+        testQuestion,
+        { itemId: mockProps.itemId, threadId: mockGeneratedThreadId },
+        'user',
+      );
       expect(mockOnQuestionSubmit).toHaveBeenCalledTimes(1);
     });
 
-    it('calls onQuestionSubmit callback when a suggested question is clicked', () => {
+    it('calls onQuestionSubmit callback with suggestion source when a suggested question is clicked', () => {
       const mockOnQuestionSubmit = jest.fn();
 
       const { getByText } = render(
@@ -325,7 +330,11 @@ describe('CioPia Component', () => {
 
       fireEvent.click(getByText(mockSuggestedQuestions[0].value));
 
-      expect(mockOnQuestionSubmit).toHaveBeenCalledWith(mockSuggestedQuestions[0].value);
+      expect(mockOnQuestionSubmit).toHaveBeenCalledWith(
+        mockSuggestedQuestions[0].value,
+        { itemId: mockProps.itemId, threadId: mockGeneratedThreadId },
+        'suggestion',
+      );
       expect(mockOnQuestionSubmit).toHaveBeenCalledTimes(1);
     });
 
@@ -542,7 +551,7 @@ describe('CioPia Component', () => {
     });
 
     it('handles events when no items have url property', () => {
-      const itemsWithoutUrl = [
+      const itemsWithoutUrl: Item[] = [
         {
           id: 'item-1',
           name: 'Product 1',
@@ -738,7 +747,7 @@ describe('CioPia Component', () => {
     });
 
     it('passes isLoading state to render props function', () => {
-      useCioPia.mockReturnValue(mockLoadingResponse);
+      mockUseCioPiaHook.mockReturnValue(mockLoadingResponse);
 
       render(
         <CioPia {...mockProps}>
@@ -754,7 +763,7 @@ describe('CioPia Component', () => {
     });
 
     it('passes error state to render props function', () => {
-      useCioPia.mockReturnValue(mockErrorResponse);
+      mockUseCioPiaHook.mockReturnValue(mockErrorResponse);
 
       render(
         <CioPia {...mockProps}>
@@ -947,7 +956,7 @@ describe('CioPia Component', () => {
         <CioPia {...mockProps} displayConfigs={{ mode: 'conversation' }} />,
       );
 
-      const footer = container.querySelector('.cio-pia-conversation-footer');
+      const footer = container.querySelector('.cio-pia-conversation-footer') as HTMLElement;
       expect(footer).toBeInTheDocument();
       expect(within(footer).getByRole('textbox')).toBeInTheDocument();
       mockSuggestedQuestions.forEach((question) => {
@@ -1011,16 +1020,15 @@ describe('CioPia Component', () => {
       const { rerender } = render(<CioPia {...mockProps} itemId='item-1' />);
 
       // Follow-up questions should be displayed
-      mockAnswerData.follow_up_questions.forEach((question) => {
+      mockAnswerData.follow_up_questions!.forEach((question) => {
         expect(screen.getByText(question.value)).toBeInTheDocument();
       });
 
-      // Change itemId — in production, answer data resets when a new item is selected
-      mockUseCioPia({ answerData: null });
+      // Change itemId — displayedQuestions should reset to empty until new suggestions load
       rerender(<CioPia {...mockProps} itemId='item-2' />);
 
       // Follow-up questions from the previous item should be gone
-      mockAnswerData.follow_up_questions.forEach((question) => {
+      mockAnswerData.follow_up_questions!.forEach((question) => {
         expect(screen.queryByText(question.value)).not.toBeInTheDocument();
       });
     });
@@ -1107,7 +1115,7 @@ describe('CioPia Component', () => {
       const { container } = render(<CioPia {...mockProps} />);
 
       const answerContainer = container.querySelector('.cio-pia-answer-container');
-      const children = Array.from(answerContainer.children);
+      const children = Array.from(answerContainer!.children);
       const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
       const answerIndex = children.findIndex((el) => el.matches('.cio-pia-answer'));
       expect(disclaimerIndex).toBeGreaterThan(answerIndex);
@@ -1121,7 +1129,7 @@ describe('CioPia Component', () => {
       );
 
       const answerContainer = container.querySelector('.cio-pia-answer-container');
-      const children = Array.from(answerContainer.children);
+      const children = Array.from(answerContainer!.children);
       const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
       const answerIndex = children.findIndex((el) => el.matches('.cio-pia-answer'));
       expect(disclaimerIndex).toBeLessThan(answerIndex);

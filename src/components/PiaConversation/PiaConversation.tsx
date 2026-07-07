@@ -3,8 +3,7 @@ import Input from '../Input/Input';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import SuggestedQuestionsSkeleton from '../SuggestedQuestionsContainer/SuggestedQuestionsSkeleton';
 import { translate } from '../../utils/translate';
-import { FeedbackType, Question } from '../../types';
-import { ContainerClickProps } from '../../hooks/useConversation';
+import { FeedbackType, Item, Question } from '../../types';
 import ConversationHistory, {
   ConversationHistoryProps,
 } from '../ConversationHistory/ConversationHistory';
@@ -12,10 +11,11 @@ import ConversationHistory, {
 export interface PiaConversationProps extends ConversationHistoryProps {
   displayedQuestions: Question[];
   handleSubmitQuestion: (question: string) => void;
-  handleQuestionClick?: (question: string) => void;
-  containerClickProps?: ContainerClickProps;
-  containerRef?: React.RefObject<HTMLDivElement | null>;
+  handleQuestionClick: (question: string) => void;
+  containerRef?: (node: HTMLDivElement | null) => void;
   handleFeedback?: (type: FeedbackType) => void;
+  onResultClick?: (item: Item, position: number, question: string, qnaResultId?: string) => void;
+  qnaResultId?: string;
   onInputFocus?: () => void;
 }
 
@@ -34,12 +34,11 @@ export default function PiaConversation({
   displayedQuestions,
   handleSubmitQuestion,
   handleQuestionClick,
-  containerClickProps,
   containerRef,
   handleFeedback,
-  onInputFocus,
   onResultClick,
   qnaResultId,
+  onInputFocus,
 }: PiaConversationProps) {
   const hasHistory = conversationHistory.length > 0;
 
@@ -47,8 +46,7 @@ export default function PiaConversation({
     <div
       ref={containerRef}
       className='cio-pia-container cio-pia-conversation'
-      data-testid='cio-pia-container'
-      {...containerClickProps}>
+      data-testid='cio-pia-container'>
       {!hasHistory && (
         <p className='cio-pia-title' data-testid='cio-pia-title'>
           {translate('Any questions about this product?', translations)}
@@ -77,7 +75,7 @@ export default function PiaConversation({
         {!isLoading && !error && (
           <SuggestedQuestionsContainer
             questions={displayedQuestions}
-            onQuestionClick={handleQuestionClick || handleSubmitQuestion}
+            onQuestionClick={handleQuestionClick}
             componentOverride={componentOverrides?.suggestedQuestions}
           />
         )}

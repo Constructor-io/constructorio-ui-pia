@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import ConstructorIOClient from '@constructor-io/constructorio-client-javascript';
+import { Tracker } from '@constructor-io/constructorio-client-javascript/lib/types/constructorio';
 import { FeedbackType, Item, Question, GetAnswerResultsResponse } from '../types';
 
 export interface TimeSpan {
@@ -8,7 +8,7 @@ export interface TimeSpan {
 }
 
 export interface UseTrackingProps {
-  cioClient?: ConstructorIOClient;
+  cioClient?: { tracker: Tracker };
   itemId: string;
   itemName: string;
   variationId?: string;

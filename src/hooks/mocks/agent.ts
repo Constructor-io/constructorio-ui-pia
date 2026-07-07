@@ -1,0 +1,194 @@
+import { ConstructorClientOptions } from '@constructor-io/constructorio-client-javascript';
+import {
+  AgentUrlProps,
+  QuestionResponse,
+  StreamEndEvent,
+  StreamMessageEvent,
+  StreamStartEvent,
+  SuggestedQuestionsParameters,
+  GetSuggestedQuestionsProps,
+  GetAnswerResultsStreamProps,
+  GetAnswerResultsProps,
+  GetAnswerResultsResponse,
+} from './types';
+
+// Create URL for PIA API
+function createAgentUrl({
+  itemId,
+  threadId,
+  variationId,
+  question,
+  isStreaming = false,
+  options,
+  parameters = {},
+}: AgentUrlProps): string {
+  const { apiKey, agentServiceUrl } = options;
+  if (!agentServiceUrl) throw new Error('Agent service URL is required');
+
+  let baseUrl = `${agentServiceUrl}/v1/item_questions`;
+  if (question) {
+    baseUrl += `/${encodeURIComponent(question)}/answer`;
+  }
+  if (isStreaming) {
+    baseUrl += '/streaming';
+  }
+
+  const url = new URL(baseUrl);
+  url.searchParams.append('item_id', itemId);
+  url.searchParams.append('key', apiKey);
+
+  if (threadId) {
+    url.searchParams.append('thread_id', threadId);
+  }
+  if (variationId) {
+    url.searchParams.append('variation_id', variationId);
+  }
+
+  // Any additional parameters
+  Object.entries(parameters).forEach(([key, value]) => {
+    if (value !== undefined) {
+      url.searchParams.append(key, String(value));
+    }
+  });
+
+  return url.toString();
+}
+
+// Map camelCase SuggestedQuestionsParameters to snake_case query params expected by the API
+function mapSuggestedQuestionsParams(
+  params: SuggestedQuestionsParameters,
+): Record<string, string | number | boolean> {
+  const result: Record<string, string | number | boolean> = {};
+  if (params.numResults !== undefined) result.num_results = params.numResults;
+  return result;
+}
+
+class MockAgent {
+  options: ConstructorClientOptions;
+
+  constructor(options: ConstructorClientOptions) {
+    this.options = options;
+  }
+
+  async getSuggestedQuestions({
+    itemId,
+    variationId,
+    threadId,
+    parameters = {},
+  }: GetSuggestedQuestionsProps): Promise<QuestionResponse> {
+    if (!itemId) throw new Error('Item ID is required');
+    if (!this.options.apiKey) throw new Error('API key is required');
+
+    const url = createAgentUrl({
+      itemId,
+      variationId,
+      threadId,
+      options: this.options,
+      parameters: mapSuggestedQuestionsParams(parameters),
+    });
+
+    try {
+      const response = await fetch(url);
+
+      if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
+
+      const data = await response.json();
+
+      return data;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+
+      throw new Error(errorMessage);
+    }
+  }
+
+  async getAnswerResults({
+    itemId,
+    variationId,
+    threadId,
+    question,
+    parameters = {},
+  }: GetAnswerResultsProps): Promise<GetAnswerResultsResponse> {
+    if (!itemId) throw new Error('Item ID is required');
+    if (!question) throw new Error('Question is required');
+    if (!this.options.apiKey) throw new Error('API key is required');
+
+    const url = createAgentUrl({
+      itemId,
+      threadId,
+      variationId,
+      question,
+      options: this.options,
+      parameters,
+    });
+
+    try {
+      const response = await fetch(url);
+
+      if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
+
+      const data = await response.json();
+
+      return data;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+
+      throw new Error(errorMessage);
+    }
+  }
+
+  async getAnswerResultsStream({
+    itemId,
+    threadId,
+    variationId,
+    question,
+    parameters,
+    onStart,
+    onMessage,
+    onEnd,
+  }: GetAnswerResultsStreamProps): Promise<void> {
+    if (!itemId) throw new Error('Item ID is required');
+    if (!question) throw new Error('Question is required');
+    if (!this.options.apiKey) throw new Error('API key is required');
+
+    const url = createAgentUrl({
+      itemId,
+      threadId,
+      variationId,
+      question,
+      isStreaming: true,
+      options: this.options,
+      parameters,
+    });
+
+    try {
+      const eventSource = new EventSource(url);
+
+      eventSource.addEventListener('open', (event: MessageEvent) => {
+        const data = JSON.parse(event.data) as StreamStartEvent;
+        if (onStart) onStart(data);
+      });
+
+      eventSource.addEventListener('message', (event: MessageEvent) => {
+        const data = JSON.parse(event.data) as StreamMessageEvent;
+        if (onMessage) onMessage(data);
+      });
+
+      eventSource.addEventListener('end', (event: MessageEvent) => {
+        const data = JSON.parse(event.data) as StreamEndEvent;
+        if (onEnd) onEnd(data);
+        eventSource.close();
+      });
+
+      eventSource.onerror = () => {
+        eventSource.close();
+        throw new Error('Unexpected error occurred. Please try again.');
+      };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      throw new Error(errorMessage);
+    }
+  }
+}
+
+export default MockAgent;

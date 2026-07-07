@@ -4,13 +4,14 @@ import {
   IncludeRenderProps,
   RenderPropsWrapper,
 } from '@constructor-io/constructorio-ui-components';
-import ConstructorIOClient from '@constructor-io/constructorio-client-javascript';
 import Input from '../Input/Input';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
+import MockConstructorIOClient from '../../hooks/mocks/MockConstructorIOClient';
 import useCioPia from '../../hooks/useCioPia';
 import useConversation from '../../hooks/useConversation';
 import useTracking from '../../hooks/useTracking';
 import useViewportTracking from '../../hooks/useViewportTracking';
+import useViewportCallbacks from '../../hooks/useViewportCallbacks';
 import ErrorBlock from '../Error/ErrorBlock';
 import LoadingSkeleton from '../LoadingSkeleton/LoadingSkeleton';
 import {
@@ -42,7 +43,9 @@ export interface CioPiaProps
   threadId?: string;
   /** Optional variation ID for the product. */
   variationId?: string;
-  cioClient?: ConstructorIOClient;
+  /** Optional Constructor.io client instance. If not provided, one will be created internally. */
+  cioClient?: MockConstructorIOClient;
+  /** Display configuration options (mode, type, showFeedback, etc.). */
   displayConfigs?: CioPiaDisplayConfigs;
   /** Callback handlers for user interactions (onQuestionSubmit, onProductCardClick, onFeedback). */
   callbacks?: Callbacks;
@@ -57,6 +60,7 @@ export interface CioPiaProps
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
 }
 
+// eslint-disable-next-line complexity
 export default function CioPia(props: CioPiaProps) {
   const {
     apiKey,
@@ -65,7 +69,7 @@ export default function CioPia(props: CioPiaProps) {
     threadId,
     variationId,
     cioClient,
-    displayConfigs = {},
+    displayConfigs,
     componentOverrides,
     callbacks,
     formatters,
@@ -80,7 +84,7 @@ export default function CioPia(props: CioPiaProps) {
     type = 'inline',
     showPreviousItems,
     disclaimerPosition = 'bottom',
-  } = displayConfigs;
+  } = displayConfigs || {};
   const isConversation = mode === 'conversation' || type === 'modal';
 
   const pia = useCioPia({
@@ -98,7 +102,7 @@ export default function CioPia(props: CioPiaProps) {
     itemId,
     itemName,
     variationId,
-    threadId,
+    threadId: pia.threadId,
   });
 
   const {
@@ -109,15 +113,27 @@ export default function CioPia(props: CioPiaProps) {
     currentItems,
     isLoading,
     error,
+    context,
     handleSubmitQuestion,
     handleQuestionClick,
-    containerClickProps,
-    inputFocusProps,
+    handleInputFocus,
     handleFeedback,
     resetState,
   } = useConversation({ pia, itemId, isConversation, callbacks, tracking });
 
-  const { containerRef } = useViewportTracking({ tracking, questions: displayedQuestions });
+  const { containerRef: viewportContainerRef } = useViewportTracking({
+    tracking,
+    questions: displayedQuestions,
+  });
+  const { containerRef: callbackContainerRef } = useViewportCallbacks({ callbacks, context });
+
+  const containerRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      viewportContainerRef.current = node;
+      callbackContainerRef(node);
+    },
+    [callbackContainerRef],
+  );
 
   const qnaResultId = pia.answers.data?.qna_result_id;
 
@@ -158,6 +174,8 @@ export default function CioPia(props: CioPiaProps) {
     handleFeedback: onFeedback,
     onResultClick: tracking.trackResultClick,
     qnaResultId,
+    containerRef,
+    onInputFocus: handleInputFocus,
   };
 
   if (type === 'modal') {
@@ -166,78 +184,63 @@ export default function CioPia(props: CioPiaProps) {
         initialQuestions={pia.suggestedQuestions.data}
         handleSubmitQuestion={handleSubmitQuestion}
         handleQuestionClick={handleQuestionClick}
-        containerClickProps={containerClickProps}
         containerRef={containerRef}
         isLoading={isLoading}
         componentOverrides={componentOverrides}
         translations={translations}
-        onInputFocus={inputFocusProps.onFocus}
+        onInputFocus={handleInputFocus}
         onClose={resetState}>
-        <PiaConversation {...conversationHistoryProps} onInputFocus={inputFocusProps.onFocus} />
+        <PiaConversation {...conversationHistoryProps} />
       </PiaModal>
     );
   }
 
-  if (isConversation) {
-    return (
-      <PiaConversation
-        {...conversationHistoryProps}
-        containerRef={containerRef}
-        containerClickProps={containerClickProps}
-        onInputFocus={inputFocusProps.onFocus}
-      />
-    );
-  }
+  if (isConversation) return <PiaConversation {...conversationHistoryProps} />;
 
   // Default inline mode
   return (
-    <div
-      ref={containerRef}
-      className='cio-pia-container'
-      data-testid='cio-pia-container'
-      {...containerClickProps}>
+    <div ref={containerRef} className='cio-pia-container' data-testid='cio-pia-container'>
       <RenderPropsWrapper props={renderProps} override={children || componentOverrides?.reactNode}>
         <p className='cio-pia-title' data-testid='cio-pia-title'>
           {translate('Any questions about this product?', translations)}
         </p>
         <Input
           onSubmit={handleSubmitQuestion}
-          onFocus={inputFocusProps.onFocus}
+          onFocus={handleInputFocus}
           value={currentQuestion}
           translations={translations}
         />
 
         {isLoading && <LoadingSkeleton />}
 
-        {!isLoading &&
-          (error ? (
-            <ErrorBlock message={error.message || 'Unexpected error'} />
-          ) : (
-            <>
-              {currentAnswer && (
-                <PiaInlineAnswer
-                  currentAnswer={currentAnswer}
-                  currentItems={currentItems}
-                  showFeedback={showFeedback}
-                  learnMoreUrl={learnMoreUrl}
-                  disclaimerPosition={disclaimerPosition}
-                  translations={translations}
-                  callbacks={callbacks}
-                  componentOverrides={componentOverrides}
-                  onFeedback={onFeedback}
-                  onResultClick={tracking.trackResultClick}
-                  question={currentQuestion}
-                  qnaResultId={qnaResultId}
-                />
-              )}
+        {!isLoading && error && <ErrorBlock message={error?.message || 'Unexpected error'} />}
 
-              <SuggestedQuestionsContainer
-                questions={displayedQuestions}
-                onQuestionClick={handleQuestionClick}
-                componentOverride={componentOverrides?.suggestedQuestions}
+        {!isLoading && !error && (
+          <>
+            {currentAnswer && (
+              <PiaInlineAnswer
+                currentAnswer={currentAnswer}
+                currentItems={currentItems}
+                showFeedback={showFeedback}
+                learnMoreUrl={learnMoreUrl}
+                disclaimerPosition={disclaimerPosition}
+                translations={translations}
+                callbacks={callbacks}
+                componentOverrides={componentOverrides}
+                onFeedback={onFeedback}
+                onResultClick={tracking.trackResultClick}
+                question={currentQuestion}
+                qnaResultId={qnaResultId}
               />
-            </>
-          ))}
+            )}
+
+            <SuggestedQuestionsContainer
+              questions={displayedQuestions}
+              onQuestionClick={handleQuestionClick}
+              componentOverride={componentOverrides?.suggestedQuestions}
+            />
+          </>
+        )}
       </RenderPropsWrapper>
     </div>
   );

@@ -3,21 +3,12 @@ import {
   CarouselOverrides,
   ComponentOverrideProps,
 } from '@constructor-io/constructorio-ui-components';
-import ConstructorIOClient, {
+import {
   ConstructorClientOptions,
   Nullable,
-  PiaQuestion,
-  PiaSuggestedQuestionsParameters,
-  PiaAnswerResultsResponse,
-  PiaAnswerItemResults,
-  Item as CioItem,
 } from '@constructor-io/constructorio-client-javascript';
-
-export type Question = PiaQuestion;
-export type SuggestedQuestionsParameters = Pick<PiaSuggestedQuestionsParameters, 'numResults'>;
-export type GetAnswerResultsResponse = PiaAnswerResultsResponse;
-export type AnswerItemResults = PiaAnswerItemResults;
-export type ApiItem = CioItem;
+import { Question } from './hooks/mocks/types';
+import MockConstructorIOClient from './hooks/mocks/MockConstructorIOClient';
 
 export enum FeedbackType {
   UP = 'up',
@@ -25,7 +16,7 @@ export enum FeedbackType {
 }
 
 export interface PiaContextValue {
-  cioClient: Nullable<ConstructorIOClient>;
+  cioClient: Nullable<MockConstructorIOClient>;
   cioClientOptions: CioClientOptions;
   setCioClientOptions: React.Dispatch<CioClientOptions>;
   itemId: string;
@@ -42,7 +33,7 @@ export interface CioPiaProviderProps {
   variationId?: string;
   /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000") */
   threadId?: string;
-  cioClient?: Nullable<ConstructorIOClient>;
+  cioClient?: Nullable<MockConstructorIOClient>;
 }
 
 export type CioPiaMode = 'default' | 'conversation';
@@ -84,13 +75,32 @@ export type Translations = {
   'Ask about this product'?: string;
 };
 
+export type QuestionSource = 'user' | 'suggestion';
+
+export interface PiaCallbackContext {
+  itemId: string;
+  threadId: string;
+}
+
 export interface Callbacks {
-  /** Called when a question is submitted (via Enter key, Send button, or suggested question click). */
-  onQuestionSubmit?: (question: string) => void;
+  /** Called when a question is submitted (typed or suggested question clicked). */
+  onQuestionSubmit?: (
+    question: string,
+    context: PiaCallbackContext,
+    source: QuestionSource,
+  ) => void;
   /** Called when a product card in the carousel is clicked. */
   onProductCardClick?: (item: Item) => void;
   /** Called when the user submits positive or negative feedback on an answer. */
   onFeedback?: (type: FeedbackType) => void;
+  /** Called when a new answer is received. Passes the full conversation history. */
+  onAnswer?: (history: ConversationEntry[], context: PiaCallbackContext) => void;
+  /** Called when the user focuses the input field. */
+  onFocus?: (context: PiaCallbackContext) => void;
+  /** Called when the widget enters the viewport. */
+  onView?: (context: PiaCallbackContext) => void;
+  /** Called when the widget leaves the viewport. */
+  onOutOfView?: (context: PiaCallbackContext) => void;
 }
 
 /** Formatter functions for transforming data before display. */
@@ -109,7 +119,10 @@ export interface ConversationEntry {
   id: number;
   question: string;
   answer: string;
+  source: QuestionSource;
   items?: Item[] | null;
+  threadId?: string;
+  qnaResultId?: string;
 }
 
 /**
@@ -156,3 +169,5 @@ export interface CioPiaComponentOverrides extends ComponentOverrideProps<CioPiaR
   disclaimer?: ComponentOverrideProps<DisclaimerRenderProps>;
   feedback?: ComponentOverrideProps<FeedbackRenderProps>;
 }
+
+export * from './hooks/mocks/types';

@@ -1,5 +1,6 @@
-import { useCallback, useState } from 'react';
-import ConstructorIOClient, { Nullable } from '@constructor-io/constructorio-client-javascript';
+import { useCallback, useMemo, useState } from 'react';
+import { Nullable } from '@constructor-io/constructorio-client-javascript';
+import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 import { Formatters, Item, GetAnswerResultsResponse } from '../types';
 import { transformResultItem } from '../utils/transformers';
 
@@ -7,7 +8,7 @@ export interface UseAnswerResultsProps {
   itemId: string;
   variationId?: string;
   threadId?: string;
-  cioClient: ConstructorIOClient;
+  cioClient: MockConstructorIOClient;
   parameters?: Record<string, any>;
   formatImageUrl?: Formatters['formatImageUrl'];
 }
@@ -21,7 +22,7 @@ export interface UseAnswerResultsReturn {
 }
 
 interface FetchAnswerResultsParams {
-  client: ConstructorIOClient;
+  client: MockConstructorIOClient;
   itemId: string;
   question: string;
   variationId?: string;
@@ -55,14 +56,12 @@ const fetchAnswerResults = async ({
   variationId,
   threadId,
 }: FetchAnswerResultsParams) => {
-  const response: GetAnswerResultsResponse = await client.agent.pia.getAnswerResults(
+  const response: GetAnswerResultsResponse = await client.agent.getAnswerResults({
     itemId,
+    variationId,
+    threadId,
     question,
-    {
-      threadId,
-      variationId,
-    },
-  );
+  });
   return response;
 };
 
@@ -74,9 +73,13 @@ export default function useAnswerResults({
   formatImageUrl,
 }: UseAnswerResultsProps): UseAnswerResultsReturn {
   const [answerResults, setAnswerResults] = useState<GetAnswerResultsResponse | null>(null);
-  const [items, setItems] = useState<Array<Item> | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
+
+  const items = useMemo(
+    () => extractAndTransformItems(answerResults, formatImageUrl),
+    [answerResults, formatImageUrl],
+  );
 
   const fetchResult = useCallback(
     (question: string) => {
@@ -84,23 +87,22 @@ export default function useAnswerResults({
 
       setIsLoading(true);
       setError(null);
+      setAnswerResults(null);
 
       fetchAnswerResults({ client: cioClient, itemId, question, variationId, threadId })
         .then((fetchedAnswerResults) => {
           setAnswerResults(fetchedAnswerResults);
-          setItems(extractAndTransformItems(fetchedAnswerResults, formatImageUrl));
           setError(null);
         })
         .catch((err) => {
           setError(err instanceof Error ? err : new Error('Error fetching answer'));
           setAnswerResults(null);
-          setItems(null);
         })
         .finally(() => {
           setIsLoading(false);
         });
     },
-    [cioClient, itemId, variationId, threadId, formatImageUrl],
+    [cioClient, itemId, variationId, threadId],
   );
 
   return {

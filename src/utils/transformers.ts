@@ -1,5 +1,5 @@
-import { Nullable, Item as ApiItem } from '@constructor-io/constructorio-client-javascript';
-import { Formatters, Item } from '../types';
+import { Nullable } from '@constructor-io/constructorio-client-javascript';
+import { ApiItem, Formatters, Item } from '../types';
 
 /**
  * Converts a raw ApiItem from the Get Answers API response into an Item object

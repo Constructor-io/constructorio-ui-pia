@@ -3,7 +3,6 @@ import Input from '../Input/Input';
 import { translate } from '../../utils/translate';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import { Translations, Question, CioPiaComponentOverrides } from '../../types';
-import { ContainerClickProps } from '../../hooks/useConversation';
 
 const OVERFLOW_HIDDEN_CLASS = 'cio-pia-modal-open';
 
@@ -21,9 +20,8 @@ function CloseIcon() {
 interface PiaModalProps {
   initialQuestions: Question[];
   handleSubmitQuestion: (question: string) => void;
-  handleQuestionClick?: (question: string) => void;
-  containerClickProps?: ContainerClickProps;
-  containerRef?: React.RefObject<HTMLDivElement | null>;
+  handleQuestionClick: (question: string) => void;
+  containerRef?: (node: HTMLDivElement | null) => void;
   isLoading: boolean;
   componentOverrides?: CioPiaComponentOverrides;
   translations?: Translations;
@@ -35,7 +33,6 @@ export default function PiaModal({
   initialQuestions,
   handleSubmitQuestion,
   handleQuestionClick,
-  containerClickProps,
   containerRef,
   isLoading,
   componentOverrides,
@@ -104,22 +101,14 @@ export default function PiaModal({
 
   const handleQuestionClicked = useCallback(
     (question: string) => {
-      if (handleQuestionClick) {
-        handleQuestionClick(question);
-      } else {
-        handleSubmitQuestion(question);
-      }
+      handleQuestionClick(question);
       openModal();
     },
-    [handleQuestionClick, handleSubmitQuestion, openModal],
+    [handleQuestionClick, openModal],
   );
 
   return (
-    <div
-      ref={containerRef}
-      className='cio-pia-container'
-      data-testid='cio-pia-container'
-      {...containerClickProps}>
+    <div ref={containerRef} className='cio-pia-container' data-testid='cio-pia-container'>
       <p className='cio-pia-title' data-testid='cio-pia-title'>
         {translate('Any questions about this product?', translations)}
       </p>

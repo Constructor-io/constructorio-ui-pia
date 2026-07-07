@@ -1,5 +1,6 @@
-import ConstructorIOClient from '@constructor-io/constructorio-client-javascript';
+import { useState } from 'react';
 import { Formatters, SuggestedQuestionsParameters } from '../types';
+import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 import useAnswerResults, { UseAnswerResultsReturn } from './useAnswerResults';
 import useCioClient from './useCioClient';
 import useSuggestedQuestions, { UseSuggestedQuestionsReturn } from './useSuggestedQuestions';
@@ -9,14 +10,15 @@ export interface UseCioPiaProps {
   itemId: string;
   variationId?: string;
   threadId?: string;
-  cioClient?: ConstructorIOClient;
+  cioClient?: MockConstructorIOClient;
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
   /** Define outside the component or wrap with useCallback to avoid unnecessary re-renders. */
   formatImageUrl?: Formatters['formatImageUrl'];
 }
 
 export interface UseCioPiaReturn {
-  cioClient: ConstructorIOClient;
+  cioClient: MockConstructorIOClient;
+  threadId: string;
   suggestedQuestions: UseSuggestedQuestionsReturn;
   answers: UseAnswerResultsReturn;
 }
@@ -26,20 +28,23 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     apiKey,
     itemId,
     variationId,
-    threadId,
+    threadId: providedThreadId,
     cioClient: providedClient,
     suggestedQuestionsParameters,
     formatImageUrl,
   } = props;
 
+  const [generatedThreadId] = useState(() => crypto.randomUUID());
+  const threadId = providedThreadId || generatedThreadId;
+
   const defaultClient = useCioClient({ apiKey });
-  const client = (providedClient || defaultClient) as ConstructorIOClient;
+  const client = (providedClient || defaultClient) as MockConstructorIOClient;
 
   const suggestedQuestions = useSuggestedQuestions({
     itemId,
     variationId,
     threadId,
-    cioClient: client,
+    cioClient: client as MockConstructorIOClient,
     parameters: suggestedQuestionsParameters,
   });
 
@@ -47,12 +52,13 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     itemId,
     variationId,
     threadId,
-    cioClient: client,
+    cioClient: client as MockConstructorIOClient,
     formatImageUrl,
   });
 
   return {
     cioClient: client,
+    threadId,
     suggestedQuestions,
     answers,
   };
