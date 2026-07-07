@@ -2,7 +2,7 @@ import { renderHook, act } from '@testing-library/react';
 import useConversation from '../../../src/hooks/useConversation';
 import { UseCioPiaReturn } from '../../../src/hooks/useCioPia';
 import { GetAnswerResultsResponse } from '../../../src/hooks/mocks/types';
-import { UseTrackingReturn } from '../../../src/hooks/useTracking';
+import createMockTracking from '../../__mocks__/createMockTracking';
 
 interface MockPiaOverrides {
   threadId?: string;
@@ -44,20 +44,6 @@ describe('Testing Hook: useConversation', () => {
         getAnswer: jest.fn(),
         ...restAnswers,
       },
-    };
-  }
-
-  function createMockTracking(): UseTrackingReturn {
-    return {
-      trackViews: jest.fn(),
-      trackView: jest.fn(),
-      trackOutOfView: jest.fn(),
-      trackFocus: jest.fn(),
-      trackQuestionClick: jest.fn(),
-      trackQuestionSubmit: jest.fn(),
-      trackAnswerView: jest.fn(),
-      trackAnswerFeedback: jest.fn(),
-      trackResultClick: jest.fn(),
     };
   }
 

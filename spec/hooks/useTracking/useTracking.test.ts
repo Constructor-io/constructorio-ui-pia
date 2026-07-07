@@ -325,11 +325,12 @@ describe('Testing Hook: useTracking', () => {
 
       result.current.trackAnswerFeedback(FeedbackType.UP);
 
-      expect(mockTracker.trackProductInsightsAgentAnswerFeedback).toHaveBeenCalledWith({
+      const call = mockTracker.trackProductInsightsAgentAnswerFeedback.mock.calls[0][0];
+      expect(call).not.toHaveProperty('qnaResultId');
+      expect(call).toEqual({
         itemId: 'test-item',
         itemName: 'Test Product',
         feedbackLabel: 'thumbs_up',
-        qnaResultId: undefined,
       });
     });
   });

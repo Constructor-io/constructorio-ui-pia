@@ -140,7 +140,7 @@ export default function useTracking({
       tracker?.trackProductInsightsAgentAnswerFeedback({
         ...baseParams,
         feedbackLabel,
-        qnaResultId,
+        ...(qnaResultId && { qnaResultId }),
       });
     },
     [tracker, baseParams],
