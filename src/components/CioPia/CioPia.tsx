@@ -19,7 +19,6 @@ import {
   CioPiaComponentOverrides,
   Callbacks,
   CioPiaDisplayConfigs,
-  FeedbackType,
   Translations,
   SuggestedQuestionsParameters,
   Formatters,
@@ -137,14 +136,6 @@ export default function CioPia(props: CioPiaProps) {
 
   const qnaResultId = pia.answers.data?.qna_result_id;
 
-  const onFeedback = useCallback(
-    (feedbackType: FeedbackType) => {
-      handleFeedback(feedbackType);
-      callbacks?.onFeedback?.(feedbackType);
-    },
-    [handleFeedback, callbacks],
-  );
-
   const renderProps: CioPiaRenderProps = {
     items: currentItems,
     isLoading,
@@ -171,7 +162,7 @@ export default function CioPia(props: CioPiaProps) {
     displayedQuestions,
     handleSubmitQuestion,
     handleQuestionClick,
-    handleFeedback: onFeedback,
+    handleFeedback,
     onResultClick: tracking.trackResultClick,
     qnaResultId,
     containerRef,
@@ -227,7 +218,7 @@ export default function CioPia(props: CioPiaProps) {
                 translations={translations}
                 callbacks={callbacks}
                 componentOverrides={componentOverrides}
-                onFeedback={onFeedback}
+                onFeedback={handleFeedback}
                 onResultClick={tracking.trackResultClick}
                 question={currentQuestion}
                 qnaResultId={qnaResultId}

@@ -869,4 +869,106 @@ describe('Testing Hook: useConversation', () => {
       );
     });
   });
+
+  describe('tracking integration', () => {
+    it('calls tracking.trackQuestionSubmit when handleSubmitQuestion is called', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
+      );
+
+      act(() => {
+        result.current.handleSubmitQuestion('What is this?');
+      });
+
+      expect(mockTracking.trackQuestionSubmit).toHaveBeenCalledWith('What is this?');
+    });
+
+    it('calls tracking.trackQuestionClick when handleQuestionClick is called', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
+      );
+
+      act(() => {
+        result.current.handleQuestionClick('Suggested question?');
+      });
+
+      expect(mockTracking.trackQuestionClick).toHaveBeenCalledWith('Suggested question?');
+    });
+
+    it('calls tracking.trackFocus when handleInputFocus is called', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
+      );
+
+      act(() => {
+        result.current.handleInputFocus();
+      });
+
+      expect(mockTracking.trackFocus).toHaveBeenCalledTimes(1);
+    });
+
+    it('calls tracking.trackAnswerFeedback when handleFeedback is called', () => {
+      const pia = createMockPia({
+        answers: { data: { qna_result_id: 'result-123', value: 'answer' } },
+      });
+      const { result } = renderHook(() =>
+        useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
+      );
+
+      act(() => {
+        result.current.handleFeedback('up' as any);
+      });
+
+      expect(mockTracking.trackAnswerFeedback).toHaveBeenCalledWith('up', 'result-123');
+    });
+
+    it('calls tracking.trackAnswerView when answer data arrives', () => {
+      const pia = createMockPia();
+      const { result, rerender } = renderHook(
+        (props) => useConversation(props),
+        { initialProps: { pia, itemId: 'test-item', isConversation: false, tracking: mockTracking } },
+      );
+
+      act(() => {
+        result.current.handleSubmitQuestion('Question?');
+      });
+
+      const piaWithAnswer = createMockPia({
+        answers: { data: { qna_result_id: 'r-1', value: 'The answer' } },
+      });
+
+      rerender({ pia: piaWithAnswer, itemId: 'test-item', isConversation: false, tracking: mockTracking });
+
+      expect(mockTracking.trackAnswerView).toHaveBeenCalledWith(
+        'Question?',
+        expect.objectContaining({ qna_result_id: 'r-1', value: 'The answer' }),
+        null,
+      );
+    });
+
+    it('calls callbacks.onFeedback when handleFeedback is called', () => {
+      const pia = createMockPia({
+        answers: { data: { qna_result_id: 'result-123', value: 'answer' } },
+      });
+      const onFeedback = jest.fn();
+      const { result } = renderHook(() =>
+        useConversation({
+          pia,
+          itemId: 'test-item',
+          isConversation: false,
+          tracking: mockTracking,
+          callbacks: { onFeedback },
+        }),
+      );
+
+      act(() => {
+        result.current.handleFeedback('up' as any);
+      });
+
+      expect(onFeedback).toHaveBeenCalledWith('up');
+    });
+  });
 });

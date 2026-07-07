@@ -118,6 +118,7 @@ export default function useConversation({
 
   const handleFeedback = useCallback((type: FeedbackType) => {
     trackingRef.current?.trackAnswerFeedback(type, answersRef.current.data?.qna_result_id);
+    callbacksRef.current?.onFeedback?.(type);
   }, []);
 
   const resetState = useCallback(() => {
