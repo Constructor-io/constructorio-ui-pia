@@ -3,7 +3,7 @@ import useAnswerResults, { UseAnswerResultsProps } from '../../../hooks/useAnswe
 import useCioClient from '../../../hooks/useCioClient';
 import DisplayHookExample from '../DisplayHookExample';
 import { DEMO_API_KEY } from '../../../constants';
-import MockConstructorIOClient from '../../../hooks/mocks/MockConstructorIOClient';
+import CioClient from '../../../hooks/mocks/CioClient';
 
 interface UseAnswerResultsExampleProps extends UseAnswerResultsProps {
   question: string;
@@ -14,7 +14,7 @@ export default function UseAnswerResultsExample(props: UseAnswerResultsExamplePr
   const cioClient = useCioClient({ apiKey: DEMO_API_KEY });
   const { getAnswer, ...other } = useAnswerResults({
     itemId,
-    cioClient: cioClient as MockConstructorIOClient,
+    cioClient: cioClient as CioClient,
   });
 
   useEffect(() => {

@@ -1,6 +1,6 @@
-import MockConstructorIOClient from '../../src/hooks/mocks/MockConstructorIOClient';
+import CioClient from '../../src/hooks/mocks/CioClient';
 
-describe('MockAgent: URL parameters', () => {
+describe('PiaAgent: URL parameters', () => {
   let requestedUrl: string;
   let mockFetch: jest.Mock;
   const originalFetch = globalThis.fetch;
@@ -9,7 +9,7 @@ describe('MockAgent: URL parameters', () => {
     requestedUrl = '';
     mockFetch = jest.fn(async (url: string) => {
       requestedUrl = url.toString();
-      return { ok: true, json: async () => ({ questions: [] }) };
+      return { ok: true, json: async () => ({ questions: [], qna_result_id: 'mock', value: '' }) };
     });
     (globalThis as Record<string, unknown>).fetch = mockFetch;
   });
@@ -23,7 +23,7 @@ describe('MockAgent: URL parameters', () => {
   });
 
   it('appends i, s, ui, c params from client options to getSuggestedQuestions URL', async () => {
-    const client = new MockConstructorIOClient({
+    const client = new CioClient({
       apiKey: 'test-key',
       clientId: 'test-client-id',
       sessionId: 5,
@@ -41,7 +41,7 @@ describe('MockAgent: URL parameters', () => {
   });
 
   it('appends us (segments) params from client options', async () => {
-    const client = new MockConstructorIOClient({
+    const client = new CioClient({
       apiKey: 'test-key',
       clientId: 'test-client-id',
       sessionId: 1,
@@ -56,7 +56,7 @@ describe('MockAgent: URL parameters', () => {
   });
 
   it('appends i, s, ui, c params to getAnswerResults URL', async () => {
-    const client = new MockConstructorIOClient({
+    const client = new CioClient({
       apiKey: 'test-key',
       clientId: 'browser-abc',
       sessionId: 3,
@@ -73,8 +73,23 @@ describe('MockAgent: URL parameters', () => {
     expect(url.searchParams.get('c')).toContain('cio-ui-pia-');
   });
 
+  it('forwards explicit version as c param', async () => {
+    const client = new CioClient({
+      apiKey: 'test-key',
+      clientId: 'test-client-id',
+      sessionId: 1,
+      version: 'my-app@1.2.3',
+      sendTrackingEvents: false,
+    });
+
+    await client.agent.getSuggestedQuestions({ itemId: 'item-123' });
+
+    const url = new URL(requestedUrl);
+    expect(url.searchParams.get('c')).toBe('my-app@1.2.3');
+  });
+
   it('does not append ui/us when userId/segments are not provided', async () => {
-    const client = new MockConstructorIOClient({
+    const client = new CioClient({
       apiKey: 'test-key',
       clientId: 'test-client-id',
       sessionId: 1,
@@ -91,7 +106,7 @@ describe('MockAgent: URL parameters', () => {
   });
 
   it('uses default clientId and sessionId when not explicitly provided', async () => {
-    const client = new MockConstructorIOClient({
+    const client = new CioClient({
       apiKey: 'test-key',
       sendTrackingEvents: false,
     });
@@ -99,7 +114,7 @@ describe('MockAgent: URL parameters', () => {
     await client.agent.getSuggestedQuestions({ itemId: 'item-123' });
 
     const url = new URL(requestedUrl);
-    // Defaults are set by MockConstructorIOClient constructor
+    // Defaults are set by CioClient constructor
     expect(url.searchParams.has('i')).toBe(true);
     expect(url.searchParams.get('i')).toBeTruthy();
     expect(url.searchParams.has('s')).toBe(true);
@@ -113,7 +128,7 @@ describe('MockAgent: URL parameters', () => {
     }));
     (globalThis as Record<string, unknown>).EventSource = mockEventSource;
 
-    const client = new MockConstructorIOClient({
+    const client = new CioClient({
       apiKey: 'test-key',
       clientId: 'stream-client',
       sessionId: 7,

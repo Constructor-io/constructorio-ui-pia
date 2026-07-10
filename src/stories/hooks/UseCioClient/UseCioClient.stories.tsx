@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import UseCioClientExample from './UseCioClientExample';
 import { DEMO_API_KEY } from '../../../constants';
-import MockConstructorIOClient from '../../../hooks/mocks/MockConstructorIOClient';
+import CioClient from '../../../hooks/mocks/CioClient';
 
 const meta = {
   title: 'Hooks/UseCioClient',
@@ -28,7 +28,7 @@ export const Default: Story = {
 
 export const WithCustomClient: Story = {
   args: {
-    cioClient: new MockConstructorIOClient({
+    cioClient: new CioClient({
       apiKey: DEMO_API_KEY,
       serviceUrl: 'https://custom.client.com',
       quizzesServiceUrl: 'https://custom.client.quiz.com',

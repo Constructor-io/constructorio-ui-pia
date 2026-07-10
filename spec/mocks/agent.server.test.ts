@@ -1,4 +1,4 @@
-import MockConstructorIOClient from '../../src/hooks/mocks/MockConstructorIOClient';
+import CioClient from '../../src/hooks/mocks/CioClient';
 import {
   DEMO_API_KEY,
   DEMO_ITEM_ID,
@@ -10,7 +10,7 @@ describe('Testing Mocks: Agent', () => {
   let client;
 
   beforeEach(() => {
-    client = new MockConstructorIOClient({
+    client = new CioClient({
       apiKey: DEMO_API_KEY,
       sessionId: 123,
       clientId: 'test-client-id',
@@ -29,7 +29,7 @@ describe('Testing Mocks: Agent', () => {
     });
 
     it('throws an error if no agentServiceUrl is provided', async () => {
-      const clientWithoutUrl = new MockConstructorIOClient({
+      const clientWithoutUrl = new CioClient({
         apiKey: DEMO_API_KEY,
         sessionId: 123,
         clientId: 'test-client-id',
@@ -42,7 +42,7 @@ describe('Testing Mocks: Agent', () => {
     });
 
     it('throws an error if no item id is provided', async () => {
-      const clientWithoutUrl = new MockConstructorIOClient({
+      const clientWithoutUrl = new CioClient({
         apiKey: DEMO_API_KEY,
         sessionId: 123,
         clientId: 'test-client-id',
@@ -56,7 +56,7 @@ describe('Testing Mocks: Agent', () => {
   });
 
   describe('getAnswerResults', () => {
-    it('fetches answer given item_id and questions', async () => {
+    it('fetches answer given item_id and question (item_results/follow_up_questions may vary by question type)', async () => {
       const result = await client.agent.getAnswerResults({
         itemId: DEMO_ITEM_ID,
         question: DEMO_QUESTION_ALTERNATIVE_PRODUCTS,
@@ -88,7 +88,7 @@ describe('Testing Mocks: Agent', () => {
     }, 30000); // Answer API can take 15s+ to respond
 
     it('throws an error if no agentServiceUrl is provided', async () => {
-      const clientWithoutUrl = new MockConstructorIOClient({
+      const clientWithoutUrl = new CioClient({
         apiKey: DEMO_API_KEY,
         sessionId: 123,
         clientId: 'test-client-id',
@@ -104,7 +104,7 @@ describe('Testing Mocks: Agent', () => {
     });
 
     it('throws an error if no item id is provided', async () => {
-      const clientWithoutUrl = new MockConstructorIOClient({
+      const clientWithoutUrl = new CioClient({
         apiKey: DEMO_API_KEY,
         sessionId: 123,
         clientId: 'test-client-id',
@@ -120,7 +120,7 @@ describe('Testing Mocks: Agent', () => {
     });
 
     it('throws an error if no question is provided', async () => {
-      const clientWithoutUrl = new MockConstructorIOClient({
+      const clientWithoutUrl = new CioClient({
         apiKey: DEMO_API_KEY,
         sessionId: 123,
         clientId: 'test-client-id',

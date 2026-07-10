@@ -6,7 +6,7 @@ import {
 } from '@constructor-io/constructorio-ui-components';
 import Input from '../Input/Input';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
-import MockConstructorIOClient from '../../hooks/mocks/MockConstructorIOClient';
+import CioClient from '../../hooks/mocks/CioClient';
 import useCioPia from '../../hooks/useCioPia';
 import useConversation from '../../hooks/useConversation';
 import useViewportCallbacks from '../../hooks/useViewportCallbacks';
@@ -43,7 +43,7 @@ export interface CioPiaProps
    *
    * @example
    * ```ts
-   * new MockConstructorIOClient({
+   * new CioClient({
    *   apiKey: 'your-api-key',
    *   clientId: 'browser-id',   // → sent as `i`
    *   sessionId: 1,             // → sent as `s`
@@ -53,7 +53,7 @@ export interface CioPiaProps
    * })
    * ```
    */
-  cioClient?: MockConstructorIOClient;
+  cioClient?: CioClient;
   /** Display configuration options (mode, type, showFeedback, etc.). */
   displayConfigs?: CioPiaDisplayConfigs;
   /** Callback handlers for user interactions (onQuestionSubmit, onProductCardClick, onFeedback). */

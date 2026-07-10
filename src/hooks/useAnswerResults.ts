@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Nullable } from '@constructor-io/constructorio-client-javascript';
-import MockConstructorIOClient from './mocks/MockConstructorIOClient';
+import CioClient from './mocks/CioClient';
 import { Formatters, Item, GetAnswerResultsResponse } from '../types';
 import { transformResultItem } from '../utils/transformers';
 
@@ -8,7 +8,7 @@ export interface UseAnswerResultsProps {
   itemId: string;
   variationId?: string;
   threadId?: string;
-  cioClient: MockConstructorIOClient;
+  cioClient: CioClient;
   parameters?: Record<string, any>;
   formatImageUrl?: Formatters['formatImageUrl'];
 }
@@ -22,7 +22,7 @@ export interface UseAnswerResultsReturn {
 }
 
 interface FetchAnswerResultsParams {
-  client: MockConstructorIOClient;
+  client: CioClient;
   itemId: string;
   question: string;
   variationId?: string;

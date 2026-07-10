@@ -1,18 +1,18 @@
-import MockConstructorIOClient from '../../src/hooks/mocks/MockConstructorIOClient';
-import MockAgent from '../../src/hooks/mocks/agent';
+import CioClient from '../../src/hooks/mocks/CioClient';
+import PiaAgent from '../../src/hooks/mocks/agent';
 
 type MockedAgent = {
-  [K in keyof MockAgent]: MockAgent[K] extends (...args: infer A) => infer R
+  [K in keyof PiaAgent]: PiaAgent[K] extends (...args: infer A) => infer R
     ? jest.MockedFunction<(...args: A) => R>
-    : MockAgent[K];
+    : PiaAgent[K];
 };
 
-export type TestMockClient = Omit<MockConstructorIOClient, 'agent'> & { agent: MockedAgent };
+export type TestMockClient = Omit<CioClient, 'agent'> & { agent: MockedAgent };
 
 const TEST_API_KEY = 'test-api-key';
 
 export function createMockCioClient(apiKey = TEST_API_KEY): TestMockClient {
-  const client = new MockConstructorIOClient({
+  const client = new CioClient({
     apiKey,
     sendTrackingEvents: false,
     fetch: jest.fn(),

@@ -8,7 +8,7 @@ import {
   Nullable,
 } from '@constructor-io/constructorio-client-javascript';
 import { Question } from './hooks/mocks/types';
-import MockConstructorIOClient from './hooks/mocks/MockConstructorIOClient';
+import CioClient from './hooks/mocks/CioClient';
 
 export enum FeedbackType {
   UP = 'up',
@@ -16,7 +16,7 @@ export enum FeedbackType {
 }
 
 export interface PiaContextValue {
-  cioClient: Nullable<MockConstructorIOClient>;
+  cioClient: Nullable<CioClient>;
   cioClientOptions: CioClientOptions;
   setCioClientOptions: React.Dispatch<CioClientOptions>;
   itemId: string;
@@ -33,7 +33,7 @@ export interface CioPiaProviderProps {
   variationId?: string;
   /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000") */
   threadId?: string;
-  cioClient?: Nullable<MockConstructorIOClient>;
+  cioClient?: Nullable<CioClient>;
 }
 
 export type CioPiaMode = 'default' | 'conversation';

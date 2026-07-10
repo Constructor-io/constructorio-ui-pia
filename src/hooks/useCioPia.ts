@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Formatters, SuggestedQuestionsParameters } from '../types';
-import MockConstructorIOClient from './mocks/MockConstructorIOClient';
+import CioClient from './mocks/CioClient';
 import useAnswerResults, { UseAnswerResultsReturn } from './useAnswerResults';
 import useCioClient from './useCioClient';
 import useSuggestedQuestions, { UseSuggestedQuestionsReturn } from './useSuggestedQuestions';
@@ -10,7 +10,7 @@ export interface UseCioPiaProps {
   itemId: string;
   variationId?: string;
   threadId?: string;
-  cioClient?: MockConstructorIOClient;
+  cioClient?: CioClient;
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
   /** Define outside the component or wrap with useCallback to avoid unnecessary re-renders. */
   formatImageUrl?: Formatters['formatImageUrl'];
@@ -43,7 +43,7 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     itemId,
     variationId,
     threadId,
-    cioClient: client as MockConstructorIOClient,
+    cioClient: client as CioClient,
     parameters: suggestedQuestionsParameters,
   });
 
@@ -51,7 +51,7 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     itemId,
     variationId,
     threadId,
-    cioClient: client as MockConstructorIOClient,
+    cioClient: client as CioClient,
     formatImageUrl,
   });
 

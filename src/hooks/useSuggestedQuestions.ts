@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Question, QuestionResponse, SuggestedQuestionsParameters } from '../types';
-import MockConstructorIOClient from './mocks/MockConstructorIOClient';
+import CioClient from './mocks/CioClient';
 
 export interface UseSuggestedQuestionsProps {
   itemId: string;
   variationId?: string;
   threadId?: string;
-  cioClient?: MockConstructorIOClient;
+  cioClient?: CioClient;
   parameters?: SuggestedQuestionsParameters;
 }
 
@@ -18,7 +18,7 @@ export interface UseSuggestedQuestionsReturn {
 }
 
 interface FetchSuggestedQuestionsParams {
-  client: MockConstructorIOClient;
+  client: CioClient;
   itemId: string;
   variationId?: string;
   threadId?: string;

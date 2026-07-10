@@ -46,7 +46,7 @@ function createAgentUrl({
   if (clientId) {
     url.searchParams.append('i', clientId);
   }
-  if (sessionId != null) {
+  if (sessionId !== undefined && sessionId !== null) {
     url.searchParams.append('s', String(sessionId));
   }
   if (userId) {
@@ -78,7 +78,7 @@ function mapSuggestedQuestionsParams(
   return result;
 }
 
-class MockAgent {
+class PiaAgent {
   options: ConstructorClientOptions;
 
   constructor(options: ConstructorClientOptions) {
@@ -206,4 +206,4 @@ class MockAgent {
   }
 }
 
-export default MockAgent;
+export default PiaAgent;

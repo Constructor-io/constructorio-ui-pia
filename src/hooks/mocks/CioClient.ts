@@ -8,10 +8,10 @@ import {
   Tracker,
   Quizzes,
 } from '@constructor-io/constructorio-client-javascript/lib/types/constructorio';
-import MockAgent from './agent';
+import PiaAgent from './agent';
 import version from '../../version';
 
-class MockConstructorIOClient {
+class CioClient {
   public options: ConstructorClientOptions;
 
   public search: Search;
@@ -24,7 +24,7 @@ class MockConstructorIOClient {
 
   public quizzes: Quizzes;
 
-  public agent: MockAgent;
+  public agent: PiaAgent;
 
   constructor(options: ConstructorClientOptions) {
     this.options = {
@@ -49,9 +49,8 @@ class MockConstructorIOClient {
     this.tracker = cioClient.tracker;
     this.quizzes = cioClient.quizzes;
 
-    // Use the mock agent instead of the one from the client
-    this.agent = new MockAgent(this.options);
+    this.agent = new PiaAgent(this.options);
   }
 }
 
-export default MockConstructorIOClient;
+export default CioClient;

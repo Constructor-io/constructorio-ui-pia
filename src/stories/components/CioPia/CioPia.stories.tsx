@@ -17,7 +17,7 @@ const meta = {
         '',
         '`clientId: string` — Unique browser/app identifier.',
         '',
-        '`sessionId: number` — Session number (defaults to `0` in `MockConstructorIOClient`).',
+        '`sessionId: number` — Session number (defaults to `0` in `CioClient`).',
         '',
         '`userId: string` — Anonymized logged-in user identifier.',
         '',
