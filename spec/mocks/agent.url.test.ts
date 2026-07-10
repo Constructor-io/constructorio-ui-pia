@@ -121,29 +121,31 @@ describe('PiaAgent: URL parameters', () => {
     }));
     (globalThis as Record<string, unknown>).EventSource = mockEventSource;
 
-    const client = new CioClient({
-      apiKey: 'test-key',
-      clientId: 'stream-client',
-      sessionId: 7,
-      userId: 'stream-user',
-      sendTrackingEvents: false,
-    });
+    try {
+      const client = new CioClient({
+        apiKey: 'test-key',
+        clientId: 'stream-client',
+        sessionId: 7,
+        userId: 'stream-user',
+        sendTrackingEvents: false,
+      });
 
-    await client.agent.getAnswerResultsStream({
-      itemId: 'item-123',
-      question: 'Tell me more',
-      onStart: jest.fn(),
-      onMessage: jest.fn(),
-      onEnd: jest.fn(),
-    });
+      await client.agent.getAnswerResultsStream({
+        itemId: 'item-123',
+        question: 'Tell me more',
+        onStart: jest.fn(),
+        onMessage: jest.fn(),
+        onEnd: jest.fn(),
+      });
 
-    const url = new URL(mockEventSource.mock.calls[0][0]);
-    expect(url.pathname).toContain('/streaming');
-    expect(url.searchParams.get('i')).toBe('stream-client');
-    expect(url.searchParams.get('s')).toBe('7');
-    expect(url.searchParams.get('ui')).toBe('stream-user');
-    expect(url.searchParams.get('c')).toContain('cio-ui-pia-');
-
-    (globalThis as Record<string, unknown>).EventSource = originalEventSource;
+      const url = new URL(mockEventSource.mock.calls[0][0]);
+      expect(url.pathname).toContain('/streaming');
+      expect(url.searchParams.get('i')).toBe('stream-client');
+      expect(url.searchParams.get('s')).toBe('7');
+      expect(url.searchParams.get('ui')).toBe('stream-user');
+      expect(url.searchParams.get('c')).toContain('cio-ui-pia-');
+    } finally {
+      (globalThis as Record<string, unknown>).EventSource = originalEventSource;
+    }
   });
 });
