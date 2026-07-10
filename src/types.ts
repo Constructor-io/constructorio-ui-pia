@@ -8,7 +8,7 @@ import {
   Nullable,
 } from '@constructor-io/constructorio-client-javascript';
 import { Question } from './hooks/mocks/types';
-import CioClient from './hooks/mocks/CioClient';
+import type CioClient from './hooks/mocks/CioClient';
 
 export enum FeedbackType {
   UP = 'up',
