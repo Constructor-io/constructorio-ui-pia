@@ -12,7 +12,6 @@ describe('PiaAgent: URL parameters', () => {
   });
 
   afterEach(() => {
-    (globalThis.fetch as jest.Mock).mockRestore();
     delete (globalThis as Record<string, unknown>).fetch;
   });
 
