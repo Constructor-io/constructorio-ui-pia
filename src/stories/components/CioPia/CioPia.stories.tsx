@@ -18,7 +18,7 @@ const meta = {
         '`clientId: string` — Unique browser/app identifier.',
         '',
         '`sessionId?: number` — Session number sent as `s` when provided (CioClient uses an internal placeholder when omitted).',
-        ''
+        '',
         '`userId: string` — Anonymized logged-in user identifier.',
         '',
         '`segments: string[]` — User segments for targeting.',
