@@ -7,7 +7,7 @@ import {
 } from '../../src/constants';
 
 describe('Testing Mocks: Agent', () => {
-  let client;
+  let client: CioClient;
 
   beforeEach(() => {
     // clientId intentionally omitted — PIA API rejects the placeholder default,
@@ -72,17 +72,17 @@ describe('Testing Mocks: Agent', () => {
       expect(typeof result.value).toBe('string');
 
       expect(result.item_results).toBeDefined();
-      expect(result.item_results.request).toBeDefined();
-      expect(result.item_results.response).toBeDefined();
-      expect(result.item_results.response.results).toBeDefined();
-      expect(Array.isArray(result.item_results.response.results)).toBe(true);
-      expect(result.item_results.response.results[0]).toHaveProperty('value');
-      expect(typeof result.item_results.response.results[0].value).toBe('string');
+      expect(result.item_results!.request).toBeDefined();
+      expect(result.item_results!.response).toBeDefined();
+      expect(result.item_results!.response.results).toBeDefined();
+      expect(Array.isArray(result.item_results!.response.results)).toBe(true);
+      expect(result.item_results!.response.results[0]).toHaveProperty('value');
+      expect(typeof result.item_results!.response.results[0].value).toBe('string');
 
       expect(result.follow_up_questions).toBeDefined();
       expect(Array.isArray(result.follow_up_questions)).toBe(true);
-      expect(result.follow_up_questions[0]).toHaveProperty('value');
-      expect(typeof result.follow_up_questions[0].value).toBe('string');
+      expect(result.follow_up_questions![0]).toHaveProperty('value');
+      expect(typeof result.follow_up_questions![0].value).toBe('string');
     }, 30000); // Answer API can take 15s+ to respond
 
     it('throws an error if no agentServiceUrl is provided', async () => {

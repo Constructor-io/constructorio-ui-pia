@@ -98,7 +98,7 @@ describe('PiaAgent: URL parameters', () => {
     expect(url.searchParams.has('us')).toBe(false);
   });
 
-  it('does not send i param when clientId is not provided', async () => {
+  it('does not send i or s params when clientId and sessionId are not provided', async () => {
     const client = new CioClient({
       apiKey: 'test-key',
       sendTrackingEvents: false,
@@ -108,7 +108,7 @@ describe('PiaAgent: URL parameters', () => {
 
     const url = new URL(requestedUrl);
     expect(url.searchParams.has('i')).toBe(false);
-    expect(url.searchParams.get('s')).toBe('0');
+    expect(url.searchParams.has('s')).toBe(false);
   });
 
   it('appends i, s, ui, c params to getAnswerResultsStream URL', async () => {

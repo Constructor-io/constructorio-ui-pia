@@ -33,7 +33,7 @@ class CioClient {
       quizzesServiceUrl: options.quizzesServiceUrl || 'https://quizzes.cnstrc.com',
       agentServiceUrl: options.agentServiceUrl || 'https://agent.cnstrc.com',
       sessionId: options.sessionId || 0,
-      clientId: options.clientId,
+      clientId: options.clientId || 'this-is-a-random-client-id',
       sendTrackingEvents:
         options.sendTrackingEvents !== undefined ? options.sendTrackingEvents : true,
       beaconMode: options.beaconMode !== undefined ? options.beaconMode : true,
@@ -41,10 +41,7 @@ class CioClient {
       ...options,
     };
 
-    const cioClient = new ConstructorioClient({
-      ...this.options,
-      clientId: this.options.clientId || 'this-is-a-random-client-id',
-    });
+    const cioClient = new ConstructorioClient(this.options);
 
     this.search = cioClient.search;
     this.browse = cioClient.browse;
@@ -52,7 +49,11 @@ class CioClient {
     this.tracker = cioClient.tracker;
     this.quizzes = cioClient.quizzes;
 
-    this.agent = new PiaAgent(this.options);
+    this.agent = new PiaAgent({
+      ...this.options,
+      clientId: options.clientId,
+      sessionId: options.sessionId,
+    });
   }
 }
 
