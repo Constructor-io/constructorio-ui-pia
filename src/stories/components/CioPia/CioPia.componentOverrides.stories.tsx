@@ -135,81 +135,42 @@ export const CustomFeedback: Story = {
   },
 };
 
-export const CustomCarouselItem: Story = {
+export const CustomLoading: Story = {
   args: {
     apiKey: DEMO_API_KEY,
     itemId: DEMO_ITEM_ID,
     componentOverrides: {
-      carousel: {
-        item: {
-          reactNode: ({ item }) => (
-            <div
-              style={{
-                padding: '12px',
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px',
-                textAlign: 'center',
-                minWidth: '140px',
-              }}>
-              {item?.imageUrl && (
-                <img
-                  src={item.imageUrl}
-                  alt={item?.name}
-                  style={{ width: '100px', height: '100px', objectFit: 'contain' }}
-                />
-              )}
-              <p style={{ fontSize: '13px', fontWeight: 500, margin: '8px 0 4px' }}>{item?.name}</p>
-              {item?.price && (
-                <p style={{ fontSize: '14px', color: '#2563eb', fontWeight: 600, margin: 0 }}>
-                  ${item.price}
-                </p>
-              )}
-            </div>
-          ),
-        },
+      loading: {
+        reactNode: () => (
+          <p style={{ fontSize: '14px', color: '#6b7280', fontStyle: 'italic', marginTop: '12px' }}>
+            Cooking up an answer…
+          </p>
+        ),
       },
     },
   },
 };
 
-export const CustomCarouselNavigation: Story = {
+export const CustomLoadingWithSkeleton: Story = {
   args: {
     apiKey: DEMO_API_KEY,
     itemId: DEMO_ITEM_ID,
     componentOverrides: {
-      carousel: {
-        previous: {
-          reactNode: () => (
-            <button
-              type='button'
+      loading: {
+        reactNode: ({ skeleton }) => (
+          <div>
+            <p
               style={{
-                padding: '8px 12px',
-                borderRadius: '50%',
-                border: '1px solid #d1d5db',
-                background: '#fff',
-                cursor: 'pointer',
-                fontSize: '16px',
+                fontSize: '14px',
+                color: '#6b7280',
+                fontStyle: 'italic',
+                margin: '0 0 8px',
               }}>
-              &#8592;
-            </button>
-          ),
-        },
-        next: {
-          reactNode: () => (
-            <button
-              type='button'
-              style={{
-                padding: '8px 12px',
-                borderRadius: '50%',
-                border: '1px solid #d1d5db',
-                background: '#fff',
-                cursor: 'pointer',
-                fontSize: '16px',
-              }}>
-              &#8594;
-            </button>
-          ),
-        },
+              Thinking…
+            </p>
+            {skeleton}
+          </div>
+        ),
       },
     },
   },

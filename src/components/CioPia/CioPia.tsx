@@ -170,7 +170,7 @@ export default function CioPia(props: CioPiaProps) {
           translations={translations}
         />
 
-        {isLoading && <LoadingSkeleton />}
+        {isLoading && <LoadingSkeleton componentOverride={componentOverrides?.loading} />}
 
         {!isLoading && error && <ErrorBlock message={error?.message || 'Unexpected error'} />}
 
