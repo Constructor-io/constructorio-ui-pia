@@ -33,7 +33,7 @@ class CioClient {
       quizzesServiceUrl: options.quizzesServiceUrl || 'https://quizzes.cnstrc.com',
       agentServiceUrl: options.agentServiceUrl || 'https://agent.cnstrc.com',
       sessionId: options.sessionId || 0,
-      clientId: options.clientId || 'this-is-a-random-client-id',
+      clientId: options.clientId || 'cia-ui-pia-test-client',
       sendTrackingEvents:
         options.sendTrackingEvents !== undefined ? options.sendTrackingEvents : true,
       beaconMode: options.beaconMode !== undefined ? options.beaconMode : true,
