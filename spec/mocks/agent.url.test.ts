@@ -98,7 +98,7 @@ describe('PiaAgent: URL parameters', () => {
     expect(url.searchParams.has('us')).toBe(false);
   });
 
-  it('does not send default placeholder clientId to PIA API', async () => {
+  it('does not send i param when clientId is not provided', async () => {
     const client = new CioClient({
       apiKey: 'test-key',
       sendTrackingEvents: false,

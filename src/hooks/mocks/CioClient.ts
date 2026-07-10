@@ -11,8 +11,6 @@ import {
 import PiaAgent from './agent';
 import version from '../../version';
 
-export const DEFAULT_CLIENT_ID = 'this-is-a-random-client-id';
-
 class CioClient {
   public options: ConstructorClientOptions;
 
@@ -35,7 +33,7 @@ class CioClient {
       quizzesServiceUrl: options.quizzesServiceUrl || 'https://quizzes.cnstrc.com',
       agentServiceUrl: options.agentServiceUrl || 'https://agent.cnstrc.com',
       sessionId: options.sessionId || 0,
-      clientId: options.clientId || DEFAULT_CLIENT_ID,
+      clientId: options.clientId,
       sendTrackingEvents:
         options.sendTrackingEvents !== undefined ? options.sendTrackingEvents : true,
       beaconMode: options.beaconMode !== undefined ? options.beaconMode : true,
@@ -43,7 +41,10 @@ class CioClient {
       ...options,
     };
 
-    const cioClient = new ConstructorioClient(this.options);
+    const cioClient = new ConstructorioClient({
+      ...this.options,
+      clientId: this.options.clientId || 'this-is-a-random-client-id',
+    });
 
     this.search = cioClient.search;
     this.browse = cioClient.browse;
