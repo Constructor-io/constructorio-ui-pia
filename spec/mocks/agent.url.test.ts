@@ -2,24 +2,18 @@ import CioClient from '../../src/hooks/mocks/CioClient';
 
 describe('PiaAgent: URL parameters', () => {
   let requestedUrl: string;
-  let mockFetch: jest.Mock;
-  const originalFetch = globalThis.fetch;
 
   beforeEach(() => {
     requestedUrl = '';
-    mockFetch = jest.fn(async (url: string) => {
+    globalThis.fetch = jest.fn(async (url: RequestInfo | URL) => {
       requestedUrl = url.toString();
-      return { ok: true, json: async () => ({ questions: [], qna_result_id: 'mock', value: '' }) };
+      return { ok: true, json: async () => ({ questions: [], qna_result_id: 'mock', value: '' }) } as Response;
     });
-    (globalThis as Record<string, unknown>).fetch = mockFetch;
   });
 
   afterEach(() => {
-    if (originalFetch) {
-      globalThis.fetch = originalFetch;
-    } else {
-      delete (globalThis as Record<string, unknown>).fetch;
-    }
+    (globalThis.fetch as jest.Mock).mockRestore();
+    delete (globalThis as Record<string, unknown>).fetch;
   });
 
   it('appends i, s, ui, c params from client options to getSuggestedQuestions URL', async () => {

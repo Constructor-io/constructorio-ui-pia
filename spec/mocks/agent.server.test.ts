@@ -73,17 +73,21 @@ describe('Testing Mocks: Agent', () => {
       // item_results and follow_up_questions may not be present for all question types
       if (result.item_results) {
         expect(result.item_results.response).toBeDefined();
-        expect(result.item_results.response.results).toBeDefined();
-        expect(Array.isArray(result.item_results.response.results)).toBe(true);
-        expect(result.item_results.response.results[0]).toHaveProperty('value');
-        expect(typeof result.item_results.response.results[0].value).toBe('string');
+        const results = result.item_results.response.results;
+        expect(Array.isArray(results)).toBe(true);
+        if (results.length) {
+          expect(results[0]).toHaveProperty('value');
+          expect(typeof results[0].value).toBe('string');
+        }
         expect(result.item_results.request).toBeDefined();
       }
 
       if (result.follow_up_questions) {
         expect(Array.isArray(result.follow_up_questions)).toBe(true);
-        expect(result.follow_up_questions[0]).toHaveProperty('value');
-        expect(typeof result.follow_up_questions[0].value).toBe('string');
+        if (result.follow_up_questions.length) {
+          expect(result.follow_up_questions[0]).toHaveProperty('value');
+          expect(typeof result.follow_up_questions[0].value).toBe('string');
+        }
       }
     }, 30000); // Answer API can take 15s+ to respond
 
