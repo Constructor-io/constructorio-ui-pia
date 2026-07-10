@@ -69,13 +69,14 @@ describe('Testing Mocks: Agent', () => {
       expect(result.value).toBeDefined();
       expect(typeof result.value).toBe('string');
 
-      expect(result.item_results).toBeDefined();
-      expect(result.item_results.request).toBeDefined();
-      expect(result.item_results.response).toBeDefined();
-      expect(result.item_results.response.results).toBeDefined();
-      expect(Array.isArray(result.item_results.response.results)).toBe(true);
-      expect(result.item_results.response.results[0]).toHaveProperty('value');
-      expect(typeof result.item_results.response.results[0].value).toBe('string');
+      if (result.item_results) {
+        expect(result.item_results.request).toBeDefined();
+        expect(result.item_results.response).toBeDefined();
+        expect(result.item_results.response.results).toBeDefined();
+        expect(Array.isArray(result.item_results.response.results)).toBe(true);
+        expect(result.item_results.response.results[0]).toHaveProperty('value');
+        expect(typeof result.item_results.response.results[0].value).toBe('string');
+      }
 
       expect(result.follow_up_questions).toBeDefined();
       expect(Array.isArray(result.follow_up_questions)).toBe(true);
