@@ -10,6 +10,8 @@ describe('Testing Mocks: Agent', () => {
   let client;
 
   beforeEach(() => {
+    // clientId intentionally omitted — PIA API rejects the placeholder default,
+    // and this test validates real API behavior without identity tracking.
     client = new CioClient({
       apiKey: DEMO_API_KEY,
       sessionId: 1,

@@ -46,7 +46,7 @@ function createAgentUrl({
   if (clientId) {
     url.searchParams.append('i', clientId);
   }
-  if (sessionId !== undefined && sessionId !== null) {
+  if (sessionId !== undefined) {
     url.searchParams.append('s', String(sessionId));
   }
   if (userId) {
