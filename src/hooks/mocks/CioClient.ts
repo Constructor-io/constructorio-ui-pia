@@ -11,6 +11,16 @@ import {
 import PiaAgent from './agent';
 import version from '../../version';
 
+/**
+ * Lightweight wrapper around constructorio-client-javascript used for Storybook demos and testing.
+ *
+ * The upstream ConstructorioClient requires `clientId` (string) and `sessionId` (number) in
+ * non-DOM (Node/SSR) environments — it throws without them. The placeholder defaults below
+ * satisfy that requirement so search/browse/tracker modules initialize without error.
+ *
+ * PiaAgent receives the *raw* user-supplied values (which may be undefined) so that identity
+ * params (`i`, `s`) are only sent to the PIA API when explicitly provided by the consumer.
+ */
 class CioClient {
   public options: ConstructorClientOptions;
 
@@ -27,13 +37,16 @@ class CioClient {
   public agent: PiaAgent;
 
   constructor(options: ConstructorClientOptions) {
+    // Defaults satisfy upstream ConstructorioClient validation in non-DOM environments.
+    // These placeholder values are used only by search/browse/tracker modules — they do NOT
+    // propagate to PIA API requests (see PiaAgent instantiation below).
     this.options = {
       version: options.version || `cio-ui-pia-${version}`,
       serviceUrl: options.serviceUrl || 'https://ac.cnstrc.com',
       quizzesServiceUrl: options.quizzesServiceUrl || 'https://quizzes.cnstrc.com',
       agentServiceUrl: options.agentServiceUrl || 'https://agent.cnstrc.com',
       sessionId: options.sessionId || 0,
-      clientId: options.clientId || 'this-is-a-random-client-id',
+      clientId: options.clientId || 'cio-ui-pia-default-client',
       sendTrackingEvents:
         options.sendTrackingEvents !== undefined ? options.sendTrackingEvents : true,
       beaconMode: options.beaconMode !== undefined ? options.beaconMode : true,
@@ -49,6 +62,8 @@ class CioClient {
     this.tracker = cioClient.tracker;
     this.quizzes = cioClient.quizzes;
 
+    // Pass raw user-supplied identity values so PiaAgent only appends i/s/ui/us/c params
+    // when the consumer explicitly provided them — not the placeholder defaults above.
     this.agent = new PiaAgent({
       ...this.options,
       clientId: options.clientId,
