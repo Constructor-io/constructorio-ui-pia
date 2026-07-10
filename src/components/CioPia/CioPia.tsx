@@ -55,6 +55,7 @@ export interface CioPiaProps
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
 }
 
+// eslint-disable-next-line complexity
 export default function CioPia(props: CioPiaProps) {
   const {
     apiKey,
