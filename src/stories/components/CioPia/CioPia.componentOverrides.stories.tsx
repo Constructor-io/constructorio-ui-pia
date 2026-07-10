@@ -1,7 +1,64 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import CioPia from '../../../components/CioPia/CioPia';
 import { DEMO_API_KEY, DEMO_ITEM_ID } from '../../../constants';
+
+const LOADING_MESSAGES = ['Thinking', 'Searching the catalog', 'Cooking up an answer'];
+
+function CyclingLoader() {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setIndex((prev) => (prev + 1) % LOADING_MESSAGES.length);
+    }, 2000);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <div
+      key={index}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        marginTop: '12px',
+        color: '#6b7280',
+        fontSize: '14px',
+        fontStyle: 'italic',
+        animation: 'cioPiaLoaderFade 0.4s ease-in',
+      }}>
+      <style>
+        {`
+          @keyframes cioPiaLoaderFade {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          @keyframes cioPiaLoaderDot {
+            0%, 80%, 100% { opacity: 0.2; }
+            40% { opacity: 1; }
+          }
+        `}
+      </style>
+      <span>{LOADING_MESSAGES[index]}</span>
+      <span style={{ display: 'inline-flex', gap: '2px' }}>
+        {[0, 1, 2].map((dot) => (
+          <span
+            key={dot}
+            style={{
+              width: '4px',
+              height: '4px',
+              borderRadius: '50%',
+              background: 'currentColor',
+              animation: 'cioPiaLoaderDot 1.4s infinite ease-in-out',
+              animationDelay: `${dot * 0.2}s`,
+            }}
+          />
+        ))}
+      </span>
+    </div>
+  );
+}
 
 const meta = {
   title: 'Components/CioPia/ComponentOverrides',
@@ -141,11 +198,44 @@ export const CustomLoading: Story = {
     itemId: DEMO_ITEM_ID,
     componentOverrides: {
       loading: {
-        reactNode: () => (
-          <p style={{ fontSize: '14px', color: '#6b7280', fontStyle: 'italic', marginTop: '12px' }}>
-            Cooking up an answer…
-          </p>
-        ),
+        reactNode: () => <CyclingLoader />,
+      },
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A fully custom loading indicator with animated dots and a message that cycles every ' +
+          'two seconds (e.g. "Thinking" → "Searching the catalog" → "Cooking up an answer"). ' +
+          'Ask a question to see it while the answer is generated.',
+      },
+      source: {
+        code: `const LOADING_MESSAGES = ['Thinking', 'Searching the catalog', 'Cooking up an answer'];
+
+function CyclingLoader() {
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setIndex((prev) => (prev + 1) % LOADING_MESSAGES.length);
+    }, 2000);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <div className="my-loader">
+      <span>{LOADING_MESSAGES[index]}</span>
+      <span className="my-loader__dots" />
+    </div>
+  );
+}
+
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId="YOUR_ITEM_ID"
+  componentOverrides={{
+    loading: { reactNode: () => <CyclingLoader /> },
+  }}
+/>`,
       },
     },
   },
