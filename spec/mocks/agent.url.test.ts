@@ -2,6 +2,7 @@ import CioClient from '../../src/hooks/mocks/CioClient';
 
 describe('PiaAgent: URL parameters', () => {
   let requestedUrl: string;
+  const originalFetch = globalThis.fetch;
 
   beforeEach(() => {
     requestedUrl = '';
@@ -12,7 +13,7 @@ describe('PiaAgent: URL parameters', () => {
   });
 
   afterEach(() => {
-    delete (globalThis as Record<string, unknown>).fetch;
+    globalThis.fetch = originalFetch;
   });
 
   it('appends i, s, ui, c params from client options to getSuggestedQuestions URL', async () => {
@@ -112,6 +113,7 @@ describe('PiaAgent: URL parameters', () => {
   });
 
   it('appends i, s, ui, c params to getAnswerResultsStream URL', async () => {
+    const originalEventSource = (globalThis as Record<string, unknown>).EventSource;
     const mockEventSource = jest.fn().mockImplementation(() => ({
       addEventListener: jest.fn(),
       close: jest.fn(),
@@ -142,6 +144,6 @@ describe('PiaAgent: URL parameters', () => {
     expect(url.searchParams.get('ui')).toBe('stream-user');
     expect(url.searchParams.get('c')).toContain('cio-ui-pia-');
 
-    delete (globalThis as Record<string, unknown>).EventSource;
+    (globalThis as Record<string, unknown>).EventSource = originalEventSource;
   });
 });
