@@ -38,7 +38,20 @@ export interface CioPiaProps
   threadId?: string;
   /** Optional variation ID for the product. */
   variationId?: string;
-  /** Optional Constructor.io client instance. If not provided, one will be created internally. */
+  /**
+   * Constructor.io client instance with identity/tracking options for PIA requests.
+   *
+   * @example
+   * ```ts
+   * new MockConstructorIOClient({
+   *   apiKey: 'your-api-key',
+   *   clientId: 'browser-id',   // → sent as `i`
+   *   sessionId: 1,             // → sent as `s`
+   *   userId: 'user-id',        // → sent as `ui`
+   *   segments: ['vip'],        // → sent as `us`
+   * })
+   * ```
+   */
   cioClient?: MockConstructorIOClient;
   /** Display configuration options (mode, type, showFeedback, etc.). */
   displayConfigs?: CioPiaDisplayConfigs;

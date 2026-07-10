@@ -11,6 +11,19 @@ const meta = {
   },
   tags: ['autodocs'],
   argTypes: {
+    cioClient: {
+      description: [
+        'Constructor.io client instance with identity/tracking options for PIA requests.',
+        '',
+        '`clientId: string` — Unique browser/app identifier.',
+        '',
+        '`sessionId: number` — Session number, starting with 1, incremented after 30min inactivity.',
+        '',
+        '`userId: string` — Anonymized logged-in user identifier.',
+        '',
+        '`segments: string[]` — User segments for targeting.',
+      ].join('\n'),
+    },
     displayConfigs: {
       description: [
         'Display configuration options:',

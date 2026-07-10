@@ -22,7 +22,7 @@ function createAgentUrl({
   options,
   parameters = {},
 }: AgentUrlProps): string {
-  const { apiKey, agentServiceUrl } = options;
+  const { apiKey, agentServiceUrl, clientId, sessionId, userId, segments, version } = options;
   if (!agentServiceUrl) throw new Error('Agent service URL is required');
 
   let baseUrl = `${agentServiceUrl}/v1/item_questions`;
@@ -42,6 +42,21 @@ function createAgentUrl({
   }
   if (variationId) {
     url.searchParams.append('variation_id', variationId);
+  }
+  if (clientId) {
+    url.searchParams.append('i', clientId);
+  }
+  if (sessionId !== undefined && sessionId !== null) {
+    url.searchParams.append('s', String(sessionId));
+  }
+  if (userId) {
+    url.searchParams.append('ui', userId);
+  }
+  if (version) {
+    url.searchParams.append('c', version);
+  }
+  if (segments?.length) {
+    segments.forEach((segment) => url.searchParams.append('us', segment));
   }
 
   // Any additional parameters
