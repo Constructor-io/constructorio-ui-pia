@@ -11,6 +11,7 @@ import {
   GetAnswerResultsProps,
   GetAnswerResultsResponse,
 } from './types';
+import { DEFAULT_CLIENT_ID } from './CioClient';
 
 // Create URL for PIA API
 function createAgentUrl({
@@ -43,7 +44,7 @@ function createAgentUrl({
   if (variationId) {
     url.searchParams.append('variation_id', variationId);
   }
-  if (clientId) {
+  if (clientId && clientId !== DEFAULT_CLIENT_ID) {
     url.searchParams.append('i', clientId);
   }
   if (sessionId !== undefined && sessionId !== null) {

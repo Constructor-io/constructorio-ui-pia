@@ -98,7 +98,7 @@ describe('PiaAgent: URL parameters', () => {
     expect(url.searchParams.has('us')).toBe(false);
   });
 
-  it('uses default clientId and sessionId when not explicitly provided', async () => {
+  it('does not send default placeholder clientId to PIA API', async () => {
     const client = new CioClient({
       apiKey: 'test-key',
       sendTrackingEvents: false,
@@ -107,10 +107,8 @@ describe('PiaAgent: URL parameters', () => {
     await client.agent.getSuggestedQuestions({ itemId: 'item-123' });
 
     const url = new URL(requestedUrl);
-    // Defaults are set by CioClient constructor
-    expect(url.searchParams.has('i')).toBe(true);
-    expect(url.searchParams.get('i')).toBeTruthy();
-    expect(url.searchParams.has('s')).toBe(true);
+    expect(url.searchParams.has('i')).toBe(false);
+    expect(url.searchParams.get('s')).toBe('0');
   });
 
   it('appends i, s, ui, c params to getAnswerResultsStream URL', async () => {
