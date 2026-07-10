@@ -49,6 +49,7 @@ export interface CioPiaProps
    *   sessionId: 1,             // → sent as `s`
    *   userId: 'user-id',        // → sent as `ui`
    *   segments: ['vip'],        // → sent as `us`
+   *   version: 'my-app@1.2.3', // → sent as `c`
    * })
    * ```
    */

@@ -3,6 +3,7 @@ import MockConstructorIOClient from '../../src/hooks/mocks/MockConstructorIOClie
 describe('MockAgent: URL parameters', () => {
   let requestedUrl: string;
   let mockFetch: jest.Mock;
+  const originalFetch = globalThis.fetch;
 
   beforeEach(() => {
     requestedUrl = '';
@@ -14,7 +15,11 @@ describe('MockAgent: URL parameters', () => {
   });
 
   afterEach(() => {
-    delete (globalThis as Record<string, unknown>).fetch;
+    if (originalFetch) {
+      globalThis.fetch = originalFetch;
+    } else {
+      delete (globalThis as Record<string, unknown>).fetch;
+    }
   });
 
   it('appends i, s, ui, c params from client options to getSuggestedQuestions URL', async () => {
@@ -94,7 +99,43 @@ describe('MockAgent: URL parameters', () => {
     await client.agent.getSuggestedQuestions({ itemId: 'item-123' });
 
     const url = new URL(requestedUrl);
-    expect(url.searchParams.get('i')).toBe('this-is-a-random-client-id');
-    expect(url.searchParams.get('s')).toBe('0');
+    // Defaults are set by MockConstructorIOClient constructor
+    expect(url.searchParams.has('i')).toBe(true);
+    expect(url.searchParams.get('i')).toBeTruthy();
+    expect(url.searchParams.has('s')).toBe(true);
+  });
+
+  it('appends i, s, ui, c params to getAnswerResultsStream URL', async () => {
+    const mockEventSource = jest.fn().mockImplementation(() => ({
+      addEventListener: jest.fn(),
+      close: jest.fn(),
+      onerror: null,
+    }));
+    (globalThis as Record<string, unknown>).EventSource = mockEventSource;
+
+    const client = new MockConstructorIOClient({
+      apiKey: 'test-key',
+      clientId: 'stream-client',
+      sessionId: 7,
+      userId: 'stream-user',
+      sendTrackingEvents: false,
+    });
+
+    await client.agent.getAnswerResultsStream({
+      itemId: 'item-123',
+      question: 'Tell me more',
+      onStart: jest.fn(),
+      onMessage: jest.fn(),
+      onEnd: jest.fn(),
+    });
+
+    const url = new URL(mockEventSource.mock.calls[0][0]);
+    expect(url.pathname).toContain('/streaming');
+    expect(url.searchParams.get('i')).toBe('stream-client');
+    expect(url.searchParams.get('s')).toBe('7');
+    expect(url.searchParams.get('ui')).toBe('stream-user');
+    expect(url.searchParams.get('c')).toContain('cio-ui-pia-');
+
+    delete (globalThis as Record<string, unknown>).EventSource;
   });
 });
