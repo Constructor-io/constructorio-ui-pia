@@ -55,6 +55,7 @@ export interface CioPiaProps
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
 }
 
+// eslint-disable-next-line complexity
 export default function CioPia(props: CioPiaProps) {
   const {
     apiKey,
@@ -170,7 +171,7 @@ export default function CioPia(props: CioPiaProps) {
           translations={translations}
         />
 
-        {isLoading && <LoadingSkeleton />}
+        {isLoading && <LoadingSkeleton componentOverride={componentOverrides?.loading} />}
 
         {!isLoading && error && <ErrorBlock message={error?.message || 'Unexpected error'} />}
 

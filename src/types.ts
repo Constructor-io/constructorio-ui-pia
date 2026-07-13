@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import {
   Product,
   CarouselOverrides,
@@ -158,6 +159,10 @@ export interface FeedbackRenderProps {
   onFeedback?: (type: FeedbackType) => void;
 }
 
+export interface LoadingRenderProps {
+  skeleton: ReactNode;
+}
+
 /**
  * Component overrides for CioPia.
  * Allows customization of sub-components via reactNode or render props functions.
@@ -168,6 +173,7 @@ export interface CioPiaComponentOverrides extends ComponentOverrideProps<CioPiaR
   suggestedQuestions?: ComponentOverrideProps<SuggestedQuestionsRenderProps>;
   disclaimer?: ComponentOverrideProps<DisclaimerRenderProps>;
   feedback?: ComponentOverrideProps<FeedbackRenderProps>;
+  loading?: ComponentOverrideProps<LoadingRenderProps>;
 }
 
 export * from './hooks/mocks/types';
