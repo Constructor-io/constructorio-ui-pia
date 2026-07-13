@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import CioPia from '../../../components/CioPia/CioPia';
 import { DEMO_API_KEY, DEMO_ITEM_ID } from '../../../constants';
+import { FeedbackType } from '../../../types';
 
 const LOADING_MESSAGES = ['Thinking', 'Searching the catalog', 'Cooking up an answer'];
 
@@ -163,7 +164,7 @@ export const CustomFeedback: Story = {
           <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
             <button
               type='button'
-              onClick={() => onFeedback?.('up')}
+              onClick={() => onFeedback?.(FeedbackType.UP)}
               style={{
                 padding: '4px 12px',
                 borderRadius: '4px',
@@ -175,7 +176,7 @@ export const CustomFeedback: Story = {
             </button>
             <button
               type='button'
-              onClick={() => onFeedback?.('down')}
+              onClick={() => onFeedback?.(FeedbackType.DOWN)}
               style={{
                 padding: '4px 12px',
                 borderRadius: '4px',

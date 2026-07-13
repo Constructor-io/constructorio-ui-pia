@@ -367,6 +367,7 @@ export const CustomNavigation: Story = {
 
 export const CustomProductCardSubComponents: Story = {
   args: {
+    items: mockItems.map((item) => ({ ...item, tags: ['Bestseller'] })),
     componentOverrides: {
       item: {
         productCard: {
@@ -424,6 +425,12 @@ export const CustomProductCardSubComponents: Story = {
                 </Button>
               ),
             },
+            // The card footer only appears when an item has tags (or a cart handler).
+            // We keep the tag on the data to reveal the footer, but hide the tag label
+            // itself so only the "Add to bag" button shows.
+            tags: {
+              reactNode: () => null,
+            },
           },
         },
       },
@@ -445,11 +452,14 @@ export const CustomProductCardSubComponents: Story = {
       source: {
         code: `import { Button } from '@constructor-io/constructorio-ui-components';
 
+// Customize any part of a product card without rebuilding the whole card.
+// Each section below swaps in your own markup while the card keeps its layout.
 <PiaCustomCarousel
             items={items}
             componentOverrides={{
               item: {
                 productCard: {
+                  // "Favorite" heart shown on the product image.
                   image: {
                     wishlistButton: {
                       reactNode: ({ product, isInWishlist, onAddToWishlist }) => (
@@ -461,6 +471,7 @@ export const CustomProductCardSubComponents: Story = {
                       ),
                     },
                   },
+                  // Product name and price text.
                   content: {
                     title: {
                       reactNode: ({ product }) => <p className="my-title">{product?.name}</p>,
@@ -469,7 +480,9 @@ export const CustomProductCardSubComponents: Story = {
                       reactNode: ({ product }) => <span className="my-price">\${product?.price}</span>,
                     },
                   },
+                  // Buttons shown below the product details.
                   footer: {
+                    // "Add to cart" button, styled with the shared design-system Button.
                     addToCartButton: {
                       reactNode: ({ product, onAddToCart }) => (
                         <Button
