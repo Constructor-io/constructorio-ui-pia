@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
+import { Button } from '@constructor-io/constructorio-ui-components';
 import PiaCustomCarousel from '../../../components/CioPia/PiaCustomCarousel';
 import { Item } from '../../../types';
 
@@ -369,6 +370,33 @@ export const CustomProductCardSubComponents: Story = {
     componentOverrides: {
       item: {
         productCard: {
+          image: {
+            wishlistButton: {
+              reactNode: ({ product, isInWishlist, onAddToWishlist }) => (
+                <button
+                  type='button'
+                  aria-label={isInWishlist ? 'Remove from favorites' : 'Add to favorites'}
+                  onClick={(e) => onAddToWishlist?.(e, product)}
+                  style={{
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px',
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    border: '1px solid #e5e7eb',
+                    background: '#fff',
+                    color: isInWishlist ? '#dc2626' : '#6b7280',
+                    cursor: 'pointer',
+                    fontSize: '16px',
+                    lineHeight: 1,
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                  }}>
+                  {isInWishlist ? '♥' : '♡'}
+                </button>
+              ),
+            },
+          },
           content: {
             title: {
               reactNode: ({ product }) => (
@@ -387,20 +415,13 @@ export const CustomProductCardSubComponents: Story = {
           footer: {
             addToCartButton: {
               reactNode: ({ product, onAddToCart }) => (
-                <button
-                  type='button'
-                  onClick={(e) => onAddToCart?.(e, product)}
-                  style={{
-                    padding: '6px 12px',
-                    borderRadius: '6px',
-                    border: 'none',
-                    background: '#2563eb',
-                    color: '#fff',
-                    cursor: 'pointer',
-                    fontSize: '13px',
-                  }}>
+                <Button
+                  variant='default'
+                  size='sm'
+                  conversionType='add_to_cart'
+                  onClick={(e) => onAddToCart?.(e, product)}>
                   Add to bag
-                </button>
+                </Button>
               ),
             },
           },
@@ -413,33 +434,58 @@ export const CustomProductCardSubComponents: Story = {
       description: {
         story:
           'Keep the default card but override individual parts via `item.productCard` — here the ' +
-          'title, price, and add-to-cart button. Each slot receives `ProductCardProps`.',
+          'favorite (wishlist) button, title, price, and add-to-cart button. Each slot receives ' +
+          '`ProductCardProps`, so the favorite button gets `isInWishlist` plus the `onAddToWishlist` ' +
+          'handler, and the add-to-cart button gets `onAddToCart`. The add-to-cart override reuses the ' +
+          'library `Button` (imported from `@constructor-io/constructorio-ui-components`) so it matches ' +
+          'the design system. ' +
+          'See the [ProductCard best practices](https://constructor-io.github.io/constructorio-ui-components/?path=/docs/components-productcard--best-practices) and ' +
+          '[Carousel best practices](https://constructor-io.github.io/constructorio-ui-components/?path=/docs/components-carousel--best-practices) for more details.',
       },
       source: {
-        code: `<PiaCustomCarousel
-  items={items}
-  componentOverrides={{
-    item: {
-      productCard: {
-        content: {
-          title: {
-            reactNode: ({ product }) => <p className="my-title">{product?.name}</p>,
-          },
-          price: {
-            reactNode: ({ product }) => <span className="my-price">\${product?.price}</span>,
-          },
-        },
-        footer: {
-          addToCartButton: {
-            reactNode: ({ product, onAddToCart }) => (
-              <button onClick={(e) => onAddToCart?.(e, product)}>Add to bag</button>
-            ),
-          },
-        },
-      },
-    },
-  }}
-/>`,
+        code: `import { Button } from '@constructor-io/constructorio-ui-components';
+
+<PiaCustomCarousel
+            items={items}
+            componentOverrides={{
+              item: {
+                productCard: {
+                  image: {
+                    wishlistButton: {
+                      reactNode: ({ product, isInWishlist, onAddToWishlist }) => (
+                        <button
+                          aria-label={isInWishlist ? 'Remove from favorites' : 'Add to favorites'}
+                          onClick={(e) => onAddToWishlist?.(e, product)}>
+                          {isInWishlist ? '♥' : '♡'}
+                        </button>
+                      ),
+                    },
+                  },
+                  content: {
+                    title: {
+                      reactNode: ({ product }) => <p className="my-title">{product?.name}</p>,
+                    },
+                    price: {
+                      reactNode: ({ product }) => <span className="my-price">\${product?.price}</span>,
+                    },
+                  },
+                  footer: {
+                    addToCartButton: {
+                      reactNode: ({ product, onAddToCart }) => (
+                        <Button
+                          variant="default"
+                          size="sm"
+                          conversionType="add_to_cart"
+                          onClick={(e) => onAddToCart?.(e, product)}>
+                          Add to bag
+                        </Button>
+                      ),
+                    },
+                  },
+                },
+              },
+            }}
+          />`,
       },
     },
   },
