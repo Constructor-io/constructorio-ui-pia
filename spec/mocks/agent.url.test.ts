@@ -160,7 +160,7 @@ describe('MockAgent: URL parameters', () => {
     expect(url.searchParams.has('s')).toBe(false);
   });
 
-  it('appends i, s, ui, c params to getAnswerResultsStream URL', async () => {
+  it('appends identity params (i, s, ui, c) to getAnswerResultsStream URL', async () => {
     const originalEventSource = (globalThis as Record<string, unknown>).EventSource;
     const mockEventSource = jest.fn().mockImplementation(() => ({
       addEventListener: jest.fn(),
