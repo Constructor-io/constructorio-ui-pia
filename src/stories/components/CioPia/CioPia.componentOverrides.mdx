@@ -1,5 +1,6 @@
 import { Meta, Canvas, Markdown } from '@storybook/blocks';
 import * as OverridesStories from './CioPia.componentOverrides.stories';
+import * as CarouselStories from './PiaCustomCarousel.stories';
 
 <Meta of={OverridesStories} />
 
@@ -22,6 +23,7 @@ The full list of overridable components:
 | \`suggestedQuestions.reactNode\`    | \`SuggestedQuestionsRenderProps\`   | Suggested questions list |
 | \`disclaimer.reactNode\`           | \`DisclaimerRenderProps\`           | Disclaimer text          |
 | \`feedback.reactNode\`             | \`FeedbackRenderProps\`             | Feedback controls        |
+| \`loading.reactNode\`              | \`LoadingRenderProps\`              | Loading state            |
 | \`carousel.reactNode\`             | \`CarouselRenderProps\`             | Entire carousel          |
 | \`carousel.content.reactNode\`     | \`CarouselRenderProps\`             | Carousel content area    |
 | \`carousel.item.reactNode\`        | \`CarouselItemRenderProps\`         | Individual carousel item |
@@ -131,11 +133,63 @@ Replace the feedback controls. Receives `{ translations?, onFeedback? }`. Requir
 />
 ```
 
+## Custom Loading
+
+Replace the loading state shown while an answer is being generated. Receives `{ skeleton }`, the default shimmer node, so you can reuse it in your own layout.
+
+By default the component renders the shimmer skeleton. Provide `reactNode` to show your own loading indicator (e.g. "Thinking…" text) instead.
+
+<Canvas of={OverridesStories.CustomLoading} />
+
+```jsx
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId="YOUR_ITEM_ID"
+  componentOverrides={{
+    loading: {
+      reactNode: () => <p>Cooking up an answer…</p>,
+    },
+  }}
+/>
+```
+
+To keep the default shimmer alongside your custom content, render the `skeleton` node passed in the render props:
+
+<Canvas of={OverridesStories.CustomLoadingWithSkeleton} />
+
+```jsx
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId="YOUR_ITEM_ID"
+  componentOverrides={{
+    loading: {
+      reactNode: ({ skeleton }) => (
+        <div>
+          <p>Thinking…</p>
+          {skeleton}
+        </div>
+      ),
+    },
+  }}
+/>
+```
+
+## Default Carousel
+
+When an answer references products, the library renders a built-in carousel of default product cards — no configuration required. The examples below render the carousel directly with mock items, since the demo server does not return products.
+
+<Canvas of={CarouselStories.Default} />
+
+```jsx
+// No componentOverrides needed — the default carousel renders automatically
+<CioPia apiKey="YOUR_API_KEY" itemId="YOUR_ITEM_ID" />
+```
+
 ## Custom Carousel Item
 
 Replace individual product cards in the carousel. Receives `{ item, index, ...carouselProps }`.
 
-<Canvas of={OverridesStories.CustomCarouselItem} />
+<Canvas of={CarouselStories.CustomItem} />
 
 ```jsx
 <CioPia
@@ -157,11 +211,47 @@ Replace individual product cards in the carousel. Receives `{ item, index, ...ca
 />
 ```
 
+## Custom Product Card Sub-components
+
+Instead of replacing the whole card, override individual parts of the default product card via `carousel.item.productCard`. Available slots: `image` (with `wishlistButton`, `badge`), `content` (`title`, `description`, `rating`, `price`), and `footer` (`addToCartButton`, `tags`). Each slot receives `ProductCardProps` (including `product` and handlers like `onAddToCart`).
+
+<Canvas of={CarouselStories.CustomProductCardSubComponents} />
+
+```jsx
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId="YOUR_ITEM_ID"
+  componentOverrides={{
+    carousel: {
+      item: {
+        productCard: {
+          content: {
+            title: {
+              reactNode: ({ product }) => <p className="my-title">{product?.name}</p>,
+            },
+            price: {
+              reactNode: ({ product }) => <span className="my-price">${product?.price}</span>,
+            },
+          },
+          footer: {
+            addToCartButton: {
+              reactNode: ({ product, onAddToCart }) => (
+                <button onClick={(e) => onAddToCart?.(e, product)}>Add to bag</button>
+              ),
+            },
+          },
+        },
+      },
+    },
+  }}
+/>
+```
+
 ## Custom Carousel Navigation
 
 Replace the previous/next navigation buttons.
 
-<Canvas of={OverridesStories.CustomCarouselNavigation} />
+<Canvas of={CarouselStories.CustomNavigation} />
 
 ```jsx
 <CioPia

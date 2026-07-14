@@ -1,7 +1,65 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import CioPia from '../../../components/CioPia/CioPia';
 import { DEMO_API_KEY, DEMO_ITEM_ID } from '../../../constants';
+import { FeedbackType } from '../../../types';
+
+const LOADING_MESSAGES = ['Thinking', 'Searching the catalog', 'Cooking up an answer'];
+
+function CyclingLoader() {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setIndex((prev) => (prev + 1) % LOADING_MESSAGES.length);
+    }, 2000);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <div
+      key={index}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        marginTop: '12px',
+        color: '#6b7280',
+        fontSize: '14px',
+        fontStyle: 'italic',
+        animation: 'cioPiaLoaderFade 0.4s ease-in',
+      }}>
+      <style>
+        {`
+          @keyframes cioPiaLoaderFade {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          @keyframes cioPiaLoaderDot {
+            0%, 80%, 100% { opacity: 0.2; }
+            40% { opacity: 1; }
+          }
+        `}
+      </style>
+      <span>{LOADING_MESSAGES[index]}</span>
+      <span style={{ display: 'inline-flex', gap: '2px' }}>
+        {[0, 1, 2].map((dot) => (
+          <span
+            key={dot}
+            style={{
+              width: '4px',
+              height: '4px',
+              borderRadius: '50%',
+              background: 'currentColor',
+              animation: 'cioPiaLoaderDot 1.4s infinite ease-in-out',
+              animationDelay: `${dot * 0.2}s`,
+            }}
+          />
+        ))}
+      </span>
+    </div>
+  );
+}
 
 const meta = {
   title: 'Components/CioPia/ComponentOverrides',
@@ -106,7 +164,7 @@ export const CustomFeedback: Story = {
           <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
             <button
               type='button'
-              onClick={() => onFeedback?.('up')}
+              onClick={() => onFeedback?.(FeedbackType.UP)}
               style={{
                 padding: '4px 12px',
                 borderRadius: '4px',
@@ -118,7 +176,7 @@ export const CustomFeedback: Story = {
             </button>
             <button
               type='button'
-              onClick={() => onFeedback?.('down')}
+              onClick={() => onFeedback?.(FeedbackType.DOWN)}
               style={{
                 padding: '4px 12px',
                 borderRadius: '4px',
@@ -135,81 +193,75 @@ export const CustomFeedback: Story = {
   },
 };
 
-export const CustomCarouselItem: Story = {
+export const CustomLoading: Story = {
   args: {
     apiKey: DEMO_API_KEY,
     itemId: DEMO_ITEM_ID,
     componentOverrides: {
-      carousel: {
-        item: {
-          reactNode: ({ item }) => (
-            <div
-              style={{
-                padding: '12px',
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px',
-                textAlign: 'center',
-                minWidth: '140px',
-              }}>
-              {item?.imageUrl && (
-                <img
-                  src={item.imageUrl}
-                  alt={item?.name}
-                  style={{ width: '100px', height: '100px', objectFit: 'contain' }}
-                />
-              )}
-              <p style={{ fontSize: '13px', fontWeight: 500, margin: '8px 0 4px' }}>{item?.name}</p>
-              {item?.price && (
-                <p style={{ fontSize: '14px', color: '#2563eb', fontWeight: 600, margin: 0 }}>
-                  ${item.price}
-                </p>
-              )}
-            </div>
-          ),
-        },
+      loading: {
+        reactNode: () => <CyclingLoader />,
+      },
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A fully custom loading indicator with animated dots and a message that cycles every ' +
+          'two seconds (e.g. "Thinking" → "Searching the catalog" → "Cooking up an answer"). ' +
+          'Ask a question to see it while the answer is generated.',
+      },
+      source: {
+        code: `const LOADING_MESSAGES = ['Thinking', 'Searching the catalog', 'Cooking up an answer'];
+
+function CyclingLoader() {
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setIndex((prev) => (prev + 1) % LOADING_MESSAGES.length);
+    }, 2000);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <div className="my-loader">
+      <span>{LOADING_MESSAGES[index]}</span>
+      <span className="my-loader__dots" />
+    </div>
+  );
+}
+
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId="YOUR_ITEM_ID"
+  componentOverrides={{
+    loading: { reactNode: () => <CyclingLoader /> },
+  }}
+/>`,
       },
     },
   },
 };
 
-export const CustomCarouselNavigation: Story = {
+export const CustomLoadingWithSkeleton: Story = {
   args: {
     apiKey: DEMO_API_KEY,
     itemId: DEMO_ITEM_ID,
     componentOverrides: {
-      carousel: {
-        previous: {
-          reactNode: () => (
-            <button
-              type='button'
+      loading: {
+        reactNode: ({ skeleton }) => (
+          <div>
+            <p
               style={{
-                padding: '8px 12px',
-                borderRadius: '50%',
-                border: '1px solid #d1d5db',
-                background: '#fff',
-                cursor: 'pointer',
-                fontSize: '16px',
+                fontSize: '14px',
+                color: '#6b7280',
+                fontStyle: 'italic',
+                margin: '0 0 8px',
               }}>
-              &#8592;
-            </button>
-          ),
-        },
-        next: {
-          reactNode: () => (
-            <button
-              type='button'
-              style={{
-                padding: '8px 12px',
-                borderRadius: '50%',
-                border: '1px solid #d1d5db',
-                background: '#fff',
-                cursor: 'pointer',
-                fontSize: '16px',
-              }}>
-              &#8594;
-            </button>
-          ),
-        },
+              Thinking…
+            </p>
+            {skeleton}
+          </div>
+        ),
       },
     },
   },

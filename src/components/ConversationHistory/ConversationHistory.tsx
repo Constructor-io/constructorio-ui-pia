@@ -92,7 +92,7 @@ export default function ConversationHistory({
 
               {isLast && isLoading && (
                 <div className='cio-pia-conversation-loading' aria-live='polite'>
-                  <LoadingSkeleton />
+                  <LoadingSkeleton componentOverride={componentOverrides?.loading} />
                 </div>
               )}
 
