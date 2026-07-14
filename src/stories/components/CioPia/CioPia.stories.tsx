@@ -11,6 +11,22 @@ const meta = {
   },
   tags: ['autodocs'],
   argTypes: {
+    cioClient: {
+      description: [
+        'Constructor.io client instance with identity/tracking options for PIA requests.',
+        '',
+        '`clientId?: string` — Unique browser/app identifier (sent as `i` query param).',
+        '',
+        '`sessionId?: number` — Session number (sent as `s` query param).',
+        '',
+        '`userId?: string` — Logged-in user identifier (sent as `ui` query param).',
+        '',
+        '`segments?: string[]` — User segments for targeting (sent as `us` query param).',
+        '',
+        '`version?: string` — Client version (sent as `c` query param, defaults to `cio-ui-pia-<packageVersion>`).',
+      ].join('\n'),
+      table: { type: { summary: 'CioClient' } },
+    },
     displayConfigs: {
       description: [
         'Display configuration options:',
