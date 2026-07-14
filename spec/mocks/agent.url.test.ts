@@ -67,6 +67,54 @@ describe('MockAgent: URL parameters', () => {
     expect(url.searchParams.get('c')).toContain('cio-ui-pia-');
   });
 
+  it('appends us (segments) params to getAnswerResults URL', async () => {
+    const client = new MockConstructorIOClient({
+      apiKey: 'test-key',
+      clientId: 'test-client-id',
+      sessionId: 1,
+      segments: ['vip', 'returning-customer'],
+      sendTrackingEvents: false,
+    });
+
+    await client.agent.getAnswerResults({ itemId: 'item-123', question: 'Is this good?' });
+
+    const url = new URL(requestedUrl);
+    expect(url.searchParams.getAll('us')).toEqual(['vip', 'returning-customer']);
+  });
+
+  it('appends us (segments) params to getAnswerResultsStream URL', async () => {
+    const originalEventSource = (globalThis as Record<string, unknown>).EventSource;
+    const mockEventSource = jest.fn().mockImplementation(() => ({
+      addEventListener: jest.fn(),
+      close: jest.fn(),
+      onerror: null,
+    }));
+    (globalThis as Record<string, unknown>).EventSource = mockEventSource;
+
+    try {
+      const client = new MockConstructorIOClient({
+        apiKey: 'test-key',
+        clientId: 'test-client-id',
+        sessionId: 1,
+        segments: ['vip', 'returning-customer'],
+        sendTrackingEvents: false,
+      });
+
+      await client.agent.getAnswerResultsStream({
+        itemId: 'item-123',
+        question: 'Tell me more',
+        onStart: jest.fn(),
+        onMessage: jest.fn(),
+        onEnd: jest.fn(),
+      });
+
+      const url = new URL(mockEventSource.mock.calls[0][0]);
+      expect(url.searchParams.getAll('us')).toEqual(['vip', 'returning-customer']);
+    } finally {
+      (globalThis as Record<string, unknown>).EventSource = originalEventSource;
+    }
+  });
+
   it('forwards explicit version as c param', async () => {
     const client = new MockConstructorIOClient({
       apiKey: 'test-key',
