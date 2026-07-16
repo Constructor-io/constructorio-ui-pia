@@ -49,8 +49,11 @@ class MockConstructorIOClient {
     this.tracker = cioClient.tracker;
     this.quizzes = cioClient.quizzes;
 
-    // Use the mock agent instead of the one from the client
-    this.agent = new MockAgent(this.options);
+    this.agent = new MockAgent({
+      ...this.options,
+      clientId: options.clientId,
+      sessionId: options.sessionId,
+    });
   }
 }
 
