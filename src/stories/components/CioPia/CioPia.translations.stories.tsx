@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import CioPia from '../../../components/CioPia/CioPia';
-import { DEMO_API_KEY, DEMO_ITEM_ID, DISCLAIMER_TEXT } from '../../../constants';
+import { DEMO_API_KEY, DEMO_ITEM_ID, DEMO_ITEM_NAME, DISCLAIMER_TEXT } from '../../../constants';
 
 const meta = {
   title: 'Components/CioPia/Translations',
@@ -18,6 +18,7 @@ export const CustomTitle: Story = {
   args: {
     apiKey: DEMO_API_KEY,
     itemId: DEMO_ITEM_ID,
+    itemName: DEMO_ITEM_NAME,
     translations: {
       'Any questions about this product?': 'Got a question? Ask our AI assistant!',
     },
@@ -28,6 +29,7 @@ export const AllCustomText: Story = {
   args: {
     apiKey: DEMO_API_KEY,
     itemId: DEMO_ITEM_ID,
+    itemName: DEMO_ITEM_NAME,
     displayConfigs: {
       showFeedback: true,
       learnMoreUrl: 'https://constructor.io/learn-more',

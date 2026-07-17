@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import ConstructorIOClient from '@constructor-io/constructorio-client-javascript';
 import UseAnswerResultsExample from './UseAnswerResultsExample';
 import { DEMO_API_KEY, DEMO_ITEM_ID, DEMO_QUESTION } from '../../../constants';
-import MockConstructorIOClient from '../../../hooks/mocks/MockConstructorIOClient';
 
 const meta = {
   title: 'Hooks/UseAnswerResults',
@@ -23,7 +23,7 @@ export const Default: Story = {
   args: {
     itemId: DEMO_ITEM_ID,
     question: DEMO_QUESTION,
-    cioClient: new MockConstructorIOClient({
+    cioClient: new ConstructorIOClient({
       apiKey: DEMO_API_KEY,
     }),
   },
@@ -32,7 +32,7 @@ export const IrrelevantQuestion: Story = {
   args: {
     itemId: DEMO_ITEM_ID,
     question: 'Can I buy a car?',
-    cioClient: new MockConstructorIOClient({
+    cioClient: new ConstructorIOClient({
       apiKey: DEMO_API_KEY,
     }),
   },

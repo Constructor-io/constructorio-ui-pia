@@ -2,6 +2,8 @@ import { renderHook, act } from '@testing-library/react';
 import useConversation from '../../../src/hooks/useConversation';
 import { UseCioPiaReturn } from '../../../src/hooks/useCioPia';
 import { GetAnswerResultsResponse } from '../../../src/hooks/mocks/types';
+import { FeedbackType } from '../../../src/types';
+import createMockTracking from '../../__mocks__/createMockTracking';
 
 interface MockPiaOverrides {
   threadId?: string;
@@ -27,6 +29,7 @@ describe('Testing Hook: useConversation', () => {
   function createMockPia(overrides: MockPiaOverrides = {}): UseCioPiaReturn {
     const { data: answerData, ...restAnswers } = overrides.answers || {};
     return {
+      cioClient: { tracker: {} as UseCioPiaReturn['cioClient']['tracker'] },
       threadId: overrides.threadId ?? mockThreadId,
       suggestedQuestions: {
         data: [],
@@ -46,14 +49,17 @@ describe('Testing Hook: useConversation', () => {
     };
   }
 
+  let mockTracking: ReturnType<typeof createMockTracking>;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    mockTracking = createMockTracking();
   });
 
   it('initializes with default state', () => {
     const pia = createMockPia();
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
 
     expect(result.current.currentQuestion).toBe('');
@@ -68,7 +74,7 @@ describe('Testing Hook: useConversation', () => {
   it('calls getAnswer and sets currentQuestion on handleSubmitQuestion', () => {
     const pia = createMockPia();
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
 
     act(() => {
@@ -88,6 +94,7 @@ describe('Testing Hook: useConversation', () => {
         itemId: 'test-item',
         isConversation: false,
         callbacks: { onQuestionSubmit },
+        tracking: mockTracking,
       }),
     );
 
@@ -106,7 +113,7 @@ describe('Testing Hook: useConversation', () => {
   it('does not throw when callbacks.onQuestionSubmit is not provided', () => {
     const pia = createMockPia();
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: false, callbacks: {} }),
+      useConversation({ pia, itemId: 'test-item', isConversation: false, callbacks: {}, tracking: mockTracking }),
     );
 
     expect(() => {
@@ -119,7 +126,7 @@ describe('Testing Hook: useConversation', () => {
   it('does not append to conversationHistory in default mode', () => {
     const pia = createMockPia();
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
 
     act(() => {
@@ -132,7 +139,7 @@ describe('Testing Hook: useConversation', () => {
   it('appends to conversationHistory in conversation mode', () => {
     const pia = createMockPia();
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: true }),
+      useConversation({ pia, itemId: 'test-item', isConversation: true, tracking: mockTracking }),
     );
 
     act(() => {
@@ -147,7 +154,7 @@ describe('Testing Hook: useConversation', () => {
   it('appends multiple entries to conversationHistory', () => {
     const pia = createMockPia();
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: true }),
+      useConversation({ pia, itemId: 'test-item', isConversation: true, tracking: mockTracking }),
     );
 
     act(() => {
@@ -170,7 +177,7 @@ describe('Testing Hook: useConversation', () => {
     });
 
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
 
     expect(result.current.displayedQuestions).toEqual(testQuestions);
@@ -206,7 +213,7 @@ describe('Testing Hook: useConversation', () => {
     });
 
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
 
     expect(result.current.displayedQuestions).toEqual(followUpQuestions);
@@ -218,7 +225,7 @@ describe('Testing Hook: useConversation', () => {
     });
 
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
 
     expect(result.current.currentAnswer).toBe(mockAnswerValue);
@@ -227,7 +234,7 @@ describe('Testing Hook: useConversation', () => {
   it('returns empty string for currentAnswer when answers.data is null', () => {
     const pia = createMockPia();
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
 
     expect(result.current.currentAnswer).toBe('');
@@ -240,7 +247,7 @@ describe('Testing Hook: useConversation', () => {
     });
 
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
 
     expect(result.current.currentItems).toEqual(mockItems);
@@ -249,7 +256,7 @@ describe('Testing Hook: useConversation', () => {
   it('returns null for currentItems when answers.items is null', () => {
     const pia = createMockPia();
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
 
     expect(result.current.currentItems).toBeNull();
@@ -261,7 +268,7 @@ describe('Testing Hook: useConversation', () => {
     });
 
     const { result: result1 } = renderHook(() =>
-      useConversation({ pia: piaAnswersLoading, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia: piaAnswersLoading, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
     expect(result1.current.isLoading).toBe(true);
 
@@ -270,7 +277,7 @@ describe('Testing Hook: useConversation', () => {
     });
 
     const { result: result2 } = renderHook(() =>
-      useConversation({ pia: piaSuggestionsLoading, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia: piaSuggestionsLoading, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
     expect(result2.current.isLoading).toBe(true);
   });
@@ -282,7 +289,7 @@ describe('Testing Hook: useConversation', () => {
     });
 
     const { result: result1 } = renderHook(() =>
-      useConversation({ pia: piaAnswersError, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia: piaAnswersError, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
     expect(result1.current.error).toBe(answersError);
 
@@ -292,7 +299,7 @@ describe('Testing Hook: useConversation', () => {
     });
 
     const { result: result2 } = renderHook(() =>
-      useConversation({ pia: piaSuggestionsError, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia: piaSuggestionsError, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
     expect(result2.current.error).toBe(suggestionsError);
   });
@@ -306,7 +313,7 @@ describe('Testing Hook: useConversation', () => {
     });
 
     const { result } = renderHook(() =>
-      useConversation({ pia, itemId: 'test-item', isConversation: false }),
+      useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
     );
     expect(result.current.error).toBe(answersError);
   });
@@ -506,7 +513,7 @@ describe('Testing Hook: useConversation', () => {
       });
 
       const { result } = renderHook(() =>
-        useConversation({ pia, itemId: 'test-item', isConversation: true }),
+        useConversation({ pia, itemId: 'test-item', isConversation: true, tracking: mockTracking }),
       );
 
       act(() => {
@@ -602,7 +609,7 @@ describe('Testing Hook: useConversation', () => {
     it('calls getAnswer when a suggested question is clicked', () => {
       const pia = createMockPia();
       const { result } = renderHook(() =>
-        useConversation({ pia, itemId: 'test-item', isConversation: false }),
+        useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
       );
 
       act(() => {
@@ -615,7 +622,7 @@ describe('Testing Hook: useConversation', () => {
     it('sets source to suggestion in conversation history', () => {
       const pia = createMockPia();
       const { result } = renderHook(() =>
-        useConversation({ pia, itemId: 'test-item', isConversation: true }),
+        useConversation({ pia, itemId: 'test-item', isConversation: true, tracking: mockTracking }),
       );
 
       act(() => {
@@ -650,7 +657,7 @@ describe('Testing Hook: useConversation', () => {
     it('does not throw when callbacks.onFocus is not provided', () => {
       const pia = createMockPia();
       const { result } = renderHook(() =>
-        useConversation({ pia, itemId: 'test-item', isConversation: false, callbacks: {} }),
+        useConversation({ pia, itemId: 'test-item', isConversation: false, callbacks: {}, tracking: mockTracking }),
       );
 
       expect(() => {
@@ -862,6 +869,108 @@ describe('Testing Hook: useConversation', () => {
         [expect.objectContaining({ question: 'Second question', answer: 'Second answer' })],
         { itemId: 'test-item', threadId: mockThreadId },
       );
+    });
+  });
+
+  describe('tracking integration', () => {
+    it('calls tracking.trackQuestionSubmit when handleSubmitQuestion is called', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
+      );
+
+      act(() => {
+        result.current.handleSubmitQuestion('What is this?');
+      });
+
+      expect(mockTracking.trackQuestionSubmit).toHaveBeenCalledWith('What is this?');
+    });
+
+    it('calls tracking.trackQuestionClick when handleQuestionClick is called', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
+      );
+
+      act(() => {
+        result.current.handleQuestionClick('Suggested question?');
+      });
+
+      expect(mockTracking.trackQuestionClick).toHaveBeenCalledWith('Suggested question?');
+    });
+
+    it('calls tracking.trackFocus when handleInputFocus is called', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
+      );
+
+      act(() => {
+        result.current.handleInputFocus();
+      });
+
+      expect(mockTracking.trackFocus).toHaveBeenCalledTimes(1);
+    });
+
+    it('calls tracking.trackAnswerFeedback when handleFeedback is called', () => {
+      const pia = createMockPia({
+        answers: { data: { qna_result_id: 'result-123', value: 'answer' } },
+      });
+      const { result } = renderHook(() =>
+        useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
+      );
+
+      act(() => {
+        result.current.handleFeedback(FeedbackType.UP);
+      });
+
+      expect(mockTracking.trackAnswerFeedback).toHaveBeenCalledWith(FeedbackType.UP, 'result-123');
+    });
+
+    it('calls tracking.trackAnswerView when answer data arrives', () => {
+      const pia = createMockPia();
+      const { result, rerender } = renderHook(
+        (props) => useConversation(props),
+        { initialProps: { pia, itemId: 'test-item', isConversation: false, tracking: mockTracking } },
+      );
+
+      act(() => {
+        result.current.handleSubmitQuestion('Question?');
+      });
+
+      const piaWithAnswer = createMockPia({
+        answers: { data: { qna_result_id: 'r-1', value: 'The answer' } },
+      });
+
+      rerender({ pia: piaWithAnswer, itemId: 'test-item', isConversation: false, tracking: mockTracking });
+
+      expect(mockTracking.trackAnswerView).toHaveBeenCalledWith(
+        'Question?',
+        expect.objectContaining({ qna_result_id: 'r-1', value: 'The answer' }),
+        null,
+      );
+    });
+
+    it('calls callbacks.onFeedback when handleFeedback is called', () => {
+      const pia = createMockPia({
+        answers: { data: { qna_result_id: 'result-123', value: 'answer' } },
+      });
+      const onFeedback = jest.fn();
+      const { result } = renderHook(() =>
+        useConversation({
+          pia,
+          itemId: 'test-item',
+          isConversation: false,
+          tracking: mockTracking,
+          callbacks: { onFeedback },
+        }),
+      );
+
+      act(() => {
+        result.current.handleFeedback(FeedbackType.UP);
+      });
+
+      expect(onFeedback).toHaveBeenCalledWith(FeedbackType.UP);
     });
   });
 });

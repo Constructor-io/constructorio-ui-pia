@@ -59,7 +59,7 @@ describe('Testing Hook: useCioClient', () => {
     });
 
     const client = result.current!;
-    expect(client.options).toEqual({
+    expect(client.options).toMatchObject({
       apiKey: key,
       ...clientOptions,
     });

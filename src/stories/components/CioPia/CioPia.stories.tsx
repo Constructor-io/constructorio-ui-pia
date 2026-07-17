@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import CioPia from '../../../components/CioPia/CioPia';
-import { DEMO_API_KEY, DEMO_ITEM_ID } from '../../../constants';
+import { DEMO_API_KEY, DEMO_ITEM_ID, DEMO_ITEM_NAME } from '../../../constants';
 import { prependCdnBase } from '../../utils';
 
 const meta = {
@@ -121,6 +121,7 @@ export const Default: Story = {
   args: {
     apiKey: DEMO_API_KEY,
     itemId: DEMO_ITEM_ID,
+    itemName: DEMO_ITEM_NAME,
   },
 };
 
@@ -128,6 +129,7 @@ export const WithLimitedQuestions: Story = {
   args: {
     apiKey: DEMO_API_KEY,
     itemId: DEMO_ITEM_ID,
+    itemName: DEMO_ITEM_NAME,
     suggestedQuestionsParameters: { numResults: 2 },
   },
 };
@@ -136,6 +138,7 @@ export const WithFormatImageUrl: Story = {
   args: {
     apiKey: DEMO_API_KEY,
     itemId: DEMO_ITEM_ID,
+    itemName: DEMO_ITEM_NAME,
     formatters: {
       formatImageUrl: prependCdnBase,
     },

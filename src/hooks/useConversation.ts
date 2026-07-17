@@ -2,18 +2,21 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Callbacks,
   ConversationEntry,
+  FeedbackType,
   PiaCallbackContext,
   Question,
   QuestionSource,
   Item,
 } from '../types';
 import { UseCioPiaReturn } from './useCioPia';
+import { UseTrackingReturn } from './useTracking';
 
 export interface UseConversationProps {
   pia: UseCioPiaReturn;
   itemId: string;
   isConversation: boolean;
   callbacks?: Callbacks;
+  tracking?: UseTrackingReturn;
 }
 
 export interface UseConversationReturn {
@@ -28,6 +31,7 @@ export interface UseConversationReturn {
   handleSubmitQuestion: (question: string) => void;
   handleQuestionClick: (question: string) => void;
   handleInputFocus: () => void;
+  handleFeedback: (type: FeedbackType) => void;
   resetState: () => void;
 }
 
@@ -36,6 +40,7 @@ export default function useConversation({
   itemId,
   isConversation,
   callbacks,
+  tracking,
 }: UseConversationProps): UseConversationReturn {
   const { suggestedQuestions, answers, threadId } = pia;
   const { getAnswer } = answers;
@@ -48,8 +53,11 @@ export default function useConversation({
 
   const entryIdRef = useRef(0);
   const prevAnswerValueRef = useRef(answers.data?.value);
+  const hasTrackedCurrentAnswerRef = useRef(false);
+  const answersRef = useRef(answers);
   const callbacksRef = useRef(callbacks);
   const contextRef = useRef(context);
+  const trackingRef = useRef(tracking);
   const lastQuestionRef = useRef<string>('');
   const lastSourceRef = useRef<QuestionSource>('user');
 
@@ -61,10 +69,19 @@ export default function useConversation({
     contextRef.current = context;
   }, [context]);
 
+  useEffect(() => {
+    trackingRef.current = tracking;
+  }, [tracking]);
+
+  useEffect(() => {
+    answersRef.current = answers;
+  }, [answers]);
+
   const submitQuestion = useCallback(
     (question: string, source: QuestionSource) => {
       lastSourceRef.current = source;
       lastQuestionRef.current = question;
+      hasTrackedCurrentAnswerRef.current = false;
       setCurrentQuestion(question);
       getAnswer(question);
 
@@ -79,6 +96,7 @@ export default function useConversation({
 
   const handleSubmitQuestion = useCallback(
     (question: string) => {
+      trackingRef.current?.trackQuestionSubmit(question);
       callbacksRef.current?.onQuestionSubmit?.(question, contextRef.current, 'user');
       submitQuestion(question, 'user');
     },
@@ -87,6 +105,7 @@ export default function useConversation({
 
   const handleQuestionClick = useCallback(
     (question: string) => {
+      trackingRef.current?.trackQuestionClick(question);
       callbacksRef.current?.onQuestionSubmit?.(question, contextRef.current, 'suggestion');
       submitQuestion(question, 'suggestion');
     },
@@ -94,7 +113,13 @@ export default function useConversation({
   );
 
   const handleInputFocus = useCallback(() => {
+    trackingRef.current?.trackFocus();
     callbacksRef.current?.onFocus?.(contextRef.current);
+  }, []);
+
+  const handleFeedback = useCallback((type: FeedbackType) => {
+    trackingRef.current?.trackAnswerFeedback(type, answersRef.current.data?.qna_result_id);
+    callbacksRef.current?.onFeedback?.(type);
   }, []);
 
   const resetState = useCallback(() => {
@@ -117,7 +142,11 @@ export default function useConversation({
 
   useEffect(() => {
     if (answers.data?.follow_up_questions) setDisplayedQuestions(answers.data.follow_up_questions);
-  }, [answers.data]);
+    if (answers.data && lastQuestionRef.current && !hasTrackedCurrentAnswerRef.current) {
+      hasTrackedCurrentAnswerRef.current = true;
+      trackingRef.current?.trackAnswerView(lastQuestionRef.current, answers.data, answers.items);
+    }
+  }, [answers.data, answers.items]);
 
   useEffect(() => {
     const answerValue = answers.data?.value ?? '';
@@ -173,6 +202,7 @@ export default function useConversation({
     handleSubmitQuestion,
     handleQuestionClick,
     handleInputFocus,
+    handleFeedback,
     resetState,
   };
 }

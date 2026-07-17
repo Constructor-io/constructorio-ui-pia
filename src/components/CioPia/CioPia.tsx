@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   IncludeComponentOverrides,
   IncludeRenderProps,
@@ -9,6 +9,8 @@ import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/Suggeste
 import MockConstructorIOClient from '../../hooks/mocks/MockConstructorIOClient';
 import useCioPia from '../../hooks/useCioPia';
 import useConversation from '../../hooks/useConversation';
+import useTracking from '../../hooks/useTracking';
+import useViewportTracking from '../../hooks/useViewportTracking';
 import useViewportCallbacks from '../../hooks/useViewportCallbacks';
 import ErrorBlock from '../Error/ErrorBlock';
 import LoadingSkeleton from '../LoadingSkeleton/LoadingSkeleton';
@@ -34,6 +36,8 @@ export interface CioPiaProps
   apiKey: string;
   /** The product item ID to fetch insights for. */
   itemId: string;
+  /** The product display name, sent with tracking events. */
+  itemName: string;
   /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000"). */
   threadId?: string;
   /** Optional variation ID for the product. */
@@ -60,6 +64,7 @@ export default function CioPia(props: CioPiaProps) {
   const {
     apiKey,
     itemId,
+    itemName,
     threadId,
     variationId,
     cioClient,
@@ -91,6 +96,14 @@ export default function CioPia(props: CioPiaProps) {
     formatImageUrl: formatters?.formatImageUrl,
   });
 
+  const tracking = useTracking({
+    cioClient: pia.cioClient,
+    itemId,
+    itemName,
+    variationId,
+    threadId: pia.threadId,
+  });
+
   const {
     currentQuestion,
     displayedQuestions,
@@ -103,10 +116,25 @@ export default function CioPia(props: CioPiaProps) {
     handleSubmitQuestion,
     handleQuestionClick,
     handleInputFocus,
+    handleFeedback,
     resetState,
-  } = useConversation({ pia, itemId, isConversation, callbacks });
+  } = useConversation({ pia, itemId, isConversation, callbacks, tracking });
 
-  const { containerRef } = useViewportCallbacks({ callbacks, context });
+  const { containerRef: viewportContainerRef } = useViewportTracking({
+    tracking,
+    questions: displayedQuestions,
+  });
+  const { containerRef: callbackContainerRef } = useViewportCallbacks({ callbacks, context });
+
+  const containerRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      viewportContainerRef(node);
+      callbackContainerRef(node);
+    },
+    [viewportContainerRef, callbackContainerRef],
+  );
+
+  const qnaResultId = pia.answers.data?.qna_result_id;
 
   const renderProps: CioPiaRenderProps = {
     items: currentItems,
@@ -134,6 +162,9 @@ export default function CioPia(props: CioPiaProps) {
     displayedQuestions,
     handleSubmitQuestion,
     handleQuestionClick,
+    handleFeedback,
+    onResultClick: tracking.trackResultClick,
+    qnaResultId,
     containerRef,
     onInputFocus: handleInputFocus,
   };
@@ -187,6 +218,10 @@ export default function CioPia(props: CioPiaProps) {
                 translations={translations}
                 callbacks={callbacks}
                 componentOverrides={componentOverrides}
+                onFeedback={handleFeedback}
+                onResultClick={tracking.trackResultClick}
+                question={currentQuestion}
+                qnaResultId={qnaResultId}
               />
             )}
 

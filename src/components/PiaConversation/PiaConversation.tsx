@@ -3,7 +3,7 @@ import Input from '../Input/Input';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import SuggestedQuestionsSkeleton from '../SuggestedQuestionsContainer/SuggestedQuestionsSkeleton';
 import { translate } from '../../utils/translate';
-import { Question } from '../../types';
+import { FeedbackType, Item, Question } from '../../types';
 import ConversationHistory, {
   ConversationHistoryProps,
 } from '../ConversationHistory/ConversationHistory';
@@ -13,6 +13,9 @@ export interface PiaConversationProps extends ConversationHistoryProps {
   handleSubmitQuestion: (question: string) => void;
   handleQuestionClick: (question: string) => void;
   containerRef?: (node: HTMLDivElement | null) => void;
+  handleFeedback?: (type: FeedbackType) => void;
+  onResultClick?: (item: Item, position: number, question: string, qnaResultId?: string) => void;
+  qnaResultId?: string;
   onInputFocus?: () => void;
 }
 
@@ -32,6 +35,9 @@ export default function PiaConversation({
   handleSubmitQuestion,
   handleQuestionClick,
   containerRef,
+  handleFeedback,
+  onResultClick,
+  qnaResultId,
   onInputFocus,
 }: PiaConversationProps) {
   const hasHistory = conversationHistory.length > 0;
@@ -59,6 +65,9 @@ export default function PiaConversation({
         translations={translations}
         callbacks={callbacks}
         componentOverrides={componentOverrides}
+        handleFeedback={handleFeedback}
+        onResultClick={onResultClick}
+        qnaResultId={qnaResultId}
       />
 
       <div className='cio-pia-conversation-footer'>

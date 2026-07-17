@@ -7,6 +7,7 @@ import {
   Callbacks,
   CioPiaComponentOverrides,
   DisclaimerPosition,
+  FeedbackType,
   Translations,
   Item,
 } from '../../types';
@@ -20,6 +21,10 @@ interface PiaInlineAnswerProps {
   translations?: Translations;
   callbacks?: Callbacks;
   componentOverrides?: CioPiaComponentOverrides;
+  onFeedback?: (type: FeedbackType) => void;
+  onResultClick?: (item: Item, position: number, question: string, qnaResultId?: string) => void;
+  question?: string;
+  qnaResultId?: string;
 }
 
 export default function PiaInlineAnswer({
@@ -31,6 +36,10 @@ export default function PiaInlineAnswer({
   translations,
   callbacks,
   componentOverrides,
+  onFeedback,
+  onResultClick,
+  question,
+  qnaResultId,
 }: PiaInlineAnswerProps) {
   const disclaimer = (
     <Disclaimer
@@ -49,12 +58,15 @@ export default function PiaInlineAnswer({
           items={currentItems}
           componentOverrides={componentOverrides?.carousel}
           callbacks={callbacks}
+          onResultClick={onResultClick}
+          question={question}
+          qnaResultId={qnaResultId}
         />
       )}
       {showFeedback && (
         <Feedback
           translations={translations}
-          onFeedback={callbacks?.onFeedback}
+          onFeedback={onFeedback || callbacks?.onFeedback}
           componentOverride={componentOverrides?.feedback}
         />
       )}

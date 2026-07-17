@@ -1,21 +1,17 @@
 import { useMemo } from 'react';
-import {
+import ConstructorIOClient, {
   ConstructorClientOptions,
   Nullable,
 } from '@constructor-io/constructorio-client-javascript';
 import version from '../version';
-import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 
-/**
- * Uses MockConstructorIOClient for now, to be replaced with the actual Client JS object
- */
 export type UseCioClientProps = {
   apiKey?: string;
-  cioClient?: Nullable<MockConstructorIOClient>;
+  cioClient?: Nullable<ConstructorIOClient>;
   options?: Omit<ConstructorClientOptions, 'apiKey' | 'sendTrackingEvents' | 'version'>;
 };
 
-type UseCioClient = (props: UseCioClientProps) => Nullable<MockConstructorIOClient> | never;
+type UseCioClient = (props: UseCioClientProps) => Nullable<ConstructorIOClient> | never;
 
 const useCioClient: UseCioClient = ({ apiKey, cioClient, options } = {}) => {
   if (!apiKey && !cioClient) {
@@ -26,7 +22,7 @@ const useCioClient: UseCioClient = ({ apiKey, cioClient, options } = {}) => {
     if (cioClient) return cioClient;
 
     if (apiKey) {
-      return new MockConstructorIOClient({
+      return new ConstructorIOClient({
         apiKey,
         sendTrackingEvents: true,
         version: `cio-ui-pia-${version}`,

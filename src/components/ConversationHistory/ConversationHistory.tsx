@@ -7,6 +7,7 @@ import LoadingSkeleton from '../LoadingSkeleton/LoadingSkeleton';
 import PiaCustomCarousel from '../CioPia/PiaCustomCarousel';
 import {
   ConversationEntry,
+  FeedbackType,
   Translations,
   Item,
   Callbacks,
@@ -36,6 +37,9 @@ export interface ConversationHistoryProps {
   translations?: Translations;
   callbacks?: Callbacks;
   componentOverrides?: CioPiaComponentOverrides;
+  handleFeedback?: (type: FeedbackType) => void;
+  onResultClick?: (item: Item, position: number, question: string, qnaResultId?: string) => void;
+  qnaResultId?: string;
 }
 
 export default function ConversationHistory({
@@ -50,6 +54,9 @@ export default function ConversationHistory({
   translations,
   callbacks,
   componentOverrides,
+  handleFeedback,
+  onResultClick,
+  qnaResultId,
 }: ConversationHistoryProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -108,12 +115,15 @@ export default function ConversationHistory({
                       items={carouselItems}
                       componentOverrides={componentOverrides?.carousel}
                       callbacks={callbacks}
+                      onResultClick={onResultClick}
+                      question={entry.question}
+                      qnaResultId={qnaResultId}
                     />
                   )}
                   {isLast && showFeedback && (
                     <Feedback
                       translations={translations}
-                      onFeedback={callbacks?.onFeedback}
+                      onFeedback={handleFeedback}
                       componentOverride={componentOverrides?.feedback}
                     />
                   )}
