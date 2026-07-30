@@ -118,6 +118,7 @@ export default function ConversationHistory({
                       onResultClick={onResultClick}
                       question={entry.question}
                       qnaResultId={qnaResultId}
+                      translations={translations}
                     />
                   )}
                   {isLast && showFeedback && (

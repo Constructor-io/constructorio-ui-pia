@@ -1154,4 +1154,79 @@ describe('CioPia Component', () => {
       expect(screen.getByText('Custom Feedback Widget')).toBeInTheDocument();
     });
   });
+
+  describe('Add to Cart', () => {
+    const getAddToCartButtons = (container: HTMLElement) =>
+      Array.from(container.querySelectorAll<HTMLElement>('.cio-product-card-add-to-cart-btn'));
+
+    it('does not render Add to Cart buttons without an onAddToCart callback', () => {
+      mockUseCioPiaWithItems();
+
+      const { container } = render(<CioPia {...mockProps} />);
+
+      expect(getAddToCartButtons(container)).toHaveLength(0);
+    });
+
+    it('renders Add to Cart buttons when the onAddToCart callback is provided', () => {
+      mockUseCioPiaWithItems();
+
+      const { container } = render(
+        <CioPia {...mockProps} callbacks={{ onAddToCart: jest.fn() }} />,
+      );
+
+      expect(getAddToCartButtons(container)).toHaveLength(mockItems.length);
+    });
+
+    it('calls the onAddToCart callback with the clicked item', () => {
+      mockUseCioPiaWithItems();
+      const onAddToCart = jest.fn();
+
+      const { container } = render(<CioPia {...mockProps} callbacks={{ onAddToCart }} />);
+
+      fireEvent.click(getAddToCartButtons(container)[0]);
+
+      expect(onAddToCart).toHaveBeenCalledTimes(1);
+      expect(onAddToCart.mock.calls[0][0]).toEqual(
+        expect.objectContaining({ id: mockItems[0].id }),
+      );
+    });
+
+    it('renders Add to Cart buttons in conversation mode', () => {
+      const onAddToCart = jest.fn();
+      const displayConfigs = { mode: 'conversation' as const };
+
+      const { container, rerender } = render(
+        <CioPia {...mockProps} displayConfigs={displayConfigs} callbacks={{ onAddToCart }} />,
+      );
+
+      const input = screen.getByRole('textbox');
+      fireEvent.change(input, { target: { value: testQuestion } });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+      mockUseCioPiaWithItems();
+      rerender(
+        <CioPia {...mockProps} displayConfigs={displayConfigs} callbacks={{ onAddToCart }} />,
+      );
+
+      const buttons = getAddToCartButtons(container);
+      expect(buttons.length).toBeGreaterThan(0);
+
+      fireEvent.click(buttons[0]);
+      expect(onAddToCart).toHaveBeenCalledTimes(1);
+    });
+
+    it('uses the translated Add to Cart label', () => {
+      mockUseCioPiaWithItems();
+
+      const { container } = render(
+        <CioPia
+          {...mockProps}
+          callbacks={{ onAddToCart: jest.fn() }}
+          translations={{ 'Add to Cart': 'Add to bag' }}
+        />,
+      );
+
+      expect(getAddToCartButtons(container)[0]).toHaveTextContent('Add to bag');
+    });
+  });
 });

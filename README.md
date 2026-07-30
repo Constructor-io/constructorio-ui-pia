@@ -105,6 +105,7 @@ The component supports multiple display modes via the `displayConfigs` prop:
 |--------|------|-------------|
 | `onQuestionSubmit` | `(question: string) => void` | Called when a question is submitted (via Enter key, Send button, or suggested question click) |
 | `onProductCardClick` | `(item: Item) => void` | Called when a product card in the carousel is clicked |
+| `onAddToCart` | `(item: Item, event: React.MouseEvent) => void` | Called when the "Add to Cart" button on a product card is clicked. Passing this callback is what renders the button — see below |
 | `onFeedback` | `(type: 'up' \| 'down') => void` | Called when the user submits positive or negative feedback on an answer |
 
 ### Using the JavaScript Bundle

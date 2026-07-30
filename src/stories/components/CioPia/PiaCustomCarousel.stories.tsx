@@ -127,6 +127,45 @@ export const Default: Story = {
   },
 };
 
+export const WithAddToCart: Story = {
+  args: {
+    callbacks: {
+      onProductCardClick: fn(),
+      // Demo handler: a real integration would add the item to its cart here.
+      onAddToCart: (item) => {
+        window.alert(`Added to cart: ${item.name} (id: ${item.id})`);
+      },
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Product cards render an "Add to Cart" button as soon as an `onAddToCart` callback is ' +
+          'passed — without it, no cart control is shown, so integrations that already handle the ' +
+          'cart themselves are unaffected. The callback receives the clicked `item` and the click ' +
+          'event, and clicking the button does not trigger `onProductCardClick`. ' +
+          'The button label comes from the `Add to Cart` translation key. ' +
+          'Click a button below: this demo pops an alert with the product name, a real integration ' +
+          'would call its own cart API instead.',
+      },
+      source: {
+        code: `<PiaCustomCarousel
+  items={items}
+  callbacks={{
+    onAddToCart: (item, event) => {
+      window.alert(\`Added to cart: \${item.name} (id: \${item.id})\`);
+      // real integration: addItemToCart(item.id)
+    },
+  }}
+  // Optional: rename the button
+  translations={{ 'Add to Cart': 'Add to bag' }}
+/>`,
+      },
+    },
+  },
+};
+
 export const CustomItem: Story = {
   args: {
     componentOverrides: {
@@ -368,6 +407,7 @@ export const CustomNavigation: Story = {
 export const CustomProductCardSubComponents: Story = {
   args: {
     items: mockItems.map((item) => ({ ...item, tags: ['Bestseller'] })),
+    callbacks: { onProductCardClick: fn(), onAddToCart: fn() },
     componentOverrides: {
       item: {
         productCard: {
@@ -425,9 +465,8 @@ export const CustomProductCardSubComponents: Story = {
                 </Button>
               ),
             },
-            // The card footer only appears when an item has tags (or a cart handler).
-            // We keep the tag on the data to reveal the footer, but hide the tag label
-            // itself so only the "Add to bag" button shows.
+            // Items carry a tag here to show the tags slot exists, but we hide the label
+            // itself so only the "Add to bag" button shows in the footer.
             tags: {
               reactNode: () => null,
             },
@@ -443,7 +482,8 @@ export const CustomProductCardSubComponents: Story = {
           'Keep the default card but override individual parts via `item.productCard` — here the ' +
           'favorite (wishlist) button, title, price, and add-to-cart button. Each slot receives ' +
           '`ProductCardProps`, so the favorite button gets `isInWishlist` plus the `onAddToWishlist` ' +
-          'handler, and the add-to-cart button gets `onAddToCart`. The add-to-cart override reuses the ' +
+          'handler, and the add-to-cart button gets `onAddToCart` — wired to the `callbacks.onAddToCart` ' +
+          'prop, which must be passed for the footer button to render. The add-to-cart override reuses the ' +
           'library `Button` (imported from `@constructor-io/constructorio-ui-components`) so it matches ' +
           'the design system. ' +
           'See the [ProductCard best practices](https://constructor-io.github.io/constructorio-ui-components/?path=/docs/components-productcard--best-practices) and ' +
@@ -456,6 +496,8 @@ export const CustomProductCardSubComponents: Story = {
 // Each section below swaps in your own markup while the card keeps its layout.
 <PiaCustomCarousel
             items={items}
+            // Required for the footer's add-to-cart button to render at all.
+            callbacks={{ onAddToCart: (item, event) => addItemToCart(item.id) }}
             componentOverrides={{
               item: {
                 productCard: {

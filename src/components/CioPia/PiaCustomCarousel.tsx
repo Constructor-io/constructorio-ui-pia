@@ -2,10 +2,14 @@ import React, { useCallback, useRef, useEffect, useMemo } from 'react';
 import {
   Carousel,
   CarouselOverrides,
+  ProductCard,
+  ProductCardOverrides,
+  ProductCardProps,
   CIO_EVENTS,
 } from '@constructor-io/constructorio-ui-components';
-import { Callbacks, Item } from '../../types';
+import { Callbacks, Item, Translations } from '../../types';
 import { sanitizeHtml } from '../../utils/contentTransformers';
+import { translate } from '../../utils/translate';
 
 function HtmlDescription({ product }: { product: Item }) {
   const { description } = product;
@@ -25,6 +29,7 @@ interface PiaCustomCarouselProps {
   onResultClick?: (item: Item, position: number, question: string, qnaResultId?: string) => void;
   question?: string;
   qnaResultId?: string;
+  translations?: Translations;
 }
 
 export default function PiaCustomCarousel({
@@ -34,8 +39,17 @@ export default function PiaCustomCarousel({
   onResultClick,
   question,
   qnaResultId,
+  translations,
 }: PiaCustomCarouselProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const { onAddToCart } = callbacks || {};
+
+  const addToCartHandler = useCallback(
+    (event: React.MouseEvent, product: Item) => {
+      onAddToCart?.(product, event);
+    },
+    [onAddToCart],
+  );
 
   // Determine to use user-defined click handler or default behavior
   const productClickHandler = useCallback(
@@ -74,24 +88,49 @@ export default function PiaCustomCarousel({
   }, [productClickHandler]);
 
   const mergedOverrides = useMemo((): CarouselOverrides<Item> => {
-    if (componentOverrides?.item?.productCard?.content?.description) {
-      return componentOverrides;
+    const userProductCard = componentOverrides?.item?.productCard;
+
+    // Render descriptions as sanitized HTML unless the consumer overrides the description
+    let productCard: ProductCardOverrides = userProductCard?.content?.description
+      ? userProductCard
+      : {
+          ...userProductCard,
+          content: {
+            ...userProductCard?.content,
+            description: { reactNode: HtmlDescription },
+          },
+        };
+
+    // The carousel never hands its product cards an `onAddToCart` handler, and the card hides
+    // the button without one. Re-render the card with the consumer's handler to reveal it, so the
+    // button only ever appears when there is cart logic behind it. A consumer-supplied card
+    // override replaces the card wholesale, so leave that case alone.
+    if (onAddToCart && !userProductCard?.reactNode) {
+      const cardOverrides = productCard;
+      const addToCartText = translate('Add to Cart', translations);
+
+      productCard = {
+        ...cardOverrides,
+        reactNode: ({ product }: ProductCardProps) => (
+          <ProductCard
+            product={product}
+            className='w-full h-full'
+            addToCartText={addToCartText}
+            onAddToCart={addToCartHandler}
+            componentOverrides={cardOverrides}
+          />
+        ),
+      };
     }
 
     return {
       ...componentOverrides,
       item: {
         ...componentOverrides?.item,
-        productCard: {
-          ...componentOverrides?.item?.productCard,
-          content: {
-            ...componentOverrides?.item?.productCard?.content,
-            description: { reactNode: HtmlDescription },
-          },
-        },
+        productCard,
       },
     };
-  }, [componentOverrides]);
+  }, [componentOverrides, onAddToCart, translations, addToCartHandler]);
 
   // If there are no items, do not render the carousel
   if (items.length === 0) {
