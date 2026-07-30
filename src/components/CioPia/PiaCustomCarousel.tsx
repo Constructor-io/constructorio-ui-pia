@@ -101,10 +101,8 @@ export default function PiaCustomCarousel({
           },
         };
 
-    // The carousel never hands its product cards an `onAddToCart` handler, and the card hides
-    // the button without one. Re-render the card with the consumer's handler to reveal it, so the
-    // button only ever appears when there is cart logic behind it. A consumer-supplied card
-    // override replaces the card wholesale, so leave that case alone.
+    // The carousel never passes onAddToCart down and the card hides the button without it, so
+    // re-render the card with the handler. A full card override owns its own layout - skip it.
     if (onAddToCart && !userProductCard?.reactNode) {
       const cardOverrides = productCard;
       const addToCartText = translate('Add to Cart', translations);

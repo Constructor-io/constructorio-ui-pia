@@ -141,12 +141,13 @@ export const WithAddToCart: Story = {
     docs: {
       description: {
         story:
-          'Product cards render an "Add to Cart" button as soon as an `onAddToCart` callback is ' +
-          'passed — without it, no cart control is shown, so integrations that already handle the ' +
-          'cart themselves are unaffected. The callback receives the clicked `item` and the click ' +
-          'event, and clicking the button does not trigger `onProductCardClick`. ' +
-          'The button label comes from the `Add to Cart` translation key. ' +
-          'Click a button below: this demo pops an alert with the product name, a real integration ' +
+          'Pass an `onAddToCart` callback and every product card gets an "Add to Cart" button. ' +
+          'Leave it out and the cards show no cart control at all, so nothing changes for ' +
+          'storefronts that already handle the cart themselves.\n\n' +
+          'The callback gets the clicked `item` and the click event. Clicking the button does not ' +
+          'fire `onProductCardClick`, so the shopper is not navigated away mid-purchase. ' +
+          'To rename the button, use the `Add to Cart` translation key.\n\n' +
+          'Try it below — each click shows an alert with the product name. A real integration ' +
           'would call its own cart API instead.',
       },
       source: {
@@ -496,7 +497,6 @@ export const CustomProductCardSubComponents: Story = {
 // Each section below swaps in your own markup while the card keeps its layout.
 <PiaCustomCarousel
             items={items}
-            // Required for the footer's add-to-cart button to render at all.
             callbacks={{ onAddToCart: (item, event) => addItemToCart(item.id) }}
             componentOverrides={{
               item: {
