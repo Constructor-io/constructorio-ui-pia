@@ -1189,6 +1189,7 @@ describe('CioPia Component', () => {
       expect(onAddToCart.mock.calls[0][0]).toEqual(
         expect.objectContaining({ id: mockItems[0].id }),
       );
+      expect(onAddToCart.mock.calls[0][1]).toEqual(expect.objectContaining({ type: 'click' }));
     });
 
     it('renders Add to Cart buttons in conversation mode', () => {

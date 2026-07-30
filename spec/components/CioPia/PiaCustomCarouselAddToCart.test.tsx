@@ -82,6 +82,26 @@ describe('PiaCustomCarousel Add to Cart', () => {
     expect(description!.innerHTML).toBe('<b>Bold</b> copy');
   });
 
+  it('does not remount cards when every override dependency changes identity', () => {
+    // Fresh callbacks/translations objects on each render recompute the merged overrides, which
+    // builds a new card render function. RenderPropsWrapper calls that function rather than
+    // mounting it as a component type, so the rendered card must survive as the same DOM node.
+    const renderCarousel = () => (
+      <PiaCustomCarousel
+        items={mockItems}
+        callbacks={{ onAddToCart: jest.fn() }}
+        translations={{}}
+      />
+    );
+
+    const { container, rerender } = render(renderCarousel());
+    const cardBefore = container.querySelector('.cio-product-card');
+
+    rerender(renderCarousel());
+
+    expect(container.querySelector('.cio-product-card')).toBe(cardBefore);
+  });
+
   it('applies consumer product card overrides alongside the button', () => {
     const { container } = render(
       <PiaCustomCarousel
