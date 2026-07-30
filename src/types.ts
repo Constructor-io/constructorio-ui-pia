@@ -95,7 +95,8 @@ export interface Callbacks {
   onProductCardClick?: (item: Item) => void;
   /**
    * Called when the "Add to Cart" button on a product card is clicked.
-   * Providing this callback is what renders the button
+   * Providing this callback is what renders the button.
+   * Clicking the button does not fire `onProductCardClick`.
    */
   onAddToCart?: (item: Item, event: React.MouseEvent) => void;
   /** Called when the user submits positive or negative feedback on an answer. */

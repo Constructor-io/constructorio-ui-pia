@@ -11,29 +11,35 @@ const mockItems: Item[] = [
   { id: '2', name: 'Product 2', description: 'Second product', price: 20 },
 ];
 
-const getAddToCartButtons = () =>
-  Array.from(document.querySelectorAll<HTMLElement>('.cio-product-card-add-to-cart-btn'));
+const getAddToCartButtons = (container: HTMLElement) =>
+  Array.from(container.querySelectorAll<HTMLElement>('.cio-product-card-add-to-cart-btn'));
 
 describe('PiaCustomCarousel Add to Cart', () => {
   it('does not render Add to Cart buttons without an onAddToCart callback', () => {
-    render(<PiaCustomCarousel items={mockItems} callbacks={{ onProductCardClick: jest.fn() }} />);
+    const { container } = render(
+      <PiaCustomCarousel items={mockItems} callbacks={{ onProductCardClick: jest.fn() }} />,
+    );
 
-    expect(getAddToCartButtons()).toHaveLength(0);
+    expect(getAddToCartButtons(container)).toHaveLength(0);
   });
 
   it('renders an Add to Cart button on each card when onAddToCart is provided', () => {
-    render(<PiaCustomCarousel items={mockItems} callbacks={{ onAddToCart: jest.fn() }} />);
+    const { container } = render(
+      <PiaCustomCarousel items={mockItems} callbacks={{ onAddToCart: jest.fn() }} />,
+    );
 
-    const buttons = getAddToCartButtons();
+    const buttons = getAddToCartButtons(container);
     expect(buttons).toHaveLength(mockItems.length);
     expect(buttons[0]).toHaveTextContent('Add to Cart');
   });
 
   it('calls onAddToCart with the clicked item and the click event', () => {
     const onAddToCart = jest.fn();
-    render(<PiaCustomCarousel items={mockItems} callbacks={{ onAddToCart }} />);
+    const { container } = render(
+      <PiaCustomCarousel items={mockItems} callbacks={{ onAddToCart }} />,
+    );
 
-    fireEvent.click(getAddToCartButtons()[1]);
+    fireEvent.click(getAddToCartButtons(container)[1]);
 
     expect(onAddToCart).toHaveBeenCalledTimes(1);
     expect(onAddToCart.mock.calls[0][0]).toEqual(expect.objectContaining({ id: '2' }));
@@ -43,38 +49,41 @@ describe('PiaCustomCarousel Add to Cart', () => {
   it('does not trigger the product card click callback when Add to Cart is clicked', () => {
     const onAddToCart = jest.fn();
     const onProductCardClick = jest.fn();
-    render(
+    const { container } = render(
       <PiaCustomCarousel items={mockItems} callbacks={{ onAddToCart, onProductCardClick }} />,
     );
 
-    fireEvent.click(getAddToCartButtons()[0]);
+    fireEvent.click(getAddToCartButtons(container)[0]);
 
     expect(onAddToCart).toHaveBeenCalledTimes(1);
     expect(onProductCardClick).not.toHaveBeenCalled();
   });
 
   it('translates the button label', () => {
-    render(
+    const { container } = render(
       <PiaCustomCarousel
         items={mockItems}
         callbacks={{ onAddToCart: jest.fn() }}
-        translations={{ 'Add to Cart': 'Ajouter au panier' }}
+        translations={{ 'Add to Cart': 'Añadir al carrito' }}
       />,
     );
 
-    expect(getAddToCartButtons()[0]).toHaveTextContent('Ajouter au panier');
+    expect(getAddToCartButtons(container)[0]).toHaveTextContent('Añadir al carrito');
   });
 
   it('keeps the sanitized HTML description when the button is rendered', () => {
     const items: Item[] = [{ id: '1', name: 'Product 1', description: '<b>Bold</b> copy' }];
-    render(<PiaCustomCarousel items={items} callbacks={{ onAddToCart: jest.fn() }} />);
+    const { container } = render(
+      <PiaCustomCarousel items={items} callbacks={{ onAddToCart: jest.fn() }} />,
+    );
 
-    const description = document.querySelector('.cio-product-card-description');
+    const description = container.querySelector('.cio-product-card-description');
+    expect(description).not.toBeNull();
     expect(description!.innerHTML).toBe('<b>Bold</b> copy');
   });
 
   it('applies consumer product card overrides alongside the button', () => {
-    render(
+    const { container } = render(
       <PiaCustomCarousel
         items={mockItems}
         callbacks={{ onAddToCart: jest.fn() }}
@@ -91,7 +100,7 @@ describe('PiaCustomCarousel Add to Cart', () => {
     );
 
     expect(screen.getByText('Custom Product 1')).toBeInTheDocument();
-    expect(getAddToCartButtons()).toHaveLength(mockItems.length);
+    expect(getAddToCartButtons(container)).toHaveLength(mockItems.length);
   });
 
   it('routes a custom Add to Cart button override to the callback', () => {
@@ -125,7 +134,7 @@ describe('PiaCustomCarousel Add to Cart', () => {
   });
 
   it('leaves a full product card override untouched', () => {
-    render(
+    const { container } = render(
       <PiaCustomCarousel
         items={mockItems}
         callbacks={{ onAddToCart: jest.fn() }}
@@ -140,6 +149,6 @@ describe('PiaCustomCarousel Add to Cart', () => {
     );
 
     expect(screen.getByText('Custom card Product 1')).toBeInTheDocument();
-    expect(getAddToCartButtons()).toHaveLength(0);
+    expect(getAddToCartButtons(container)).toHaveLength(0);
   });
 });
