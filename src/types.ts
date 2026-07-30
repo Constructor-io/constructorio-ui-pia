@@ -110,6 +110,12 @@ export interface Formatters {
   formatImageUrl?: (url: string) => string;
 }
 
+/** Props forwarded to the ProductCard rendered inside the carousel. */
+export interface ProductCardDisplayProps {
+  /** Currency symbol to display next to product prices (e.g., "€", "£"). Defaults to "$". */
+  priceCurrency?: string;
+}
+
 /** Extends Product type to include PIA-specific fields */
 export interface Item extends Product, Record<string, any> {
   url?: string;

@@ -9,9 +9,11 @@ jest.mock('@constructor-io/constructorio-ui-components', () => ({
       {items.map((item) => {
         const Description =
           componentOverrides?.item?.productCard?.content?.description?.reactNode;
+        const Price = componentOverrides?.item?.productCard?.content?.price?.reactNode;
         return (
           <div key={item.id} data-testid={`carousel-item-${item.id}`}>
             {Description && <Description product={item} />}
+            {Price && <Price product={item} />}
           </div>
         );
       })}
@@ -21,8 +23,8 @@ jest.mock('@constructor-io/constructorio-ui-components', () => ({
 }));
 
 const mockItems = [
-  { id: '1', name: 'Product 1', description: '<b>Bold</b> description' },
-  { id: '2', name: 'Product 2', description: undefined },
+  { id: '1', name: 'Product 1', description: '<b>Bold</b> description', price: 29.99 },
+  { id: '2', name: 'Product 2', description: undefined, price: 49.99, salePrice: 39.99 },
   { id: '3', name: 'Product 3', description: 'Plain text' },
 ];
 
@@ -99,6 +101,74 @@ describe('PiaCustomCarousel', () => {
       const parsed = JSON.parse(getByTestId('mock-carousel').getAttribute('data-overrides')!);
       expect(parsed.item.productCard.content.title).toBeDefined();
       expect(parsed.item.productCard.content.description).toBeDefined();
+    });
+  });
+
+  describe('priceCurrency rendering', () => {
+    it('does not inject a price override when priceCurrency is not provided', () => {
+      const { getByTestId } = render(<PiaCustomCarousel items={mockItems} />);
+      const parsed = JSON.parse(getByTestId('mock-carousel').getAttribute('data-overrides')!);
+      expect(parsed.item.productCard.content.price).toBeUndefined();
+    });
+
+    it('renders price with custom currency symbol', () => {
+      const { getByTestId } = render(
+        <PiaCustomCarousel items={mockItems} priceCurrency='€' />,
+      );
+      const item1 = getByTestId('carousel-item-1');
+      const priceSection = item1.querySelector('.cio-product-card-price-section');
+      expect(priceSection).toBeInTheDocument();
+      expect(priceSection).toHaveTextContent('€');
+      expect(priceSection).toHaveTextContent('29.99');
+    });
+
+    it('renders sale price with strikethrough when salePrice exists', () => {
+      const { getByTestId } = render(
+        <PiaCustomCarousel items={mockItems} priceCurrency='£' />,
+      );
+      const item2 = getByTestId('carousel-item-2');
+      const priceSection = item2.querySelector('.cio-product-card-price-section');
+      expect(priceSection).toBeInTheDocument();
+      expect(priceSection).toHaveTextContent('£');
+      expect(priceSection).toHaveTextContent('39.99');
+      const strikethrough = priceSection!.querySelector('.line-through');
+      expect(strikethrough).toHaveTextContent('49.99');
+    });
+
+    it('does not render price section when product has no price', () => {
+      const { getByTestId } = render(
+        <PiaCustomCarousel items={mockItems} priceCurrency='€' />,
+      );
+      const item3 = getByTestId('carousel-item-3');
+      expect(
+        item3.querySelector('.cio-product-card-price-section'),
+      ).not.toBeInTheDocument();
+    });
+
+    it('preserves user-provided price override over priceCurrency', () => {
+      const CustomPrice = ({ product }) => (
+        <span data-testid='custom-price'>{product.price}</span>
+      );
+
+      const overrides = {
+        item: {
+          productCard: {
+            content: {
+              price: { reactNode: CustomPrice },
+            },
+          },
+        },
+      };
+
+      const { getByTestId } = render(
+        <PiaCustomCarousel items={mockItems} componentOverrides={overrides} priceCurrency='€' />,
+      );
+
+      const item1 = getByTestId('carousel-item-1');
+      expect(item1.querySelector('[data-testid="custom-price"]')).toHaveTextContent('29.99');
+      expect(
+        item1.querySelector('.cio-product-card-price-section'),
+      ).not.toBeInTheDocument();
     });
   });
 
