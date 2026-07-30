@@ -112,7 +112,10 @@ export interface Formatters {
 
 /** Props forwarded to the ProductCard rendered inside the carousel. */
 export interface ProductCardDisplayProps {
-  /** Currency symbol to display next to product prices (e.g., "€", "£"). Defaults to "$". */
+  /**
+   * Currency symbol to display next to product prices (e.g., "€", "£").
+   * When omitted, the default ProductCard price rendering is used.
+   */
   priceCurrency?: string;
 }
 

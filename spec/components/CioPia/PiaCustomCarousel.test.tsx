@@ -56,7 +56,7 @@ describe('PiaCustomCarousel', () => {
     });
 
     it('preserves user-provided description override', () => {
-      const CustomDescription = ({ product }) => (
+      const CustomDescription = ({ product }: { product: { name: string } }) => (
         <span data-testid='custom-desc'>{product.name}</span>
       );
 
@@ -146,7 +146,7 @@ describe('PiaCustomCarousel', () => {
     });
 
     it('preserves user-provided price override over priceCurrency', () => {
-      const CustomPrice = ({ product }) => (
+      const CustomPrice = ({ product }: { product: { price?: number } }) => (
         <span data-testid='custom-price'>{product.price}</span>
       );
 

@@ -21,13 +21,13 @@ function HtmlDescription({ product }: { product: Item }) {
 function createPriceSectionOverride(priceCurrency: string) {
   return function PriceSectionOverride({ product }: { product: Item }) {
     const { price, salePrice } = product;
-    if (!price) return null;
+    if (price == null) return null;
     return (
       <div className='cio-product-card-price-section flex items-baseline gap-2'>
         <span className='text-lg font-bold'>
-          {priceCurrency}&nbsp;{salePrice || price}
+          {priceCurrency}&nbsp;{salePrice ?? price}
         </span>
-        {salePrice && (
+        {salePrice != null && (
           <span className='text-sm text-gray-400 line-through'>
             {priceCurrency}&nbsp;{price}
           </span>
