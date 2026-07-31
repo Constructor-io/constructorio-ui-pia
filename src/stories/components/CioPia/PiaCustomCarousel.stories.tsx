@@ -4,6 +4,7 @@ import { fn } from '@storybook/test';
 import { Button } from '@constructor-io/constructorio-ui-components';
 import PiaCustomCarousel from '../../../components/CioPia/PiaCustomCarousel';
 import { Item } from '../../../types';
+import { CAROUSEL_A11Y } from '../../utils';
 
 const mockItems: Item[] = [
   {
@@ -93,6 +94,7 @@ const meta = {
   title: 'Components/PiaCustomCarousel',
   component: PiaCustomCarousel,
   parameters: {
+    a11y: CAROUSEL_A11Y,
     layout: 'centered',
   },
   args: {

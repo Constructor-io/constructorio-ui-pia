@@ -23,6 +23,24 @@ describe('ConversationHistory Component', () => {
     expect(historyContainer).toHaveAttribute('aria-label', 'Conversation history');
   });
 
+  it('makes the scrollable history reachable by keyboard', () => {
+    render(<ConversationHistory {...baseProps} conversationHistory={[]} />);
+
+    expect(screen.getByRole('log')).toHaveAttribute('tabindex', '0');
+  });
+
+  it('translates the history region label', () => {
+    render(
+      <ConversationHistory
+        {...baseProps}
+        conversationHistory={[]}
+        translations={{ 'Conversation history': 'История переписки' }}
+      />,
+    );
+
+    expect(screen.getByRole('log')).toHaveAttribute('aria-label', 'История переписки');
+  });
+
   it('renders all conversation entries with question and answer', () => {
     const conversationHistory = [
       { id: 1, question: 'What is this product?', answer: 'It is a rug.' },

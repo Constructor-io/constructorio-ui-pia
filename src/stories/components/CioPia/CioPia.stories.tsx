@@ -7,6 +7,8 @@ const meta = {
   title: 'Components/CioPia',
   component: CioPia,
   parameters: {
+    // Fixed and verified against axe - keep it that way.
+    a11y: { test: 'error' },
     layout: 'centered',
   },
   tags: ['autodocs'],

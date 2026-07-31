@@ -34,6 +34,8 @@ const meta = {
   title: 'Components/PiaModal',
   component: PiaModal,
   parameters: {
+    // Fixed and verified against axe - keep it that way.
+    a11y: { test: 'error' },
     layout: 'centered',
   },
   tags: ['autodocs'],

@@ -6,6 +6,8 @@ const meta = {
   title: 'Components/ErrorBlock',
   component: ErrorBlock,
   parameters: {
+    // Fixed and verified against axe - keep it that way.
+    a11y: { test: 'error' },
     layout: 'centered',
   },
   tags: ['autodocs'],

@@ -154,6 +154,42 @@ describe('PiaModal Component', () => {
       expect(title).toBeInTheDocument();
       expect(title).toHaveTextContent('Ask about this product');
     });
+
+    it('exposes the modal title as a heading', () => {
+      const { container } = render(<PiaModal {...defaultProps} />);
+
+      const title = container.querySelector('#cio-pia-modal-title')!;
+      expect(title.tagName).toBe('H2');
+    });
+
+    it('translates the close button label', () => {
+      const { container } = render(
+        <PiaModal {...defaultProps} translations={{ Close: 'Закрыть' }} />,
+      );
+
+      const baseInput = container.querySelector(BASE_INPUT)!;
+      fireEvent.change(baseInput, { target: { value: 'What is this product?' } });
+      fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
+
+      const dialog = container.querySelector('dialog')!;
+      expect(within(dialog).getByRole('button', { name: 'Закрыть' })).toBeInTheDocument();
+    });
+
+    it('returns focus to the element that opened the modal when it closes', () => {
+      const { container } = render(<PiaModal {...defaultProps} />);
+
+      const baseInput = container.querySelector(BASE_INPUT)! as HTMLInputElement;
+      baseInput.focus();
+      expect(document.activeElement).toBe(baseInput);
+
+      fireEvent.change(baseInput, { target: { value: 'What is this product?' } });
+      fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
+
+      const dialog = container.querySelector('dialog')!;
+      fireEvent.click(within(dialog).getByRole('button', { name: 'Close' }));
+
+      expect(document.activeElement).toBe(baseInput);
+    });
   });
 
   describe('Suggested questions visibility', () => {

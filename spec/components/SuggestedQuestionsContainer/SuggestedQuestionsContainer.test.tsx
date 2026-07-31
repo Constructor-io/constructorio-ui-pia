@@ -23,6 +23,34 @@ describe('SuggestedQuestionsContainer Component', () => {
     });
   });
 
+  describe('accessibility', () => {
+    it('exposes the questions as a named group', () => {
+      render(<SuggestedQuestionsContainer {...defaultProps} />);
+
+      const group = screen.getByRole('group', { name: 'Suggested questions' });
+      expect(group).toBe(screen.getByTestId('suggested-questions-list'));
+    });
+
+    it('translates the group label', () => {
+      render(
+        <SuggestedQuestionsContainer
+          {...defaultProps}
+          translations={{ 'Suggested questions': 'Предлагаемые вопросы' }}
+        />,
+      );
+
+      expect(screen.getByRole('group', { name: 'Предлагаемые вопросы' })).toBeInTheDocument();
+    });
+
+    it('hides the decorative question icons from assistive technology', () => {
+      const { container } = render(<SuggestedQuestionsContainer {...defaultProps} />);
+
+      const icons = container.querySelectorAll('.cio-pia-suggested-question svg');
+      expect(icons.length).toBe(MOCK_QUESTIONS.length);
+      icons.forEach((icon) => expect(icon).toHaveAttribute('aria-hidden', 'true'));
+    });
+  });
+
   it('does not render any questions when none is provided', async () => {
     const { container } = render(
       <SuggestedQuestionsContainer questions={[]} onQuestionClick={defaultProps.onQuestionClick} />,

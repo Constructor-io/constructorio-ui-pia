@@ -14,7 +14,14 @@ interface InputProps {
 
 function SendIcon() {
   return (
-    <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
+    <svg
+      width='16'
+      height='16'
+      viewBox='0 0 16 16'
+      fill='none'
+      xmlns='http://www.w3.org/2000/svg'
+      aria-hidden='true'
+      focusable='false'>
       <g id='.icon-send'>
         <path
           id='Vector'
@@ -64,6 +71,10 @@ function Input({
       ? translate('Ask anything', translations)
       : (placeholder ?? translate('Ask anything'));
 
+  // A placeholder may legitimately be blanked out, but the field must always keep
+  // an accessible name, so fall back to the default label rather than an empty one.
+  const accessibleName = resolvedPlaceholder || translate('Ask anything', translations);
+
   return (
     <div className='cio-pia-input-container'>
       <input
@@ -73,6 +84,7 @@ function Input({
         onKeyDown={handleSubmitOnEnter}
         onFocus={onFocus}
         placeholder={resolvedPlaceholder}
+        aria-label={accessibleName}
         disabled={disabled}
         className='cio-pia-input'
       />

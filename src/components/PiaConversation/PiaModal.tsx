@@ -8,7 +8,14 @@ const OVERFLOW_HIDDEN_CLASS = 'cio-pia-modal-open';
 
 function CloseIcon() {
   return (
-    <svg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'>
+    <svg
+      width='20'
+      height='20'
+      viewBox='0 0 20 20'
+      fill='none'
+      xmlns='http://www.w3.org/2000/svg'
+      aria-hidden='true'
+      focusable='false'>
       <path
         d='M15.8334 5.34166L14.6584 4.16666L10.0001 8.82499L5.34175 4.16666L4.16675 5.34166L8.82508 9.99999L4.16675 14.6583L5.34175 15.8333L10.0001 11.175L14.6584 15.8333L15.8334 14.6583L11.1751 9.99999L15.8334 5.34166Z'
         fill='currentColor'
@@ -43,13 +50,18 @@ export default function PiaModal({
 }: PropsWithChildren<PiaModalProps>) {
   const [isOpen, setIsOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
+  // The element that had focus before the dialog opened, so it can be restored on close.
+  const triggerRef = useRef<HTMLElement | null>(null);
 
   const openModal = useCallback(() => {
+    triggerRef.current = document.activeElement as HTMLElement | null;
     setIsOpen(true);
   }, []);
 
   const closeModal = useCallback(() => {
     setIsOpen(false);
+    triggerRef.current?.focus?.();
+    triggerRef.current = null;
     onClose?.();
   }, [onClose]);
 
@@ -118,6 +130,7 @@ export default function PiaModal({
             questions={initialQuestions}
             onQuestionClick={handleQuestionClicked}
             componentOverride={componentOverrides?.suggestedQuestions}
+            translations={translations}
           />
         )}
 
@@ -132,13 +145,13 @@ export default function PiaModal({
       <dialog ref={dialogRef} className='cio-pia-modal' aria-labelledby='cio-pia-modal-title'>
         <div className='cio-pia-modal-content'>
           <div className='cio-pia-modal-header'>
-            <p className='cio-pia-title' id='cio-pia-modal-title'>
+            <h2 className='cio-pia-title' id='cio-pia-modal-title'>
               {translate('Ask about this product', translations)}
-            </p>
+            </h2>
             <button
               type='button'
               className='cio-pia-modal-close-button'
-              aria-label='Close'
+              aria-label={translate('Close', translations)}
               onClick={closeModal}>
               <CloseIcon />
             </button>

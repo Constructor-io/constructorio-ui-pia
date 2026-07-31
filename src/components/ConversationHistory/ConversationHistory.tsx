@@ -5,6 +5,7 @@ import Disclaimer from '../CioPia/Disclaimer';
 import ErrorBlock from '../Error/ErrorBlock';
 import LoadingSkeleton from '../LoadingSkeleton/LoadingSkeleton';
 import PiaCustomCarousel from '../CioPia/PiaCustomCarousel';
+import { translate } from '../../utils/translate';
 import {
   ConversationEntry,
   FeedbackType,
@@ -86,7 +87,10 @@ export default function ConversationHistory({
         ref={scrollContainerRef}
         className='cio-pia-conversation-entries'
         role='log'
-        aria-label='Conversation history'>
+        // Scrollable regions must be reachable by keyboard so they can be scrolled
+        // without a pointer.
+        tabIndex={0}
+        aria-label={translate('Conversation history', translations)}>
         {conversationHistory.map((entry, index) => {
           const isLast = index === conversationHistory.length - 1;
           const previousEntryItems = showPreviousItems ? entry.items : null;
@@ -99,12 +103,18 @@ export default function ConversationHistory({
 
               {isLast && isLoading && (
                 <div className='cio-pia-conversation-loading' aria-live='polite'>
-                  <LoadingSkeleton componentOverride={componentOverrides?.loading} />
+                  <LoadingSkeleton
+                    componentOverride={componentOverrides?.loading}
+                    translations={translations}
+                  />
                 </div>
               )}
 
               {isLast && !isLoading && error && (
-                <ErrorBlock message={error.message || 'Unexpected error'} />
+                <ErrorBlock
+                  message={error.message || 'Unexpected error'}
+                  translations={translations}
+                />
               )}
 
               {entry.answer && (

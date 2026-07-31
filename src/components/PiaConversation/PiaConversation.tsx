@@ -71,12 +71,13 @@ export default function PiaConversation({
       />
 
       <div className='cio-pia-conversation-footer'>
-        {isLoading && !error && <SuggestedQuestionsSkeleton />}
+        {isLoading && !error && <SuggestedQuestionsSkeleton translations={translations} />}
         {!isLoading && !error && (
           <SuggestedQuestionsContainer
             questions={displayedQuestions}
             onQuestionClick={handleQuestionClick}
             componentOverride={componentOverrides?.suggestedQuestions}
+            translations={translations}
           />
         )}
         <Input

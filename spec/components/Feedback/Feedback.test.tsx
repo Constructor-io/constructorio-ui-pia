@@ -15,6 +15,53 @@ describe('Feedback Component', () => {
     expect(screen.getByLabelText('thumbs down')).toBeInTheDocument();
   });
 
+  describe('accessibility', () => {
+    it('exposes both feedback buttons as unpressed toggles initially', () => {
+      render(<Feedback />);
+
+      expect(screen.getByRole('button', { name: 'thumbs up' })).toHaveAttribute(
+        'aria-pressed',
+        'false',
+      );
+      expect(screen.getByRole('button', { name: 'thumbs down' })).toHaveAttribute(
+        'aria-pressed',
+        'false',
+      );
+    });
+
+    it('reflects the selected feedback via aria-pressed rather than colour alone', () => {
+      render(<Feedback />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'thumbs up' }));
+
+      expect(screen.getByRole('button', { name: 'thumbs up' })).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      );
+      expect(screen.getByRole('button', { name: 'thumbs down' })).toHaveAttribute(
+        'aria-pressed',
+        'false',
+      );
+    });
+
+    it('hides the decorative thumb icons from assistive technology', () => {
+      const { container } = render(<Feedback />);
+
+      const icons = container.querySelectorAll('.cio-pia-feedback-button svg');
+      expect(icons).toHaveLength(2);
+      icons.forEach((icon) => expect(icon).toHaveAttribute('aria-hidden', 'true'));
+    });
+
+    it('translates the feedback button labels', () => {
+      render(
+        <Feedback translations={{ 'thumbs up': 'палец вверх', 'thumbs down': 'палец вниз' }} />,
+      );
+
+      expect(screen.getByRole('button', { name: 'палец вверх' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'палец вниз' })).toBeInTheDocument();
+    });
+  });
+
   it('calls onFeedback with "up" when thumbs up is clicked', () => {
     render(<Feedback onFeedback={onFeedback} />);
 

@@ -74,6 +74,22 @@ export type Translations = {
   'Is this answer useful?'?: string;
   'Learn More.'?: string;
   'Ask about this product'?: string;
+  /** Accessible name for the thumbs-up feedback button. */
+  'thumbs up'?: string;
+  /** Accessible name for the thumbs-down feedback button. */
+  'thumbs down'?: string;
+  /** Accessible name for the modal close button. */
+  Close?: string;
+  /** Visible label and accessible name for the error retry button. */
+  Retry?: string;
+  /** Accessible name for the conversation history region. */
+  'Conversation history'?: string;
+  /** Accessible name for the suggested questions group. */
+  'Suggested questions'?: string;
+  /** Announced while suggested questions are loading. */
+  'Loading suggestions'?: string;
+  /** Announced while an answer is loading. */
+  'Loading answer'?: string;
 };
 
 export type QuestionSource = 'user' | 'suggestion';

@@ -202,9 +202,16 @@ export default function CioPia(props: CioPiaProps) {
           translations={translations}
         />
 
-        {isLoading && <LoadingSkeleton componentOverride={componentOverrides?.loading} />}
+        {isLoading && (
+          <LoadingSkeleton
+            componentOverride={componentOverrides?.loading}
+            translations={translations}
+          />
+        )}
 
-        {!isLoading && error && <ErrorBlock message={error?.message || 'Unexpected error'} />}
+        {!isLoading && error && (
+          <ErrorBlock message={error?.message || 'Unexpected error'} translations={translations} />
+        )}
 
         {!isLoading && !error && (
           <>
@@ -229,6 +236,7 @@ export default function CioPia(props: CioPiaProps) {
               questions={displayedQuestions}
               onQuestionClick={handleQuestionClick}
               componentOverride={componentOverrides?.suggestedQuestions}
+              translations={translations}
             />
           </>
         )}

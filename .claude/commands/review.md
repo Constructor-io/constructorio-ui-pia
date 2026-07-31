@@ -123,6 +123,12 @@ Perform a comprehensive code review of all changes in the current branch (or spe
 - **Implement limits for large datasets**: Add sensible display limits for user-generated content
 - **Real-time preview updates**: Interactive elements should provide immediate feedback
 
+### Accessibility
+
+If the diff touches JSX/TSX, HTML, or CSS, read `.claude/a11y.md` and apply its rules.
+
+Report accessibility findings as **Important Issue** or **Suggestion** — never **Critical Issue**. The merge gate for accessibility is `npm run lint` (jsx-a11y) plus `npm run test-storybook:ci` (axe-core in a real browser); this review layer is advisory and covers the semantic judgement those tools cannot make.
+
 ### Suggestions Section
 
 Focus on code quality improvements that enhance maintainability:

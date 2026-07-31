@@ -7,6 +7,8 @@ const meta = {
   title: 'Components/SuggestedQuestionsContainer',
   component: SuggestedQuestionsContainer,
   parameters: {
+    // Fixed and verified against axe - keep it that way.
+    a11y: { test: 'error' },
     layout: 'centered',
   },
   tags: ['autodocs'],

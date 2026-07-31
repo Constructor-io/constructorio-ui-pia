@@ -15,6 +15,37 @@ describe('Input Component', () => {
     expect(getByPlaceholderText('Ask anything')).toBeInTheDocument();
   });
 
+  describe('accessibility', () => {
+    it('gives the text field an accessible name, not just a placeholder', () => {
+      const { getByRole } = render(<Input onSubmit={mockSubmit} />);
+
+      expect(getByRole('textbox', { name: 'Ask anything' })).toBeInTheDocument();
+    });
+
+    it('keeps the accessible name in sync with the translated placeholder', () => {
+      const { getByRole } = render(
+        <Input onSubmit={mockSubmit} translations={{ 'Ask anything': 'Спросите что-нибудь' }} />,
+      );
+
+      expect(getByRole('textbox', { name: 'Спросите что-нибудь' })).toBeInTheDocument();
+    });
+
+    it('keeps an accessible name when the placeholder is blanked out', () => {
+      const { getByRole } = render(<Input onSubmit={mockSubmit} placeholder='' />);
+
+      const input = getByRole('textbox', { name: 'Ask anything' });
+      expect(input).toHaveAttribute('placeholder', '');
+    });
+
+    it('hides the decorative send icon from assistive technology', () => {
+      const { getByRole } = render(<Input onSubmit={mockSubmit} />);
+
+      const icon = getByRole('button', { name: 'Send' }).querySelector('svg');
+      expect(icon).toHaveAttribute('aria-hidden', 'true');
+      expect(icon).toHaveAttribute('focusable', 'false');
+    });
+  });
+
   it('renders with custom placeholder via translations', () => {
     const { getByPlaceholderText } = render(
       <Input onSubmit={mockSubmit} translations={{ 'Ask anything': 'Custom placeholder' }} />,

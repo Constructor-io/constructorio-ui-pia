@@ -6,6 +6,8 @@ const meta = {
   title: 'Components/Feedback',
   component: Feedback,
   parameters: {
+    // Fixed and verified against axe - keep it that way.
+    a11y: { test: 'error' },
     layout: 'centered',
   },
   tags: ['autodocs'],
