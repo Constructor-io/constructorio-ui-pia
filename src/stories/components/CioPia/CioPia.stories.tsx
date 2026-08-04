@@ -85,6 +85,14 @@ const meta = {
       ].join('\n'),
       table: { type: { summary: 'Formatters' } },
     },
+    productCardProps: {
+      description: [
+        'Props forwarded to the ProductCard rendered inside the carousel.',
+        '',
+        '`priceCurrency?: string` — Currency symbol to display next to product prices (e.g., "€", "£"). When omitted, the default ProductCard price rendering is used.',
+      ].join('\n'),
+      table: { type: { summary: 'ProductCardDisplayProps' } },
+    },
     translations: {
       description: [
         'UI string translations for internationalization. All keys are optional — any non-provided translation falls back to English.',
@@ -145,6 +153,31 @@ export const WithFormatImageUrl: Story = {
     itemName: DEMO_ITEM_NAME,
     formatters: {
       formatImageUrl: prependCdnBase,
+    },
+  },
+};
+
+export const WithCustomCurrency: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: DEMO_ITEM_ID,
+    itemName: DEMO_ITEM_NAME,
+    productCardProps: {
+      priceCurrency: '€',
+    },
+  },
+};
+
+export const WithCustomCurrencyConversation: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: DEMO_ITEM_ID,
+    itemName: DEMO_ITEM_NAME,
+    productCardProps: {
+      priceCurrency: '£',
+    },
+    displayConfigs: {
+      mode: 'conversation',
     },
   },
 };

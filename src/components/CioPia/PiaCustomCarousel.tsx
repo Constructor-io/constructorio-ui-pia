@@ -3,7 +3,6 @@ import {
   Carousel,
   CarouselOverrides,
   ProductCard,
-  ProductCardOverrides,
   ProductCardProps,
   CIO_EVENTS,
 } from '@constructor-io/constructorio-ui-components';
@@ -22,6 +21,70 @@ function HtmlDescription({ product }: { product: Item }) {
   );
 }
 
+function createPriceSectionOverride(priceCurrency: string) {
+  return function PriceSectionOverride({ product }: { product: Item }) {
+    const { price, salePrice } = product;
+    if (price == null) return null;
+    return (
+      <div className='cio-product-card-price-section flex items-baseline gap-2'>
+        <span className='text-lg font-bold'>
+          {priceCurrency}&nbsp;{salePrice ?? price}
+        </span>
+        {salePrice != null && (
+          <span className='text-sm text-gray-400 line-through'>
+            {priceCurrency}&nbsp;{price}
+          </span>
+        )}
+      </div>
+    );
+  };
+}
+
+interface ContentOverrides {
+  description?: unknown;
+  price?: unknown;
+}
+
+function getContentDefaults(
+  content: ContentOverrides | undefined,
+  priceSectionOverride: React.ComponentType<{ product: Item }> | undefined,
+) {
+  const defaults: Record<string, { reactNode: React.ComponentType<{ product: Item }> }> = {};
+  if (!content?.description) {
+    defaults.description = { reactNode: HtmlDescription };
+  }
+  if (!content?.price && priceSectionOverride) {
+    defaults.price = { reactNode: priceSectionOverride };
+  }
+  return defaults;
+}
+
+function buildMergedOverrides(
+  componentOverrides: CarouselOverrides<Item> | undefined,
+  priceSectionOverride: React.ComponentType<{ product: Item }> | undefined,
+): CarouselOverrides<Item> {
+  const content = componentOverrides?.item?.productCard?.content;
+  const defaults = getContentDefaults(content, priceSectionOverride);
+
+  if (Object.keys(defaults).length === 0) {
+    return componentOverrides || {};
+  }
+
+  return {
+    ...componentOverrides,
+    item: {
+      ...componentOverrides?.item,
+      productCard: {
+        ...componentOverrides?.item?.productCard,
+        content: {
+          ...content,
+          ...defaults,
+        },
+      },
+    },
+  };
+}
+
 interface PiaCustomCarouselProps {
   items: Array<Item>;
   componentOverrides?: CarouselOverrides<Item>;
@@ -30,6 +93,7 @@ interface PiaCustomCarouselProps {
   question?: string;
   qnaResultId?: string;
   translations?: Translations;
+  priceCurrency?: string;
 }
 
 export default function PiaCustomCarousel({
@@ -40,6 +104,7 @@ export default function PiaCustomCarousel({
   question,
   qnaResultId,
   translations,
+  priceCurrency,
 }: PiaCustomCarouselProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const { onAddToCart } = callbacks || {};
@@ -87,48 +152,42 @@ export default function PiaCustomCarousel({
     };
   }, [productClickHandler]);
 
-  const mergedOverrides = useMemo((): CarouselOverrides<Item> => {
-    const userProductCard = componentOverrides?.item?.productCard;
+  const priceSectionOverride = useMemo(
+    () => (priceCurrency ? createPriceSectionOverride(priceCurrency) : undefined),
+    [priceCurrency],
+  );
 
-    // Render descriptions as sanitized HTML unless the consumer overrides the description
-    let productCard: ProductCardOverrides = userProductCard?.content?.description
-      ? userProductCard
-      : {
-          ...userProductCard,
-          content: {
-            ...userProductCard?.content,
-            description: { reactNode: HtmlDescription },
-          },
-        };
+  const mergedOverrides = useMemo((): CarouselOverrides<Item> => {
+    const baseOverrides = buildMergedOverrides(componentOverrides, priceSectionOverride);
+    const cardOverrides = baseOverrides.item?.productCard;
 
     // The carousel never passes onAddToCart down and the card hides the button without it, so
     // re-render the card with the handler. A full card override owns its own layout - skip it.
-    if (onAddToCart && !userProductCard?.reactNode) {
-      const cardOverrides = productCard;
-      const addToCartText = translate('Add to Cart', translations);
-
-      productCard = {
-        ...cardOverrides,
-        reactNode: ({ product }: ProductCardProps) => (
-          <ProductCard
-            product={product}
-            className='w-full h-full'
-            addToCartText={addToCartText}
-            onAddToCart={addToCartHandler}
-            componentOverrides={cardOverrides}
-          />
-        ),
-      };
+    if (!onAddToCart || cardOverrides?.reactNode) {
+      return baseOverrides;
     }
 
+    const addToCartText = translate('Add to Cart', translations);
+
     return {
-      ...componentOverrides,
+      ...baseOverrides,
       item: {
-        ...componentOverrides?.item,
-        productCard,
+        ...baseOverrides.item,
+        productCard: {
+          ...cardOverrides,
+          reactNode: ({ product }: ProductCardProps) => (
+            <ProductCard
+              product={product}
+              className='w-full h-full'
+              addToCartText={addToCartText}
+              onAddToCart={addToCartHandler}
+              componentOverrides={cardOverrides}
+            />
+          ),
+        },
       },
     };
-  }, [componentOverrides, onAddToCart, translations, addToCartHandler]);
+  }, [componentOverrides, priceSectionOverride, onAddToCart, translations, addToCartHandler]);
 
   // If there are no items, do not render the carousel
   if (items.length === 0) {

@@ -22,6 +22,7 @@ import {
   Translations,
   SuggestedQuestionsParameters,
   Formatters,
+  ProductCardDisplayProps,
 } from '../../types';
 import { translate } from '../../utils/translate';
 import PiaInlineAnswer from '../PiaInlineAnswer/PiaInlineAnswer';
@@ -53,6 +54,8 @@ export interface CioPiaProps
   componentOverrides?: CioPiaComponentOverrides;
   /** Formatter functions for transforming data before display. */
   formatters?: Formatters;
+  /** Props forwarded to the ProductCard rendered inside the carousel. */
+  productCardProps?: ProductCardDisplayProps;
   /** UI string translations for internationalization. */
   translations?: Translations;
   /** Parameters for the suggested questions request. */
@@ -72,6 +75,7 @@ export default function CioPia(props: CioPiaProps) {
     componentOverrides,
     callbacks,
     formatters,
+    productCardProps,
     children,
     translations,
     suggestedQuestionsParameters,
@@ -85,6 +89,8 @@ export default function CioPia(props: CioPiaProps) {
     disclaimerPosition = 'bottom',
   } = displayConfigs || {};
   const isConversation = mode === 'conversation' || type === 'modal';
+
+  const { priceCurrency } = productCardProps || {};
 
   const pia = useCioPia({
     apiKey,
@@ -167,6 +173,7 @@ export default function CioPia(props: CioPiaProps) {
     qnaResultId,
     containerRef,
     onInputFocus: handleInputFocus,
+    priceCurrency,
   };
 
   if (type === 'modal') {
@@ -222,6 +229,7 @@ export default function CioPia(props: CioPiaProps) {
                 onResultClick={tracking.trackResultClick}
                 question={currentQuestion}
                 qnaResultId={qnaResultId}
+                priceCurrency={priceCurrency}
               />
             )}
 
