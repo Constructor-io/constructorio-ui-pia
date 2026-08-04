@@ -109,6 +109,21 @@ describe('PiaModal Component', () => {
       expect(HTMLDialogElement.prototype.close).toHaveBeenCalled();
     });
 
+    it('unlocks body scroll when the modal is closed', () => {
+      const { container } = render(<PiaModal {...defaultProps} />);
+
+      const baseInput = container.querySelector(BASE_INPUT)!;
+      fireEvent.change(baseInput, { target: { value: 'What is this product?' } });
+      fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
+
+      expect(document.body).toHaveClass('cio-pia-modal-open');
+
+      const dialog = container.querySelector('dialog')!;
+      fireEvent.click(within(dialog).getByRole('button', { name: 'Close', hidden: true }));
+
+      expect(document.body).not.toHaveClass('cio-pia-modal-open');
+    });
+
     it('calls onClose when modal is closed', () => {
       const { container } = render(<PiaModal {...defaultProps} />);
 
