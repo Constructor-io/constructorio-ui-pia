@@ -18,6 +18,70 @@ function HtmlDescription({ product }: { product: Item }) {
   );
 }
 
+function createPriceSectionOverride(priceCurrency: string) {
+  return function PriceSectionOverride({ product }: { product: Item }) {
+    const { price, salePrice } = product;
+    if (price == null) return null;
+    return (
+      <div className='cio-product-card-price-section flex items-baseline gap-2'>
+        <span className='text-lg font-bold'>
+          {priceCurrency}&nbsp;{salePrice ?? price}
+        </span>
+        {salePrice != null && (
+          <span className='text-sm text-gray-400 line-through'>
+            {priceCurrency}&nbsp;{price}
+          </span>
+        )}
+      </div>
+    );
+  };
+}
+
+interface ContentOverrides {
+  description?: unknown;
+  price?: unknown;
+}
+
+function getContentDefaults(
+  content: ContentOverrides | undefined,
+  priceSectionOverride: React.ComponentType<{ product: Item }> | undefined,
+) {
+  const defaults: Record<string, { reactNode: React.ComponentType<{ product: Item }> }> = {};
+  if (!content?.description) {
+    defaults.description = { reactNode: HtmlDescription };
+  }
+  if (!content?.price && priceSectionOverride) {
+    defaults.price = { reactNode: priceSectionOverride };
+  }
+  return defaults;
+}
+
+function buildMergedOverrides(
+  componentOverrides: CarouselOverrides<Item> | undefined,
+  priceSectionOverride: React.ComponentType<{ product: Item }> | undefined,
+): CarouselOverrides<Item> {
+  const content = componentOverrides?.item?.productCard?.content;
+  const defaults = getContentDefaults(content, priceSectionOverride);
+
+  if (Object.keys(defaults).length === 0) {
+    return componentOverrides || {};
+  }
+
+  return {
+    ...componentOverrides,
+    item: {
+      ...componentOverrides?.item,
+      productCard: {
+        ...componentOverrides?.item?.productCard,
+        content: {
+          ...content,
+          ...defaults,
+        },
+      },
+    },
+  };
+}
+
 interface PiaCustomCarouselProps {
   items: Array<Item>;
   componentOverrides?: CarouselOverrides<Item>;
@@ -25,6 +89,7 @@ interface PiaCustomCarouselProps {
   onResultClick?: (item: Item, position: number, question: string, qnaResultId?: string) => void;
   question?: string;
   qnaResultId?: string;
+  priceCurrency?: string;
 }
 
 export default function PiaCustomCarousel({
@@ -34,6 +99,7 @@ export default function PiaCustomCarousel({
   onResultClick,
   question,
   qnaResultId,
+  priceCurrency,
 }: PiaCustomCarouselProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -73,25 +139,15 @@ export default function PiaCustomCarousel({
     };
   }, [productClickHandler]);
 
-  const mergedOverrides = useMemo((): CarouselOverrides<Item> => {
-    if (componentOverrides?.item?.productCard?.content?.description) {
-      return componentOverrides;
-    }
+  const priceSectionOverride = useMemo(
+    () => (priceCurrency ? createPriceSectionOverride(priceCurrency) : undefined),
+    [priceCurrency],
+  );
 
-    return {
-      ...componentOverrides,
-      item: {
-        ...componentOverrides?.item,
-        productCard: {
-          ...componentOverrides?.item?.productCard,
-          content: {
-            ...componentOverrides?.item?.productCard?.content,
-            description: { reactNode: HtmlDescription },
-          },
-        },
-      },
-    };
-  }, [componentOverrides]);
+  const mergedOverrides = useMemo(
+    () => buildMergedOverrides(componentOverrides, priceSectionOverride),
+    [componentOverrides, priceSectionOverride],
+  );
 
   // If there are no items, do not render the carousel
   if (items.length === 0) {

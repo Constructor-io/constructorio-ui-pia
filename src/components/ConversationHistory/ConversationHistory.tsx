@@ -41,6 +41,7 @@ export interface ConversationHistoryProps {
   handleFeedback?: (type: FeedbackType) => void;
   onResultClick?: (item: Item, position: number, question: string, qnaResultId?: string) => void;
   qnaResultId?: string;
+  priceCurrency?: string;
 }
 
 export default function ConversationHistory({
@@ -58,6 +59,7 @@ export default function ConversationHistory({
   handleFeedback,
   onResultClick,
   qnaResultId,
+  priceCurrency,
 }: ConversationHistoryProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -128,6 +130,7 @@ export default function ConversationHistory({
                       onResultClick={onResultClick}
                       question={entry.question}
                       qnaResultId={qnaResultId}
+                      priceCurrency={priceCurrency}
                     />
                   )}
                   {isLast && showFeedback && (
