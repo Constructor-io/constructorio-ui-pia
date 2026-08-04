@@ -89,8 +89,6 @@ export default function ConversationHistory({
         ref={scrollContainerRef}
         className='cio-pia-conversation-entries'
         role='log'
-        // Scrollable regions must be reachable by keyboard so they can be scrolled
-        // without a pointer.
         tabIndex={0}
         aria-label={translate('Conversation history', translations)}>
         {conversationHistory.map((entry, index) => {
@@ -104,7 +102,7 @@ export default function ConversationHistory({
               <div className='cio-pia-chat-question'>{entry.question}</div>
 
               {isLast && isLoading && (
-                <div className='cio-pia-conversation-loading' aria-live='polite'>
+                <div className='cio-pia-conversation-loading'>
                   <LoadingSkeleton
                     componentOverride={componentOverrides?.loading}
                     translations={translations}

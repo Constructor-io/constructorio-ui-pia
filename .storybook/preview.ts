@@ -9,8 +9,16 @@ const preview: Preview = {
       test: 'todo',
       options: {
         runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'],
-        // axe-core ships its WCAG 2.2 rules disabled by default.
-        rules: { 'target-size': { enabled: true } },
+        // Rules axe ships disabled by default: WCAG 2.2, plus best-practice ones
+        // that are meaningful for isolated components (landmark/page-level ones are not).
+        rules: {
+          'target-size': { enabled: true },
+          'aria-dialog-name': { enabled: true },
+          'aria-allowed-role': { enabled: true },
+          'presentation-role-conflict': { enabled: true },
+          'focus-order-semantics': { enabled: true },
+          tabindex: { enabled: true },
+        },
       },
     },
     controls: {

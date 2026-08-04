@@ -34,11 +34,11 @@ describe('ConversationHistory Component', () => {
       <ConversationHistory
         {...baseProps}
         conversationHistory={[]}
-        translations={{ 'Conversation history': 'История переписки' }}
+        translations={{ 'Conversation history': 'Historial de conversación' }}
       />,
     );
 
-    expect(screen.getByRole('log')).toHaveAttribute('aria-label', 'История переписки');
+    expect(screen.getByRole('log')).toHaveAttribute('aria-label', 'Historial de conversación');
   });
 
   it('renders all conversation entries with question and answer', () => {

@@ -50,7 +50,6 @@ export default function PiaModal({
 }: PropsWithChildren<PiaModalProps>) {
   const [isOpen, setIsOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
-  // The element that had focus before the dialog opened, so it can be restored on close.
   const triggerRef = useRef<HTMLElement | null>(null);
 
   const openModal = useCallback(() => {
@@ -59,6 +58,9 @@ export default function PiaModal({
   }, []);
 
   const closeModal = useCallback(() => {
+    const dialog = dialogRef.current;
+    if (dialog?.open) dialog.close();
+
     setIsOpen(false);
     triggerRef.current?.focus?.();
     triggerRef.current = null;

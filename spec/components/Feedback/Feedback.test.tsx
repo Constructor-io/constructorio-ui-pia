@@ -29,7 +29,7 @@ describe('Feedback Component', () => {
       );
     });
 
-    it('reflects the selected feedback via aria-pressed rather than colour alone', () => {
+    it('reflects the selected feedback via aria-pressed rather than color alone', () => {
       render(<Feedback />);
 
       fireEvent.click(screen.getByRole('button', { name: 'thumbs up' }));
@@ -54,11 +54,11 @@ describe('Feedback Component', () => {
 
     it('translates the feedback button labels', () => {
       render(
-        <Feedback translations={{ 'thumbs up': 'палец вверх', 'thumbs down': 'палец вниз' }} />,
+        <Feedback translations={{ 'thumbs up': 'Pulgar arriba', 'thumbs down': 'Pulgar abajo' }} />,
       );
 
-      expect(screen.getByRole('button', { name: 'палец вверх' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'палец вниз' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Pulgar arriba' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Pulgar abajo' })).toBeInTheDocument();
     });
   });
 

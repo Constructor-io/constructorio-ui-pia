@@ -19,8 +19,6 @@ export default function LoadingSkeleton({
     <div
       className='cio-pia-loading-skeleton'
       data-testid='loading-skeleton'
-      // role='status' carries an implicit aria-live='polite' and, unlike a plain
-      // div with no role, is permitted to have an aria-label.
       role='status'
       aria-busy='true'
       aria-label={translate('Loading answer', translations)}>

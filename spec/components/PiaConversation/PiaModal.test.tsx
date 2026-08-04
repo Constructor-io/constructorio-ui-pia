@@ -164,7 +164,7 @@ describe('PiaModal Component', () => {
 
     it('translates the close button label', () => {
       const { container } = render(
-        <PiaModal {...defaultProps} translations={{ Close: 'Закрыть' }} />,
+        <PiaModal {...defaultProps} translations={{ Close: 'Cerrar' }} />,
       );
 
       const baseInput = container.querySelector(BASE_INPUT)!;
@@ -172,7 +172,7 @@ describe('PiaModal Component', () => {
       fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
 
       const dialog = container.querySelector('dialog')!;
-      expect(within(dialog).getByRole('button', { name: 'Закрыть' })).toBeInTheDocument();
+      expect(within(dialog).getByRole('button', { name: 'Cerrar' })).toBeInTheDocument();
     });
 
     it('returns focus to the element that opened the modal when it closes', () => {

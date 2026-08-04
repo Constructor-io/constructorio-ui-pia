@@ -70,11 +70,11 @@ describe('ErrorBlock component', () => {
         <ErrorBlock
           message={testErrorMessage}
           onRetry={() => {}}
-          translations={{ Retry: 'Повторить' }}
+          translations={{ Retry: 'Reintentar' }}
         />,
       );
 
-      expect(getByRole('button', { name: 'Повторить' })).toBeInTheDocument();
+      expect(getByRole('button', { name: 'Reintentar' })).toBeInTheDocument();
     });
   });
 

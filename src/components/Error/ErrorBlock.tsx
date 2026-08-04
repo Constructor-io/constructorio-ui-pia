@@ -52,8 +52,10 @@ function ErrorBlock({ message, onRetry = undefined, translations }: ErrorBlockPr
         data-testid='error-block-warning-icon'>
         <WarningIcon />
       </div>
-      <div className='cio-pia-error-block-text-container' role='alert'>
-        <p className='cio-pia-error-block-text'>{message}</p>
+      <div className='cio-pia-error-block-text-container'>
+        <p className='cio-pia-error-block-text' role='alert'>
+          {message}
+        </p>
         {onRetry && (
           <button type='button' onClick={onRetry} className='cio-pia-error-block-retry-button'>
             <RetryIcon />

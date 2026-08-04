@@ -35,11 +35,11 @@ describe('SuggestedQuestionsContainer Component', () => {
       render(
         <SuggestedQuestionsContainer
           {...defaultProps}
-          translations={{ 'Suggested questions': 'Предлагаемые вопросы' }}
+          translations={{ 'Suggested questions': 'Preguntas sugeridas' }}
         />,
       );
 
-      expect(screen.getByRole('group', { name: 'Предлагаемые вопросы' })).toBeInTheDocument();
+      expect(screen.getByRole('group', { name: 'Preguntas sugeridas' })).toBeInTheDocument();
     });
 
     it('hides the decorative question icons from assistive technology', () => {

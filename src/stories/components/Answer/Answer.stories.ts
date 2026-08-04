@@ -5,7 +5,6 @@ const meta = {
   title: 'Components/Answer',
   component: Answer,
   parameters: {
-    // Fixed and verified against axe - keep it that way.
     a11y: { test: 'error' },
     layout: 'centered',
   },

@@ -9,8 +9,6 @@ const defaultTranslations: Translations = {
   'Is this answer useful?': 'Is this answer useful?',
   'Learn More.': 'Learn More.',
   'Ask about this product': 'Ask about this product',
-  // Accessible names and live-region announcements. Defaults intentionally match
-  // the strings that were previously hardcoded in the components.
   'thumbs up': 'thumbs up',
   'thumbs down': 'thumbs down',
   Close: 'Close',

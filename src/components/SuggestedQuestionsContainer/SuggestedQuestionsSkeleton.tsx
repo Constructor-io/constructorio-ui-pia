@@ -13,8 +13,6 @@ export default function SuggestedQuestionsSkeleton({
     <div
       className='cio-pia-suggested-questions-container'
       data-testid='suggested-questions-skeleton'
-      // role='status' carries an implicit aria-live='polite' and, unlike a plain
-      // div with no role, is permitted to have an aria-label.
       role='status'
       aria-busy='true'
       aria-label={translate('Loading suggestions', translations)}>

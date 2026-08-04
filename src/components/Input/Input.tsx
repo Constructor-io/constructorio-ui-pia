@@ -71,8 +71,6 @@ function Input({
       ? translate('Ask anything', translations)
       : (placeholder ?? translate('Ask anything'));
 
-  // A placeholder may legitimately be blanked out, but the field must always keep
-  // an accessible name, so fall back to the default label rather than an empty one.
   const accessibleName = resolvedPlaceholder || translate('Ask anything', translations);
 
   return (

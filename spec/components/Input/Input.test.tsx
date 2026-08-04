@@ -24,10 +24,10 @@ describe('Input Component', () => {
 
     it('keeps the accessible name in sync with the translated placeholder', () => {
       const { getByRole } = render(
-        <Input onSubmit={mockSubmit} translations={{ 'Ask anything': 'Спросите что-нибудь' }} />,
+        <Input onSubmit={mockSubmit} translations={{ 'Ask anything': 'Pregunta lo que quieras' }} />,
       );
 
-      expect(getByRole('textbox', { name: 'Спросите что-нибудь' })).toBeInTheDocument();
+      expect(getByRole('textbox', { name: 'Pregunta lo que quieras' })).toBeInTheDocument();
     });
 
     it('keeps an accessible name when the placeholder is blanked out', () => {
