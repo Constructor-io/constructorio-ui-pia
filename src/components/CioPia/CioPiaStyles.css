@@ -30,3 +30,21 @@
 .cio-pia-learn-more {
   color: inherit;
 }
+
+/* Neutral placeholder shown behind product images while they load */
+.cio-pia-answer-container .cio-product-card-image-section {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+}
+
+/* Match the stock ProductCard description look: 3-line clamp, small muted text */
+.cio-pia-answer-container .cio-product-card-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  line-clamp: 3;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 20px;
+  color: #6b7280;
+}
