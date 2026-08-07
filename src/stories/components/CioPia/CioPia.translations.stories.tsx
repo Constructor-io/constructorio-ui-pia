@@ -42,6 +42,7 @@ export const AllCustomText: Story = {
       'Is this answer useful?': '¿Es útil esta respuesta?',
       'Learn More.': 'Más información.',
       'Ask about this product': 'Pregunta sobre este producto',
+      'Add to Cart': 'Añadir al carrito',
     },
   },
 };
