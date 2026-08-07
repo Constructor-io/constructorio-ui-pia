@@ -39,7 +39,7 @@
 
 /* Restores the clamped, muted look of the stock ProductCard description, which the
    custom HTML description rendering does not inherit. */
-.cio-pia-product-description {
+.cio-pia-answer-container .cio-product-card-description {
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;

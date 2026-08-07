@@ -15,7 +15,7 @@ function HtmlDescription({ product }: { product: Item }) {
   if (!description) return null;
   return (
     <p
-      className='cio-product-card-description cio-pia-product-description'
+      className='cio-product-card-description'
       dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
     />
   );
