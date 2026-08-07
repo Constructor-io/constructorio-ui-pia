@@ -31,13 +31,14 @@
   color: inherit;
 }
 
-/* Neutral placeholder shown behind product images while they load */
-.cio-pia-answer-container .cio-product-card-image-section {
+/* Neutral placeholder shown until the product image itself paints over it.
+   Set on the image element so it inherits the card's own size and corner radius. */
+.cio-pia-answer-container .cio-product-card-image {
   background-color: rgba(0, 0, 0, 0.05);
-  border-radius: 16px;
 }
 
-/* Match the stock ProductCard description look: 3-line clamp, small muted text */
+/* Restores the clamped, muted look of the stock ProductCard description, which the
+   custom HTML description rendering does not inherit. */
 .cio-pia-answer-container .cio-product-card-description {
   display: -webkit-box;
   -webkit-line-clamp: 3;

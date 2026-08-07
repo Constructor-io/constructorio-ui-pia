@@ -429,10 +429,14 @@ for high-DPI screens):
 ```jsx
 // Example: Adobe Dynamic Media (Scene7)
 const formatImageUrl = (url) => {
-  const resized = new URL(url);
-  resized.searchParams.set('wid', '400');
-  resized.searchParams.set('qlt', '75');
-  return resized.toString();
+  try {
+    const resized = new URL(url);
+    resized.searchParams.set('wid', '400');
+    resized.searchParams.set('qlt', '75');
+    return resized.toString();
+  } catch {
+    return url; // relative paths and data URIs are left as-is
+  }
 };
 ```
 
