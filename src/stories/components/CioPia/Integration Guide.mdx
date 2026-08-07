@@ -444,6 +444,9 @@ Similar parameters exist on most platforms: Shopify (`?width=400`), Cloudinary
 (`w_400,f_auto,q_auto`), imgix (`?w=400&auto=format`). Return the URL unchanged for
 hosts you don't recognize; if the formatter throws, the original URL is used.
 
+If your catalog stores relative paths, prepend your CDN base before resizing (as in the
+previous example) — `new URL()` needs an absolute URL to parse.
+
 ---
 
 For more details on error handling, styling, and other topics see the [FAQ](?path=/docs/general-faq--docs).
