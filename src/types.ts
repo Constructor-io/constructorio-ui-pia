@@ -74,6 +74,7 @@ export type Translations = {
   'Is this answer useful?'?: string;
   'Learn More.'?: string;
   'Ask about this product'?: string;
+  'Add to Cart'?: string;
   /** Accessible name for the thumbs-up feedback button. */
   'thumbs up'?: string;
   /** Accessible name for the thumbs-down feedback button. */
@@ -108,6 +109,12 @@ export interface Callbacks {
   ) => void;
   /** Called when a product card in the carousel is clicked. */
   onProductCardClick?: (item: Item) => void;
+  /**
+   * Called when the "Add to Cart" button on a product card is clicked.
+   * Providing this callback is what renders the button.
+   * Clicking the button does not fire `onProductCardClick`.
+   */
+  onAddToCart?: (item: Item, event: React.MouseEvent) => void;
   /** Called when the user submits positive or negative feedback on an answer. */
   onFeedback?: (type: FeedbackType) => void;
   /** Called when a new answer is received. Passes the full conversation history. */

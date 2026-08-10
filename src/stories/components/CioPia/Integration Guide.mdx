@@ -74,6 +74,12 @@ const piaCallbacks = {
     // is disabled when onProductCardClick is provided.
     if (item.url) window.open(item.url, '_blank', 'noopener,noreferrer');
   },
+  onAddToCart: (item) => {
+    // Providing this callback is what renders the "Add to Cart"
+    // button on product cards — omit it and no button is shown.
+    addItemToCart(item.id);
+    analytics.track('PIA Add To Cart', { productId: item.id });
+  },
   onFeedback: (type) => {
     analytics.track('PIA Feedback', { type });
   },
@@ -183,6 +189,14 @@ The library handles the entire data pipeline — from loading suggested question
     <span style={{ color: '#6b7280' }}>→</span>
     <code className="flow-callback">callbacks.onProductCardClick(item)</code>
   </div>
+  <div className="flow-arrow">↓</div>
+  <div className="flow-step">
+    <div className="flow-box flow-box--consumer">
+      <strong>User clicks "Add to Cart"</strong><br /><span className="flow-box-subtitle">button shown only when the callback is provided</span>
+    </div>
+    <span style={{ color: '#6b7280' }}>→</span>
+    <code className="flow-callback">callbacks.onAddToCart(item, event)</code>
+  </div>
 </div>
 
 <div className="cio-flow-legend" style={{ marginTop: '32px' }}>
@@ -234,6 +248,7 @@ For your own analytics needs, the library exposes a number of callbacks via the 
 |----------|-----------|---------------|
 | \`onQuestionSubmit\` | \`(question: string) => void\` | User submits a question (Enter key, Send button, or suggested question click) |
 | \`onProductCardClick\` | \`(item: Item) => void\` | User clicks any product card in the recommendation carousel |
+| \`onAddToCart\` | \`(item: Item, event: React.MouseEvent) => void\` | User clicks the "Add to Cart" button on a product card. Providing this callback is what renders the button — see [Add to Cart](#add-to-cart) |
 | \`onFeedback\` | \`(type: 'up' \\| 'down') => void\` | User clicks thumbs up or thumbs down (requires \`showFeedback: true\`) |
 `}
 </Markdown>
@@ -256,6 +271,9 @@ To verify callbacks are working, open your browser's DevTools console. Here is a
     onProductCardClick: (item) => {
       console.log('Product clicked:', item.id, item.name);
     },
+    onAddToCart: (item, event) => {
+      console.log('Add to cart:', item.id, item.name);
+    },
     onFeedback: (type) => {
       console.log('Feedback submitted:', type); // 'up' | 'down'
     },
@@ -264,6 +282,30 @@ To verify callbacks are working, open your browser's DevTools console. Here is a
 ```
 
 > **Important:** When `onProductCardClick` is provided, the library will **not** navigate to `item.url` automatically. The consumer fully owns click behavior — including navigation. If `onProductCardClick` is not provided, clicking a card opens `item.url` in a new tab by default.
+
+### Add to Cart
+
+Product cards render an **"Add to Cart"** button only when an `onAddToCart` callback is provided. There is no separate boolean flag: no callback means no cart control at all, so storefronts that already handle the cart themselves see the carousel exactly as before.
+
+The callback receives the clicked `item` and the click event. Clicking the button does **not** fire `onProductCardClick` — the card click is suppressed for cart actions, so the user is not navigated away while adding to the cart.
+
+For a live example, see [PiaCustomCarousel → WithAddToCart](?path=/story/components-piacustomcarousel--with-add-to-cart).
+
+```jsx
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId="YOUR_ITEM_ID"
+  callbacks={{
+    onAddToCart: (item, event) => {
+      addItemToCart({ id: item.id, variationId: item.variationId, quantity: 1 });
+    },
+  }}
+  // Optional: rename the button (defaults to "Add to Cart")
+  translations={{ 'Add to Cart': 'Add to bag' }}
+/>
+```
+
+To restyle the button rather than replace its behavior, override `componentOverrides.carousel.item.productCard.footer.addToCartButton` — the override receives the same `onAddToCart` handler. See [PiaCustomCarousel](?path=/docs/components-piacustomcarousel--docs) for a live example.
 
 ## Tracking Integration
 
@@ -287,6 +329,13 @@ The `callbacks` prop accepts any function, so you can plug in your own analytics
         items: [{ item_id: item.id, item_name: item.name, price: item.price }],
       });
       if (item.url) window.open(item.url, '_blank', 'noopener,noreferrer');
+    },
+    onAddToCart: (item) => {
+      addItemToCart({ id: item.id, variationId: item.variationId, quantity: 1 });
+      window.gtag('event', 'add_to_cart', {
+        item_list_name: 'PIA Recommendations',
+        items: [{ item_id: item.id, item_name: item.name, price: item.price, quantity: 1 }],
+      });
     },
     onFeedback: (type) => {
       window.gtag('event', 'pia_feedback', { feedback_type: type });

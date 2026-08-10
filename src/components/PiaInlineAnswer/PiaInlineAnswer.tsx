@@ -63,6 +63,7 @@ export default function PiaInlineAnswer({
           onResultClick={onResultClick}
           question={question}
           qnaResultId={qnaResultId}
+          translations={translations}
           priceCurrency={priceCurrency}
         />
       )}

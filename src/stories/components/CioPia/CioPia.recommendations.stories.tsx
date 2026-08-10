@@ -38,6 +38,10 @@ export const WithAllCallbacks: Story = {
       onProductCardClick: (item) => {
         console.log('Product clicked:', item.id, item.name);
       },
+      onAddToCart: (item) => {
+        console.log('Add to cart:', item.id, item.name);
+        window.alert(`Added to cart: ${item.name} (id: ${item.id})`);
+      },
       onFeedback: (type) => {
         console.log('Feedback submitted:', type);
       },
@@ -61,6 +65,11 @@ export const WithAllCallbacks: Story = {
         price: item.price,
       });
       if (item.url) window.open(item.url, '_blank', 'noopener,noreferrer');
+    },
+    // Passing this callback is what renders the "Add to Cart" button.
+    onAddToCart: (item) => {
+      addItemToCart(item.id);
+      analytics.track('PIA Add To Cart', { productId: item.id });
     },
     onFeedback: (type) => {
       analytics.track('PIA Feedback', { type });

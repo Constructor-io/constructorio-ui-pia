@@ -9,6 +9,7 @@ const defaultTranslations: Translations = {
   'Is this answer useful?': 'Is this answer useful?',
   'Learn More.': 'Learn More.',
   'Ask about this product': 'Ask about this product',
+  'Add to Cart': 'Add to Cart',
   'thumbs up': 'thumbs up',
   'thumbs down': 'thumbs down',
   Close: 'Close',
