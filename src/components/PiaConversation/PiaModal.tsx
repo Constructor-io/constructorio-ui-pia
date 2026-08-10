@@ -76,7 +76,6 @@ export default function PiaModal({
       if (dialog.open) dialog.close();
       document.body.classList.remove(OVERFLOW_HIDDEN_CLASS);
 
-
       triggerRef.current?.focus?.();
       triggerRef.current = null;
     }
