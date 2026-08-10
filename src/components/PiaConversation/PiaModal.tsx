@@ -62,8 +62,6 @@ export default function PiaModal({
     if (dialog?.open) dialog.close();
 
     setIsOpen(false);
-    triggerRef.current?.focus?.();
-    triggerRef.current = null;
     onClose?.();
   }, [onClose]);
 
@@ -74,9 +72,13 @@ export default function PiaModal({
     if (isOpen) {
       dialog.showModal();
       document.body.classList.add(OVERFLOW_HIDDEN_CLASS);
-    } else if (dialog.open) {
-      dialog.close();
+    } else {
+      if (dialog.open) dialog.close();
       document.body.classList.remove(OVERFLOW_HIDDEN_CLASS);
+
+
+      triggerRef.current?.focus?.();
+      triggerRef.current = null;
     }
 
     return () => {

@@ -190,7 +190,7 @@ describe('PiaModal Component', () => {
       expect(within(dialog).getByRole('button', { name: 'Cerrar' })).toBeInTheDocument();
     });
 
-    it('returns focus to the element that opened the modal when it closes', () => {
+    it('returns focus to the input that opened the modal when it closes', () => {
       const { container } = render(<PiaModal {...defaultProps} />);
 
       const baseInput = container.querySelector(BASE_INPUT)! as HTMLInputElement;
@@ -201,9 +201,33 @@ describe('PiaModal Component', () => {
       fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
 
       const dialog = container.querySelector('dialog')!;
-      fireEvent.click(within(dialog).getByRole('button', { name: 'Close' }));
+      const closeButton = within(dialog).getByRole('button', { name: 'Close' });
 
+      (closeButton as HTMLButtonElement).focus();
+      expect(document.activeElement).toBe(closeButton);
+
+      fireEvent.click(closeButton);
+
+      expect(baseInput.disabled).toBe(false);
       expect(document.activeElement).toBe(baseInput);
+    });
+
+    it('returns focus to the suggested question that opened the modal when it closes', () => {
+      const { container } = render(<PiaModal {...defaultProps} />);
+
+      const questionButton = within(container.querySelector(BASE_QUESTIONS)!).getAllByRole(
+        'button',
+      )[0];
+      questionButton.focus();
+      fireEvent.click(questionButton);
+
+      const dialog = container.querySelector('dialog')!;
+      const closeButton = within(dialog).getByRole('button', { name: 'Close' });
+      (closeButton as HTMLButtonElement).focus();
+
+      fireEvent.click(closeButton);
+
+      expect(document.activeElement).toBe(questionButton);
     });
   });
 
