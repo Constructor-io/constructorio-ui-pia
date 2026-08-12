@@ -27,13 +27,18 @@ class MockConstructorIOClient {
   public agent: MockAgent;
 
   constructor(options: ConstructorClientOptions) {
+    const isServer = typeof window === 'undefined' || typeof document === 'undefined';
+
     this.options = {
       version: options.version || `cio-ui-pia-${version}`,
       serviceUrl: options.serviceUrl || 'https://ac.cnstrc.com',
       quizzesServiceUrl: options.quizzesServiceUrl || 'https://quizzes.cnstrc.com',
       agentServiceUrl: options.agentServiceUrl || 'https://agent.cnstrc.com',
-      sessionId: options.sessionId || 0,
-      clientId: options.clientId || 'this-is-a-random-client-id',
+      // In the browser the client resolves the id from browser storage; on the
+      // server (SSR) it requires an explicit one, so fall back to a placeholder
+      ...(isServer && {
+        clientId: options.clientId || 'this-is-a-random-client-id',
+      }),
       sendTrackingEvents:
         options.sendTrackingEvents !== undefined ? options.sendTrackingEvents : true,
       beaconMode: options.beaconMode !== undefined ? options.beaconMode : true,
@@ -43,17 +48,19 @@ class MockConstructorIOClient {
 
     const cioClient = new ConstructorioClient(this.options);
 
+    // Adopt the ids the client resolved (e.g. from the ConstructorioID cookie)
+    // so agent requests carry the same identity as tracking events
+    const resolvedOptions = (cioClient as unknown as { options: ConstructorClientOptions }).options;
+    this.options.clientId = resolvedOptions.clientId;
+    this.options.sessionId = resolvedOptions.sessionId;
+
     this.search = cioClient.search;
     this.browse = cioClient.browse;
     this.recommendations = cioClient.recommendations;
     this.tracker = cioClient.tracker;
     this.quizzes = cioClient.quizzes;
 
-    this.agent = new MockAgent({
-      ...this.options,
-      clientId: options.clientId,
-      sessionId: options.sessionId,
-    });
+    this.agent = new MockAgent(this.options);
   }
 }
 
