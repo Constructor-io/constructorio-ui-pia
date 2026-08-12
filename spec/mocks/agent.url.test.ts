@@ -156,6 +156,8 @@ describe('MockAgent: URL parameters', () => {
     await client.agent.getSuggestedQuestions({ itemId: 'item-123' });
 
     const cookieClientId = document.cookie.match(/ConstructorioID_client_id=([^;]+)/)?.[1];
+    expect(cookieClientId).toBeTruthy();
+
     const url = new URL(requestedUrl);
     expect(url.searchParams.get('i')).toBe(cookieClientId);
     expect(Number(url.searchParams.get('s'))).toBeGreaterThan(0);
@@ -169,10 +171,13 @@ describe('MockAgent: URL parameters', () => {
 
     await client.agent.getSuggestedQuestions({ itemId: 'item-123' });
 
+    const cookieClientId = document.cookie.match(/ConstructorioID_client_id=([^;]+)/)?.[1];
     const url = new URL(requestedUrl);
+
+    expect(client.options.clientId).toBe(cookieClientId);
+    expect(typeof client.options.sessionId).toBe('number');
     expect(url.searchParams.get('i')).toBe(client.options.clientId);
     expect(url.searchParams.get('s')).toBe(String(client.options.sessionId));
-    expect(client.options.clientId).not.toBe('this-is-a-random-client-id');
   });
 
   it('appends identity params (i, s, ui, c) to getAnswerResultsStream URL', async () => {

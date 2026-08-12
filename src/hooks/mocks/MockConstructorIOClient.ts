@@ -29,7 +29,7 @@ class MockConstructorIOClient {
   constructor(options: ConstructorClientOptions) {
     const isServer = typeof window === 'undefined' || typeof document === 'undefined';
 
-    this.options = {
+    const clientOptions: ConstructorClientOptions = {
       version: options.version || `cio-ui-pia-${version}`,
       serviceUrl: options.serviceUrl || 'https://ac.cnstrc.com',
       quizzesServiceUrl: options.quizzesServiceUrl || 'https://quizzes.cnstrc.com',
@@ -46,11 +46,11 @@ class MockConstructorIOClient {
       ...options,
     };
 
-    const cioClient = new ConstructorioClient(this.options);
+    const cioClient = new ConstructorioClient(clientOptions);
 
     const { clientId, sessionId } = cioClient.agent.options;
-    this.options.clientId = clientId;
-    this.options.sessionId = sessionId;
+
+    this.options = { ...clientOptions, clientId, sessionId };
 
     this.search = cioClient.search;
     this.browse = cioClient.browse;
