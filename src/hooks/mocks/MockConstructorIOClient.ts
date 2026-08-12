@@ -34,8 +34,6 @@ class MockConstructorIOClient {
       serviceUrl: options.serviceUrl || 'https://ac.cnstrc.com',
       quizzesServiceUrl: options.quizzesServiceUrl || 'https://quizzes.cnstrc.com',
       agentServiceUrl: options.agentServiceUrl || 'https://agent.cnstrc.com',
-      // In the browser the client resolves the id from browser storage; on the
-      // server (SSR) it requires an explicit one, so fall back to a placeholder
       ...(isServer && {
         clientId: options.clientId || 'this-is-a-random-client-id',
       }),
