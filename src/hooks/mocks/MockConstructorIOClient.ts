@@ -48,11 +48,9 @@ class MockConstructorIOClient {
 
     const cioClient = new ConstructorioClient(this.options);
 
-    // Adopt the ids the client resolved (e.g. from the ConstructorioID cookie)
-    // so agent requests carry the same identity as tracking events
-    const resolvedOptions = (cioClient as unknown as { options: ConstructorClientOptions }).options;
-    this.options.clientId = resolvedOptions.clientId;
-    this.options.sessionId = resolvedOptions.sessionId;
+    const { clientId, sessionId } = cioClient.agent.options;
+    this.options.clientId = clientId;
+    this.options.sessionId = sessionId;
 
     this.search = cioClient.search;
     this.browse = cioClient.browse;
