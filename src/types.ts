@@ -180,7 +180,6 @@ export interface LoadingRenderProps {
 }
 
 export interface InputRenderProps {
-  value: string;
   disabled: boolean;
   placeholder: string;
   onSubmit: (value: string) => void;

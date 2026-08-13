@@ -72,7 +72,7 @@ function Input({
 
   return (
     <RenderPropsWrapper
-      props={{ value, disabled, placeholder: resolvedPlaceholder, onSubmit, onFocus }}
+      props={{ disabled, placeholder: resolvedPlaceholder, onSubmit, onFocus }}
       override={componentOverride?.reactNode}>
       <div className='cio-pia-input-container'>
         <input
