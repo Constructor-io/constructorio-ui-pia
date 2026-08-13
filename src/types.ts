@@ -179,6 +179,9 @@ export interface LoadingRenderProps {
   skeleton: ReactNode;
 }
 
+/**
+ * Render props passed to a custom Input override.
+ */
 export interface InputRenderProps {
   disabled: boolean;
   placeholder: string;
