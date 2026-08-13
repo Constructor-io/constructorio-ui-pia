@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ComponentOverrideProps,
   RenderPropsWrapper,
@@ -48,14 +48,17 @@ function Input({
     }
   }, [providedValue]);
 
-  const handleSubmit = (submittedValue: string) => {
-    if (submittedValue.trim()) {
-      onSubmit(submittedValue.trim());
-      if (submittedValue.trim() !== providedValue) {
-        setValue('');
+  const handleSubmit = useCallback(
+    (submittedValue: string) => {
+      if (submittedValue.trim()) {
+        onSubmit(submittedValue.trim());
+        if (submittedValue.trim() !== providedValue) {
+          setValue('');
+        }
       }
-    }
-  };
+    },
+    [onSubmit, providedValue],
+  );
 
   const handleSubmitOnEnter = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {

@@ -345,7 +345,7 @@ export const CustomInput: Story = {
     itemName: 'Demo Item',
     componentOverrides: {
       input: {
-        reactNode: (props) => <GrowingTextarea {...props} />,
+        reactNode: GrowingTextarea,
       },
     },
   },

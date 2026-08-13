@@ -155,18 +155,19 @@ describe('Input Component', () => {
     });
 
     it('trims and guards empty values in override onSubmit', () => {
-      let capturedSubmit: (val: string) => void;
+      let capturedSubmit: (val: string) => void = () => {};
       const override = jest.fn((props) => {
         capturedSubmit = props.onSubmit;
         return <div data-testid='custom-input' />;
       });
 
       render(<Input onSubmit={mockSubmit} componentOverride={{ reactNode: override }} />);
+      expect(override).toHaveBeenCalled();
 
-      act(() => { capturedSubmit!('   '); });
+      act(() => { capturedSubmit('   '); });
       expect(mockSubmit).not.toHaveBeenCalled();
 
-      act(() => { capturedSubmit!('  hello world  '); });
+      act(() => { capturedSubmit('  hello world  '); });
       expect(mockSubmit).toHaveBeenCalledWith('hello world');
     });
   });
