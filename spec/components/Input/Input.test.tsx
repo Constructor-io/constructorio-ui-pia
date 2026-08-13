@@ -12,7 +12,7 @@ describe('Input Component', () => {
 
   it('renders with default placeholder', () => {
     const { getByPlaceholderText } = render(<Input onSubmit={mockSubmit} />);
-    expect(getByPlaceholderText('Ask anything')).toBeInTheDocument();
+    expect(getByPlaceholderText('Type your question here...')).toBeInTheDocument();
   });
 
   it('renders with custom placeholder via translations', () => {

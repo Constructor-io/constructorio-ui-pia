@@ -6,3 +6,7 @@
   color: #14151a;
   text-align: start;
 }
+
+.cio-pia-answer > p {
+  margin: 0;
+}

@@ -84,59 +84,61 @@ export default function ConversationHistory({
   return (
     <div className='cio-pia-conversation-history'>
       {disclaimerPosition === 'top' && disclaimer}
-      <div
-        ref={scrollContainerRef}
-        className='cio-pia-conversation-entries'
-        role='log'
-        aria-label='Conversation history'>
-        {conversationHistory.map((entry, index) => {
-          const isLast = index === conversationHistory.length - 1;
-          const previousEntryItems = showPreviousItems ? entry.items : null;
-          const latestEntryItems = currentItems !== undefined ? currentItems : entry.items;
-          const carouselItems = isLast ? latestEntryItems : previousEntryItems;
+      {!!conversationHistory.length && (
+        <div
+          ref={scrollContainerRef}
+          className='cio-pia-conversation-entries'
+          role='log'
+          aria-label='Conversation history'>
+          {conversationHistory.map((entry, index) => {
+            const isLast = index === conversationHistory.length - 1;
+            const previousEntryItems = showPreviousItems ? entry.items : null;
+            const latestEntryItems = currentItems !== undefined ? currentItems : entry.items;
+            const carouselItems = isLast ? latestEntryItems : previousEntryItems;
 
-          return (
-            <div key={entry.id} className='cio-pia-conversation-entry'>
-              <div className='cio-pia-chat-question'>{entry.question}</div>
+            return (
+              <div key={entry.id} className='cio-pia-conversation-entry'>
+                <div className='cio-pia-chat-question'>{entry.question}</div>
 
-              {isLast && isLoading && (
-                <div className='cio-pia-conversation-loading' aria-live='polite'>
-                  <LoadingSkeleton componentOverride={componentOverrides?.loading} />
-                </div>
-              )}
+                {isLast && isLoading && (
+                  <div className='cio-pia-conversation-loading' aria-live='polite'>
+                    <LoadingSkeleton componentOverride={componentOverrides?.loading} />
+                  </div>
+                )}
 
-              {isLast && !isLoading && error && (
-                <ErrorBlock message={error.message || 'Unexpected error'} />
-              )}
+                {isLast && !isLoading && error && (
+                  <ErrorBlock message={error.message || 'Unexpected error'} />
+                )}
 
-              {entry.answer && (
-                <div className='cio-pia-answer-container'>
-                  <Answer text={entry.answer} componentOverride={componentOverrides?.answer} />
-                  {carouselItems && (
-                    <PiaCustomCarousel
-                      items={carouselItems}
-                      componentOverrides={componentOverrides?.carousel}
-                      callbacks={callbacks}
-                      onResultClick={onResultClick}
-                      question={entry.question}
-                      qnaResultId={qnaResultId}
-                      translations={translations}
-                      priceCurrency={priceCurrency}
-                    />
-                  )}
-                  {isLast && showFeedback && (
-                    <Feedback
-                      translations={translations}
-                      onFeedback={handleFeedback}
-                      componentOverride={componentOverrides?.feedback}
-                    />
-                  )}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+                {entry.answer && (
+                  <div className='cio-pia-answer-container'>
+                    <Answer text={entry.answer} componentOverride={componentOverrides?.answer} />
+                    {carouselItems && (
+                      <PiaCustomCarousel
+                        items={carouselItems}
+                        componentOverrides={componentOverrides?.carousel}
+                        callbacks={callbacks}
+                        onResultClick={onResultClick}
+                        question={entry.question}
+                        qnaResultId={qnaResultId}
+                        translations={translations}
+                        priceCurrency={priceCurrency}
+                      />
+                    )}
+                    {isLast && showFeedback && (
+                      <Feedback
+                        translations={translations}
+                        onFeedback={handleFeedback}
+                        componentOverride={componentOverrides?.feedback}
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
       {disclaimerPosition === 'bottom' && disclaimer}
     </div>
   );

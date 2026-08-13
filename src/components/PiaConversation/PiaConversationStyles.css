@@ -1,11 +1,19 @@
 .cio-pia-conversation {
+  --conversation-gap: 16px;
   max-height: var(--cio-pia-conversation-max-height);
+}
+
+.cio-pia-conversation-body {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  gap: var(--conversation-gap);
 }
 
 .cio-pia-conversation-footer {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   flex-shrink: 0;
 }
 

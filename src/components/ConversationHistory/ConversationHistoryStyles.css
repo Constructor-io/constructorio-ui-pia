@@ -25,35 +25,27 @@
 .cio-pia-chat-question {
   align-self: flex-end;
   background: var(--cio-pia-chat-question-bg);
-  border-radius: 12px 12px 12px 12px;
-  padding: 8px 12px;
+  color: var(--cio-pia-chat-question-color);
+  border-radius: 12px 12px 4px 12px;
+  padding: 6px 12px;
   font-size: 14px;
-  font-weight: 500;
-  color: #14151a;
+  font-weight: 400;
+  line-height: 1.43;
   max-width: 80%;
   text-align: start;
   word-break: break-word;
-  transition: border-radius 0.3s ease;
 }
 
 .cio-pia-conversation-entry .cio-pia-answer-container {
   align-self: flex-start;
   background: var(--cio-pia-chat-answer-bg);
-  border-radius: 12px 12px 12px 12px;
-  padding: 8px 12px;
-  max-width: 80%;
-  transition: border-radius 0.3s ease;
-}
-
-.cio-pia-conversation-entry:last-child .cio-pia-chat-question {
-  border-bottom-right-radius: 2px;
-}
-
-.cio-pia-conversation-entry:last-child .cio-pia-answer-container {
-  border-bottom-left-radius: 2px;
+  border-radius: 0;
+  padding: 0;
+  max-width: 100%;
 }
 
 .cio-pia-conversation-loading {
   align-self: flex-start;
   max-width: 80%;
+  width: 100%
 }

@@ -3,7 +3,7 @@ import React from 'react';
 export default function SuggestedQuestionsSkeleton() {
   return (
     <div
-      className='cio-pia-suggested-questions-container'
+      className='cio-pia-suggested-questions-container cio-pia-suggested-questions-skeleton-container'
       data-testid='suggested-questions-skeleton'
       aria-busy='true'
       aria-label='Loading suggestions'>

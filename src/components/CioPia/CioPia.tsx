@@ -28,6 +28,8 @@ import { translate } from '../../utils/translate';
 import PiaInlineAnswer from '../PiaInlineAnswer/PiaInlineAnswer';
 import PiaModal from '../PiaConversation/PiaModal';
 import PiaConversation from '../PiaConversation/PiaConversation';
+import PoweredBy from './PoweredBy';
+import Disclaimer from './Disclaimer';
 
 export interface CioPiaProps
   extends
@@ -202,44 +204,52 @@ export default function CioPia(props: CioPiaProps) {
         <p className='cio-pia-title' data-testid='cio-pia-title'>
           {translate('Any questions about this product?', translations)}
         </p>
+
+        {!isLoading && !error && (
+          <SuggestedQuestionsContainer
+            questions={displayedQuestions}
+            onQuestionClick={handleQuestionClick}
+            componentOverride={componentOverrides?.suggestedQuestions}
+          />
+        )}
+
+        {!isLoading && !error && !currentAnswer && (
+          <Disclaimer
+            learnMoreUrl={learnMoreUrl}
+            translations={translations}
+            componentOverride={componentOverrides?.disclaimer}
+          />
+        )}
+
+        {isLoading && <LoadingSkeleton componentOverride={componentOverrides?.loading} />}
+
+        {!isLoading && error && <ErrorBlock message={error?.message || 'Unexpected error'} />}
+
+        {!isLoading && !error && currentAnswer && (
+          <PiaInlineAnswer
+            currentAnswer={currentAnswer}
+            currentItems={currentItems}
+            showFeedback={showFeedback}
+            learnMoreUrl={learnMoreUrl}
+            disclaimerPosition={disclaimerPosition}
+            translations={translations}
+            callbacks={callbacks}
+            componentOverrides={componentOverrides}
+            onFeedback={handleFeedback}
+            onResultClick={tracking.trackResultClick}
+            question={currentQuestion}
+            qnaResultId={qnaResultId}
+            priceCurrency={priceCurrency}
+          />
+        )}
+
         <Input
           onSubmit={handleSubmitQuestion}
           onFocus={handleInputFocus}
           value={currentQuestion}
           translations={translations}
         />
-
-        {isLoading && <LoadingSkeleton componentOverride={componentOverrides?.loading} />}
-
-        {!isLoading && error && <ErrorBlock message={error?.message || 'Unexpected error'} />}
-
-        {!isLoading && !error && (
-          <>
-            {currentAnswer && (
-              <PiaInlineAnswer
-                currentAnswer={currentAnswer}
-                currentItems={currentItems}
-                showFeedback={showFeedback}
-                learnMoreUrl={learnMoreUrl}
-                disclaimerPosition={disclaimerPosition}
-                translations={translations}
-                callbacks={callbacks}
-                componentOverrides={componentOverrides}
-                onFeedback={handleFeedback}
-                onResultClick={tracking.trackResultClick}
-                question={currentQuestion}
-                qnaResultId={qnaResultId}
-                priceCurrency={priceCurrency}
-              />
-            )}
-
-            <SuggestedQuestionsContainer
-              questions={displayedQuestions}
-              onQuestionClick={handleQuestionClick}
-              componentOverride={componentOverrides?.suggestedQuestions}
-            />
-          </>
-        )}
+        <PoweredBy />
       </RenderPropsWrapper>
     </div>
   );

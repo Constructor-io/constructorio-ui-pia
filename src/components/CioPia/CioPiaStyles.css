@@ -2,16 +2,21 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  border: 1px solid #E7E5E4;
+  border-radius: 12px;
+  background-color: var(--cio-pia-container-background);
 }
 
 .cio-pia-title {
-  color: #14151a;
-  font-size: 18px;
-  font-weight: 400;
+  color: #14151A;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
   text-align: start;
   margin-top: 0;
   margin-bottom: 0;
+  padding: 12px;
+  border-bottom: 1px solid #E7E5E4;
 }
 
 .cio-pia-answer-container {
@@ -21,12 +26,28 @@
 }
 
 .cio-pia-disclaimer {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 400;
+  line-height: 1.43;
   text-align: start;
-  color: rgba(15, 19, 36, 0.7);
+  color: #78716C;
 }
 
 .cio-pia-learn-more {
   color: inherit;
+}
+
+.cio-pia-powered-by {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.cio-pia-powered-by-text {
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.21;
+  letter-spacing: -0.5%;
+  color: rgba(15, 19, 36, 0.6);
 }

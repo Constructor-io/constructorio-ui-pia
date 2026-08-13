@@ -3,7 +3,7 @@ import { DISCLAIMER_TEXT } from '../constants';
 
 const defaultTranslations: Translations = {
   'Any questions about this product?': 'Any questions about this product?',
-  'Ask anything': 'Ask anything',
+  'Ask anything': 'Type your question here...',
   Send: 'Send',
   [DISCLAIMER_TEXT]: DISCLAIMER_TEXT,
   'Is this answer useful?': 'Is this answer useful?',

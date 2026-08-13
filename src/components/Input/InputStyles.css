@@ -11,14 +11,11 @@
 .cio-pia-input {
   width: 100%;
   padding: 8px 80px 8px 12px;
-  border: 1px solid #dee0e3;
-  border-radius: 4px;
+  border: 1px solid #E7E5E4;
+  border-radius: 6px;
   font-size: 14px;
+  line-height: 1.43;
   background: #ffffff;
-  box-shadow:
-    1px 1px 2px 0px rgba(18, 18, 105, 0.1) inset,
-    0px 1px 4px 0px rgba(18, 18, 105, 0.05) inset,
-    1px 1px 1px 0px rgba(18, 18, 105, 0.05) inset;
 }
 
 /* Input Hover */
@@ -37,15 +34,12 @@
 .cio-pia-input:focus:active {
   outline: none;
   border: 1px solid #000000;
-  box-shadow:
-    0px 1px 4px 0px rgba(18, 18, 105, 0.14) inset,
-    2.1px 2px 2px 0px rgba(18, 18, 105, 0.1) inset,
-    0px 1.5px 3px 0px rgba(18, 18, 105, 0.05) inset;
+  box-shadow: none;
 }
 
 /* Input Placeholder */
 .cio-pia-input::placeholder {
-  display: none;
+  color: #A8A29E;
 }
 
 /* Input Disabled */
@@ -83,7 +77,7 @@
     0px 1px 3px 0px rgba(18, 18, 105, 0.05);
 }
 
-/* Send Button */
+/* Send Button Hover */
 .cio-pia-send-button:hover {
   background: #2b2d36;
 }
