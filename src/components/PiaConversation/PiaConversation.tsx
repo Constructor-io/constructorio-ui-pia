@@ -86,6 +86,7 @@ export default function PiaConversation({
           onFocus={onInputFocus}
           disabled={isLoading}
           translations={translations}
+          componentOverride={componentOverrides?.input}
         />
       </div>
     </div>

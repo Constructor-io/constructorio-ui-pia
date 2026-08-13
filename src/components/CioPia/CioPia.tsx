@@ -207,6 +207,7 @@ export default function CioPia(props: CioPiaProps) {
           onFocus={handleInputFocus}
           value={currentQuestion}
           translations={translations}
+          componentOverride={componentOverrides?.input}
         />
 
         {isLoading && <LoadingSkeleton componentOverride={componentOverrides?.loading} />}
