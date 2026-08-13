@@ -48,10 +48,10 @@ function Input({
     }
   }, [providedValue]);
 
-  const handleSubmit = () => {
-    if (value.trim()) {
-      onSubmit(value.trim());
-      if (value.trim() !== providedValue) {
+  const handleSubmit = (submittedValue: string) => {
+    if (submittedValue.trim()) {
+      onSubmit(submittedValue.trim());
+      if (submittedValue.trim() !== providedValue) {
         setValue('');
       }
     }
@@ -60,7 +60,7 @@ function Input({
   const handleSubmitOnEnter = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      handleSubmit();
+      handleSubmit(value);
     }
   };
 
@@ -72,7 +72,13 @@ function Input({
 
   return (
     <RenderPropsWrapper
-      props={{ disabled, placeholder: resolvedPlaceholder, onSubmit, onFocus }}
+      props={{
+        disabled,
+        placeholder: resolvedPlaceholder,
+        onSubmit: handleSubmit,
+        onFocus,
+        translations,
+      }}
       override={componentOverride?.reactNode}>
       <div className='cio-pia-input-container'>
         <input
@@ -87,7 +93,7 @@ function Input({
         />
         <button
           type='button'
-          onClick={handleSubmit}
+          onClick={() => handleSubmit(value)}
           className='cio-pia-send-button'
           disabled={disabled}>
           {translate('Send', translations)}

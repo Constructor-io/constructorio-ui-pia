@@ -187,6 +187,7 @@ export interface InputRenderProps {
   placeholder: string;
   onSubmit: (value: string) => void;
   onFocus?: () => void;
+  translations?: Translations;
 }
 
 /**
