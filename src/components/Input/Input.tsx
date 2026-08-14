@@ -1,5 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Translations } from '../../types';
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  ComponentOverrideProps,
+  RenderPropsWrapper,
+} from '@constructor-io/constructorio-ui-components';
+import { InputRenderProps, Translations } from '../../types';
 import { translate } from '../../utils/translate';
 
 interface InputProps {
@@ -10,6 +14,7 @@ interface InputProps {
   onSubmit: (value: string) => void;
   onFocus?: () => void;
   translations?: Translations;
+  componentOverride?: ComponentOverrideProps<InputRenderProps>;
 }
 
 function SendIcon() {
@@ -33,6 +38,7 @@ function Input({
   onSubmit,
   onFocus,
   translations,
+  componentOverride,
 }: InputProps) {
   const [value, setValue] = useState(providedValue || '');
 
@@ -42,19 +48,22 @@ function Input({
     }
   }, [providedValue]);
 
-  const handleSubmit = () => {
-    if (value.trim()) {
-      onSubmit(value.trim());
-      if (value.trim() !== providedValue) {
-        setValue('');
+  const handleSubmit = useCallback(
+    (submittedValue: string) => {
+      if (submittedValue.trim()) {
+        onSubmit(submittedValue.trim());
+        if (submittedValue.trim() !== providedValue) {
+          setValue('');
+        }
       }
-    }
-  };
+    },
+    [onSubmit, providedValue],
+  );
 
   const handleSubmitOnEnter = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      handleSubmit();
+      handleSubmit(value);
     }
   };
 
@@ -65,26 +74,36 @@ function Input({
       : (placeholder ?? translate('Ask anything'));
 
   return (
-    <div className='cio-pia-input-container'>
-      <input
-        type='text'
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        onKeyDown={handleSubmitOnEnter}
-        onFocus={onFocus}
-        placeholder={resolvedPlaceholder}
-        disabled={disabled}
-        className='cio-pia-input'
-      />
-      <button
-        type='button'
-        onClick={handleSubmit}
-        className='cio-pia-send-button'
-        disabled={disabled}>
-        {translate('Send', translations)}
-        <SendIcon />
-      </button>
-    </div>
+    <RenderPropsWrapper
+      props={{
+        disabled,
+        placeholder: resolvedPlaceholder,
+        onSubmit: handleSubmit,
+        onFocus,
+        translations,
+      }}
+      override={componentOverride?.reactNode}>
+      <div className='cio-pia-input-container'>
+        <input
+          type='text'
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={handleSubmitOnEnter}
+          onFocus={onFocus}
+          placeholder={resolvedPlaceholder}
+          disabled={disabled}
+          className='cio-pia-input'
+        />
+        <button
+          type='button'
+          onClick={() => handleSubmit(value)}
+          className='cio-pia-send-button'
+          disabled={disabled}>
+          {translate('Send', translations)}
+          <SendIcon />
+        </button>
+      </div>
+    </RenderPropsWrapper>
   );
 }
 

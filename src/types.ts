@@ -180,12 +180,24 @@ export interface LoadingRenderProps {
 }
 
 /**
+ * Render props passed to a custom Input override.
+ */
+export interface InputRenderProps {
+  disabled: boolean;
+  placeholder: string;
+  onSubmit: (value: string) => void;
+  onFocus?: () => void;
+  translations?: Translations;
+}
+
+/**
  * Component overrides for CioPia.
  * Allows customization of sub-components via reactNode or render props functions.
  */
 export interface CioPiaComponentOverrides extends ComponentOverrideProps<CioPiaRenderProps> {
   carousel?: CarouselOverrides<Item>;
   answer?: ComponentOverrideProps<AnswerRenderProps>;
+  input?: ComponentOverrideProps<InputRenderProps>;
   suggestedQuestions?: ComponentOverrideProps<SuggestedQuestionsRenderProps>;
   disclaimer?: ComponentOverrideProps<DisclaimerRenderProps>;
   feedback?: ComponentOverrideProps<FeedbackRenderProps>;
