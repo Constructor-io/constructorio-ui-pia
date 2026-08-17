@@ -11,7 +11,9 @@ import {
   GetAnswerResultsProps,
   GetAnswerResultsResponse,
 } from './types';
+import { GetRecsProps, RecsResult } from '../../types';
 import { AgentRequestError } from '../../errors';
+import { adaptLegacyAnswerToRecs, PROVISIONAL_STRATEGY_QUESTIONS } from '../../utils/recs';
 
 // Create URL for PIA API
 function createAgentUrl({
@@ -154,6 +156,34 @@ class MockAgent {
 
       throw new Error(String(error));
     }
+  }
+
+  /**
+   * Fetches one set of recommendations, already converted to the shape the pod renders.
+   *
+   * ⚠ PROVISIONAL data source. There is no recommendations endpoint yet, so this asks the
+   * answers endpoint a question that stands in for the strategy and converts the reply. See
+   * `adaptLegacyAnswerToRecs` for what that costs. Swapping the endpoint later changes this
+   * method and `src/utils/recs.ts` only.
+   */
+  async getRecs({
+    itemId,
+    variationId,
+    threadId,
+    strategy = 'complementary_items',
+    shopperInput,
+    numResults,
+    formatImageUrl,
+  }: GetRecsProps): Promise<RecsResult> {
+    const data = await this.getAnswerResults({
+      itemId,
+      variationId,
+      threadId,
+      question: shopperInput || PROVISIONAL_STRATEGY_QUESTIONS[strategy],
+      ...(numResults !== undefined && { parameters: { num_results: numResults } }),
+    });
+
+    return adaptLegacyAnswerToRecs(data, formatImageUrl);
   }
 
   async getAnswerResultsStream({

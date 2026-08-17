@@ -26,6 +26,23 @@
   border: 1px solid #c8cad0;
 }
 
+/* Input Rejected Value */
+.cio-pia-input--error,
+.cio-pia-input--error:hover,
+.cio-pia-input--error:focus {
+  border: 1px solid #d93025;
+  box-shadow: none;
+}
+
+/* Input Rejected Value Message */
+.cio-pia-input-error {
+  display: block;
+  margin-top: 4px;
+  color: #d93025;
+  font-size: 12px;
+  line-height: 16px;
+}
+
 /* Input Focus */
 .cio-pia-input:focus {
   outline: none;

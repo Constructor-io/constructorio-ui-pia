@@ -1,10 +1,9 @@
-import { useMemo, useState } from 'react';
 import { Tracker } from '@constructor-io/constructorio-client-javascript/lib/types/constructorio';
 import { Formatters, SuggestedQuestionsParameters } from '../types';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 import useAnswerResults, { UseAnswerResultsReturn } from './useAnswerResults';
+import usePiaClient from './usePiaClient';
 import useSuggestedQuestions, { UseSuggestedQuestionsReturn } from './useSuggestedQuestions';
-import version from '../version';
 
 export interface UseCioPiaProps {
   apiKey: string;
@@ -41,17 +40,11 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     formatImageUrl,
   } = props;
 
-  const [generatedThreadId] = useState(() => crypto.randomUUID());
-  const threadId = providedThreadId || generatedThreadId;
-
-  const client = useMemo(() => {
-    if (providedClient) return providedClient;
-    return new MockConstructorIOClient({
-      apiKey,
-      sendTrackingEvents: true,
-      version: `cio-ui-pia-${version}`,
-    });
-  }, [apiKey, providedClient]);
+  const { cioClient: client, threadId } = usePiaClient({
+    apiKey,
+    threadId: providedThreadId,
+    cioClient: providedClient,
+  });
 
   const suggestedQuestions = useSuggestedQuestions({
     itemId,

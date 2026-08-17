@@ -1,5 +1,6 @@
 import MockConstructorIOClient from '../../src/hooks/mocks/MockConstructorIOClient';
 import { AgentRequestError } from '../../src/errors';
+import { PROVISIONAL_STRATEGY_QUESTIONS } from '../../src/utils/recs';
 
 describe('MockAgent: URL parameters', () => {
   let requestedUrl: string;
@@ -283,5 +284,88 @@ describe('MockAgent: failed requests', () => {
 
     expect(error).toBeInstanceOf(Error);
     expect(error.message).toBe('network down');
+  });
+});
+
+describe('MockAgent: getRecs', () => {
+  const originalFetch = globalThis.fetch;
+  let requestedUrl: string;
+
+  const answerResponse = {
+    qna_result_id: 'recs-result-id',
+    value: 'Since you prefer slim fits, more shirts like this',
+    thread_id: 'thread-id',
+    follow_up_questions: [{ value: 'Slim fit' }, { value: 'Oxford' }],
+  };
+
+  beforeEach(() => {
+    requestedUrl = '';
+    globalThis.fetch = jest.fn(async (url: RequestInfo | URL) => {
+      requestedUrl = url.toString();
+      return { ok: true, json: async () => answerResponse } as Response;
+    });
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+  });
+
+  function createClient() {
+    return new MockConstructorIOClient({ apiKey: 'test-key', sendTrackingEvents: false });
+  }
+
+  it('returns the pod shape rather than the raw response', async () => {
+    const result = await createClient().agent.getRecs({ itemId: 'item-123' });
+
+    expect(result).toEqual({
+      title: answerResponse.value,
+      items: null,
+      refinement: { options: ['Slim fit', 'Oxford'] },
+      resultId: answerResponse.qna_result_id,
+      threadId: answerResponse.thread_id,
+      status: 'complete',
+    });
+  });
+
+  it('asks for complementary items by default', async () => {
+    await createClient().agent.getRecs({ itemId: 'item-123' });
+
+    expect(decodeURIComponent(new URL(requestedUrl).pathname)).toContain(
+      PROVISIONAL_STRATEGY_QUESTIONS.complementary_items,
+    );
+  });
+
+  it('sends the phrasing that stands in for the requested strategy', async () => {
+    await createClient().agent.getRecs({ itemId: 'item-123', strategy: 'bestsellers' });
+
+    expect(decodeURIComponent(new URL(requestedUrl).pathname)).toContain(
+      PROVISIONAL_STRATEGY_QUESTIONS.bestsellers,
+    );
+  });
+
+  it('sends the shopper text instead of the strategy phrasing when there is some', async () => {
+    await createClient().agent.getRecs({ itemId: 'item-123', shopperInput: 'something in linen' });
+
+    const path = decodeURIComponent(new URL(requestedUrl).pathname);
+    expect(path).toContain('something in linen');
+    expect(path).not.toContain(PROVISIONAL_STRATEGY_QUESTIONS.complementary_items);
+  });
+
+  it('forwards the requested number of results', async () => {
+    await createClient().agent.getRecs({ itemId: 'item-123', numResults: 6 });
+
+    expect(new URL(requestedUrl).searchParams.get('num_results')).toBe('6');
+  });
+
+  it('omits the result count when none was asked for', async () => {
+    await createClient().agent.getRecs({ itemId: 'item-123' });
+
+    expect(new URL(requestedUrl).searchParams.has('num_results')).toBe(false);
+  });
+
+  it('reuses the guard clauses of the request it delegates to', async () => {
+    await expect(createClient().agent.getRecs({ itemId: '' })).rejects.toThrow(
+      'Item ID is required',
+    );
   });
 });
