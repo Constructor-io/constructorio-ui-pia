@@ -28,4 +28,13 @@ describe('SuggestedQuestion Component', () => {
     fireEvent.click(queryByRole('button')!);
     expect(defaultProps.onClick).toHaveBeenCalledTimes(1);
   });
+
+  it('replaces the default icon when a custom one is given', () => {
+    const { getByTestId, queryByRole } = render(
+      <SuggestedQuestion {...defaultProps} icon={<span data-testid='custom-icon' />} />,
+    );
+
+    expect(getByTestId('custom-icon')).toBeInTheDocument();
+    expect(queryByRole('button')).toHaveTextContent(testSuggestedQuestion);
+  });
 });

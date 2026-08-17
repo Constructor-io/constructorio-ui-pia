@@ -6,6 +6,10 @@ import {
 import { InputRenderProps, Translations } from '../../types';
 import { translate } from '../../utils/translate';
 import { SendIcon } from '../icons';
+import { RECS_INPUT_PLACEHOLDER } from '../../constants';
+
+/** Translation keys this input can use for its placeholder. */
+export type InputPlaceholderKey = 'Ask anything' | typeof RECS_INPUT_PLACEHOLDER;
 
 interface InputProps {
   value?: string;
@@ -16,6 +20,18 @@ interface InputProps {
   onFocus?: () => void;
   translations?: Translations;
   componentOverride?: ComponentOverrideProps<InputRenderProps>;
+  /**
+   * Validation message for the value that was just submitted. When set, the box gets a red
+   * border and the message renders below it. The value the shopper typed is left alone.
+   */
+  error?: string;
+  /**
+   * Which translation key to use for the placeholder. Needed because two inputs in the same
+   * library ask for different things and must stay independently translatable.
+   *
+   * @default 'Ask anything'
+   */
+  placeholderKey?: InputPlaceholderKey;
 }
 
 function Input({
@@ -26,6 +42,8 @@ function Input({
   onFocus,
   translations,
   componentOverride,
+  error,
+  placeholderKey = 'Ask anything',
 }: InputProps) {
   const [value, setValue] = useState(providedValue || '');
 
@@ -56,9 +74,9 @@ function Input({
 
   // Priority: translations > placeholder prop > default
   const resolvedPlaceholder =
-    translations?.['Ask anything'] !== undefined
-      ? translate('Ask anything', translations)
-      : (placeholder ?? translate('Ask anything'));
+    translations?.[placeholderKey] !== undefined
+      ? translate(placeholderKey, translations)
+      : (placeholder ?? translate(placeholderKey));
 
   return (
     <RenderPropsWrapper
@@ -68,28 +86,38 @@ function Input({
         onSubmit: handleSubmit,
         onFocus,
         translations,
+        error,
       }}
       override={componentOverride?.reactNode}>
-      <div className='cio-pia-input-container'>
-        <input
-          type='text'
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={handleSubmitOnEnter}
-          onFocus={onFocus}
-          placeholder={resolvedPlaceholder}
-          disabled={disabled}
-          className='cio-pia-input'
-        />
-        <button
-          type='button'
-          onClick={() => handleSubmit(value)}
-          className='cio-pia-send-button'
-          disabled={disabled}>
-          {translate('Send', translations)}
-          <SendIcon />
-        </button>
-      </div>
+      {/* The message sits beside the box, not inside it: the box is a fixed-height flex row. */}
+      <>
+        <div className='cio-pia-input-container'>
+          <input
+            type='text'
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            onKeyDown={handleSubmitOnEnter}
+            onFocus={onFocus}
+            placeholder={resolvedPlaceholder}
+            disabled={disabled}
+            className={error ? 'cio-pia-input cio-pia-input--error' : 'cio-pia-input'}
+            aria-invalid={error ? true : undefined}
+          />
+          <button
+            type='button'
+            onClick={() => handleSubmit(value)}
+            className='cio-pia-send-button'
+            disabled={disabled}>
+            {translate('Send', translations)}
+            <SendIcon />
+          </button>
+        </div>
+        {error && (
+          <span className='cio-pia-input-error' role='alert'>
+            {error}
+          </span>
+        )}
+      </>
     </RenderPropsWrapper>
   );
 }

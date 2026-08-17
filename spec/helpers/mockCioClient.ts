@@ -19,5 +19,10 @@ export function createMockCioClient(apiKey = TEST_API_KEY): TestMockClient {
   });
   jest.spyOn(client.agent, 'getSuggestedQuestions').mockResolvedValue({ questions: [] });
   jest.spyOn(client.agent, 'getAnswerResults').mockResolvedValue({ qna_result_id: 'mock-id', value: '' });
+  jest.spyOn(client.agent, 'getRecs').mockResolvedValue({
+    title: '',
+    items: null,
+    refinement: null,
+  });
   return { ...client, agent: client.agent as unknown as MockedAgent } as TestMockClient;
 }

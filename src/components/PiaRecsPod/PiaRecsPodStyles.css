@@ -1,0 +1,69 @@
+.cio-pia-recs-pod {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.cio-pia-recs-pod__title {
+  min-height: 20px;
+}
+
+/* Options and the free-text box share one row, wrapping on narrow screens */
+.cio-pia-recs-pod__refinement {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.cio-pia-recs-pod__refinement-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #0f1324;
+}
+
+.cio-pia-recs-pod__input {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 200px;
+  min-width: 200px;
+}
+
+/* Nothing in the row is clickable while its contents are being replaced */
+.cio-pia-recs-pod--loading .cio-pia-recs-pod__refinement {
+  pointer-events: none;
+}
+
+/* Placeholders, shaped like the real content so the page does not jump when data lands */
+.cio-pia-recs-skeleton {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.cio-pia-recs-skeleton--carousel .cio-pia-recs-skeleton__block {
+  height: 280px;
+  min-width: 0;
+  flex: 1 1 0;
+  border-radius: 8px;
+}
+
+.cio-pia-recs-skeleton--options {
+  width: auto;
+}
+
+.cio-pia-recs-skeleton--options .cio-pia-recs-skeleton__block {
+  height: 26px;
+  width: 96px;
+}
+
+.cio-pia-recs-skeleton--input .cio-pia-recs-skeleton__block {
+  height: 40px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cio-pia-recs-skeleton__block {
+    animation: none;
+  }
+}

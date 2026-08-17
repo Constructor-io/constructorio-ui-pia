@@ -132,6 +132,88 @@ describe('Input Component', () => {
     expect(input.value).toBe('');
   });
 
+  describe('placeholderKey', () => {
+    it('uses the recommendations placeholder when asked for it', () => {
+      const { getByPlaceholderText } = render(
+        <Input onSubmit={mockSubmit} placeholderKey='Describe something else...' />,
+      );
+      expect(getByPlaceholderText('Describe something else...')).toBeInTheDocument();
+    });
+
+    it('ignores a translation for the other placeholder', () => {
+      const { getByPlaceholderText } = render(
+        <Input
+          onSubmit={mockSubmit}
+          placeholderKey='Describe something else...'
+          translations={{ 'Ask anything': 'Ask me about this product' }}
+        />,
+      );
+      expect(getByPlaceholderText('Describe something else...')).toBeInTheDocument();
+    });
+
+    it('translates the recommendations placeholder', () => {
+      const { getByPlaceholderText } = render(
+        <Input
+          onSubmit={mockSubmit}
+          placeholderKey='Describe something else...'
+          translations={{ 'Describe something else...': 'Tell us what you want' }}
+        />,
+      );
+      expect(getByPlaceholderText('Tell us what you want')).toBeInTheDocument();
+    });
+  });
+
+  describe('error', () => {
+    it('renders no message and no error class by default', () => {
+      const { queryByRole, container } = render(<Input onSubmit={mockSubmit} />);
+
+      expect(queryByRole('alert')).not.toBeInTheDocument();
+      expect(container.querySelector('.cio-pia-input--error')).not.toBeInTheDocument();
+      expect(queryByRole('textbox')).not.toHaveAttribute('aria-invalid');
+    });
+
+    it('renders the message, the error class and aria-invalid', () => {
+      const { getByRole, container } = render(
+        <Input onSubmit={mockSubmit} error='Unsupported request, try a different feature.' />,
+      );
+
+      expect(getByRole('alert')).toHaveTextContent('Unsupported request, try a different feature.');
+      expect(container.querySelector('.cio-pia-input--error')).toBeInTheDocument();
+      expect(getByRole('textbox')).toHaveAttribute('aria-invalid', 'true');
+    });
+
+    it('puts the message beside the box rather than inside it', () => {
+      const { getByRole, container } = render(<Input onSubmit={mockSubmit} error='Not allowed' />);
+
+      const message = getByRole('alert');
+      expect(container.querySelector('.cio-pia-input-container')).not.toContainElement(message);
+    });
+
+    it('leaves the value the shopper typed alone', () => {
+      const { queryByRole, rerender } = render(<Input onSubmit={mockSubmit} />);
+      const input = queryByRole('textbox')! as HTMLInputElement;
+
+      fireEvent.change(input, { target: { value: 'paint my house' } });
+      rerender(<Input onSubmit={mockSubmit} error='Not allowed' />);
+
+      expect(input.value).toBe('paint my house');
+    });
+
+    it('passes the message to a component override', () => {
+      const override = jest.fn(() => <div data-testid='custom-input' />);
+
+      render(
+        <Input
+          onSubmit={mockSubmit}
+          error='Not allowed'
+          componentOverride={{ reactNode: override }}
+        />,
+      );
+
+      expect(override).toHaveBeenCalledWith(expect.objectContaining({ error: 'Not allowed' }));
+    });
+  });
+
   describe('componentOverride', () => {
     it('renders the override and passes render props', () => {
       const override = jest.fn(() => <div data-testid='custom-input'>Custom</div>);
