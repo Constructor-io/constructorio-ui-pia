@@ -91,6 +91,7 @@ class MockAgent {
     variationId,
     threadId,
     parameters = {},
+    requestParameters = {},
   }: GetSuggestedQuestionsProps): Promise<QuestionResponse> {
     if (!itemId) throw new Error('Item ID is required');
     if (!this.options.apiKey) throw new Error('API key is required');
@@ -100,7 +101,7 @@ class MockAgent {
       variationId,
       threadId,
       options: this.options,
-      parameters: mapSuggestedQuestionsParams(parameters),
+      parameters: { ...requestParameters, ...mapSuggestedQuestionsParams(parameters) },
     });
 
     try {

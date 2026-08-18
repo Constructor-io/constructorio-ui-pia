@@ -60,6 +60,11 @@ export interface CioPiaProps
   translations?: Translations;
   /** Parameters for the suggested questions request. */
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
+  /**
+   * Extra query parameters appended to PIA API requests (e.g. `ef-*` test cell params).
+   * Define outside the component or wrap with useMemo to avoid unnecessary re-renders.
+   */
+  parameters?: Record<string, string | number | boolean>;
 }
 
 // eslint-disable-next-line complexity
@@ -79,6 +84,7 @@ export default function CioPia(props: CioPiaProps) {
     children,
     translations,
     suggestedQuestionsParameters,
+    parameters,
   } = props;
   const {
     learnMoreUrl,
@@ -99,6 +105,7 @@ export default function CioPia(props: CioPiaProps) {
     variationId,
     cioClient,
     suggestedQuestionsParameters,
+    parameters,
     formatImageUrl: formatters?.formatImageUrl,
   });
 
