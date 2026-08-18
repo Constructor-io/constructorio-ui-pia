@@ -11,6 +11,7 @@ import {
   GetAnswerResultsProps,
   GetAnswerResultsResponse,
 } from './types';
+import { AgentRequestError } from '../../errors';
 
 // Create URL for PIA API
 function createAgentUrl({
@@ -105,15 +106,16 @@ class MockAgent {
     try {
       const response = await fetch(url);
 
-      if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
+      if (!response.ok) throw new AgentRequestError(response.status);
 
       const data = await response.json();
 
       return data;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      // Rethrow untouched so the status code and the original stack survive.
+      if (error instanceof Error) throw error;
 
-      throw new Error(errorMessage);
+      throw new Error(String(error));
     }
   }
 
@@ -140,15 +142,16 @@ class MockAgent {
     try {
       const response = await fetch(url);
 
-      if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
+      if (!response.ok) throw new AgentRequestError(response.status);
 
       const data = await response.json();
 
       return data;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      // Rethrow untouched so the status code and the original stack survive.
+      if (error instanceof Error) throw error;
 
-      throw new Error(errorMessage);
+      throw new Error(String(error));
     }
   }
 
