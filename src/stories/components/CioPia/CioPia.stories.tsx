@@ -57,6 +57,8 @@ const meta = {
         '',
         '`onProductCardClick: (item: Item) => void` — Called when a product card in the carousel is clicked.',
         '',
+        '`onAddToCart: (item: Item, event: React.MouseEvent) => void` — Called when the "Add to Cart" button on a product card is clicked. Passing this callback is what renders the button; cards show no cart control without it.',
+        '',
         '`onFeedback: (type: FeedbackType) => void` — Called when the user submits positive or negative feedback on an answer.',
         '',
         '`onFocus: (context) => void` — Called when the user focuses the input field.',
@@ -83,6 +85,14 @@ const meta = {
       ].join('\n'),
       table: { type: { summary: 'Formatters' } },
     },
+    productCardProps: {
+      description: [
+        'Props forwarded to the ProductCard rendered inside the carousel.',
+        '',
+        '`priceCurrency?: string` — Currency symbol to display next to product prices (e.g., "€", "£"). When omitted, the default ProductCard price rendering is used.',
+      ].join('\n'),
+      table: { type: { summary: 'ProductCardDisplayProps' } },
+    },
     translations: {
       description: [
         'UI string translations for internationalization. All keys are optional — any non-provided translation falls back to English.',
@@ -100,6 +110,8 @@ const meta = {
         '`"Learn More."` — Disclaimer link text.',
         '',
         '`"Ask about this product"` — Modal title.',
+        '',
+        '`"Add to Cart"` — Product card add-to-cart button label.',
       ].join('\n'),
       table: { type: { summary: 'Translations' } },
     },
@@ -141,6 +153,31 @@ export const WithFormatImageUrl: Story = {
     itemName: DEMO_ITEM_NAME,
     formatters: {
       formatImageUrl: prependCdnBase,
+    },
+  },
+};
+
+export const WithCustomCurrency: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: DEMO_ITEM_ID,
+    itemName: DEMO_ITEM_NAME,
+    productCardProps: {
+      priceCurrency: '€',
+    },
+  },
+};
+
+export const WithCustomCurrencyConversation: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: DEMO_ITEM_ID,
+    itemName: DEMO_ITEM_NAME,
+    productCardProps: {
+      priceCurrency: '£',
+    },
+    displayConfigs: {
+      mode: 'conversation',
     },
   },
 };

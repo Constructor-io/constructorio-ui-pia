@@ -27,13 +27,16 @@ class MockConstructorIOClient {
   public agent: MockAgent;
 
   constructor(options: ConstructorClientOptions) {
-    this.options = {
+    const isServer = typeof window === 'undefined' || typeof document === 'undefined';
+
+    const clientOptions: ConstructorClientOptions = {
       version: options.version || `cio-ui-pia-${version}`,
       serviceUrl: options.serviceUrl || 'https://ac.cnstrc.com',
       quizzesServiceUrl: options.quizzesServiceUrl || 'https://quizzes.cnstrc.com',
       agentServiceUrl: options.agentServiceUrl || 'https://agent.cnstrc.com',
-      sessionId: options.sessionId || 0,
-      clientId: options.clientId || 'this-is-a-random-client-id',
+      ...(isServer && {
+        clientId: options.clientId || 'this-is-a-random-client-id',
+      }),
       sendTrackingEvents:
         options.sendTrackingEvents !== undefined ? options.sendTrackingEvents : true,
       beaconMode: options.beaconMode !== undefined ? options.beaconMode : true,
@@ -41,7 +44,11 @@ class MockConstructorIOClient {
       ...options,
     };
 
-    const cioClient = new ConstructorioClient(this.options);
+    const cioClient = new ConstructorioClient(clientOptions);
+
+    const { clientId, sessionId } = cioClient.agent.options;
+
+    this.options = { ...clientOptions, clientId, sessionId };
 
     this.search = cioClient.search;
     this.browse = cioClient.browse;
@@ -49,11 +56,7 @@ class MockConstructorIOClient {
     this.tracker = cioClient.tracker;
     this.quizzes = cioClient.quizzes;
 
-    this.agent = new MockAgent({
-      ...this.options,
-      clientId: options.clientId,
-      sessionId: options.sessionId,
-    });
+    this.agent = new MockAgent(this.options);
   }
 }
 

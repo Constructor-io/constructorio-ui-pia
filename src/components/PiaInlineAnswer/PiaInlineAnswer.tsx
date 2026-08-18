@@ -25,6 +25,7 @@ interface PiaInlineAnswerProps {
   onResultClick?: (item: Item, position: number, question: string, qnaResultId?: string) => void;
   question?: string;
   qnaResultId?: string;
+  priceCurrency?: string;
 }
 
 export default function PiaInlineAnswer({
@@ -40,6 +41,7 @@ export default function PiaInlineAnswer({
   onResultClick,
   question,
   qnaResultId,
+  priceCurrency,
 }: PiaInlineAnswerProps) {
   const disclaimer = (
     <Disclaimer
@@ -61,6 +63,8 @@ export default function PiaInlineAnswer({
           onResultClick={onResultClick}
           question={question}
           qnaResultId={qnaResultId}
+          translations={translations}
+          priceCurrency={priceCurrency}
         />
       )}
       {showFeedback && (

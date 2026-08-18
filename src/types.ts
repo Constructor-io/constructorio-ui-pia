@@ -74,6 +74,7 @@ export type Translations = {
   'Is this answer useful?'?: string;
   'Learn More.'?: string;
   'Ask about this product'?: string;
+  'Add to Cart'?: string;
 };
 
 export type QuestionSource = 'user' | 'suggestion';
@@ -92,6 +93,12 @@ export interface Callbacks {
   ) => void;
   /** Called when a product card in the carousel is clicked. */
   onProductCardClick?: (item: Item) => void;
+  /**
+   * Called when the "Add to Cart" button on a product card is clicked.
+   * Providing this callback is what renders the button.
+   * Clicking the button does not fire `onProductCardClick`.
+   */
+  onAddToCart?: (item: Item, event: React.MouseEvent) => void;
   /** Called when the user submits positive or negative feedback on an answer. */
   onFeedback?: (type: FeedbackType) => void;
   /** Called when a new answer is received. Passes the full conversation history. */
@@ -108,6 +115,15 @@ export interface Callbacks {
 export interface Formatters {
   /** Transforms image URLs before rendering (e.g., prepend a CDN base URL). */
   formatImageUrl?: (url: string) => string;
+}
+
+/** Props forwarded to the ProductCard rendered inside the carousel. */
+export interface ProductCardDisplayProps {
+  /**
+   * Currency symbol to display next to product prices (e.g., "€", "£").
+   * When omitted, the default ProductCard price rendering is used.
+   */
+  priceCurrency?: string;
 }
 
 /** Extends Product type to include PIA-specific fields */
@@ -164,12 +180,24 @@ export interface LoadingRenderProps {
 }
 
 /**
+ * Render props passed to a custom Input override.
+ */
+export interface InputRenderProps {
+  disabled: boolean;
+  placeholder: string;
+  onSubmit: (value: string) => void;
+  onFocus?: () => void;
+  translations?: Translations;
+}
+
+/**
  * Component overrides for CioPia.
  * Allows customization of sub-components via reactNode or render props functions.
  */
 export interface CioPiaComponentOverrides extends ComponentOverrideProps<CioPiaRenderProps> {
   carousel?: CarouselOverrides<Item>;
   answer?: ComponentOverrideProps<AnswerRenderProps>;
+  input?: ComponentOverrideProps<InputRenderProps>;
   suggestedQuestions?: ComponentOverrideProps<SuggestedQuestionsRenderProps>;
   disclaimer?: ComponentOverrideProps<DisclaimerRenderProps>;
   feedback?: ComponentOverrideProps<FeedbackRenderProps>;

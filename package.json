@@ -26,8 +26,10 @@
   "module": "lib/mjs/index.js",
   "exports": {
     "./styles.css": {
+      "style": "./lib/mjs/styles.css",
       "import": "./lib/mjs/styles.css",
-      "require": "./lib/cjs/styles.css"
+      "require": "./lib/cjs/styles.css",
+      "default": "./lib/mjs/styles.css"
     },
     "./constructorio-ui-pia-bundled": {
       "import": "./dist/constructorio-ui-pia-bundled.js",

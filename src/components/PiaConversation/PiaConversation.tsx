@@ -39,6 +39,7 @@ export default function PiaConversation({
   onResultClick,
   qnaResultId,
   onInputFocus,
+  priceCurrency,
 }: PiaConversationProps) {
   const hasHistory = conversationHistory.length > 0;
 
@@ -68,6 +69,7 @@ export default function PiaConversation({
         handleFeedback={handleFeedback}
         onResultClick={onResultClick}
         qnaResultId={qnaResultId}
+        priceCurrency={priceCurrency}
       />
 
       <div className='cio-pia-conversation-footer'>
@@ -84,6 +86,7 @@ export default function PiaConversation({
           onFocus={onInputFocus}
           disabled={isLoading}
           translations={translations}
+          componentOverride={componentOverrides?.input}
         />
       </div>
     </div>
