@@ -27,6 +27,7 @@ interface FetchAnswerResultsParams {
   question: string;
   variationId?: string;
   threadId?: string;
+  parameters?: Record<string, any>;
 }
 
 const extractAndTransformItems = (
@@ -55,12 +56,14 @@ const fetchAnswerResults = async ({
   question,
   variationId,
   threadId,
+  parameters,
 }: FetchAnswerResultsParams) => {
   const response: GetAnswerResultsResponse = await client.agent.getAnswerResults({
     itemId,
     variationId,
     threadId,
     question,
+    parameters,
   });
   return response;
 };
@@ -70,6 +73,7 @@ export default function useAnswerResults({
   variationId,
   threadId,
   cioClient,
+  parameters,
   formatImageUrl,
 }: UseAnswerResultsProps): UseAnswerResultsReturn {
   const [answerResults, setAnswerResults] = useState<GetAnswerResultsResponse | null>(null);
@@ -89,7 +93,7 @@ export default function useAnswerResults({
       setError(null);
       setAnswerResults(null);
 
-      fetchAnswerResults({ client: cioClient, itemId, question, variationId, threadId })
+      fetchAnswerResults({ client: cioClient, itemId, question, variationId, threadId, parameters })
         .then((fetchedAnswerResults) => {
           setAnswerResults(fetchedAnswerResults);
           setError(null);
@@ -102,7 +106,7 @@ export default function useAnswerResults({
           setIsLoading(false);
         });
     },
-    [cioClient, itemId, variationId, threadId],
+    [cioClient, itemId, variationId, threadId, parameters],
   );
 
   return {

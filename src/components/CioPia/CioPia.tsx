@@ -60,6 +60,8 @@ export interface CioPiaProps
   translations?: Translations;
   /** Parameters for the suggested questions request. */
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
+  /** Extra query parameters appended to answer API requests (e.g. `ef-*` test cell params). */
+  parameters?: Record<string, any>;
 }
 
 // eslint-disable-next-line complexity
@@ -79,6 +81,7 @@ export default function CioPia(props: CioPiaProps) {
     children,
     translations,
     suggestedQuestionsParameters,
+    parameters,
   } = props;
   const {
     learnMoreUrl,
@@ -99,6 +102,7 @@ export default function CioPia(props: CioPiaProps) {
     variationId,
     cioClient,
     suggestedQuestionsParameters,
+    parameters,
     formatImageUrl: formatters?.formatImageUrl,
   });
 
