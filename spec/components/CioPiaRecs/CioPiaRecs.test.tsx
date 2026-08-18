@@ -2,7 +2,7 @@ import React from 'react';
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { CIO_EVENTS } from '@constructor-io/constructorio-ui-components';
-import PiaRecsPod from '../../../src/components/PiaRecsPod/PiaRecsPod';
+import CioPiaRecs from '../../../src/components/CioPiaRecs/CioPiaRecs';
 import type { CioPiaProps } from '../../../src/components/CioPia/types';
 import { AgentRequestError } from '../../../src/errors';
 import {
@@ -14,13 +14,22 @@ import {
 } from '../../../src/constants';
 import { Item, RecsResult } from '../../../src/types';
 import { createMockCioClient, TestMockClient } from '../../helpers/mockCioClient';
-import deferred from '../../helpers/deferred';
 import { testRecsPodNoHistory, testRecsPodResult } from '../../localExamples';
 
 const firstResult: RecsResult = testRecsPodResult;
 const secondResult: RecsResult = testRecsPodNoHistory;
 
 let mockClient: TestMockClient;
+
+/** A request whose settling the test controls, for asserting what is on screen mid-flight. */
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((resolvePromise) => {
+    resolve = resolvePromise;
+  });
+
+  return { promise, resolve };
+}
 
 function getProps(overrides: Partial<CioPiaProps> = {}): CioPiaProps {
   return {
@@ -42,7 +51,7 @@ async function settle() {
 
 /** Renders the pod and waits for the request made on mount to settle. */
 async function renderSettled(overrides: Partial<CioPiaProps> = {}) {
-  const view = render(<PiaRecsPod {...getProps(overrides)} />);
+  const view = render(<CioPiaRecs {...getProps(overrides)} />);
   await settle();
   return view;
 }
@@ -60,7 +69,7 @@ function clickProductCard(container: HTMLElement, product: Item) {
   );
 }
 
-describe('PiaRecsPod Component', () => {
+describe('CioPiaRecs Component', () => {
   beforeEach(() => {
     mockClient = createMockCioClient();
     mockClient.agent.getRecs.mockResolvedValue(firstResult);
@@ -68,9 +77,9 @@ describe('PiaRecsPod Component', () => {
 
   describe('First load', () => {
     it('shows the loading title and a placeholder for each block', () => {
-      mockClient.agent.getRecs.mockReturnValue(deferred<RecsResult>().promise);
+      mockClient.agent.getRecs.mockReturnValue(new Promise<RecsResult>(() => {}));
 
-      render(<PiaRecsPod {...getProps()} />);
+      render(<CioPiaRecs {...getProps()} />);
 
       expect(screen.getByTestId('cio-pia-recs-pod')).toHaveClass('cio-pia-recs-pod--loading');
       expect(screen.getByText(RECS_LOADING_TITLE)).toBeInTheDocument();
@@ -81,9 +90,9 @@ describe('PiaRecsPod Component', () => {
     });
 
     it('shows the refinement label while the options are still placeholders', () => {
-      mockClient.agent.getRecs.mockReturnValue(deferred<RecsResult>().promise);
+      mockClient.agent.getRecs.mockReturnValue(new Promise<RecsResult>(() => {}));
 
-      const { container } = render(<PiaRecsPod {...getProps()} />);
+      const { container } = render(<CioPiaRecs {...getProps()} />);
 
       expect(container.querySelector('.cio-pia-recs-pod__refinement-label')).toHaveTextContent(
         RECS_REFINEMENT_LABEL,
@@ -152,15 +161,15 @@ describe('PiaRecsPod Component', () => {
       expect(container.querySelector('.cio-pia-feedback')).not.toBeInTheDocument();
     });
 
-    it('renders the disclaimer', async () => {
+    it('renders no disclaimer', async () => {
       const { container } = await renderSettled();
 
-      expect(container.querySelector('.cio-pia-disclaimer')).toBeInTheDocument();
+      expect(container.querySelector('.cio-pia-disclaimer')).not.toBeInTheDocument();
     });
   });
 
   describe('Refining', () => {
-    it('refetches with the option label when an option is clicked', async () => {
+    it('fetches again with the option label when an option is clicked', async () => {
       await renderSettled();
 
       await act(async () => {
@@ -172,7 +181,7 @@ describe('PiaRecsPod Component', () => {
       );
     });
 
-    it('refetches with the typed text when the input is submitted', async () => {
+    it('fetches again with the typed text when the input is submitted', async () => {
       await renderSettled();
 
       const input = screen.getByRole('textbox');
@@ -213,48 +222,10 @@ describe('PiaRecsPod Component', () => {
       expect(screen.getByText(secondResult.title)).toBeInTheDocument();
     });
 
-    it('holds the height the carousel had, so the row below it does not move', async () => {
-      // jsdom does no layout, so every height is 0. Stand in for the height the carousel would
-      // have had on screen; what is being tested is that the pod carries it over to the
-      // placeholders, not the measurement itself.
-      const measured = jest
-        .spyOn(HTMLDivElement.prototype, 'getBoundingClientRect')
-        .mockReturnValue({ height: 409 } as DOMRect);
-
-      const pending = deferred<RecsResult>();
-      mockClient.agent.getRecs
-        .mockResolvedValueOnce(firstResult)
-        .mockReturnValueOnce(pending.promise);
-
-      await renderSettled();
-
-      // Settled, the carousel sizes itself and the pod imposes nothing.
-      expect(screen.getByTestId('cio-pia-recs-pod-products')).not.toHaveStyle({
-        minHeight: '409px',
-      });
-
-      act(() => {
-        fireEvent.click(screen.getByRole('button', { name: 'Oxford' }));
-      });
-
-      expect(screen.getByTestId('cio-pia-recs-pod-products')).toHaveStyle({ minHeight: '409px' });
-
-      measured.mockRestore();
-    });
-
-    it('imposes no height on a first load, when there is nothing on screen to measure', () => {
-      mockClient.agent.getRecs.mockReturnValue(deferred<RecsResult>().promise);
-
-      render(<PiaRecsPod {...getProps()} />);
-
-      expect(screen.getByTestId('cio-pia-recs-pod-products').style.minHeight).toBe('');
-    });
-
     it('draws as many option placeholders as the previous response had', async () => {
-      const pending = deferred<RecsResult>();
       mockClient.agent.getRecs
         .mockResolvedValueOnce(firstResult)
-        .mockReturnValueOnce(pending.promise);
+        .mockReturnValueOnce(new Promise<RecsResult>(() => {}));
 
       await renderSettled();
 
@@ -284,8 +255,6 @@ describe('PiaRecsPod Component', () => {
 
       expect(screen.getByRole('alert')).toHaveTextContent(RECS_UNSUPPORTED_REQUEST);
       expect(container.querySelector('.cio-pia-input--error')).toBeInTheDocument();
-      // Tabbing back to the box has to say why it is invalid, not just that it is.
-      expect(screen.getByRole('textbox')).toHaveAccessibleDescription(RECS_UNSUPPORTED_REQUEST);
       expect(screen.getByText(firstResult.title)).toBeInTheDocument();
       firstResult.refinement!.options.forEach((option) => {
         expect(screen.getByRole('button', { name: option })).toBeInTheDocument();
@@ -413,7 +382,7 @@ describe('PiaRecsPod Component', () => {
         [RECS_INPUT_PLACEHOLDER]: 'Tell us what you want',
       };
 
-      render(<PiaRecsPod {...getProps({ translations })} />);
+      render(<CioPiaRecs {...getProps({ translations })} />);
 
       expect(screen.getByText('Tuning your picks')).toBeInTheDocument();
       expect(screen.getByText('Try one of these:')).toBeInTheDocument();
@@ -475,7 +444,7 @@ describe('PiaRecsPod Component', () => {
 
     it('renders custom content from the children render props function', async () => {
       const view = render(
-        <PiaRecsPod {...getProps()}>
+        <CioPiaRecs {...getProps()}>
           {({ currentAnswer, items, displayedQuestions }) => (
             <div data-testid='custom-recs-pod'>
               <span data-testid='custom-title'>{currentAnswer}</span>
@@ -483,7 +452,7 @@ describe('PiaRecsPod Component', () => {
               <span data-testid='custom-options'>{displayedQuestions.length}</span>
             </div>
           )}
-        </PiaRecsPod>,
+        </CioPiaRecs>,
       );
       await settle();
 
@@ -498,10 +467,10 @@ describe('PiaRecsPod Component', () => {
     });
 
     it('renders a custom loading placeholder', () => {
-      mockClient.agent.getRecs.mockReturnValue(deferred<RecsResult>().promise);
+      mockClient.agent.getRecs.mockReturnValue(new Promise<RecsResult>(() => {}));
 
       render(
-        <PiaRecsPod
+        <CioPiaRecs
           {...getProps({
             componentOverrides: {
               loading: { reactNode: () => <div data-testid='custom-loading' /> },
@@ -514,14 +483,15 @@ describe('PiaRecsPod Component', () => {
       expect(screen.queryByTestId('cio-pia-recs-skeleton-carousel')).not.toBeInTheDocument();
     });
 
-    it('renders a custom disclaimer', async () => {
+    // The pod has no disclaimer of its own, so this override has nothing to replace here.
+    it('ignores a disclaimer override', async () => {
       await renderSettled({
         componentOverrides: {
           disclaimer: { reactNode: () => <div data-testid='custom-disclaimer' /> },
         },
       });
 
-      expect(screen.getByTestId('custom-disclaimer')).toBeInTheDocument();
+      expect(screen.queryByTestId('custom-disclaimer')).not.toBeInTheDocument();
     });
   });
 

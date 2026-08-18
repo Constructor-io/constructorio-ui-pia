@@ -89,7 +89,7 @@ The component supports multiple display modes via the `displayConfigs` prop:
 > deployed yet, so the pod currently asks the Q&A endpoint and converts the reply, which means the
 > title and the options are not yet the short copy the pod is designed for. The layout, the loading
 > states and the refinement flow are final. See the
-> [Recommendations Pod docs](https://constructor-io.github.io/constructorio-ui-pia/?path=/docs/components-ciopia-recspod--docs).
+> [Recommendations Pod docs](https://constructor-io.github.io/constructorio-ui-pia/?path=/docs/components-ciopia-recs-pod--docs).
 
 #### Configuration Options
 

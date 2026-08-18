@@ -8,7 +8,6 @@ import {
 } from '../../../src/constants';
 import { RecsResult } from '../../../src/types';
 import { createMockCioClient } from '../../helpers/mockCioClient';
-import deferred from '../../helpers/deferred';
 import { testRecsPodNoHistory, testRecsPodResult } from '../../localExamples';
 
 const testItemId = 'test-item-id';
@@ -16,6 +15,19 @@ const newTestItemId = 'new-test-item-id';
 
 const firstResult: RecsResult = testRecsPodResult;
 const secondResult: RecsResult = testRecsPodNoHistory;
+
+/**
+ * A request whose settling the test controls. Hand the first call `a.promise` and the second
+ * `b.promise`, resolve `b` first, then `a`, and the out-of-order guard can be asserted.
+ */
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((resolvePromise) => {
+    resolve = resolvePromise;
+  });
+
+  return { promise, resolve };
+}
 
 /** Lets every pending promise and state update settle, the way the other hook specs do. */
 async function settle() {
@@ -34,7 +46,7 @@ describe('Testing Hook: useRecsPod', () => {
   });
 
   it('shows the loading title with no products while the first request is in flight', () => {
-    mockClient.agent.getRecs.mockReturnValueOnce(deferred<RecsResult>().promise);
+    mockClient.agent.getRecs.mockReturnValueOnce(new Promise<RecsResult>(() => {}));
 
     const { result } = renderHook(() =>
       useRecsPod({ itemId: testItemId, cioClient: mockClient }),
@@ -135,7 +147,7 @@ describe('Testing Hook: useRecsPod', () => {
     expect(result.current.items).toBeNull();
   });
 
-  it('refetches when itemId changes', async () => {
+  it('fetches again when itemId changes', async () => {
     mockClient.agent.getRecs
       .mockResolvedValueOnce(firstResult)
       .mockResolvedValueOnce(secondResult);
@@ -157,7 +169,7 @@ describe('Testing Hook: useRecsPod', () => {
     expect(result.current.items).toEqual(secondResult.items);
   });
 
-  it('refetches when the strategy changes', async () => {
+  it('fetches again when the strategy changes', async () => {
     mockClient.agent.getRecs
       .mockResolvedValueOnce(firstResult)
       .mockResolvedValueOnce(secondResult);
@@ -465,7 +477,7 @@ describe('Testing Hook: useRecsPod', () => {
     });
 
     it('shows the loading copy rather than defaultTitle while a request is in flight', () => {
-      mockClient.agent.getRecs.mockReturnValueOnce(deferred<RecsResult>().promise);
+      mockClient.agent.getRecs.mockReturnValueOnce(new Promise<RecsResult>(() => {}));
 
       const { result } = renderHook(() =>
         useRecsPod({
@@ -481,7 +493,7 @@ describe('Testing Hook: useRecsPod', () => {
     });
 
     it('translates the loading title', () => {
-      mockClient.agent.getRecs.mockReturnValueOnce(deferred<RecsResult>().promise);
+      mockClient.agent.getRecs.mockReturnValueOnce(new Promise<RecsResult>(() => {}));
 
       const { result } = renderHook(() =>
         useRecsPod({

@@ -87,9 +87,9 @@ products, in its normal response shape, so the library never picks between them.
 
 <Canvas of={RecsPodStories.Refining} />
 
-Only the products and the options ever become placeholders. The refinement prompt holds still and
-the products keep the height they had, so nothing on the page moves up or down while a request is in
-flight.
+Only the products and the options ever become placeholders. The refinement prompt holds still, and
+the placeholders are shaped like the content they stand in for, so the row moves as little as
+possible while a request is in flight.
 
 The title is the one thing that does change, and it fades in over 200ms rather than snapping, so the
 pod visibly reacts to what the shopper asked for. This is a fade-in on the arriving title, not a

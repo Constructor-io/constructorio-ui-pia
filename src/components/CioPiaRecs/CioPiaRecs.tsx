@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { RenderPropsWrapper } from '@constructor-io/constructorio-ui-components';
 import Answer from '../Answer/Answer';
-import Disclaimer from '../CioPia/Disclaimer';
 import PiaCustomCarousel from '../CioPia/PiaCustomCarousel';
 import RecsPodRefinement from './RecsPodRefinement';
 import RecsPodSkeleton from './RecsPodSkeleton';
@@ -21,14 +20,13 @@ import type { CioPiaProps } from '../CioPia/types';
  * that supplied its own root — `children` or `componentOverrides.reactNode` — still gets it in that
  * state, with `error` available, and decides what belongs there.
  */
-export default function PiaRecsPod(props: CioPiaProps) {
+export default function CioPiaRecs(props: CioPiaProps) {
   const {
     apiKey,
     itemId,
     threadId,
     variationId,
     cioClient,
-    displayConfigs,
     componentOverrides,
     callbacks,
     formatters,
@@ -37,13 +35,11 @@ export default function PiaRecsPod(props: CioPiaProps) {
     translations,
     recsPodParameters,
   } = props;
-  const { learnMoreUrl } = displayConfigs || {};
   const { priceCurrency } = productCardProps || {};
   const { showInput = true } = recsPodParameters || {};
   const {
     answer: answerOverride,
     carousel: carouselOverride,
-    disclaimer: disclaimerOverride,
     loading: loadingOverride,
     reactNode: rootOverride,
   } = componentOverrides || {};
@@ -79,35 +75,6 @@ export default function PiaRecsPod(props: CioPiaProps) {
     [itemId, resolvedThreadId],
   );
   const { containerRef } = useViewportCallbacks({ callbacks, context });
-
-  // How tall the carousel is depends on the product images and on how far the names wrap, so the
-  // placeholders cannot know it in advance. Measure the real thing while it is on screen and hold
-  // that height through the next request, which is what stops the refinement row below from
-  // moving under the shopper's cursor. There is nothing to measure on a first load, so the
-  // placeholders fall back to their own height in CSS.
-  const productsRef = useRef<HTMLDivElement>(null);
-  const [heldProductsHeight, setHeldProductsHeight] = useState<number>();
-
-  useEffect(() => {
-    const element = productsRef.current;
-    if (isLoading || !element) return undefined;
-
-    const measure = () => {
-      const { height } = element.getBoundingClientRect();
-      // Returning the previous value when there is nothing to record is what keeps this from
-      // re-rendering on every settled response.
-      setHeldProductsHeight((previous) => height || previous);
-    };
-    measure();
-
-    // The product images load after this effect first runs and the cards grow taller when they
-    // do, so a single measurement here would hold a height ~40px short of the real one. Keep it
-    // in step instead. `ResizeObserver` is missing in jsdom, where there is no layout to observe.
-    if (typeof ResizeObserver === 'undefined') return undefined;
-    const observer = new ResizeObserver(measure);
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, [isLoading, items]);
 
   const handleSubmit = useCallback((value: string) => refine(value), [refine]);
   const handleInputFocus = useCallback(() => callbacks?.onFocus?.(context), [callbacks, context]);
@@ -145,11 +112,7 @@ export default function PiaRecsPod(props: CioPiaProps) {
           <Answer text={title} componentOverride={answerOverride} />
         </div>
 
-        <div
-          ref={productsRef}
-          className='cio-pia-recs-pod__products'
-          data-testid='cio-pia-recs-pod-products'
-          style={isLoading ? { minHeight: heldProductsHeight } : undefined}>
+        <div className='cio-pia-recs-pod__products' data-testid='cio-pia-recs-pod-products'>
           {isLoading || !items ? (
             <RecsPodSkeleton
               part='carousel'
@@ -178,12 +141,6 @@ export default function PiaRecsPod(props: CioPiaProps) {
           onRefine={refine}
           onSubmit={handleSubmit}
           onInputFocus={handleInputFocus}
-        />
-
-        <Disclaimer
-          learnMoreUrl={learnMoreUrl}
-          translations={translations}
-          componentOverride={disclaimerOverride}
         />
       </RenderPropsWrapper>
     </div>

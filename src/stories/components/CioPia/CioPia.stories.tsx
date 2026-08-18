@@ -28,7 +28,7 @@ const meta = {
       description: [
         'Display configuration options:',
         '',
-        '`mode: "default" | "conversation" | "recommendations"` — Display mode. Defaults to `"default"`. `"recommendations"` renders a recommendations pod instead of Q&A — see [RecsPod](./?path=/docs/components-ciopia-recspod--docs).',
+        '`mode: "default" | "conversation" | "recommendations"` — Display mode. Defaults to `"default"`. `"recommendations"` renders a recommendations pod instead of Q&A — see [Recs Pod](./?path=/docs/components-ciopia-recs-pod--docs).',
         '',
         '`type: "inline" | "modal"` — Component type. Defaults to `"inline"`.',
         '',
