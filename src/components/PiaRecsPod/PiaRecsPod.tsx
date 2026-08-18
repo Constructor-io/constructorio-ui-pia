@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { RenderPropsWrapper } from '@constructor-io/constructorio-ui-components';
 import Answer from '../Answer/Answer';
 import Disclaimer from '../CioPia/Disclaimer';
@@ -90,6 +90,35 @@ export default function PiaRecsPod(props: CioPiaProps) {
   );
   const { containerRef } = useViewportCallbacks({ callbacks, context });
 
+  // How tall the carousel is depends on the product images and on how far the names wrap, so the
+  // placeholders cannot know it in advance. Measure the real thing while it is on screen and hold
+  // that height through the next request, which is what stops the refinement row below from
+  // moving under the shopper's cursor. There is nothing to measure on a first load, so the
+  // placeholders fall back to their own height in CSS.
+  const productsRef = useRef<HTMLDivElement>(null);
+  const [heldProductsHeight, setHeldProductsHeight] = useState<number>();
+
+  useEffect(() => {
+    const element = productsRef.current;
+    if (isLoading || !element) return undefined;
+
+    const measure = () => {
+      const { height } = element.getBoundingClientRect();
+      // Returning the previous value when there is nothing to record is what keeps this from
+      // re-rendering on every settled response.
+      setHeldProductsHeight((previous) => height || previous);
+    };
+    measure();
+
+    // The product images load after this effect first runs and the cards grow taller when they
+    // do, so a single measurement here would hold a height ~40px short of the real one. Keep it
+    // in step instead. `ResizeObserver` is missing in jsdom, where there is no layout to observe.
+    if (typeof ResizeObserver === 'undefined') return undefined;
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [isLoading, items]);
+
   const handleSubmit = useCallback((value: string) => refine(value), [refine]);
   const handleInputFocus = useCallback(() => callbacks?.onFocus?.(context), [callbacks, context]);
 
@@ -113,30 +142,40 @@ export default function PiaRecsPod(props: CioPiaProps) {
   return (
     <div ref={containerRef} className={className} data-testid='cio-pia-recs-pod'>
       <RenderPropsWrapper props={renderProps} override={children || rootOverride}>
-        <div className='cio-pia-recs-pod__title'>
+        {/*
+          `key` is the title itself, so React remounts this node whenever the copy changes and
+          replays the fade rather than swapping the text in place.
+        */}
+        <div key={title} className='cio-pia-recs-pod__title'>
           <Answer text={title} componentOverride={answerOverride} />
         </div>
 
-        {isLoading || !items ? (
-          <RecsPodSkeleton
-            part='carousel'
-            count={items?.length}
-            componentOverride={loadingOverride}
-          />
-        ) : (
-          <PiaCustomCarousel
-            items={items}
-            componentOverrides={carouselOverride}
-            callbacks={callbacks}
-            onResultClick={tracking.trackResultClick}
-            // The click event is shared with Q&A, where this field holds the question that
-            // produced the results. A pod has no question until something is refined.
-            question={lastShopperInput || title}
-            qnaResultId={resultId}
-            translations={translations}
-            priceCurrency={priceCurrency}
-          />
-        )}
+        <div
+          ref={productsRef}
+          className='cio-pia-recs-pod__products'
+          data-testid='cio-pia-recs-pod-products'
+          style={isLoading ? { minHeight: heldProductsHeight } : undefined}>
+          {isLoading || !items ? (
+            <RecsPodSkeleton
+              part='carousel'
+              count={items?.length}
+              componentOverride={loadingOverride}
+            />
+          ) : (
+            <PiaCustomCarousel
+              items={items}
+              componentOverrides={carouselOverride}
+              callbacks={callbacks}
+              onResultClick={tracking.trackResultClick}
+              // The click event is shared with Q&A, where this field holds the question that
+              // produced the results. A pod has no question until something is refined.
+              question={lastShopperInput || title}
+              qnaResultId={resultId}
+              translations={translations}
+              priceCurrency={priceCurrency}
+            />
+          )}
+        </div>
 
         <RecsPodRefinement
           refinement={refinement}
