@@ -3,12 +3,7 @@ import Input from '../Input/Input';
 import SuggestedQuestion from '../SuggestedQuestion/SuggestedQuestion';
 import { SparklesIcon } from '../icons';
 import RecsPodSkeleton from './RecsPodSkeleton';
-import {
-  CioPiaComponentOverrides,
-  QuestionSource,
-  RecsRefinement,
-  Translations,
-} from '../../types';
+import { CioPiaComponentOverrides, RecsRefinement, Translations } from '../../types';
 import { resolveRefinementQuestion } from '../../utils/recs';
 import { RECS_INPUT_PLACEHOLDER } from '../../constants';
 
@@ -21,7 +16,7 @@ interface RecsPodRefinementProps {
   showInput: boolean;
   translations?: Translations;
   componentOverrides?: CioPiaComponentOverrides;
-  onRefine: (text: string, source?: QuestionSource) => void;
+  onRefine: (text: string) => void;
   onSubmit: (value: string) => void;
   onInputFocus: () => void;
 }
@@ -59,7 +54,7 @@ export default function RecsPodRefinement({
             key={option}
             question={option}
             icon={<SparklesIcon />}
-            onClick={() => onRefine(option, 'suggestion')}
+            onClick={() => onRefine(option)}
           />
         ))
       )}

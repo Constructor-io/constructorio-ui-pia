@@ -7,7 +7,6 @@ import RecsPodRefinement from './RecsPodRefinement';
 import RecsPodSkeleton from './RecsPodSkeleton';
 import usePiaClient from '../../hooks/usePiaClient';
 import useRecsPod from '../../hooks/useRecsPod';
-import useTracking from '../../hooks/useTracking';
 import useViewportCallbacks from '../../hooks/useViewportCallbacks';
 import { CioPiaRenderProps } from '../../types';
 import type { CioPiaProps } from '../CioPia/types';
@@ -18,13 +17,14 @@ import type { CioPiaProps } from '../CioPia/types';
  * can use it on its own.
  *
  * Renders nothing at all once a request has settled with no products, so whatever the retailer
- * already had in that slot shows through instead of an empty shell.
+ * already had in that slot shows through instead of an empty shell. That is the default: a caller
+ * that supplied its own root — `children` or `componentOverrides.reactNode` — still gets it in that
+ * state, with `error` available, and decides what belongs there.
  */
 export default function PiaRecsPod(props: CioPiaProps) {
   const {
     apiKey,
     itemId,
-    itemName,
     threadId,
     variationId,
     cioClient,
@@ -54,14 +54,6 @@ export default function PiaRecsPod(props: CioPiaProps) {
     cioClient,
   });
 
-  const tracking = useTracking({
-    cioClient: client,
-    itemId,
-    itemName,
-    variationId,
-    threadId: resolvedThreadId,
-  });
-
   const {
     title,
     items,
@@ -71,7 +63,6 @@ export default function PiaRecsPod(props: CioPiaProps) {
     error,
     inputError,
     lastShopperInput,
-    resultId,
     refine,
   } = useRecsPod({
     itemId,
@@ -81,7 +72,6 @@ export default function PiaRecsPod(props: CioPiaProps) {
     parameters: recsPodParameters,
     formatImageUrl: formatters?.formatImageUrl,
     translations,
-    tracking,
   });
 
   const context = useMemo(
@@ -133,7 +123,12 @@ export default function PiaRecsPod(props: CioPiaProps) {
     conversationHistory: [],
   };
 
-  if (!isLoading && !items) return null;
+  // Nothing of ours to show. Rendering no markup at all is the default, so whatever the retailer
+  // already had in that slot shows through instead of an empty shell. TODO: an interim, not a
+  // settled decision — the empty-state design and the shape of a hard failure are both still open.
+  // A caller who supplied its own root still gets it, with `error` in hand, so a consumer can put
+  // its own message here.
+  if (!isLoading && !items && !children && !rootOverride) return null;
 
   const className = isLoading
     ? 'cio-pia-container cio-pia-recs-pod cio-pia-recs-pod--loading'
@@ -166,11 +161,6 @@ export default function PiaRecsPod(props: CioPiaProps) {
               items={items}
               componentOverrides={carouselOverride}
               callbacks={callbacks}
-              onResultClick={tracking.trackResultClick}
-              // The click event is shared with Q&A, where this field holds the question that
-              // produced the results. A pod has no question until something is refined.
-              question={lastShopperInput || title}
-              qnaResultId={resultId}
               translations={translations}
               priceCurrency={priceCurrency}
             />

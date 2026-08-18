@@ -106,6 +106,10 @@ looking for a pod that is not there, a settled response with no products is the 
 a *later* request behaves differently — the products already on screen stay, under "Best selling
 products".
 
+That is the default, not a dead end: it applies when the markup is ours. If you supplied your own
+root — `children` or `componentOverrides.reactNode` — it still runs in this state, with `error`
+available, so you can put your own message where the pod would have been.
+
 <Canvas of={RecsPodStories.ErrorWhileRefining} />
 
 ## Errors

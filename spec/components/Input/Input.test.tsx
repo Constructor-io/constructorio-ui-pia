@@ -170,6 +170,7 @@ describe('Input Component', () => {
       expect(queryByRole('alert')).not.toBeInTheDocument();
       expect(container.querySelector('.cio-pia-input--error')).not.toBeInTheDocument();
       expect(queryByRole('textbox')).not.toHaveAttribute('aria-invalid');
+      expect(queryByRole('textbox')).not.toHaveAttribute('aria-describedby');
     });
 
     it('renders the message, the error class and aria-invalid', () => {
@@ -180,6 +181,33 @@ describe('Input Component', () => {
       expect(getByRole('alert')).toHaveTextContent('Unsupported request, try a different feature.');
       expect(container.querySelector('.cio-pia-input--error')).toBeInTheDocument();
       expect(getByRole('textbox')).toHaveAttribute('aria-invalid', 'true');
+    });
+
+    // `aria-invalid` alone says the box is wrong without saying why, and `role='alert'` only covers
+    // the moment the message appears. This is what reads it out again on focus. The matcher
+    // resolves `aria-describedby` for real, so it fails if the id and the reference drift apart.
+    it('describes the box with the message, so focusing it again says why it is invalid', () => {
+      const { getByRole } = render(
+        <Input onSubmit={mockSubmit} error='Unsupported request, try a different feature.' />,
+      );
+
+      expect(getByRole('textbox')).toHaveAccessibleDescription(
+        'Unsupported request, try a different feature.',
+      );
+    });
+
+    it('gives two inputs on the same page different message ids', () => {
+      const { getAllByRole } = render(
+        <>
+          <Input onSubmit={mockSubmit} error='First problem' />
+          <Input onSubmit={mockSubmit} error='Second problem' />
+        </>,
+      );
+
+      const [first, second] = getAllByRole('textbox');
+
+      expect(first).toHaveAccessibleDescription('First problem');
+      expect(second).toHaveAccessibleDescription('Second problem');
     });
 
     it('puts the message beside the box rather than inside it', () => {

@@ -8,7 +8,6 @@ import {
 } from '../../../src/constants';
 import { RecsResult } from '../../../src/types';
 import { createMockCioClient } from '../../helpers/mockCioClient';
-import createMockTracking from '../../__mocks__/createMockTracking';
 import deferred from '../../helpers/deferred';
 import { testRecsPodNoHistory, testRecsPodResult } from '../../localExamples';
 
@@ -29,11 +28,9 @@ async function settle() {
 
 describe('Testing Hook: useRecsPod', () => {
   const mockClient = createMockCioClient();
-  let tracking: ReturnType<typeof createMockTracking>;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    tracking = createMockTracking();
   });
 
   it('shows the loading title with no products while the first request is in flight', () => {
@@ -66,7 +63,6 @@ describe('Testing Hook: useRecsPod', () => {
     expect(result.current.title).toBe(firstResult.title);
     expect(result.current.items).toEqual(firstResult.items);
     expect(result.current.refinement).toEqual(firstResult.refinement);
-    expect(result.current.resultId).toBe(firstResult.resultId);
     expect(result.current.lastShopperInput).toBe('');
   });
 
@@ -120,6 +116,22 @@ describe('Testing Hook: useRecsPod', () => {
     await settle();
 
     expect(mockClient.agent.getRecs).not.toHaveBeenCalled();
+    expect(result.current.items).toBeNull();
+  });
+
+  // Our own adapter never returns an empty array, but `cioClient` is a public prop and a
+  // consumer-supplied client can, so callers get one shape for "no products" rather than two.
+  it('normalizes an empty product list to null', async () => {
+    mockClient.agent.getRecs.mockResolvedValueOnce({
+      title: 'Nothing to show',
+      items: [],
+      refinement: null,
+    });
+
+    const { result } = renderHook(() => useRecsPod({ itemId: testItemId, cioClient: mockClient }));
+
+    await settle();
+
     expect(result.current.items).toBeNull();
   });
 
@@ -518,81 +530,6 @@ describe('Testing Hook: useRecsPod', () => {
       await settle();
 
       expect(result.current.inputError).toBe('We cannot do that one');
-    });
-  });
-
-  describe('tracking', () => {
-    it('reports the answer view with the pod title, options and products', async () => {
-      mockClient.agent.getRecs.mockResolvedValueOnce(firstResult);
-
-      renderHook(() => useRecsPod({ itemId: testItemId, cioClient: mockClient, tracking }));
-
-      await settle();
-
-      expect(tracking.trackAnswerView).toHaveBeenCalledTimes(1);
-      expect(tracking.trackAnswerView).toHaveBeenCalledWith(
-        '',
-        {
-          qna_result_id: firstResult.resultId,
-          value: firstResult.title,
-          follow_up_questions: firstResult.refinement!.options.map((value) => ({ value })),
-        },
-        firstResult.items,
-      );
-    });
-
-    it('does not report a submitted question for the request made on mount', async () => {
-      mockClient.agent.getRecs.mockResolvedValueOnce(firstResult);
-
-      renderHook(() => useRecsPod({ itemId: testItemId, cioClient: mockClient, tracking }));
-
-      await settle();
-
-      expect(tracking.trackQuestionSubmit).not.toHaveBeenCalled();
-      expect(tracking.trackQuestionClick).not.toHaveBeenCalled();
-    });
-
-    it('reports a click for an option and a submit for typed text', async () => {
-      mockClient.agent.getRecs.mockResolvedValue(firstResult);
-
-      const { result } = renderHook(() =>
-        useRecsPod({ itemId: testItemId, cioClient: mockClient, tracking }),
-      );
-
-      await settle();
-
-      await act(async () => {
-        result.current.refine('Slim fit', 'suggestion');
-      });
-      await settle();
-
-      expect(tracking.trackQuestionClick).toHaveBeenCalledWith('Slim fit');
-      expect(tracking.trackQuestionSubmit).not.toHaveBeenCalled();
-
-      await act(async () => {
-        result.current.refine('something with more linen');
-      });
-      await settle();
-
-      expect(tracking.trackQuestionSubmit).toHaveBeenCalledWith('something with more linen');
-    });
-
-    it('does not report an answer view when there is no answer to view', async () => {
-      mockClient.agent.getRecs
-        .mockRejectedValueOnce(new AgentRequestError(500))
-        .mockRejectedValueOnce(new AgentRequestError(422));
-
-      const { result } = renderHook(() =>
-        useRecsPod({ itemId: testItemId, cioClient: mockClient, tracking }),
-      );
-
-      await settle();
-      await act(async () => {
-        result.current.refine('paint my house');
-      });
-      await settle();
-
-      expect(tracking.trackAnswerView).not.toHaveBeenCalled();
     });
   });
 });

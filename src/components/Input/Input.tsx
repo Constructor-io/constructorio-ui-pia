@@ -47,6 +47,11 @@ function Input({
 }: InputProps) {
   const [value, setValue] = useState(providedValue || '');
 
+  // Links the error message to the box for screen readers. `useId` would need React 18 and this
+  // library supports React 16.12, so the id is minted once per instance the way `usePiaClient`
+  // mints a thread id. It cannot be a constant: two inputs can be on the same page.
+  const [errorId] = useState(() => `cio-pia-input-error-${crypto.randomUUID()}`);
+
   useEffect(() => {
     if (providedValue) {
       setValue(providedValue);
@@ -102,6 +107,10 @@ function Input({
             disabled={disabled}
             className={error ? 'cio-pia-input cio-pia-input--error' : 'cio-pia-input'}
             aria-invalid={error ? true : undefined}
+            // `aria-describedby` rather than `aria-errormessage`: less precise semantically, but
+            // universally supported. `role='alert'` announces the message when it appears; this is
+            // what reads it out again to somebody who tabs back to the box.
+            aria-describedby={error ? errorId : undefined}
           />
           <button
             type='button'
@@ -113,7 +122,7 @@ function Input({
           </button>
         </div>
         {error && (
-          <span className='cio-pia-input-error' role='alert'>
+          <span id={errorId} className='cio-pia-input-error' role='alert'>
             {error}
           </span>
         )}
