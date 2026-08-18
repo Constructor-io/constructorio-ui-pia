@@ -3,14 +3,12 @@ import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 import {
   Formatters,
   Item,
-  QuestionSource,
   RecsPodParameters,
   RecsRefinement,
   RecsResult,
   Translations,
 } from '../types';
 import { AgentRequestError } from '../errors';
-import { UseTrackingReturn } from './useTracking';
 import { translate } from '../utils/translate';
 import { RECS_FALLBACK_TITLE, RECS_LOADING_TITLE, RECS_UNSUPPORTED_REQUEST } from '../constants';
 
@@ -22,12 +20,12 @@ export interface UseRecsPodProps {
   parameters?: RecsPodParameters;
   formatImageUrl?: Formatters['formatImageUrl'];
   translations?: Translations;
-  tracking?: UseTrackingReturn;
 }
 
 export interface UseRecsPodReturn {
   /** The title to show right now, already resolved for the current state. */
   title: string;
+  /** The products to render, or `null` when there are none. Never an empty array. */
   items: Array<Item> | null;
   refinement: RecsRefinement | null;
   /** True while a request is in flight. */
@@ -40,28 +38,11 @@ export interface UseRecsPodReturn {
   inputError: string | null;
   /** The text behind what is currently on screen. Empty when nothing has been refined. */
   lastShopperInput: string;
-  resultId?: string;
   /** Fetches again, narrowed by `text`. Used by both the options and the free-text input. */
-  refine: (text: string, source?: QuestionSource) => void;
+  refine: (text: string) => void;
 }
 
 const DEFAULT_STRATEGY = 'complementary_items';
-
-/**
- * Builds the payload the answer-view tracking event expects out of a recommendations result.
- * The event is shared with Q&A, so the pod title stands in for the answer text and the
- * refinement options stand in for the follow-up questions.
- */
-function toTrackedAnswer(result: RecsResult) {
-  return {
-    qna_result_id: result.resultId || '',
-    value: result.title,
-    ...(result.refinement &&
-      result.refinement.options.length > 0 && {
-        follow_up_questions: result.refinement.options.map((value) => ({ value })),
-      }),
-  };
-}
 
 /**
  * Owns everything a recommendations pod shows: one request on mount, one on every refinement,
@@ -79,7 +60,6 @@ export default function useRecsPod({
   parameters,
   formatImageUrl,
   translations,
-  tracking,
 }: UseRecsPodProps): UseRecsPodReturn {
   const [result, setResult] = useState<RecsResult | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -93,16 +73,13 @@ export default function useRecsPod({
   // simply dropped.
   const requestIdRef = useRef(0);
 
-  // Mirrored into refs so they never become fetch dependencies. Both are commonly written
-  // inline by the caller, which would give them a new identity on every render and refetch
-  // forever.
+  // Mirrored into a ref so it never becomes a fetch dependency. It is commonly written inline by
+  // the caller, which would give it a new identity on every render and refetch forever.
   const formatImageUrlRef = useRef(formatImageUrl);
-  const trackingRef = useRef(tracking);
 
   useEffect(() => {
     formatImageUrlRef.current = formatImageUrl;
-    trackingRef.current = tracking;
-  }, [formatImageUrl, tracking]);
+  }, [formatImageUrl]);
 
   const strategy = parameters?.strategy || DEFAULT_STRATEGY;
   const { numResults } = parameters || {};
@@ -134,11 +111,6 @@ export default function useRecsPod({
 
           setResult(fetchedResult);
           setLastShopperInput(shopperInput || '');
-          trackingRef.current?.trackAnswerView(
-            shopperInput || '',
-            toTrackedAnswer(fetchedResult),
-            fetchedResult.items,
-          );
         })
         .catch((err) => {
           if (!isCurrent()) return;
@@ -167,8 +139,8 @@ export default function useRecsPod({
           setIsFirstLoad(false);
         });
     },
-    // Every dependency is a primitive. `formatImageUrl` and `tracking` are read through refs
-    // instead, so a caller writing them inline cannot restart the request on every render.
+    // Every dependency is a primitive. `formatImageUrl` is read through a ref instead, so a
+    // caller writing it inline cannot restart the request on every render.
     [cioClient, itemId, variationId, threadId, strategy, numResults],
   );
 
@@ -177,15 +149,9 @@ export default function useRecsPod({
   }, [fetchResult]);
 
   const refine = useCallback(
-    (text: string, source: QuestionSource = 'user') => {
+    (text: string) => {
       const refinementText = text.trim();
       if (!refinementText) return;
-
-      if (source === 'suggestion') {
-        trackingRef.current?.trackQuestionClick(refinementText);
-      } else {
-        trackingRef.current?.trackQuestionSubmit(refinementText);
-      }
 
       fetchResult(refinementText);
     },
@@ -209,14 +175,16 @@ export default function useRecsPod({
 
   return {
     title,
-    items: result?.items || null,
+    // Normalized so every caller can treat "nothing to render" as a single case. Our own adapter
+    // never returns an empty array, but `cioClient` is a public prop and a consumer-supplied client
+    // can. Note `[]` is truthy, so `|| null` would not catch it.
+    items: result?.items?.length ? result.items : null,
     refinement: result?.refinement || null,
     isLoading,
     isFirstLoad,
     error,
     inputError: hasUnsupportedInput ? translate(RECS_UNSUPPORTED_REQUEST, translations) : null,
     lastShopperInput,
-    resultId: result?.resultId,
     refine,
   };
 }

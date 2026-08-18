@@ -20,8 +20,9 @@ export type RecsStubStep = RecsResult | Error | 'pending';
  * mounts, the second answers the first refinement, and so on. The last step repeats, so a
  * single-step list answers every request the same way.
  *
- * It carries no tracker on purpose. Every tracking call in `useTracking` is optional, so events
- * are simply skipped and a story never sends anything to a real dashboard.
+ * It carries no tracker on purpose: the pod sends no analytics in this version, so there is nothing
+ * to stub and a story cannot send anything to a real dashboard. Tracking lands in its own PR, and
+ * this stub will need a tracker then.
  */
 export const createRecsPodStubClient = (steps: RecsStubStep[]): MockConstructorIOClient => {
   let requestCount = 0;

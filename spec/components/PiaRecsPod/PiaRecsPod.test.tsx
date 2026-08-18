@@ -1,6 +1,7 @@
 import React from 'react';
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent, act } from '@testing-library/react';
+import { CIO_EVENTS } from '@constructor-io/constructorio-ui-components';
 import PiaRecsPod from '../../../src/components/PiaRecsPod/PiaRecsPod';
 import type { CioPiaProps } from '../../../src/components/CioPia/types';
 import { AgentRequestError } from '../../../src/errors';
@@ -11,7 +12,7 @@ import {
   RECS_REFINEMENT_LABEL,
   RECS_UNSUPPORTED_REQUEST,
 } from '../../../src/constants';
-import { RecsResult } from '../../../src/types';
+import { Item, RecsResult } from '../../../src/types';
 import { createMockCioClient, TestMockClient } from '../../helpers/mockCioClient';
 import deferred from '../../helpers/deferred';
 import { testRecsPodNoHistory, testRecsPodResult } from '../../localExamples';
@@ -44,6 +45,19 @@ async function renderSettled(overrides: Partial<CioPiaProps> = {}) {
   const view = render(<PiaRecsPod {...getProps(overrides)} />);
   await settle();
   return view;
+}
+
+/**
+ * The product cards come from the components library and report a click as a DOM event on the
+ * carousel wrapper rather than through a React prop, so this is how a click is simulated.
+ */
+function clickProductCard(container: HTMLElement, product: Item) {
+  const wrapper = container.querySelector('[data-carousel]')?.parentElement;
+  if (!wrapper) throw new Error('No carousel on screen to click a product card in');
+
+  wrapper.dispatchEvent(
+    new CustomEvent(CIO_EVENTS.productCard.click, { detail: { product }, bubbles: true }),
+  );
 }
 
 describe('PiaRecsPod Component', () => {
@@ -270,6 +284,8 @@ describe('PiaRecsPod Component', () => {
 
       expect(screen.getByRole('alert')).toHaveTextContent(RECS_UNSUPPORTED_REQUEST);
       expect(container.querySelector('.cio-pia-input--error')).toBeInTheDocument();
+      // Tabbing back to the box has to say why it is invalid, not just that it is.
+      expect(screen.getByRole('textbox')).toHaveAccessibleDescription(RECS_UNSUPPORTED_REQUEST);
       expect(screen.getByText(firstResult.title)).toBeInTheDocument();
       firstResult.refinement!.options.forEach((option) => {
         expect(screen.getByRole('button', { name: option })).toBeInTheDocument();
@@ -304,6 +320,25 @@ describe('PiaRecsPod Component', () => {
 
       expect(container).toBeEmptyDOMElement();
     });
+
+    // Rendering nothing is only the default. A consumer that supplied its own root has to reach it
+    // in this state too, otherwise the `error` render prop documented on the Component Overrides
+    // page would be unreachable for this mode.
+    it('still runs a consumer override when the first request fails, so it can show its own message', async () => {
+      mockClient.agent.getRecs.mockRejectedValue(new AgentRequestError(500));
+
+      await renderSettled({
+        componentOverrides: {
+          reactNode: ({ error }) => (
+            <div data-testid='custom-failure'>
+              {error instanceof AgentRequestError ? error.status : 'no status'}
+            </div>
+          ),
+        },
+      });
+
+      expect(screen.getByTestId('custom-failure')).toHaveTextContent('500');
+    });
   });
 
   describe('Empty results', () => {
@@ -311,6 +346,21 @@ describe('PiaRecsPod Component', () => {
       mockClient.agent.getRecs.mockResolvedValue({
         title: 'Nothing to show',
         items: null,
+        refinement: null,
+      });
+
+      const { container } = await renderSettled();
+
+      expect(container).toBeEmptyDOMElement();
+    });
+
+    // `items` is typed `Item[] | null` and `cioClient` is a public prop, so a consumer-supplied
+    // client can answer with an empty array. That has to read as "no products" too, not as a
+    // carousel with nothing in it.
+    it('treats an empty product list the same as no products at all', async () => {
+      mockClient.agent.getRecs.mockResolvedValue({
+        title: 'Nothing to show',
+        items: [],
         refinement: null,
       });
 
@@ -475,51 +525,46 @@ describe('PiaRecsPod Component', () => {
     });
   });
 
-  describe('Tracking', () => {
-    it('reports the answer view once the products land', async () => {
-      const trackAnswerView = jest.spyOn(
-        mockClient.tracker,
+  // The pod sends no analytics in this version - tracking lands in its own PR. These tests exist
+  // so reconnecting it is a deliberate act with a failing test attached, not an accident.
+  describe('No tracking yet', () => {
+    it('sends no analytics event for a load, an option click or a product click', async () => {
+      const events = [
         'trackProductInsightsAgentAnswerView',
-      );
-
-      await renderSettled();
-
-      expect(trackAnswerView).toHaveBeenCalledWith(
-        expect.objectContaining({
-          itemId: 'test-item-id',
-          itemName: 'Test Item',
-          answerText: firstResult.title,
-          qnaResultId: firstResult.resultId,
-        }),
-      );
-    });
-
-    it('reports an option click', async () => {
-      const trackQuestionClick = jest.spyOn(
-        mockClient.tracker,
         'trackProductInsightsAgentQuestionClick',
-      );
+        'trackProductInsightsAgentQuestionSubmit',
+        'trackProductInsightsAgentResultClick',
+      ] as const;
+      const spies = events.map((event) => jest.spyOn(mockClient.tracker, event));
 
-      await renderSettled();
+      const { container } = await renderSettled();
 
       await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: 'Slim fit' }));
       });
+      await settle();
 
-      expect(trackQuestionClick).toHaveBeenCalledWith(
-        expect.objectContaining({ question: 'Slim fit' }),
-      );
+      clickProductCard(container, firstResult.items![0]);
+
+      await act(async () => {
+        fireEvent.change(screen.getByRole('textbox'), { target: { value: 'more linen' } });
+        fireEvent.keyDown(screen.getByRole('textbox'), { key: 'Enter' });
+      });
+      await settle();
+
+      const fired = events.filter((_, index) => spies[index].mock.calls.length > 0);
+      expect(fired).toEqual([]);
     });
 
-    it('does not report a submitted question for the request made on mount', async () => {
-      const trackQuestionSubmit = jest.spyOn(
-        mockClient.tracker,
-        'trackProductInsightsAgentQuestionSubmit',
-      );
+    it('still calls onProductCardClick, which is the consumer callback and not analytics', async () => {
+      const onProductCardClick = jest.fn();
 
-      await renderSettled();
+      const { container } = await renderSettled({ callbacks: { onProductCardClick } });
 
-      expect(trackQuestionSubmit).not.toHaveBeenCalled();
+      clickProductCard(container, firstResult.items![0]);
+
+      expect(onProductCardClick).toHaveBeenCalledTimes(1);
+      expect(onProductCardClick).toHaveBeenCalledWith(firstResult.items![0]);
     });
   });
 });
