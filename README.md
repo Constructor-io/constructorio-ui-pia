@@ -74,7 +74,22 @@ The component supports multiple display modes via the `displayConfigs` prop:
   itemId='PRODUCT_ITEM_ID'
   displayConfigs={{ type: 'modal' }}
 />
+
+// Recommendations pod: a title, a row of products, and short options for narrowing them down.
+// Asks no questions and makes no Q&A requests, so it can be used without PIA Q&A enabled.
+<CioPia
+  apiKey='YOUR_API_KEY'
+  itemId='PRODUCT_ITEM_ID'
+  displayConfigs={{ mode: 'recommendations' }}
+  recsPodParameters={{ strategy: 'complementary_items' }}
+/>
 ```
+
+> **`mode: 'recommendations'` reads a provisional data source.** The recommendations endpoint is not
+> deployed yet, so the pod currently asks the Q&A endpoint and converts the reply, which means the
+> title and the options are not yet the short copy the pod is designed for. The layout, the loading
+> states and the refinement flow are final. See the
+> [Recommendations Pod docs](https://constructor-io.github.io/constructorio-ui-pia/?path=/docs/components-ciopia-recspod--docs).
 
 #### Configuration Options
 
@@ -85,6 +100,7 @@ The component supports multiple display modes via the `displayConfigs` prop:
 | `variationId` | `string` | Optional variation ID |
 | `threadId` | `string` | Optional thread ID for conversation context (must be a valid UUID) |
 | `displayConfigs` | `object` | Display configuration options (see below) |
+| `recsPodParameters` | `object` | Options for `mode: 'recommendations'` (see below) |
 | `callbacks` | `object` | Callback handlers for user interactions |
 | `translations` | `object` | UI string translations for internationalization |
 | `componentOverrides` | `object` | Custom component overrides |
@@ -93,11 +109,20 @@ The component supports multiple display modes via the `displayConfigs` prop:
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `mode` | `'default' \| 'conversation'` | `'default'` | Display mode |
+| `mode` | `'default' \| 'conversation' \| 'recommendations'` | `'default'` | Display mode. `type: 'modal'` takes precedence over `'recommendations'` |
 | `type` | `'inline' \| 'modal'` | `'inline'` | Component type |
 | `showFeedback` | `boolean` | `false` | Show feedback controls on answers |
 | `showPreviousItems` | `boolean` | `true` | Show product carousels from previous conversation entries |
 | `learnMoreUrl` | `string` | - | URL for the "Learn More" disclaimer link |
+
+**Recs Pod Parameters** (only read when `mode` is `'recommendations'`):
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `strategy` | `RecsStrategy` | `'complementary_items'` | Which kind of recommendations to fetch. One of `'complementary_items'`, `'alternative_items'`, `'bestsellers'`, `'bundles'`, `'buy_it_again'`, `'recently_viewed_items'`, `'visually_similar_items'` |
+| `defaultTitle` | `string` | - | Last-resort title, used only when the API returns products but no title of its own |
+| `showInput` | `boolean` | `true` | Render the free-text box after the options |
+| `numResults` | `number` | - | How many products to request |
 
 **Callbacks:**
 
