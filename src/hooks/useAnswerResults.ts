@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { Nullable } from '@constructor-io/constructorio-client-javascript';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 import { Formatters, Item, GetAnswerResultsResponse } from '../types';
-import { transformResultItem } from '../utils/transformers';
+import { extractAndTransformItems } from '../utils/transformers';
 
 export interface UseAnswerResultsProps {
   itemId: string;
@@ -28,26 +28,6 @@ interface FetchAnswerResultsParams {
   variationId?: string;
   threadId?: string;
 }
-
-const extractAndTransformItems = (
-  data: Nullable<GetAnswerResultsResponse>,
-  formatImageUrl?: Formatters['formatImageUrl'],
-): Array<Item> | null => {
-  if (!data?.item_results?.response?.results) {
-    return null;
-  }
-
-  const { results } = data.item_results.response;
-  if (!Array.isArray(results) || results.length === 0) {
-    return null;
-  }
-
-  const transformedItems = results
-    .map((item) => transformResultItem(item, formatImageUrl))
-    .filter((item): item is Item => item !== null);
-
-  return transformedItems.length > 0 ? transformedItems : null;
-};
 
 const fetchAnswerResults = async ({
   client,
