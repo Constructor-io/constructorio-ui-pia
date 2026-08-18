@@ -14,7 +14,7 @@ import { translate } from '../../utils/translate';
 import PiaInlineAnswer from '../PiaInlineAnswer/PiaInlineAnswer';
 import PiaModal from '../PiaConversation/PiaModal';
 import PiaConversation from '../PiaConversation/PiaConversation';
-import { CioPiaProps } from './CioPia';
+import type { CioPiaProps } from './types';
 
 /** The question-and-answer experience: `mode: 'default'`, `mode: 'conversation'`, and the modal. */
 // eslint-disable-next-line complexity
