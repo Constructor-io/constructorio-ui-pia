@@ -40,6 +40,11 @@ describe('Input Component', () => {
     expect(getByPlaceholderText('From translations')).toBeInTheDocument();
   });
 
+  it('renders the send icon inside the send button', () => {
+    const { container } = render(<Input onSubmit={mockSubmit} />);
+    expect(container.querySelector('.cio-pia-send-button svg')).toBeInTheDocument();
+  });
+
   it('handles text input', () => {
     const { queryByRole } = render(<Input onSubmit={mockSubmit} />);
     const input = queryByRole('textbox')! as HTMLInputElement;
