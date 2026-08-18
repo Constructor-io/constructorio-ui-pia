@@ -8,7 +8,7 @@ export interface UseSuggestedQuestionsProps {
   threadId?: string;
   cioClient?: MockConstructorIOClient;
   parameters?: SuggestedQuestionsParameters;
-  requestParameters?: Record<string, any>;
+  requestParameters?: Record<string, string | number | boolean>;
 }
 
 export interface UseSuggestedQuestionsReturn {
@@ -24,7 +24,7 @@ interface FetchSuggestedQuestionsParams {
   variationId?: string;
   threadId?: string;
   parameters?: SuggestedQuestionsParameters;
-  requestParameters?: Record<string, any>;
+  requestParameters?: Record<string, string | number | boolean>;
 }
 
 const fetchSuggestedQuestions = async ({
@@ -58,6 +58,9 @@ export default function useSuggestedQuestions({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
+  // Serialize to a primitive so an object-literal prop doesn't retrigger the auto-fetch effect each render.
+  const requestParametersKey = JSON.stringify(requestParameters);
+
   const fetchResult = useCallback(() => {
     if (!cioClient) return;
 
@@ -82,8 +85,8 @@ export default function useSuggestedQuestions({
       .finally(() => {
         setIsLoading(false);
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- primitive dep prevents refetch on object reference change
-  }, [cioClient, itemId, variationId, threadId, parameters?.numResults, requestParameters]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- primitive deps prevent refetch loop
+  }, [cioClient, itemId, variationId, threadId, parameters?.numResults, requestParametersKey]);
 
   useEffect(() => {
     fetchResult();

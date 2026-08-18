@@ -13,8 +13,11 @@ export interface UseCioPiaProps {
   threadId?: string;
   cioClient?: MockConstructorIOClient;
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
-  /** Extra query parameters appended to answer API requests (e.g. `ef-*` test cell params). */
-  parameters?: Record<string, any>;
+  /**
+   * Extra query parameters appended to PIA API requests (e.g. `ef-*` test cell params).
+   * Define outside the component or wrap with useMemo to avoid unnecessary re-renders.
+   */
+  parameters?: Record<string, string | number | boolean>;
   /** Define outside the component or wrap with useCallback to avoid unnecessary re-renders. */
   formatImageUrl?: Formatters['formatImageUrl'];
 }

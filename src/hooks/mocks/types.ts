@@ -25,7 +25,7 @@ export type GetSuggestedQuestionsProps = {
   threadId?: string;
   parameters?: SuggestedQuestionsParameters;
   /** Extra query parameters appended verbatim to the request (e.g. `ef-*` test cell params). */
-  requestParameters?: Record<string, any>;
+  requestParameters?: Record<string, string | number | boolean>;
 };
 
 export interface Question {

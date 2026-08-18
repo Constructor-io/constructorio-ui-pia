@@ -9,7 +9,7 @@ export interface UseAnswerResultsProps {
   variationId?: string;
   threadId?: string;
   cioClient: MockConstructorIOClient;
-  parameters?: Record<string, any>;
+  parameters?: Record<string, string | number | boolean>;
   formatImageUrl?: Formatters['formatImageUrl'];
 }
 
@@ -27,7 +27,7 @@ interface FetchAnswerResultsParams {
   question: string;
   variationId?: string;
   threadId?: string;
-  parameters?: Record<string, any>;
+  parameters?: Record<string, string | number | boolean>;
 }
 
 const extractAndTransformItems = (
