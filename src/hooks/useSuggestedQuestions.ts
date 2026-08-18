@@ -8,6 +8,7 @@ export interface UseSuggestedQuestionsProps {
   threadId?: string;
   cioClient?: MockConstructorIOClient;
   parameters?: SuggestedQuestionsParameters;
+  requestParameters?: Record<string, any>;
 }
 
 export interface UseSuggestedQuestionsReturn {
@@ -23,6 +24,7 @@ interface FetchSuggestedQuestionsParams {
   variationId?: string;
   threadId?: string;
   parameters?: SuggestedQuestionsParameters;
+  requestParameters?: Record<string, any>;
 }
 
 const fetchSuggestedQuestions = async ({
@@ -31,12 +33,14 @@ const fetchSuggestedQuestions = async ({
   variationId,
   threadId,
   parameters,
+  requestParameters,
 }: FetchSuggestedQuestionsParams) => {
   const response: QuestionResponse = await client.agent.getSuggestedQuestions({
     itemId,
     variationId,
     threadId,
     parameters,
+    requestParameters,
   });
 
   return response.questions;
@@ -48,6 +52,7 @@ export default function useSuggestedQuestions({
   threadId,
   cioClient,
   parameters,
+  requestParameters,
 }: UseSuggestedQuestionsProps): UseSuggestedQuestionsReturn {
   const [questions, setQuestions] = useState<Array<Question>>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -65,6 +70,7 @@ export default function useSuggestedQuestions({
       variationId,
       threadId,
       parameters,
+      requestParameters,
     })
       .then((fetchedQuestions) => {
         setQuestions(fetchedQuestions);
@@ -77,7 +83,7 @@ export default function useSuggestedQuestions({
         setIsLoading(false);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- primitive dep prevents refetch on object reference change
-  }, [cioClient, itemId, variationId, threadId, parameters?.numResults]);
+  }, [cioClient, itemId, variationId, threadId, parameters?.numResults, requestParameters]);
 
   useEffect(() => {
     fetchResult();

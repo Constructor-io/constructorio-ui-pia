@@ -56,6 +56,7 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     threadId,
     cioClient: client,
     parameters: suggestedQuestionsParameters,
+    requestParameters: parameters,
   });
 
   const answers = useAnswerResults({
