@@ -29,7 +29,6 @@ const meta = {
       },
     },
   },
-  tags: ['autodocs'],
 } satisfies Meta<typeof CioPia>;
 
 export default meta;
@@ -134,9 +133,10 @@ export const FirstLoad: Story = {
     docs: {
       description: {
         story:
-          'Nothing has come back yet, so there is no title to keep. The pod shows "Adapting ' +
-          'recommendations to your preference" with placeholder blocks for the products, the ' +
-          'options and the input. The request never settles, so this appearance holds still.',
+          'Nothing has come back yet. The pod shows "Adapting recommendations to your ' +
+          'preference" with placeholder blocks for the products, the options and the input. ' +
+          'Unlike a refinement, there is no product row on screen to take a height from, so the ' +
+          'placeholders use their own. The request never settles, so this appearance holds still.',
       },
     },
   },
@@ -148,10 +148,11 @@ export const Refining: Story = {
     docs: {
       description: {
         story:
-          'Click an option or submit some text. The title and the refinement label hold still and ' +
-          'only the products and the options become placeholders, so nothing moves up or down. ' +
-          'The input keeps its place and is disabled while the request is in flight. The second ' +
-          'request never settles, so this appearance holds still too.',
+          'Click an option or submit some text. The title switches to "Adapting recommendations ' +
+          'to your preference" and fades in rather than snapping, while the refinement label and ' +
+          'the height of the product row hold still, so nothing moves up or down. The input keeps ' +
+          'its place and is disabled while the request is in flight. The second request never ' +
+          'settles, so this appearance holds still too.',
       },
     },
   },

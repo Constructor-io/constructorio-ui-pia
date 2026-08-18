@@ -67,8 +67,9 @@ function toTrackedAnswer(result: RecsResult) {
  * Owns everything a recommendations pod shows: one request on mount, one on every refinement,
  * and the title that belongs to whichever of those is happening right now.
  *
- * The previous response is deliberately kept while a new one is in flight, so a refinement
- * swaps the products without blanking the title above them.
+ * The previous items are deliberately kept while a new request is in flight, so a refinement
+ * swaps the products without collapsing the row they sit in. The title is the one thing that does
+ * change, so the shopper can see the pod reacting to what they asked for.
  */
 export default function useRecsPod({
   itemId,
@@ -191,12 +192,15 @@ export default function useRecsPod({
     [fetchResult],
   );
 
-  // The title of whatever is on screen, which is the last response we kept.
+  // The title belonging to the last response we kept. `defaultTitle` is the caller's last resort
+  // for a response that carried items but no title of its own.
   const settledTitle = result?.title || parameters?.defaultTitle || '';
 
   let title = settledTitle;
   if (isLoading) {
-    title = settledTitle || translate(RECS_LOADING_TITLE, translations);
+    // The loading copy wins whether or not a title is held, so a refinement announces itself
+    // rather than leaving the previous personalization above products that no longer match it.
+    title = translate(RECS_LOADING_TITLE, translations);
   } else if (!hasUnsupportedInput && (error || result?.status === 'partial')) {
     // Either the request failed or it came back degraded, so the personalized title cannot be
     // trusted. Any products it did carry are still worth showing under a generic title.

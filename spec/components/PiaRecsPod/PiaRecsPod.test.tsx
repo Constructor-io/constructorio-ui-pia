@@ -172,7 +172,7 @@ describe('PiaRecsPod Component', () => {
       );
     });
 
-    it('holds the title steady and disables the input while the refinement loads', async () => {
+    it('swaps in the loading title and disables the input while the refinement loads', async () => {
       const pending = deferred<RecsResult>();
       mockClient.agent.getRecs
         .mockResolvedValueOnce(firstResult)
@@ -184,7 +184,8 @@ describe('PiaRecsPod Component', () => {
         fireEvent.click(screen.getByRole('button', { name: 'Oxford' }));
       });
 
-      expect(screen.getByText(firstResult.title)).toBeInTheDocument();
+      expect(screen.getByText(RECS_LOADING_TITLE)).toBeInTheDocument();
+      expect(screen.queryByText(firstResult.title)).not.toBeInTheDocument();
       expect(screen.getByRole('textbox')).toBeDisabled();
       expect(screen.getByTestId('cio-pia-recs-skeleton-carousel')).toBeInTheDocument();
       expect(screen.getByTestId('cio-pia-recs-skeleton-options')).toBeInTheDocument();
@@ -196,6 +197,43 @@ describe('PiaRecsPod Component', () => {
       });
 
       expect(screen.getByText(secondResult.title)).toBeInTheDocument();
+    });
+
+    it('holds the height the carousel had, so the row below it does not move', async () => {
+      // jsdom does no layout, so every height is 0. Stand in for the height the carousel would
+      // have had on screen; what is being tested is that the pod carries it over to the
+      // placeholders, not the measurement itself.
+      const measured = jest
+        .spyOn(HTMLDivElement.prototype, 'getBoundingClientRect')
+        .mockReturnValue({ height: 409 } as DOMRect);
+
+      const pending = deferred<RecsResult>();
+      mockClient.agent.getRecs
+        .mockResolvedValueOnce(firstResult)
+        .mockReturnValueOnce(pending.promise);
+
+      await renderSettled();
+
+      // Settled, the carousel sizes itself and the pod imposes nothing.
+      expect(screen.getByTestId('cio-pia-recs-pod-products')).not.toHaveStyle({
+        minHeight: '409px',
+      });
+
+      act(() => {
+        fireEvent.click(screen.getByRole('button', { name: 'Oxford' }));
+      });
+
+      expect(screen.getByTestId('cio-pia-recs-pod-products')).toHaveStyle({ minHeight: '409px' });
+
+      measured.mockRestore();
+    });
+
+    it('imposes no height on a first load, when there is nothing on screen to measure', () => {
+      mockClient.agent.getRecs.mockReturnValue(deferred<RecsResult>().promise);
+
+      render(<PiaRecsPod {...getProps()} />);
+
+      expect(screen.getByTestId('cio-pia-recs-pod-products').style.minHeight).toBe('');
     });
 
     it('draws as many option placeholders as the previous response had', async () => {

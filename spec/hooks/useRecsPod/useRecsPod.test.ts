@@ -195,7 +195,7 @@ describe('Testing Hook: useRecsPod', () => {
   });
 
   describe('refining', () => {
-    it('holds the previous title and products while the refinement is in flight', async () => {
+    it('switches to the loading title but holds the products while the refinement is in flight', async () => {
       const pending = deferred<RecsResult>();
       mockClient.agent.getRecs
         .mockResolvedValueOnce(firstResult)
@@ -213,7 +213,9 @@ describe('Testing Hook: useRecsPod', () => {
 
       expect(result.current.isLoading).toBe(true);
       expect(result.current.isFirstLoad).toBe(false);
-      expect(result.current.title).toBe(firstResult.title);
+      // The title announces the refinement rather than describing products that are on their way
+      // out, while the products and options underneath stay put so the row heights hold.
+      expect(result.current.title).toBe(RECS_LOADING_TITLE);
       expect(result.current.items).toEqual(firstResult.items);
       expect(result.current.refinement).toEqual(firstResult.refinement);
 
@@ -450,7 +452,7 @@ describe('Testing Hook: useRecsPod', () => {
       expect(result.current.title).toBe('You may also like');
     });
 
-    it('shows defaultTitle instead of the loading copy on the first request', () => {
+    it('shows the loading copy rather than defaultTitle while a request is in flight', () => {
       mockClient.agent.getRecs.mockReturnValueOnce(deferred<RecsResult>().promise);
 
       const { result } = renderHook(() =>
@@ -461,7 +463,9 @@ describe('Testing Hook: useRecsPod', () => {
         }),
       );
 
-      expect(result.current.title).toBe('You may also like');
+      // `defaultTitle` is the last resort for a settled response that carried no title of its
+      // own, not something to show over placeholders.
+      expect(result.current.title).toBe(RECS_LOADING_TITLE);
     });
 
     it('translates the loading title', () => {

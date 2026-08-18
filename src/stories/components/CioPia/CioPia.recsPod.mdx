@@ -76,7 +76,7 @@ products, in its normal response shape, so the library never picks between them.
 | Situation | Title | Products | Options | Input |
 |-----------|-------|----------|---------|-------|
 | Nothing has come back yet | "Adapting recommendations to your preference" | placeholders | placeholders | placeholder |
-| A refinement is in flight | the title already on screen, held still | placeholders | placeholders | disabled |
+| A refinement is in flight | "Adapting recommendations to your preference", faded in | placeholders | placeholders | disabled |
 | A response arrived | from the API | from the API | from the API | idle |
 | The agent rejected what was submitted | held | held | held | red border, message underneath |
 | The response is degraded but has products | "Best selling products" | from the API | from the API | idle |
@@ -87,8 +87,14 @@ products, in its normal response shape, so the library never picks between them.
 
 <Canvas of={RecsPodStories.Refining} />
 
-Only the products and the options ever become placeholders. The title and the refinement prompt hold
-still through a refinement, so nothing on the page moves up or down while a request is in flight.
+Only the products and the options ever become placeholders. The refinement prompt holds still and
+the products keep the height they had, so nothing on the page moves up or down while a request is in
+flight.
+
+The title is the one thing that does change, and it fades in over 200ms rather than snapping, so the
+pod visibly reacts to what the shopper asked for. This is a fade-in on the arriving title, not a
+cross-fade: React removes the outgoing text in the same frame, so there is nothing left to fade out.
+The animation is dropped entirely under `prefers-reduced-motion`.
 
 ## The pod can render nothing at all
 
