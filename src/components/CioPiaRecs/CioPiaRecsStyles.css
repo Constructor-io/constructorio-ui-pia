@@ -7,7 +7,7 @@
 
 /*
  * The title is the one part of the pod that changes on a refinement, so it fades in rather than
- * snapping. `PiaRecsPod` keys the node on the title, which remounts it and replays this.
+ * snapping. `CioPiaRecs` keys the node on the title, which remounts it and replays this.
  *
  * This is a fade-in on the arriving title, not a cross-fade: React removes the outgoing text
  * synchronously, so there is nothing left on screen to fade out.
@@ -27,10 +27,7 @@
   }
 }
 
-/*
- * Holds the products. `PiaRecsPod` pins this to the height the carousel actually had before a
- * refinement replaced it with placeholders, so the refinement row below does not move.
- */
+/* Holds the products, and the placeholders that stand in for them while a request is in flight */
 .cio-pia-recs-pod__products {
   display: flex;
   flex-direction: column;
@@ -69,17 +66,17 @@
   width: 100%;
 }
 
-/* Fills whatever height the products slot is holding for it */
 .cio-pia-recs-skeleton--carousel {
   flex: 1 1 auto;
 }
 
 /*
- * `min-height` rather than `height`, so the blocks stretch to whatever height the row is holding
- * and fall back to this on a first load, when there is nothing on screen yet to measure.
+ * `min-height` approximates a product card, so the refinement row below moves as little as
+ * possible when the real products land. Tune this one number if it drifts from the card.
  *
- * `height: auto` is what lets them stretch at all: the shared `.skeleton-bar` sets `height: 16px`
- * for text-sized bars, and a definite height on a flex item overrides `align-items: stretch`.
+ * `height: auto` is what lets the blocks fill the row at all: the shared `.skeleton-bar` sets
+ * `height: 16px` for text-sized bars, and a definite height on a flex item overrides
+ * `align-items: stretch`.
  */
 .cio-pia-recs-skeleton--carousel .cio-pia-recs-skeleton__block {
   height: auto;

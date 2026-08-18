@@ -11,7 +11,7 @@ import { createRecsPodStubClient, RecsStubStep } from '../../utils';
  * That is what makes the designed appearance reviewable today.
  */
 const meta = {
-  title: 'Components/CioPia/RecsPod',
+  title: 'Components/CioPia/Recs Pod',
   component: CioPia,
   parameters: {
     layout: 'centered',
@@ -35,8 +35,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Real products from the demo catalog, so the pod looks the way it will in a store. The title and
- * the options are what we expect the recommendations endpoint to send.
+ * Stand-in products, shaped like the demo catalog's. The title and the options are what we expect
+ * the recommendations endpoint to send.
  */
 const designedResult: RecsResult = {
   title: 'Since you prefer high-protein shakes, more like this in your style',
@@ -45,28 +45,28 @@ const designedResult: RecsResult = {
       id: '149100219',
       name: 'Ensure Nutrition Shake Original Milk Chocolate - 6-8 Fl. Oz.',
       price: 12.49,
-      imageUrl: 'https://d17bbgoo3npfov.cloudfront.net/images/farmstand-149100219.png',
+      imageUrl: 'https://placehold.co/200x200?text=Chocolate',
       url: '/',
     },
     {
       id: '149100235',
       name: 'Ensure Nutrition Shake Original Strawberry - 6-8 Fl. Oz.',
       price: 12.49,
-      imageUrl: 'https://d17bbgoo3npfov.cloudfront.net/images/farmstand-149100235.png',
+      imageUrl: 'https://placehold.co/200x200?text=Strawberry',
       url: '/',
     },
     {
       id: '149100203',
       name: 'Ensure Nutrition Shake Original Butter Pecan - 6-8 Fl. Oz.',
       price: 12.49,
-      imageUrl: 'https://d17bbgoo3npfov.cloudfront.net/images/farmstand-149100203.png',
+      imageUrl: 'https://placehold.co/200x200?text=Butter+Pecan',
       url: '/',
     },
     {
       id: '960133397',
       name: 'Ensure High Protein Nutrition Shake Vanilla - 6-8 Fl. Oz.',
       price: 15.89,
-      imageUrl: 'https://d17bbgoo3npfov.cloudfront.net/images/farmstand-960133397.png',
+      imageUrl: 'https://placehold.co/200x200?text=Vanilla',
       url: '/',
     },
   ],
@@ -134,9 +134,8 @@ export const FirstLoad: Story = {
       description: {
         story:
           'Nothing has come back yet. The pod shows "Adapting recommendations to your ' +
-          'preference" with placeholder blocks for the products, the options and the input. ' +
-          'Unlike a refinement, there is no product row on screen to take a height from, so the ' +
-          'placeholders use their own. The request never settles, so this appearance holds still.',
+          'preference" with placeholder blocks for the products, the options and the input. The ' +
+          'request never settles, so this appearance holds still.',
       },
     },
   },
@@ -149,10 +148,9 @@ export const Refining: Story = {
       description: {
         story:
           'Click an option or submit some text. The title switches to "Adapting recommendations ' +
-          'to your preference" and fades in rather than snapping, while the refinement label and ' +
-          'the height of the product row hold still, so nothing moves up or down. The input keeps ' +
-          'its place and is disabled while the request is in flight. The second request never ' +
-          'settles, so this appearance holds still too.',
+          'to your preference" and fades in rather than snapping, while the refinement label ' +
+          'holds still. The input keeps its place and is disabled while the request is in ' +
+          'flight. The second request never settles, so this appearance holds still too.',
       },
     },
   },

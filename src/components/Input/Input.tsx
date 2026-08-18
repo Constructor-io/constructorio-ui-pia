@@ -6,10 +6,6 @@ import {
 import { InputRenderProps, Translations } from '../../types';
 import { translate } from '../../utils/translate';
 import { SendIcon } from '../icons';
-import { RECS_INPUT_PLACEHOLDER } from '../../constants';
-
-/** Translation keys this input can use for its placeholder. */
-export type InputPlaceholderKey = 'Ask anything' | typeof RECS_INPUT_PLACEHOLDER;
 
 interface InputProps {
   value?: string;
@@ -20,18 +16,8 @@ interface InputProps {
   onFocus?: () => void;
   translations?: Translations;
   componentOverride?: ComponentOverrideProps<InputRenderProps>;
-  /**
-   * Validation message for the value that was just submitted. When set, the box gets a red
-   * border and the message renders below it. The value the shopper typed is left alone.
-   */
   error?: string;
-  /**
-   * Which translation key to use for the placeholder. Needed because two inputs in the same
-   * library ask for different things and must stay independently translatable.
-   *
-   * @default 'Ask anything'
-   */
-  placeholderKey?: InputPlaceholderKey;
+  placeholderKey?: string;
 }
 
 function Input({
@@ -46,11 +32,6 @@ function Input({
   placeholderKey = 'Ask anything',
 }: InputProps) {
   const [value, setValue] = useState(providedValue || '');
-
-  // Links the error message to the box for screen readers. `useId` would need React 18 and this
-  // library supports React 16.12, so the id is minted once per instance the way `usePiaClient`
-  // mints a thread id. It cannot be a constant: two inputs can be on the same page.
-  const [errorId] = useState(() => `cio-pia-input-error-${crypto.randomUUID()}`);
 
   useEffect(() => {
     if (providedValue) {
@@ -94,7 +75,6 @@ function Input({
         error,
       }}
       override={componentOverride?.reactNode}>
-      {/* The message sits beside the box, not inside it: the box is a fixed-height flex row. */}
       <>
         <div className='cio-pia-input-container'>
           <input
@@ -106,11 +86,6 @@ function Input({
             placeholder={resolvedPlaceholder}
             disabled={disabled}
             className={error ? 'cio-pia-input cio-pia-input--error' : 'cio-pia-input'}
-            aria-invalid={error ? true : undefined}
-            // `aria-describedby` rather than `aria-errormessage`: less precise semantically, but
-            // universally supported. `role='alert'` announces the message when it appears; this is
-            // what reads it out again to somebody who tabs back to the box.
-            aria-describedby={error ? errorId : undefined}
           />
           <button
             type='button'
@@ -122,7 +97,7 @@ function Input({
           </button>
         </div>
         {error && (
-          <span id={errorId} className='cio-pia-input-error' role='alert'>
+          <span className='cio-pia-input-error' role='alert'>
             {error}
           </span>
         )}
