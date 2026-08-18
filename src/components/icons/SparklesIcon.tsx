@@ -1,28 +1,27 @@
 import React from 'react';
 
-/**
- * Marks a label as AI-generated. Inherits the surrounding text color rather than fixing a hex, so
- * it follows whatever it sits in.
- *
- * TODO: replace the paths with the exported asset once it is available in the design handoff.
- */
 export default function SparklesIcon() {
   return (
-    <svg
-      width='16'
-      height='16'
-      viewBox='0 0 16 16'
-      fill='none'
-      aria-hidden='true'
-      xmlns='http://www.w3.org/2000/svg'>
-      <path
-        d='M6.5 1L7.9 5.1L12 6.5L7.9 7.9L6.5 12L5.1 7.9L1 6.5L5.1 5.1L6.5 1Z'
-        fill='currentColor'
-      />
-      <path
-        d='M12.25 10L12.95 11.55L14.5 12.25L12.95 12.95L12.25 14.5L11.55 12.95L10 12.25L11.55 11.55L12.25 10Z'
-        fill='currentColor'
-      />
+    <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
+      <g clip-path='url(#clip0_4634_4166)'>
+        <path
+          d='M12.6667 6.0013L13.5001 4.16797L15.3334 3.33464L13.5001 2.5013L12.6667 0.667969L11.8334 2.5013L10.0001 3.33464L11.8334 4.16797L12.6667 6.0013Z'
+          fill='#1C1917'
+        />
+        <path
+          d='M12.6667 10.0013L11.8334 11.8346L10.0001 12.668L11.8334 13.5013L12.6667 15.3346L13.5001 13.5013L15.3334 12.668L13.5001 11.8346L12.6667 10.0013Z'
+          fill='#1C1917'
+        />
+        <path
+          d='M7.66675 6.33464L6.00008 2.66797L4.33341 6.33464L0.666748 8.0013L4.33341 9.66797L6.00008 13.3346L7.66675 9.66797L11.3334 8.0013L7.66675 6.33464ZM6.66008 8.6613L6.00008 10.1146L5.34008 8.6613L3.88675 8.0013L5.34008 7.3413L6.00008 5.88797L6.66008 7.3413L8.11341 8.0013L6.66008 8.6613Z'
+          fill='#1C1917'
+        />
+      </g>
+      <defs>
+        <clipPath id='clip0_4634_4166'>
+          <rect width='16' height='16' fill='white' />
+        </clipPath>
+      </defs>
     </svg>
   );
 }
