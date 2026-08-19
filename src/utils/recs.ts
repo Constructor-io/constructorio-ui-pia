@@ -45,14 +45,14 @@ export function adaptLegacyAnswerToRecs(
   formatImageUrl?: Formatters['formatImageUrl'],
 ): RecsResult {
   const followUpQuestions = data?.follow_up_questions || [];
+  // Deduped so the pod never renders the same chip twice, and so the label can safely be the
+  // React key (the endpoint sends no id for follow-up questions).
+  const options = [...new Set(followUpQuestions.map((question) => question.value))];
 
   return {
     title: data?.value || '',
     items: extractAndTransformItems(data, formatImageUrl),
-    refinement:
-      followUpQuestions.length > 0
-        ? { options: followUpQuestions.map((question) => question.value) }
-        : null,
+    refinement: options.length > 0 ? { options } : null,
     resultId: data?.qna_result_id,
     threadId: data?.thread_id,
     status: 'complete',

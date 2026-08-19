@@ -180,6 +180,23 @@ describe('Input Component', () => {
       expect(container.querySelector('.cio-pia-input--error')).toBeInTheDocument();
     });
 
+    it('marks the box invalid and points it at the message', () => {
+      const { getByRole, getByPlaceholderText } = render(
+        <Input onSubmit={mockSubmit} error='Not allowed' />,
+      );
+
+      const box = getByPlaceholderText('Ask anything');
+      expect(box).toHaveAttribute('aria-invalid', 'true');
+      expect(box).toHaveAttribute('aria-describedby', getByRole('alert').id);
+    });
+
+    it('leaves the box unmarked when there is no error', () => {
+      const box = render(<Input onSubmit={mockSubmit} />).getByPlaceholderText('Ask anything');
+
+      expect(box).not.toHaveAttribute('aria-invalid');
+      expect(box).not.toHaveAttribute('aria-describedby');
+    });
+
     it('gives each input on the same page its own message', () => {
       const { getAllByRole } = render(
         <>
