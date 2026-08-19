@@ -129,6 +129,9 @@ describe('Testing Hook: useRecsPod', () => {
 
     expect(mockClient.agent.getRecs).not.toHaveBeenCalled();
     expect(result.current.items).toBeNull();
+    // No request is in flight, so the caller must not be left holding a skeleton.
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.isFirstLoad).toBe(false);
   });
 
   // Our own adapter never returns an empty array, but `cioClient` is a public prop and a

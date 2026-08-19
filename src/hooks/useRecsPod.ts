@@ -32,7 +32,11 @@ export interface UseRecsPodReturn {
   isLoading: boolean;
   /** True until the first request settles, when there is nothing to hold on screen yet. */
   isFirstLoad: boolean;
-  /** The failure behind the fallback title, for callers rendering their own error handling. */
+  /**
+   * The failure behind the fallback title, for callers rendering their own error handling.
+   * Only set for an outright failure: a degraded response (`status: 'partial'`) shows the fallback
+   * title with `error` still null, because that response arrived and its products are usable.
+   */
   error: Error | null;
   /** Message to show under the input when the text the shopper sent was rejected. */
   inputError: string | null;
@@ -82,11 +86,17 @@ export default function useRecsPod({
   }, [formatImageUrl]);
 
   const strategy = parameters?.strategy || DEFAULT_STRATEGY;
-  const { numResults } = parameters || {};
+  const { numResults, defaultTitle } = parameters || {};
 
   const fetchResult = useCallback(
     (shopperInput?: string) => {
-      if (!cioClient) return;
+      // Nothing to ask, so settle the loading state rather than leaving the caller in a skeleton
+      // that never resolves.
+      if (!cioClient) {
+        setIsLoading(false);
+        setIsFirstLoad(false);
+        return;
+      }
 
       requestIdRef.current += 1;
       const requestId = requestIdRef.current;
@@ -160,7 +170,7 @@ export default function useRecsPod({
 
   // The title belonging to the last response we kept. `defaultTitle` is the caller's last resort
   // for a response that carried items but no title of its own.
-  const settledTitle = result?.title || parameters?.defaultTitle || '';
+  const settledTitle = result?.title || defaultTitle || '';
 
   let title = settledTitle;
   if (isLoading) {

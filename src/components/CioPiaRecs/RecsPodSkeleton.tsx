@@ -36,7 +36,7 @@ export default function RecsPodSkeleton({ part, count, componentOverride }: Recs
       className={`cio-pia-recs-skeleton cio-pia-recs-skeleton--${part}`}
       data-testid={`cio-pia-recs-skeleton-${part}`}
       aria-hidden='true'>
-      {Array.from({ length: total }, (unused, index) => (
+      {Array.from({ length: total }, (_, index) => (
         <div key={index} className='skeleton-bar cio-pia-recs-skeleton__block' />
       ))}
     </div>

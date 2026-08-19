@@ -76,7 +76,6 @@ export default function CioPiaRecs(props: CioPiaProps) {
   );
   const { containerRef } = useViewportCallbacks({ callbacks, context });
 
-  const handleSubmit = useCallback((value: string) => refine(value), [refine]);
   const handleInputFocus = useCallback(() => callbacks?.onFocus?.(context), [callbacks, context]);
 
   const renderProps: CioPiaRenderProps = {
@@ -86,7 +85,7 @@ export default function CioPiaRecs(props: CioPiaProps) {
     currentAnswer: title,
     currentQuestion: lastShopperInput,
     displayedQuestions: (refinement?.options || []).map((value) => ({ value })),
-    handleSubmitQuestion: handleSubmit,
+    handleSubmitQuestion: refine,
     conversationHistory: [],
   };
 
@@ -139,7 +138,7 @@ export default function CioPiaRecs(props: CioPiaProps) {
           translations={translations}
           componentOverrides={componentOverrides}
           onRefine={refine}
-          onSubmit={handleSubmit}
+          onSubmit={refine}
           onInputFocus={handleInputFocus}
         />
       </RenderPropsWrapper>
