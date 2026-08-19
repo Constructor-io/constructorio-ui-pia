@@ -6,18 +6,22 @@ import {
   DEMO_QUESTION_ALTERNATIVE_PRODUCTS,
   MOCK_QUESTIONS,
 } from '../../src/constants';
+import { QuestionResponse, GetAnswerResultsResponse } from '../../src/hooks/mocks/types';
 import { testGetAnswersApiResponse } from '../localExamples';
 
 describe('Testing Mocks: Agent', () => {
   let client;
-  const originalFetch = globalThis.fetch;
 
   // The happy paths used to hit the live Answer API, which made them slow and tied them to
   // demo-index data that changes outside this repo. Stubbing fetch keeps the assertions and
-  // drops the coupling. Safe to assign after the client is built: src/hooks/mocks/agent.ts
-  // calls the global `fetch` directly, so it resolves at call time.
-  const stubFetchWith = (payload: unknown) => {
-    globalThis.fetch = jest.fn(async () => ({ ok: true, json: async () => payload }) as Response);
+  // drops the coupling. Safe to stub after the client is built: src/hooks/mocks/agent.ts calls
+  // the global `fetch` directly, so it resolves at call time. (pia.server.test.ts has to inject
+  // fetch through the client options instead — see the comment there.)
+  const stubFetchWith = (payload: QuestionResponse | GetAnswerResultsResponse) => {
+    jest.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => payload,
+    } as unknown as Response);
   };
 
   beforeEach(() => {
@@ -27,8 +31,9 @@ describe('Testing Mocks: Agent', () => {
     });
   });
 
+  // Restores the spec/setupNetwork.js guard, so the error-path tests below still run behind it.
   afterEach(() => {
-    globalThis.fetch = originalFetch;
+    jest.restoreAllMocks();
   });
 
   describe('getSuggestedQuestions', () => {
