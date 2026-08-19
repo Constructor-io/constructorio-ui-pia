@@ -41,6 +41,15 @@ describe('Testing Recs Utils: adaptLegacyAnswerToRecs', () => {
     });
   });
 
+  it('drops repeated follow-up questions, keeping the order they arrived in', () => {
+    const result = adaptLegacyAnswerToRecs({
+      ...apiResponse,
+      follow_up_questions: [{ value: 'Slim fit' }, { value: 'Oxford' }, { value: 'Slim fit' }],
+    });
+
+    expect(result.refinement).toEqual({ options: ['Slim fit', 'Oxford'] });
+  });
+
   it('returns no refinement when the response carries no follow-up questions', () => {
     const result = adaptLegacyAnswerToRecs({ ...apiResponse, follow_up_questions: [] });
 

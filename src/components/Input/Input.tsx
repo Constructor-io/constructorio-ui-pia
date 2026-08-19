@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useId, useState } from 'react';
 import {
   ComponentOverrideProps,
   RenderPropsWrapper,
@@ -32,6 +32,7 @@ function Input({
   placeholderKey = 'Ask anything',
 }: InputProps) {
   const [value, setValue] = useState(providedValue || '');
+  const errorId = `${useId()}-error`;
 
   useEffect(() => {
     if (providedValue) {
@@ -86,6 +87,8 @@ function Input({
             placeholder={resolvedPlaceholder}
             disabled={disabled}
             className={error ? 'cio-pia-input cio-pia-input--error' : 'cio-pia-input'}
+            aria-invalid={error ? true : undefined}
+            aria-describedby={error ? errorId : undefined}
           />
           <button
             type='button'
@@ -97,7 +100,7 @@ function Input({
           </button>
         </div>
         {error && (
-          <span className='cio-pia-input-error' role='alert'>
+          <span className='cio-pia-input-error' id={errorId} role='alert'>
             {error}
           </span>
         )}
