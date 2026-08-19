@@ -12,11 +12,6 @@ import { testGetAnswersApiResponse } from '../localExamples';
 describe('Testing Mocks: Agent', () => {
   let client;
 
-  // The happy paths used to hit the live Answer API, which made them slow and tied them to
-  // demo-index data that changes outside this repo. Stubbing fetch keeps the assertions and
-  // drops the coupling. Safe to stub after the client is built: src/hooks/mocks/agent.ts calls
-  // the global `fetch` directly, so it resolves at call time. (pia.server.test.ts has to inject
-  // fetch through the client options instead — see the comment there.)
   const stubFetchWith = (payload: QuestionResponse | GetAnswerResultsResponse) => {
     jest.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,

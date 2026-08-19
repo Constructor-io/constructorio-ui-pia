@@ -12,11 +12,6 @@ import { testGetAnswersApiResponse } from '../localExamples';
 describe('Testing PIA Module', () => {
   let client;
 
-  // The happy paths used to hit the live Answer API, which made them slow and tied them to
-  // demo-index data that changes outside this repo. Passing `fetch` through the options rather
-  // than reassigning the global because the client snapshots it at construction time
-  // (constructorio.js: `fetch: fetchFromOptions || fetch`), and pia.js reads it back off
-  // `this.options`.
   const createClientWithResponse = (payload: QuestionResponse | GetAnswerResultsResponse) =>
     new ConstructorIOClient({
       apiKey: DEMO_API_KEY,
