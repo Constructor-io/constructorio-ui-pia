@@ -445,11 +445,12 @@ describe('CioPiaRecs Component', () => {
     it('renders custom content from the children render props function', async () => {
       const view = render(
         <CioPiaRecs {...getProps()}>
-          {({ currentAnswer, items, displayedQuestions }) => (
+          {({ currentAnswer, items, displayedQuestions, isLoading }) => (
             <div data-testid='custom-recs-pod'>
               <span data-testid='custom-title'>{currentAnswer}</span>
               <span data-testid='custom-count'>{items ? items.length : 0}</span>
               <span data-testid='custom-options'>{displayedQuestions.length}</span>
+              <span data-testid='custom-loading'>{String(isLoading)}</span>
             </div>
           )}
         </CioPiaRecs>,
@@ -464,6 +465,7 @@ describe('CioPiaRecs Component', () => {
       expect(view.getByTestId('custom-options')).toHaveTextContent(
         String(firstResult.refinement!.options.length),
       );
+      expect(view.getByTestId('custom-loading')).toHaveTextContent('false');
     });
 
     it('renders a custom loading placeholder', () => {
