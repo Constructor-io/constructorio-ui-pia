@@ -1,8 +1,28 @@
 import ConstructorIOClient from '@constructor-io/constructorio-client-javascript';
-import { DEMO_API_KEY, DEMO_ITEM_ID, DEMO_QUESTION } from '../../src/constants';
+import {
+  DEMO_API_KEY,
+  DEMO_ITEM_ID,
+  DEMO_QUESTION,
+  DEMO_QUESTION_ALTERNATIVE_PRODUCTS,
+  MOCK_QUESTIONS,
+} from '../../src/constants';
+import { testGetAnswersApiResponse } from '../localExamples';
 
 describe('Testing PIA Module', () => {
   let client;
+
+  // The happy paths used to hit the live Answer API, which made them slow and tied them to
+  // demo-index data that changes outside this repo. Passing `fetch` through the options rather
+  // than reassigning the global because the client snapshots it at construction time
+  // (constructorio.js: `fetch: fetchFromOptions || fetch`), and pia.js reads it back off
+  // `this.options`.
+  const createClientWithResponse = (payload: unknown) =>
+    new ConstructorIOClient({
+      apiKey: DEMO_API_KEY,
+      sessionId: 123,
+      clientId: 'test-client-id',
+      fetch: jest.fn(async () => ({ ok: true, json: async () => payload })),
+    });
 
   beforeEach(() => {
     client = new ConstructorIOClient({
@@ -13,6 +33,18 @@ describe('Testing PIA Module', () => {
   });
 
   describe('getSuggestedQuestions', () => {
+    it('fetches suggested questions given item_id', async () => {
+      const result = await createClientWithResponse({
+        questions: MOCK_QUESTIONS,
+      }).agent.pia.getSuggestedQuestions(DEMO_ITEM_ID);
+
+      expect(result).toBeDefined();
+      expect(result.questions).toBeDefined();
+      expect(Array.isArray(result.questions)).toBe(true);
+      expect(result.questions[0]).toHaveProperty('value');
+      expect(typeof result.questions[0].value).toBe('string');
+    });
+
     it('throws an error if no item id is provided', async () => {
       await expect(client.agent.pia.getSuggestedQuestions(undefined)).rejects.toThrow(
         'itemId is a required parameter of type string',
@@ -21,6 +53,33 @@ describe('Testing PIA Module', () => {
   });
 
   describe('getAnswerResults', () => {
+    it('fetches answer given item_id and questions', async () => {
+      const result = await createClientWithResponse(
+        testGetAnswersApiResponse,
+      ).agent.pia.getAnswerResults(DEMO_ITEM_ID, DEMO_QUESTION_ALTERNATIVE_PRODUCTS);
+
+      expect(result).toBeDefined();
+
+      expect(result.qna_result_id).toBeDefined();
+      expect(typeof result.qna_result_id).toBe('string');
+
+      expect(result.value).toBeDefined();
+      expect(typeof result.value).toBe('string');
+
+      expect(result.item_results).toBeDefined();
+      expect(result.item_results.request).toBeDefined();
+      expect(result.item_results.response).toBeDefined();
+      expect(result.item_results.response.results).toBeDefined();
+      expect(Array.isArray(result.item_results.response.results)).toBe(true);
+      expect(result.item_results.response.results[0]).toHaveProperty('value');
+      expect(typeof result.item_results.response.results[0].value).toBe('string');
+
+      expect(result.follow_up_questions).toBeDefined();
+      expect(Array.isArray(result.follow_up_questions)).toBe(true);
+      expect(result.follow_up_questions[0]).toHaveProperty('value');
+      expect(typeof result.follow_up_questions[0].value).toBe('string');
+    });
+
     it('throws an error if no item id is provided', async () => {
       await expect(client.agent.pia.getAnswerResults(undefined, DEMO_QUESTION)).rejects.toThrow(
         'itemId is a required parameter of type string',
