@@ -6,10 +6,10 @@ import {
 } from '@constructor-io/constructorio-ui-components';
 import {
   ConstructorClientOptions,
+  ItemData,
   Nullable,
 } from '@constructor-io/constructorio-client-javascript';
-import { Question } from './hooks/mocks/types';
-import MockConstructorIOClient from './hooks/mocks/MockConstructorIOClient';
+import { CioClient } from './hooks/useCioPia';
 
 export enum FeedbackType {
   UP = 'up',
@@ -17,7 +17,7 @@ export enum FeedbackType {
 }
 
 export interface PiaContextValue {
-  cioClient: Nullable<MockConstructorIOClient>;
+  cioClient: Nullable<CioClient>;
   cioClientOptions: CioClientOptions;
   setCioClientOptions: React.Dispatch<CioClientOptions>;
   itemId: string;
@@ -34,7 +34,7 @@ export interface CioPiaProviderProps {
   variationId?: string;
   /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000") */
   threadId?: string;
-  cioClient?: Nullable<MockConstructorIOClient>;
+  cioClient?: Nullable<CioClient>;
 }
 
 export type CioPiaMode = 'default' | 'conversation';
@@ -204,4 +204,53 @@ export interface CioPiaComponentOverrides extends ComponentOverrideProps<CioPiaR
   loading?: ComponentOverrideProps<LoadingRenderProps>;
 }
 
-export * from './hooks/mocks/types';
+// PIA API types
+export interface Question {
+  value: string;
+}
+
+export interface QuestionResponse {
+  questions: Array<Question>;
+}
+
+export interface PiaRequestParameters {
+  features?: Record<string, boolean>;
+  featureVariants?: Record<string, string>;
+  preFilterExpression?: Record<string, any>;
+}
+
+export interface SuggestedQuestionsParameters extends PiaRequestParameters {
+  numResults?: number;
+}
+
+export interface AnswerRequestParameters extends PiaRequestParameters {
+  guard?: boolean;
+}
+
+export interface ApiItemVariation extends Record<string, any> {
+  value: string;
+  data?: ItemData;
+}
+
+export interface ApiItem extends Record<string, any> {
+  value: string;
+  matched_terms: Array<string>;
+  data: ItemData;
+  variations?: Array<ApiItemVariation> | null;
+  variations_map?: Record<string, any> | Array<Record<string, any>> | null;
+}
+
+export interface AnswerItemResults {
+  request?: Record<string, any>;
+  response: {
+    results: Array<ApiItem>;
+  };
+}
+
+export interface GetAnswerResultsResponse {
+  qna_result_id: string;
+  value: string;
+  item_results?: AnswerItemResults;
+  follow_up_questions?: Array<Question>;
+  thread_id?: string;
+}

@@ -2,7 +2,6 @@ import {
   IncludeComponentOverrides,
   IncludeRenderProps,
 } from '@constructor-io/constructorio-ui-components';
-import MockConstructorIOClient from '../../hooks/mocks/MockConstructorIOClient';
 import {
   CioPiaRenderProps,
   CioPiaComponentOverrides,
@@ -10,9 +9,11 @@ import {
   CioPiaDisplayConfigs,
   Translations,
   SuggestedQuestionsParameters,
+  AnswerRequestParameters,
   Formatters,
   ProductCardDisplayProps,
 } from '../../types';
+import type { CioClient } from '../../hooks/useCioPia';
 
 export interface CioPiaProps
   extends
@@ -29,7 +30,7 @@ export interface CioPiaProps
   /** Optional variation ID for the product. */
   variationId?: string;
   /** Optional Constructor.io client instance. If not provided, one will be created internally. */
-  cioClient?: MockConstructorIOClient;
+  cioClient?: CioClient;
   /** Display configuration options (mode, type, showFeedback, etc.). */
   displayConfigs?: CioPiaDisplayConfigs;
   /** Callback handlers for user interactions (onQuestionSubmit, onProductCardClick, onFeedback). */
@@ -45,9 +46,6 @@ export interface CioPiaProps
   translations?: Translations;
   /** Parameters for the suggested questions request. */
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
-  /**
-   * Extra query parameters appended to PIA API requests (e.g. `ef-*` test cell params).
-   * Define outside the component or wrap with useMemo to avoid unnecessary re-renders.
-   */
-  parameters?: Record<string, string | number | boolean>;
+  /** Parameters for the answer request. */
+  answerParameters?: AnswerRequestParameters;
 }

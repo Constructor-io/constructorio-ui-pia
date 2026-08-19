@@ -6,7 +6,8 @@ import PiaConversation, {
 } from '../../../components/PiaConversation/PiaConversation';
 import useCioPia from '../../../hooks/useCioPia';
 import useConversation from '../../../hooks/useConversation';
-import { DEMO_API_KEY, DEMO_ITEM_ID, MOCK_QUESTIONS } from '../../../constants';
+import useTracking from '../../../hooks/useTracking';
+import { DEMO_API_KEY, DEMO_ITEM_ID, DEMO_ITEM_NAME, MOCK_QUESTIONS } from '../../../constants';
 
 const meta = {
   title: 'Components/PiaConversation',
@@ -24,6 +25,12 @@ const mockQuestions = MOCK_QUESTIONS.slice(0, 3);
 
 function InteractiveWrapper(extraProps: Partial<PiaConversationProps> = {}) {
   const pia = useCioPia({ apiKey: DEMO_API_KEY, itemId: DEMO_ITEM_ID });
+  const tracking = useTracking({
+    cioClient: pia.cioClient,
+    itemId: DEMO_ITEM_ID,
+    itemName: DEMO_ITEM_NAME,
+    threadId: pia.threadId,
+  });
   const {
     conversationHistory,
     displayedQuestions,
@@ -32,7 +39,7 @@ function InteractiveWrapper(extraProps: Partial<PiaConversationProps> = {}) {
     currentItems,
     handleSubmitQuestion,
     handleQuestionClick,
-  } = useConversation({ pia, itemId: DEMO_ITEM_ID, isConversation: true });
+  } = useConversation({ pia, itemId: DEMO_ITEM_ID, isConversation: true, tracking });
 
   return (
     <PiaConversation
@@ -43,6 +50,7 @@ function InteractiveWrapper(extraProps: Partial<PiaConversationProps> = {}) {
       displayedQuestions={displayedQuestions}
       handleSubmitQuestion={handleSubmitQuestion}
       handleQuestionClick={handleQuestionClick}
+      onResultClick={tracking.trackResultClick}
       {...extraProps}
     />
   );

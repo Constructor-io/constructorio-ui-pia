@@ -1,10 +1,9 @@
-import React, { useCallback, useRef, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   Carousel,
   CarouselOverrides,
   ProductCard,
   ProductCardProps,
-  CIO_EVENTS,
 } from '@constructor-io/constructorio-ui-components';
 import { Callbacks, Item, Translations } from '../../types';
 import { sanitizeHtml } from '../../utils/contentTransformers';
@@ -106,7 +105,6 @@ export default function PiaCustomCarousel({
   translations,
   priceCurrency,
 }: PiaCustomCarouselProps) {
-  const wrapperRef = useRef<HTMLDivElement>(null);
   const { onAddToCart } = callbacks || {};
 
   const addToCartHandler = useCallback(
@@ -116,7 +114,6 @@ export default function PiaCustomCarousel({
     [onAddToCart],
   );
 
-  // Determine to use user-defined click handler or default behavior
   const productClickHandler = useCallback(
     (item: Item) => {
       const position = items.findIndex((i) => i.id === item.id);
@@ -134,41 +131,62 @@ export default function PiaCustomCarousel({
     [callbacks, items, onResultClick, question, qnaResultId],
   );
 
-  // Set up event listener for product card clicks
-  useEffect(() => {
-    const el = wrapperRef.current;
-    if (!el) return undefined;
-
-    const handleClick = (e: Event) => {
-      const { product } = (e as CustomEvent).detail;
-      if (product) {
-        productClickHandler(product as Item);
-      }
-    };
-
-    el.addEventListener(CIO_EVENTS.productCard.click, handleClick);
-    return () => {
-      el.removeEventListener(CIO_EVENTS.productCard.click, handleClick);
-    };
-  }, [productClickHandler]);
-
   const priceSectionOverride = useMemo(
     () => (priceCurrency ? createPriceSectionOverride(priceCurrency) : undefined),
     [priceCurrency],
   );
 
+  const clickHandlerProps = useMemo(
+    () => ({
+      onProductClick: productClickHandler,
+      onAddToCart: onAddToCart ? addToCartHandler : undefined,
+    }),
+    [productClickHandler, onAddToCart, addToCartHandler],
+  );
+
   const mergedOverrides = useMemo((): CarouselOverrides<Item> => {
     const baseOverrides = buildMergedOverrides(componentOverrides, priceSectionOverride);
-    const cardOverrides = baseOverrides.item?.productCard;
 
-    // The carousel never passes onAddToCart down and the card hides the button without it, so
-    // re-render the card with the handler. A full card override owns its own layout - skip it.
-    if (!onAddToCart || cardOverrides?.reactNode) {
-      return baseOverrides;
+    // Wrap any override function to inject click handlers as render props
+    const carouselOverride = baseOverrides.reactNode;
+    if (typeof carouselOverride === 'function') {
+      return {
+        ...baseOverrides,
+        reactNode: (props: Record<string, unknown>) =>
+          carouselOverride({ ...props, ...clickHandlerProps } as typeof props),
+      };
     }
 
-    const addToCartText = translate('Add to Cart', translations);
+    const cardOverrides = baseOverrides.item?.productCard;
+    const itemOverride = baseOverrides.item?.reactNode;
+    if (typeof itemOverride === 'function') {
+      return {
+        ...baseOverrides,
+        item: {
+          ...baseOverrides.item,
+          reactNode: (props: Record<string, unknown>) =>
+            itemOverride({ ...props, ...clickHandlerProps } as typeof props),
+        },
+      };
+    }
 
+    if (typeof cardOverrides?.reactNode === 'function') {
+      const originalReactNode = cardOverrides.reactNode;
+      return {
+        ...baseOverrides,
+        item: {
+          ...baseOverrides.item,
+          productCard: {
+            ...cardOverrides,
+            reactNode: (props: ProductCardProps) =>
+              originalReactNode({ ...props, ...clickHandlerProps } as ProductCardProps),
+          },
+        },
+      };
+    }
+
+    // Default: render ProductCard with handlers directly
+    const addToCartText = onAddToCart ? translate('Add to Cart', translations) : undefined;
     return {
       ...baseOverrides,
       item: {
@@ -180,23 +198,19 @@ export default function PiaCustomCarousel({
               product={product}
               className='w-full h-full'
               addToCartText={addToCartText}
-              onAddToCart={addToCartHandler}
+              onAddToCart={clickHandlerProps.onAddToCart}
+              onProductClick={clickHandlerProps.onProductClick}
               componentOverrides={cardOverrides}
             />
           ),
         },
       },
     };
-  }, [componentOverrides, priceSectionOverride, onAddToCart, translations, addToCartHandler]);
+  }, [componentOverrides, priceSectionOverride, clickHandlerProps, onAddToCart, translations]);
 
-  // If there are no items, do not render the carousel
   if (items.length === 0) {
     return null;
   }
 
-  return (
-    <div ref={wrapperRef}>
-      <Carousel items={items} componentOverrides={mergedOverrides} />
-    </div>
-  );
+  return <Carousel items={items} componentOverrides={mergedOverrides} />;
 }

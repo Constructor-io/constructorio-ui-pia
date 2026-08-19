@@ -34,7 +34,7 @@ export default function CioPiaQna(props: CioPiaProps) {
     children,
     translations,
     suggestedQuestionsParameters,
-    parameters,
+    answerParameters,
   } = props;
   const {
     learnMoreUrl,
@@ -55,7 +55,7 @@ export default function CioPiaQna(props: CioPiaProps) {
     variationId,
     cioClient,
     suggestedQuestionsParameters,
-    parameters,
+    answerParameters,
     formatImageUrl: formatters?.formatImageUrl,
   });
 

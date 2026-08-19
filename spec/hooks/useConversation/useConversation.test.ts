@@ -1,7 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
 import useConversation from '../../../src/hooks/useConversation';
 import { UseCioPiaReturn } from '../../../src/hooks/useCioPia';
-import { GetAnswerResultsResponse } from '../../../src/hooks/mocks/types';
+import { GetAnswerResultsResponse } from '../../../src/types';
 import { FeedbackType } from '../../../src/types';
 import createMockTracking from '../../__mocks__/createMockTracking';
 

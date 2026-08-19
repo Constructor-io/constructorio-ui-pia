@@ -1,23 +1,21 @@
 import { useMemo, useState } from 'react';
+import ConstructorIOClient from '@constructor-io/constructorio-client-javascript';
 import { Tracker } from '@constructor-io/constructorio-client-javascript/lib/types/constructorio';
-import { Formatters, SuggestedQuestionsParameters } from '../types';
-import MockConstructorIOClient from './mocks/MockConstructorIOClient';
+import { AnswerRequestParameters, Formatters, SuggestedQuestionsParameters } from '../types';
 import useAnswerResults, { UseAnswerResultsReturn } from './useAnswerResults';
 import useSuggestedQuestions, { UseSuggestedQuestionsReturn } from './useSuggestedQuestions';
 import version from '../version';
+
+export type CioClient = InstanceType<typeof ConstructorIOClient>;
 
 export interface UseCioPiaProps {
   apiKey: string;
   itemId: string;
   variationId?: string;
   threadId?: string;
-  cioClient?: MockConstructorIOClient;
+  cioClient?: CioClient;
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
-  /**
-   * Extra query parameters appended to PIA API requests (e.g. `ef-*` test cell params).
-   * Define outside the component or wrap with useMemo to avoid unnecessary re-renders.
-   */
-  parameters?: Record<string, string | number | boolean>;
+  answerParameters?: AnswerRequestParameters;
   /** Define outside the component or wrap with useCallback to avoid unnecessary re-renders. */
   formatImageUrl?: Formatters['formatImageUrl'];
 }
@@ -37,7 +35,7 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     threadId: providedThreadId,
     cioClient: providedClient,
     suggestedQuestionsParameters,
-    parameters,
+    answerParameters,
     formatImageUrl,
   } = props;
 
@@ -46,7 +44,7 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
 
   const client = useMemo(() => {
     if (providedClient) return providedClient;
-    return new MockConstructorIOClient({
+    return new ConstructorIOClient({
       apiKey,
       sendTrackingEvents: true,
       version: `cio-ui-pia-${version}`,
@@ -59,7 +57,6 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     threadId,
     cioClient: client,
     parameters: suggestedQuestionsParameters,
-    requestParameters: parameters,
   });
 
   const answers = useAnswerResults({
@@ -67,7 +64,7 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     variationId,
     threadId,
     cioClient: client,
-    parameters,
+    parameters: answerParameters,
     formatImageUrl,
   });
 
