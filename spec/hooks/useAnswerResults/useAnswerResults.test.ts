@@ -220,6 +220,32 @@ describe('Testing Hook: useAnswerResults', () => {
     expect(result.current.data).toEqual(mockResponse);
   });
 
+  it('passes parameters to getAnswerResults', async () => {
+    const parameters = { features: { pia_v2: true }, guard: true };
+    const propsWithParams = {
+      ...testProps,
+      parameters,
+    };
+
+    const { result } = renderHook(() => useAnswerResults(propsWithParams));
+
+    act(() => {
+      result.current.getAnswer(testQuestion);
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(mockClient.agent.pia.getAnswerResults).toHaveBeenCalledWith(
+      testProps.itemId,
+      testQuestion,
+      { threadId: undefined, variationId: undefined, features: { pia_v2: true }, guard: true },
+    );
+  });
+
   it('does not fetch if cioClient is not provided', () => {
     // @ts-expect-error testing behavior when cioClient is not provided
     const { result } = renderHook(() => useAnswerResults({ ...testProps, cioClient: undefined }));
