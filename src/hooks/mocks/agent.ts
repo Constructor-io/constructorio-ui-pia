@@ -14,9 +14,6 @@ import {
 import { GetRecsProps, RecsResult } from '../../types';
 import { AgentRequestError } from '../../errors';
 
-/** Kept to one warning per page load, so a re-rendering pod cannot flood the console. */
-let warnedNoRecsEndpoint = false;
-
 // Create URL for PIA API
 function createAgentUrl({
   itemId,
@@ -173,13 +170,6 @@ class MockAgent {
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getRecs(props: GetRecsProps): Promise<RecsResult> {
-    if (!warnedNoRecsEndpoint) {
-      warnedNoRecsEndpoint = true;
-      console.warn(
-        "[cio-pia] mode: 'recommendations' is not available yet. Please use other modes instead.",
-      );
-    }
-
     return { title: '', items: null, refinement: null, status: 'complete' };
   }
 

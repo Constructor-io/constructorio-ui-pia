@@ -288,36 +288,3 @@ describe('MockAgent: failed requests', () => {
   });
 });
 
-describe('MockAgent: getRecs', () => {
-  const originalFetch = globalThis.fetch;
-  let fetchMock: jest.Mock;
-
-  beforeEach(() => {
-    fetchMock = jest.fn();
-    globalThis.fetch = fetchMock;
-  });
-
-  afterEach(() => {
-    globalThis.fetch = originalFetch;
-  });
-
-  // There is no recommendations endpoint yet, so there is no URL left to assert - only that we do
-  // not go asking a different endpoint in its place.
-  it('requests nothing, resolves to an empty result, and warns only once', async () => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    const client = new MockConstructorIOClient({ apiKey: 'test-key', sendTrackingEvents: false });
-
-    const first = await client.agent.getRecs({ itemId: 'item-123' });
-    const second = await client.agent.getRecs({ itemId: 'item-123', strategy: 'bestsellers' });
-
-    expect(fetchMock).not.toHaveBeenCalled();
-    expect(first).toEqual({ title: '', items: null, refinement: null, status: 'complete' });
-    expect(second).toEqual(first);
-
-    // One warning per page load, so a re-rendering pod cannot flood the console.
-    expect(warn).toHaveBeenCalledTimes(1);
-    expect(warn.mock.calls[0][0]).toContain('is not available yet');
-
-    warn.mockRestore();
-  });
-});

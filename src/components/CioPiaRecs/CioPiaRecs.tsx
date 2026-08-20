@@ -51,25 +51,16 @@ export default function CioPiaRecs(props: CioPiaProps) {
     cioClient,
   });
 
-  const {
-    title,
-    items,
-    refinement,
-    isLoading,
-    isFirstLoad,
-    error,
-    inputError,
-    lastShopperInput,
-    refine,
-  } = useRecsPod({
-    itemId,
-    variationId,
-    threadId: resolvedThreadId,
-    cioClient: client,
-    parameters: recsPodParameters,
-    formatImageUrl: formatters?.formatImageUrl,
-    translations,
-  });
+  const { title, items, refinement, isLoading, error, inputError, lastShopperInput, refine } =
+    useRecsPod({
+      itemId,
+      variationId,
+      threadId: resolvedThreadId,
+      cioClient: client,
+      parameters: recsPodParameters,
+      formatImageUrl: formatters?.formatImageUrl,
+      translations,
+    });
 
   const context = useMemo(
     () => ({ itemId, threadId: resolvedThreadId }),
@@ -142,7 +133,6 @@ export default function CioPiaRecs(props: CioPiaProps) {
         <RecsPodRefinement
           refinement={refinement}
           isLoading={isLoading}
-          isFirstLoad={isFirstLoad}
           inputError={inputError}
           showInput={showInput}
           translations={translations}

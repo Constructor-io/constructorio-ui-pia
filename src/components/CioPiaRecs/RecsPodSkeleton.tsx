@@ -8,7 +8,7 @@ import {
 import { Item, LoadingRenderProps } from '../../types';
 
 /** Which block of the pod is being stood in for. Each shape matches the real thing's height. */
-export type RecsPodSkeletonPart = 'carousel' | 'options' | 'input';
+export type RecsPodSkeletonPart = 'carousel' | 'options';
 
 interface RecsPodSkeletonProps {
   part: RecsPodSkeletonPart;
@@ -22,7 +22,6 @@ const DEFAULT_COUNTS: Record<RecsPodSkeletonPart, number> = {
   // overflow, exactly as it does for real cards.
   carousel: 6,
   options: 3,
-  input: 1,
 };
 
 /**
