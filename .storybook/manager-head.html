@@ -1,1 +1,14 @@
 <link rel="shortcut icon" href="https://constructor.com/hubfs/constructor-favicon-2024-1.svg">
+
+<style>
+  /* Same object-control tweak as .storybook/storybook-styles.css, for the Controls panel:
+     hide the redundant root key and keep the tree clear of the absolutely positioned RAW toggle. */
+  .rejt-tree {
+    padding-right: 60px;
+  }
+
+  .rejt-tree > .rejt-object-node > span:first-of-type > .rejt-name,
+  .rejt-tree > .rejt-array-node > span:first-of-type > .rejt-name {
+    display: none;
+  }
+</style>
