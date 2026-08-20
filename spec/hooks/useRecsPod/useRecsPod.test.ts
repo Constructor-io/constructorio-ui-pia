@@ -48,9 +48,7 @@ describe('Testing Hook: useRecsPod', () => {
   it('shows the loading title with no products while the first request is in flight', () => {
     mockClient.agent.getRecs.mockReturnValueOnce(new Promise<RecsResult>(() => {}));
 
-    const { result } = renderHook(() =>
-      useRecsPod({ itemId: testItemId, cioClient: mockClient }),
-    );
+    const { result } = renderHook(() => useRecsPod({ itemId: testItemId, cioClient: mockClient }));
 
     expect(result.current.isLoading).toBe(true);
     expect(result.current.isFirstLoad).toBe(true);
@@ -64,9 +62,7 @@ describe('Testing Hook: useRecsPod', () => {
   it('returns the title, products and refinement from the response', async () => {
     mockClient.agent.getRecs.mockResolvedValueOnce(firstResult);
 
-    const { result } = renderHook(() =>
-      useRecsPod({ itemId: testItemId, cioClient: mockClient }),
-    );
+    const { result } = renderHook(() => useRecsPod({ itemId: testItemId, cioClient: mockClient }));
 
     await settle();
 
@@ -151,9 +147,7 @@ describe('Testing Hook: useRecsPod', () => {
   });
 
   it('fetches again when itemId changes', async () => {
-    mockClient.agent.getRecs
-      .mockResolvedValueOnce(firstResult)
-      .mockResolvedValueOnce(secondResult);
+    mockClient.agent.getRecs.mockResolvedValueOnce(firstResult).mockResolvedValueOnce(secondResult);
 
     const { result, rerender } = renderHook((props) => useRecsPod(props), {
       initialProps: { itemId: testItemId, cioClient: mockClient },
@@ -173,9 +167,7 @@ describe('Testing Hook: useRecsPod', () => {
   });
 
   it('fetches again when the strategy changes', async () => {
-    mockClient.agent.getRecs
-      .mockResolvedValueOnce(firstResult)
-      .mockResolvedValueOnce(secondResult);
+    mockClient.agent.getRecs.mockResolvedValueOnce(firstResult).mockResolvedValueOnce(secondResult);
 
     const { rerender } = renderHook(
       (props: Parameters<typeof useRecsPod>[0]) => useRecsPod(props),
@@ -235,7 +227,7 @@ describe('Testing Hook: useRecsPod', () => {
       await settle();
 
       act(() => {
-        result.current.refine('Slim fit');
+        result.current.refine('Slim fit', 'option');
       });
 
       expect(result.current.isLoading).toBe(true);
@@ -266,7 +258,7 @@ describe('Testing Hook: useRecsPod', () => {
       await settle();
 
       await act(async () => {
-        result.current.refine('  Slim fit  ');
+        result.current.refine('  Slim fit  ', 'input');
       });
       await settle();
 
@@ -286,7 +278,7 @@ describe('Testing Hook: useRecsPod', () => {
       await settle();
 
       await act(async () => {
-        result.current.refine('   ');
+        result.current.refine('   ', 'input');
       });
 
       expect(mockClient.agent.getRecs).toHaveBeenCalledTimes(1);
@@ -307,10 +299,10 @@ describe('Testing Hook: useRecsPod', () => {
       await settle();
 
       act(() => {
-        result.current.refine('Slim fit');
+        result.current.refine('Slim fit', 'option');
       });
       act(() => {
-        result.current.refine('Oxford');
+        result.current.refine('Oxford', 'option');
       });
 
       await act(async () => {
@@ -344,7 +336,7 @@ describe('Testing Hook: useRecsPod', () => {
       await settle();
 
       await act(async () => {
-        result.current.refine('paint my house');
+        result.current.refine('paint my house', 'input');
       });
       await settle();
 
@@ -353,6 +345,30 @@ describe('Testing Hook: useRecsPod', () => {
       expect(result.current.items).toEqual(firstResult.items);
       expect(result.current.refinement).toEqual(firstResult.refinement);
       expect(result.current.error).toBeNull();
+    });
+
+    // A rejected option is a rejection of a label the API itself suggested, so pointing at the
+    // input would blame the shopper for something they did not type.
+    it('reports a rejected option as an ordinary failure instead of an input message', async () => {
+      const failure = new AgentRequestError(422);
+      mockClient.agent.getRecs.mockResolvedValueOnce(firstResult).mockRejectedValueOnce(failure);
+
+      const { result } = renderHook(() =>
+        useRecsPod({ itemId: testItemId, cioClient: mockClient }),
+      );
+
+      await settle();
+
+      await act(async () => {
+        result.current.refine('Warmer', 'option');
+      });
+      await settle();
+
+      expect(result.current.inputError).toBeNull();
+      expect(result.current.error).toBe(failure);
+      expect(result.current.title).toBe(RECS_FALLBACK_TITLE);
+      expect(result.current.items).toEqual(firstResult.items);
+      expect(result.current.refinement).toEqual(firstResult.refinement);
     });
 
     it('clears the input message on the next refinement', async () => {
@@ -367,13 +383,13 @@ describe('Testing Hook: useRecsPod', () => {
 
       await settle();
       await act(async () => {
-        result.current.refine('paint my house');
+        result.current.refine('paint my house', 'input');
       });
       await settle();
       expect(result.current.inputError).toBe(RECS_UNSUPPORTED_REQUEST);
 
       await act(async () => {
-        result.current.refine('Slim fit');
+        result.current.refine('Slim fit', 'option');
       });
       await settle();
 
@@ -410,7 +426,7 @@ describe('Testing Hook: useRecsPod', () => {
 
       await settle();
       await act(async () => {
-        result.current.refine('Oxford');
+        result.current.refine('Oxford', 'option');
       });
       await settle();
 
@@ -540,7 +556,7 @@ describe('Testing Hook: useRecsPod', () => {
 
       await settle();
       await act(async () => {
-        result.current.refine('paint my house');
+        result.current.refine('paint my house', 'input');
       });
       await settle();
 

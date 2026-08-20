@@ -70,6 +70,9 @@ export default function RecsPodRefinement({
               disabled={isLoading}
               error={inputError ?? undefined}
               placeholderKey={RECS_INPUT_PLACEHOLDER}
+              // The pod's box sits in a row beside the options and submits on Enter. Q&A keeps
+              // its button; this one has none in the mocks.
+              showSendButton={false}
               translations={translations}
               componentOverride={componentOverrides?.input}
             />

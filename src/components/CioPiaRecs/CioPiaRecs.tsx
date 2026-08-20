@@ -36,7 +36,7 @@ export default function CioPiaRecs(props: CioPiaProps) {
     recsPodParameters,
   } = props;
   const { priceCurrency } = productCardProps || {};
-  const { showInput = true } = recsPodParameters || {};
+  const { showInput = true, numResults } = recsPodParameters || {};
   const {
     answer: answerOverride,
     carousel: carouselOverride,
@@ -78,6 +78,9 @@ export default function CioPiaRecs(props: CioPiaProps) {
 
   const handleInputFocus = useCallback(() => callbacks?.onFocus?.(context), [callbacks, context]);
 
+  const refineFromOption = useCallback((text: string) => refine(text, 'option'), [refine]);
+  const refineFromInput = useCallback((text: string) => refine(text, 'input'), [refine]);
+
   const renderProps: CioPiaRenderProps = {
     items,
     isLoading,
@@ -85,7 +88,9 @@ export default function CioPiaRecs(props: CioPiaProps) {
     currentAnswer: title,
     currentQuestion: lastShopperInput,
     displayedQuestions: (refinement?.options || []).map((value) => ({ value })),
-    handleSubmitQuestion: refine,
+    // A caller's own root gets the free-text behavior: whatever it submits is the shopper's, so a
+    // rejection belongs under their input.
+    handleSubmitQuestion: refineFromInput,
     conversationHistory: [],
   };
 
@@ -115,7 +120,9 @@ export default function CioPiaRecs(props: CioPiaProps) {
           {isLoading || !items ? (
             <RecsPodSkeleton
               part='carousel'
-              count={items?.length}
+              // What was asked for, so the first skeleton is already the right width. `items` is
+              // the fallback for a response that carried a different number than requested.
+              count={numResults ?? items?.length}
               componentOverride={loadingOverride}
             />
           ) : (
@@ -137,8 +144,8 @@ export default function CioPiaRecs(props: CioPiaProps) {
           showInput={showInput}
           translations={translations}
           componentOverrides={componentOverrides}
-          onRefine={refine}
-          onSubmit={refine}
+          onRefine={refineFromOption}
+          onSubmit={refineFromInput}
           onInputFocus={handleInputFocus}
         />
       </RenderPropsWrapper>

@@ -3,8 +3,6 @@ import CioPiaQna from './CioPiaQna';
 import CioPiaRecs from '../CioPiaRecs/CioPiaRecs';
 import type { CioPiaProps } from './types';
 
-export type { CioPiaProps };
-
 export default function CioPia(props: CioPiaProps) {
   const mode = props.displayConfigs?.mode ?? 'default';
   const type = props.displayConfigs?.type ?? 'inline';

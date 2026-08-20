@@ -86,10 +86,10 @@ The component supports multiple display modes via the `displayConfigs` prop:
 ```
 
 > **`mode: 'recommendations'` reads a provisional data source.** The recommendations endpoint is not
-> deployed yet, so the pod currently asks the Q&A endpoint and converts the reply, which means the
-> title and the options are not yet the short copy the pod is designed for. The layout, the loading
-> states and the refinement flow are final. See the
-> [Recommendations Pod docs](https://constructor-io.github.io/constructorio-ui-pia/?path=/docs/components-ciopia-recs-pod--docs).
+> deployed yet, so the pod currently asks the Q&A endpoint and converts the reply: the title and the
+> options are not yet the short copy it is designed for. See the
+> [CioPia docs](https://constructor-io.github.io/constructorio-ui-pia/?path=/docs/components-ciopia--docs)
+> for the recommendations examples.
 
 #### Configuration Options
 
