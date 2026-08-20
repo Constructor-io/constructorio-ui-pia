@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { Nullable } from '@constructor-io/constructorio-client-javascript';
 import { AnswerRequestParameters, Formatters, Item, GetAnswerResultsResponse } from '../types';
 import { extractAndTransformItems } from '../utils/transformers';
-import { CioClient } from './useCioPia';
+import type { CioClient } from './useCioPia';
 
 export interface UseAnswerResultsProps {
   itemId: string;
