@@ -85,8 +85,9 @@ describe('CioPiaRecs Component', () => {
       expect(screen.getByText(RECS_LOADING_TITLE)).toBeInTheDocument();
       expect(screen.getByTestId('cio-pia-recs-skeleton-carousel')).toBeInTheDocument();
       expect(screen.getByTestId('cio-pia-recs-skeleton-options')).toBeInTheDocument();
-      expect(screen.getByTestId('cio-pia-recs-skeleton-input')).toBeInTheDocument();
-      expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+      // The input is never a placeholder, not even now: it holds its box from the first render and
+      // is disabled instead, so a request can never unmount what the shopper is typing into.
+      expect(screen.getByRole('textbox')).toBeDisabled();
     });
 
     it('shows the refinement label while the options are still placeholders', () => {
@@ -221,8 +222,6 @@ describe('CioPiaRecs Component', () => {
       expect(screen.getByRole('textbox')).toBeDisabled();
       expect(screen.getByTestId('cio-pia-recs-skeleton-carousel')).toBeInTheDocument();
       expect(screen.getByTestId('cio-pia-recs-skeleton-options')).toBeInTheDocument();
-      // The input keeps its box once the pod has loaded once; only the products reload.
-      expect(screen.queryByTestId('cio-pia-recs-skeleton-input')).not.toBeInTheDocument();
 
       await act(async () => {
         pending.resolve(secondResult);

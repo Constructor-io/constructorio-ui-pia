@@ -121,10 +121,6 @@
   width: 96px;
 }
 
-.cio-pia-recs-skeleton--input .cio-pia-recs-skeleton__block {
-  height: 40px;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .cio-pia-recs-skeleton__block,
   .cio-pia-recs-skeleton__image,

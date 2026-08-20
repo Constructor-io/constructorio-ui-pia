@@ -51,7 +51,6 @@ describe('Testing Hook: useRecsPod', () => {
     const { result } = renderHook(() => useRecsPod({ itemId: testItemId, cioClient: mockClient }));
 
     expect(result.current.isLoading).toBe(true);
-    expect(result.current.isFirstLoad).toBe(true);
     expect(result.current.title).toBe(RECS_LOADING_TITLE);
     expect(result.current.items).toBeNull();
     expect(result.current.refinement).toBeNull();
@@ -67,7 +66,6 @@ describe('Testing Hook: useRecsPod', () => {
     await settle();
 
     expect(result.current.isLoading).toBe(false);
-    expect(result.current.isFirstLoad).toBe(false);
     expect(result.current.title).toBe(firstResult.title);
     expect(result.current.items).toEqual(firstResult.items);
     expect(result.current.refinement).toEqual(firstResult.refinement);
@@ -121,13 +119,15 @@ describe('Testing Hook: useRecsPod', () => {
   it('does not fetch when no client is provided', async () => {
     const { result } = renderHook(() => useRecsPod({ itemId: testItemId, cioClient: undefined }));
 
+    // Asserted before anything settles: with nothing to ask there is nothing to wait for, so the
+    // caller must not be handed a skeleton on the first render either.
+    expect(result.current.isLoading).toBe(false);
+
     await settle();
 
     expect(mockClient.agent.getRecs).not.toHaveBeenCalled();
     expect(result.current.items).toBeNull();
-    // No request is in flight, so the caller must not be left holding a skeleton.
     expect(result.current.isLoading).toBe(false);
-    expect(result.current.isFirstLoad).toBe(false);
   });
 
   // Our own adapter never returns an empty array, but `cioClient` is a public prop and a
@@ -231,7 +231,6 @@ describe('Testing Hook: useRecsPod', () => {
       });
 
       expect(result.current.isLoading).toBe(true);
-      expect(result.current.isFirstLoad).toBe(false);
       // The title announces the refinement rather than describing products that are on their way
       // out, while the products and options underneath stay put so the row heights hold.
       expect(result.current.title).toBe(RECS_LOADING_TITLE);

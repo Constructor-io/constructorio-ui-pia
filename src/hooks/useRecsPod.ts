@@ -39,8 +39,6 @@ export interface UseRecsPodReturn {
   refinement: RecsRefinement | null;
   /** True while a request is in flight. */
   isLoading: boolean;
-  /** True until the first request settles, when there is nothing to hold on screen yet. */
-  isFirstLoad: boolean;
   /**
    * The failure behind the fallback title, for callers rendering their own error handling.
    * Only set for an outright failure: a degraded response (`status: 'partial'`) shows the fallback
@@ -78,8 +76,9 @@ export default function useRecsPod({
   translations,
 }: UseRecsPodProps): UseRecsPodReturn {
   const [result, setResult] = useState<RecsResult | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
+  // Seeded from the client, because with nothing to ask there is nothing to wait for and the
+  // first render would otherwise report a load that never happens.
+  const [isLoading, setIsLoading] = useState<boolean>(() => !!cioClient);
   const [error, setError] = useState<Error | null>(null);
   const [hasUnsupportedInput, setHasUnsupportedInput] = useState<boolean>(false);
   const [lastShopperInput, setLastShopperInput] = useState<string>('');
@@ -106,7 +105,6 @@ export default function useRecsPod({
       // that never resolves.
       if (!cioClient) {
         setIsLoading(false);
-        setIsFirstLoad(false);
         return;
       }
 
@@ -160,7 +158,6 @@ export default function useRecsPod({
           if (!isCurrent()) return;
 
           setIsLoading(false);
-          setIsFirstLoad(false);
         });
     },
     // Every dependency is a primitive. `formatImageUrl` is read through a ref instead, so a
@@ -205,7 +202,6 @@ export default function useRecsPod({
     items: result?.items?.length ? result.items : null,
     refinement: result?.refinement || null,
     isLoading,
-    isFirstLoad,
     error,
     inputError: hasUnsupportedInput ? translate(RECS_UNSUPPORTED_REQUEST, translations) : null,
     lastShopperInput,

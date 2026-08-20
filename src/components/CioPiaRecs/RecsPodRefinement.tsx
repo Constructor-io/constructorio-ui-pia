@@ -10,7 +10,6 @@ import { RECS_INPUT_PLACEHOLDER } from '../../constants';
 interface RecsPodRefinementProps {
   refinement: RecsRefinement | null;
   isLoading: boolean;
-  isFirstLoad: boolean;
   /** Message for a value the shopper submitted that came back rejected. */
   inputError: string | null;
   showInput: boolean;
@@ -29,7 +28,6 @@ interface RecsPodRefinementProps {
 export default function RecsPodRefinement({
   refinement,
   isLoading,
-  isFirstLoad,
   inputError,
   showInput,
   translations,
@@ -61,22 +59,23 @@ export default function RecsPodRefinement({
 
       {showInput && (
         <div className='cio-pia-recs-pod__input'>
-          {isFirstLoad ? (
-            <RecsPodSkeleton part='input' />
-          ) : (
-            <Input
-              onSubmit={onSubmit}
-              onFocus={onInputFocus}
-              disabled={isLoading}
-              error={inputError ?? undefined}
-              placeholderKey={RECS_INPUT_PLACEHOLDER}
-              // The pod's box sits in a row beside the options and submits on Enter. Q&A keeps
-              // its button; this one has none in the mocks.
-              showSendButton={false}
-              translations={translations}
-              componentOverride={componentOverrides?.input}
-            />
-          )}
+          {/*
+            Never stood in for by a skeleton, not even on the first load: swapping it out
+            unmounts the field, which discards the text the shopper had typed and their focus
+            along with it. Disabling it holds its place instead.
+          */}
+          <Input
+            onSubmit={onSubmit}
+            onFocus={onInputFocus}
+            disabled={isLoading}
+            error={inputError ?? undefined}
+            placeholderKey={RECS_INPUT_PLACEHOLDER}
+            // The pod's box sits in a row beside the options and submits on Enter. Q&A keeps
+            // its button; this one has none in the mocks.
+            showSendButton={false}
+            translations={translations}
+            componentOverride={componentOverrides?.input}
+          />
         </div>
       )}
     </div>
