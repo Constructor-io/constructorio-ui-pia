@@ -9,7 +9,3 @@
   padding-right: 60px;
 }
 
-.docblock-argstable .rejt-tree > .rejt-object-node > span:first-of-type > .rejt-name,
-.docblock-argstable .rejt-tree > .rejt-array-node > span:first-of-type > .rejt-name {
-  display: none;
-}
