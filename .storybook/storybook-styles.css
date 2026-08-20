@@ -1,7 +1,7 @@
 @import '../src/styles.css';
 @import '../src/stories/assets/storybook-styles.css';
 
-/* Reserve room for the RAW toggle Storybook floats over the object control. */
+/* Reserve 60px of clearance for the RAW toggle Storybook floats over the object control. */
 .docblock-argstable .rejt-tree {
   padding-right: 60px;
 }
