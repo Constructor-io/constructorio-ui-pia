@@ -18,9 +18,8 @@ import type { CioPiaProps } from './types';
  */
 export default function CioPia(props: CioPiaProps) {
   const mode = props.displayConfigs?.mode ?? 'default';
-  const type = props.displayConfigs?.type ?? 'inline';
 
-  if (mode === 'recommendations' && type !== 'modal') {
+  if (mode === 'recommendations') {
     return <CioPiaRecs {...props} />;
   }
 
