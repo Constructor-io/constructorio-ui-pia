@@ -1,10 +1,7 @@
 @import '../src/styles.css';
 @import '../src/stories/assets/storybook-styles.css';
 
-/* Storybook's object control (react-editable-json-tree) repeats the arg name as the tree's
-   root key and floats the RAW toggle absolutely in the top-right corner, so long names such
-   as `suggestedQuestionsParameters` run underneath it. The name is already in the table's
-   Name column, so hide the root key and reserve room for the button. */
+/* Reserve room for the RAW toggle Storybook floats over the object control. */
 .docblock-argstable .rejt-tree {
   padding-right: 60px;
 }
