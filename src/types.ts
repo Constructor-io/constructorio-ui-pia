@@ -182,7 +182,9 @@ export interface RecsResult {
 
 export interface RecsPodParameters {
   /**
-   * Which kind of recommendations to fetch.
+   * Which kind of recommendations to fetch. Inert until the recommendations endpoint ships: it is
+   * forwarded to `agent.getRecs`, which has nothing to send it to yet, so only a caller's own
+   * `getRecs` acts on it today.
    *
    * @default 'complementary_items'
    */

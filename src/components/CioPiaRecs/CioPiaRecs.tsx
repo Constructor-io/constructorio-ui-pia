@@ -8,6 +8,7 @@ import usePiaClient from '../../hooks/usePiaClient';
 import useRecsPod from '../../hooks/useRecsPod';
 import useViewportCallbacks from '../../hooks/useViewportCallbacks';
 import { CioPiaRenderProps } from '../../types';
+import { cx } from '../../utils/classNames';
 import type { CioPiaProps } from '../CioPia/types';
 
 /**
@@ -101,9 +102,11 @@ export default function CioPiaRecs(props: CioPiaProps) {
   // its own message here.
   if (!isLoading && !items && !children && !rootOverride) return null;
 
-  const className = isLoading
-    ? 'cio-pia-container cio-pia-recs-pod cio-pia-recs-pod--loading'
-    : 'cio-pia-container cio-pia-recs-pod';
+  const className = cx(
+    'cio-pia-container',
+    'cio-pia-recs-pod',
+    isLoading && 'cio-pia-recs-pod--loading',
+  );
 
   return (
     <div ref={containerRef} className={className} data-testid='cio-pia-recs-pod'>

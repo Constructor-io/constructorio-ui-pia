@@ -1,11 +1,19 @@
-import React, { useCallback, useEffect, useId, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ComponentOverrideProps,
   RenderPropsWrapper,
 } from '@constructor-io/constructorio-ui-components';
 import { InputRenderProps, Translations } from '../../types';
+import { cx } from '../../utils/classNames';
 import { translate } from '../../utils/translate';
 import { SendIcon } from '../icons';
+
+/**
+ * Counts instances so each error message can be given an id of its own, which `aria-describedby`
+ * needs to point at it. `useId` would do this, but it is React 18+ and this package supports React
+ * >= 16.12. Read once per instance through a lazy initializer, so it holds across renders.
+ */
+let inputInstanceCount = 0;
 
 interface InputProps {
   value?: string;
@@ -39,7 +47,10 @@ function Input({
   showSendButton = true,
 }: InputProps) {
   const [value, setValue] = useState(providedValue || '');
-  const errorId = `${useId()}-error`;
+  const [errorId] = useState(() => {
+    inputInstanceCount += 1;
+    return `cio-pia-input-${inputInstanceCount}-error`;
+  });
 
   useEffect(() => {
     if (providedValue) {
@@ -74,9 +85,11 @@ function Input({
 
   // The field reserves room on its right for the Send button, so it has to give that room back
   // when there is no button to reserve it for.
-  const inputClassNames = ['cio-pia-input'];
-  if (error) inputClassNames.push('cio-pia-input--error');
-  if (!showSendButton) inputClassNames.push('cio-pia-input--no-send');
+  const inputClassName = cx(
+    'cio-pia-input',
+    error && 'cio-pia-input--error',
+    !showSendButton && 'cio-pia-input--no-send',
+  );
 
   return (
     <RenderPropsWrapper
@@ -99,7 +112,7 @@ function Input({
             onFocus={onFocus}
             placeholder={resolvedPlaceholder}
             disabled={disabled}
-            className={inputClassNames.join(' ')}
+            className={inputClassName}
             aria-invalid={error ? true : undefined}
             aria-describedby={error ? errorId : undefined}
           />

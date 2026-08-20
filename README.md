@@ -85,9 +85,10 @@ The component supports multiple display modes via the `displayConfigs` prop:
 />
 ```
 
-> **`mode: 'recommendations'` reads a provisional data source.** The recommendations endpoint is not
-> deployed yet, so the pod currently asks the Q&A endpoint and converts the reply: the title and the
-> options are not yet the short copy it is designed for. See the
+> **`mode: 'recommendations'` has no data source yet.** The recommendations endpoint is not deployed,
+> so the built-in client requests nothing, returns an empty result, and the pod renders nothing —
+> whatever the retailer already had in that slot shows through. To drive the pod from your own data in
+> the meantime, pass a `cioClient` with your own `agent.getRecs`. See the
 > [CioPia docs](https://constructor-io.github.io/constructorio-ui-pia/?path=/docs/components-ciopia--docs)
 > for the recommendations examples.
 
