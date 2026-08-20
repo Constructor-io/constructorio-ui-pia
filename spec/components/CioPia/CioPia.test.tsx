@@ -1038,14 +1038,14 @@ describe('CioPia Component', () => {
       );
     });
 
-    it('lets the modal type keep winning over the mode', async () => {
+    it('lets the mode win over the type', async () => {
       const { container } = await renderRecsPod({
         displayConfigs: { mode: 'recommendations', type: 'modal' },
       });
 
-      expect(container.querySelector('dialog')).toBeInTheDocument();
-      expect(screen.queryByTestId('cio-pia-recs-pod')).not.toBeInTheDocument();
-      expect(useCioPia).toHaveBeenCalled();
+      expect(screen.getByTestId('cio-pia-recs-pod')).toBeInTheDocument();
+      expect(container.querySelector('dialog')).not.toBeInTheDocument();
+      expect(useCioPia).not.toHaveBeenCalled();
     });
 
     it('keeps rendering the question-and-answer experience for the other modes', () => {
