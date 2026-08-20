@@ -45,6 +45,27 @@ describe('Input Component', () => {
     expect(container.querySelector('.cio-pia-send-button svg')).toBeInTheDocument();
   });
 
+  // Recommendations submits on Enter alone, and the field has to reclaim the space the button was
+  // holding or it would cut off what was typed well short of its own border.
+  it('drops the send button, and the room reserved for it, when showSendButton is false', () => {
+    const { container, queryByRole } = render(
+      <Input onSubmit={mockSubmit} showSendButton={false} />,
+    );
+
+    expect(container.querySelector('.cio-pia-send-button')).not.toBeInTheDocument();
+    expect(queryByRole('textbox')).toHaveClass('cio-pia-input--no-send');
+  });
+
+  it('still submits on Enter with no send button', () => {
+    const { queryByRole } = render(<Input onSubmit={mockSubmit} showSendButton={false} />);
+    const input = queryByRole('textbox')!;
+
+    fireEvent.change(input, { target: { value: 'something lighter' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+
+    expect(mockSubmit).toHaveBeenCalledWith('something lighter');
+  });
+
   it('handles text input', () => {
     const { queryByRole } = render(<Input onSubmit={mockSubmit} />);
     const input = queryByRole('textbox')! as HTMLInputElement;
@@ -280,10 +301,14 @@ describe('Input Component', () => {
       render(<Input onSubmit={mockSubmit} componentOverride={{ reactNode: override }} />);
       expect(override).toHaveBeenCalled();
 
-      act(() => { capturedSubmit('   '); });
+      act(() => {
+        capturedSubmit('   ');
+      });
       expect(mockSubmit).not.toHaveBeenCalled();
 
-      act(() => { capturedSubmit('  hello world  '); });
+      act(() => {
+        capturedSubmit('  hello world  ');
+      });
       expect(mockSubmit).toHaveBeenCalledWith('hello world');
     });
   });

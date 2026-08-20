@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import CioPia from '../../../components/CioPia/CioPia';
+import { AgentRequestError } from '../../../errors';
 import { DEMO_API_KEY, DEMO_ITEM_ID, DEMO_ITEM_NAME } from '../../../constants';
-import { prependCdnBase } from '../../utils';
+import { createRecsPodStubClient, prependCdnBase, RecsStubOptions } from '../../utils';
+import { RECS_SIX_GROUPS, RECS_TRENDING } from '../../recsFixtures';
 
 const meta = {
   title: 'Components/CioPia',
@@ -28,7 +30,7 @@ const meta = {
       description: [
         'Display configuration options:',
         '',
-        '`mode: "default" | "conversation" | "recommendations"` — Display mode. Defaults to `"default"`. `"recommendations"` renders a recommendations pod instead of Q&A — see [Recs Pod](./?path=/docs/components-ciopia-recs-pod--docs).',
+        '`mode: "default" | "conversation" | "recommendations"` — Display mode. Defaults to `"default"`.',
         '',
         '`type: "inline" | "modal"` — Component type. Defaults to `"inline"`.',
         '',
@@ -136,7 +138,7 @@ const meta = {
       description: [
         'Parameters for the recommendations pod. Ignored unless `displayConfigs.mode` is `"recommendations"`.',
         '',
-        '`strategy?: RecsStrategy` — Which kind of recommendations to fetch: `"complementary_items"`, `"alternative_items"`, `"bestsellers"`, `"bundles"`, `"buy_it_again"`, `"recently_viewed_items"` or `"visually_similar_items"`. Defaults to `"complementary_items"`. One product page can host several pods with the same component and different strategies.',
+        '`strategy?: RecsStrategy` — Which kind of recommendations to fetch: `"complementary_items"`, `"alternative_items"`, `"bestsellers"`, `"bundles"`, `"buy_it_again"`, `"recently_viewed_items"` or `"visually_similar_items"`. Defaults to `"complementary_items"`.',
         '',
         '`defaultTitle?: string` — Last-resort title, used only when the API returns products but no title of its own.',
         '',
@@ -201,6 +203,107 @@ export const WithCustomCurrencyConversation: Story = {
     },
     displayConfigs: {
       mode: 'conversation',
+    },
+  },
+};
+
+/**
+ * Recommendations mode. Each story supplies its own client, because the endpoint that returns a
+ * short title and refinement options is not deployed yet - so `apiKey` is inert here and nothing
+ * below reaches the network.
+ */
+const recsArgs = (stub: RecsStubOptions = {}) => ({
+  apiKey: DEMO_API_KEY,
+  itemId: DEMO_ITEM_ID,
+  itemName: DEMO_ITEM_NAME,
+  displayConfigs: { mode: 'recommendations' as const },
+  cioClient: createRecsPodStubClient(stub),
+  // The stub answers with seven products, so the pod asks for seven. That is what lets the
+  // placeholders match the row replacing them card for card, with nothing sliding sideways: absent
+  // a `numResults`, the pod has only a guess to draw on the very first request.
+  recsPodParameters: { numResults: 7 },
+});
+
+/**
+ * The pod takes the width it is given, and the carousel inside it holds more products than fit -
+ * that is what its arrows are for. `centered` makes Storybook's `body` a flex container, which sizes
+ * a story to its contents rather than to the canvas, so the pod grows to the full width of the row
+ * of cards and the page scrolls sideways. `padded` leaves it in a block, the way a page would.
+ */
+const recsLayout = { layout: 'padded' as const };
+
+export const RecommendationsPod: Story = {
+  args: recsArgs(),
+  parameters: {
+    ...recsLayout,
+    docs: {
+      description: {
+        story:
+          'Click an option or type something: a new title, new products and new options every ' +
+          'time, with a loading state in between.',
+      },
+    },
+  },
+};
+
+export const RecommendationsTrending: Story = {
+  args: recsArgs({ firstResult: RECS_TRENDING }),
+  parameters: {
+    ...recsLayout,
+    docs: {
+      description: {
+        story: 'A shopper the API has nothing personal to go on, so it sends a general title.',
+      },
+    },
+  },
+};
+
+export const RecommendationsUnknownError: Story = {
+  args: recsArgs({ failAfterFirst: new AgentRequestError(500) }),
+  parameters: {
+    ...recsLayout,
+    docs: {
+      description: {
+        story:
+          'Refine once and the request fails: the products stay, under "Best selling products", ' +
+          'and the input is left alone.',
+      },
+    },
+  },
+};
+
+export const RecommendationsUnsupportedRequest: Story = {
+  args: recsArgs({ freeText: 'reject422' }),
+  parameters: {
+    ...recsLayout,
+    docs: {
+      description: {
+        story:
+          'Type something the agent will not act on, such as "paint my house": the input turns ' +
+          'red and everything else is held, while the options keep working.',
+      },
+    },
+  },
+};
+
+export const RecommendationsWithParameters: Story = {
+  args: {
+    ...recsArgs({ groups: RECS_SIX_GROUPS }),
+    recsPodParameters: {
+      strategy: 'bestsellers',
+      defaultTitle: 'Our best sellers this week',
+      showInput: false,
+      numResults: 6,
+    },
+  },
+  parameters: {
+    ...recsLayout,
+    docs: {
+      description: {
+        story:
+          'Six products rather than four, no free-text box, and a `defaultTitle` standing in ' +
+          'because these responses carry no title of their own.',
+      },
     },
   },
 };

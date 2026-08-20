@@ -152,10 +152,7 @@ export interface ConversationEntry {
   qnaResultId?: string;
 }
 
-/**
- * Which kind of recommendations to fetch. One product page can host several pods with the
- * same component and different strategies, e.g. "Pairs well with" and "Similar items".
- */
+/** Which kind of recommendations to fetch. */
 export type RecsStrategy =
   | 'complementary_items'
   | 'alternative_items'

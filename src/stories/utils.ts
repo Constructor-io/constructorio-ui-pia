@@ -1,40 +1,79 @@
 import MockConstructorIOClient from '../hooks/mocks/MockConstructorIOClient';
-import { RecsResult } from '../types';
+import { GetRecsProps, RecsResult } from '../types';
+import { AgentRequestError } from '../errors';
+import { RECS_GROUPS } from './recsFixtures';
 
 export const prependCdnBase = (url: string) =>
   url.startsWith('/') ? `https://example.com${url}` : url;
 
-/**
- * What a stubbed recommendations request should do.
- *
- * `'pending'` returns a promise that never settles, which is how a story holds the pod in its
- * loading appearance for as long as somebody wants to look at it.
- */
-export type RecsStubStep = RecsResult | Error | 'pending';
+export interface RecsStubOptions {
+  /** The responses to cycle through, one per request. Defaults to {@link RECS_GROUPS}. */
+  groups?: RecsResult[];
+  /** Answers the request the pod makes on mount. Defaults to the first of `groups`. */
+  firstResult?: RecsResult;
+  /** When set, every request after the first is rejected with it. */
+  failAfterFirst?: Error;
+  /**
+   * What to do with text that is not one of the options currently on screen - that is, with
+   * something the shopper typed rather than clicked.
+   *
+   * `'reject422'` is how a story shows a rejected input while its options keep working.
+   */
+  freeText?: 'rotate' | 'reject422';
+  /** How long each request takes. Long enough to see the loading state, short enough to sit through. */
+  delayMs?: number;
+}
 
 /**
- * A stand-in client for recommendations stories, so a story can show any appearance of the pod
+ * A stand-in client for the recommendations stories, so a story can show any appearance of the pod
  * without waiting on the API to support it.
  *
- * Give it one step per request in order: the first step answers the request the pod makes when it
- * mounts, the second answers the first refinement, and so on. The last step repeats, so a
- * single-step list answers every request the same way.
+ * Every refinement moves on to the next group, so the title, the products and the options all
+ * change every single time. That matters more than it sounds: a stub that answered twice with the
+ * same response made a working pod look like a broken one.
  *
  * It carries no tracker on purpose: the pod sends no analytics in this version, so there is nothing
  * to stub and a story cannot send anything to a real dashboard. Tracking lands in its own PR, and
  * this stub will need a tracker then.
  */
-export const createRecsPodStubClient = (steps: RecsStubStep[]): MockConstructorIOClient => {
-  let requestCount = 0;
+export const createRecsPodStubClient = (options: RecsStubOptions = {}): MockConstructorIOClient => {
+  const {
+    groups = RECS_GROUPS,
+    firstResult,
+    failAfterFirst,
+    freeText = 'rotate',
+    delayMs = 800,
+  } = options;
 
-  const getRecs = (): Promise<RecsResult> => {
-    const step = steps[Math.min(requestCount, steps.length - 1)];
+  let requestCount = 0;
+  // What the pod is showing, which is what tells a clicked option from typed text: the options are
+  // the ones the last response sent.
+  let onScreen: RecsResult | null = null;
+
+  const after = (outcome: RecsResult | Error): Promise<RecsResult> =>
+    new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (outcome instanceof Error) reject(outcome);
+        else resolve(outcome);
+      }, delayMs);
+    });
+
+  const getRecs = ({ shopperInput }: GetRecsProps): Promise<RecsResult> => {
+    const requestIndex = requestCount;
     requestCount += 1;
 
-    if (step === 'pending') return new Promise<RecsResult>(() => {});
-    if (step instanceof Error) return Promise.reject(step);
+    if (requestIndex === 0) {
+      onScreen = firstResult ?? groups[0];
+      return after(onScreen);
+    }
 
-    return Promise.resolve(step);
+    if (failAfterFirst) return after(failAfterFirst);
+
+    const isOption = !!shopperInput && (onScreen?.refinement?.options || []).includes(shopperInput);
+    if (!isOption && freeText === 'reject422') return after(new AgentRequestError(422));
+
+    onScreen = groups[requestIndex % groups.length];
+    return after(onScreen);
   };
 
   return { agent: { getRecs } } as unknown as MockConstructorIOClient;

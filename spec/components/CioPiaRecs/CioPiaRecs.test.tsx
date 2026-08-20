@@ -166,6 +166,15 @@ describe('CioPiaRecs Component', () => {
 
       expect(container.querySelector('.cio-pia-disclaimer')).not.toBeInTheDocument();
     });
+
+    // The pod's box sits in a row beside the options and submits on Enter. The mocks give it no
+    // button, and Q&A keeps its own.
+    it('renders no send button beside the refinement input', async () => {
+      const { container } = await renderSettled();
+
+      expect(container.querySelector('.cio-pia-send-button')).not.toBeInTheDocument();
+      expect(screen.getByRole('textbox')).toBeInTheDocument();
+    });
   });
 
   describe('Refining', () => {
@@ -260,6 +269,28 @@ describe('CioPiaRecs Component', () => {
         expect(screen.getByRole('button', { name: option })).toBeInTheDocument();
       });
     });
+
+    // The shopper typed nothing here: the label came from the API's own suggestion, so flagging
+    // their input would blame them for a request they did not write.
+    it('leaves the input alone when the rejected request came from an option', async () => {
+      mockClient.agent.getRecs
+        .mockResolvedValueOnce(firstResult)
+        .mockRejectedValueOnce(new AgentRequestError(422));
+
+      const { container } = await renderSettled();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Oxford' }));
+      });
+      await settle();
+
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      expect(container.querySelector('.cio-pia-input--error')).not.toBeInTheDocument();
+      expect(screen.getByText(RECS_FALLBACK_TITLE)).toBeInTheDocument();
+      firstResult.items!.forEach((item) => {
+        expect(screen.getByText(item.name!)).toBeInTheDocument();
+      });
+    });
   });
 
   describe('Failures', () => {
@@ -352,6 +383,16 @@ describe('CioPiaRecs Component', () => {
       expect(mockClient.agent.getRecs).toHaveBeenCalledWith(
         expect.objectContaining({ strategy: 'bestsellers', numResults: 6 }),
       );
+    });
+
+    // Nothing has arrived on first load, so the count can only come from what was asked for. Drawing
+    // the built-in six and then landing three products would leave the row half empty.
+    it('draws as many product placeholders as numResults asked for', () => {
+      mockClient.agent.getRecs.mockReturnValue(new Promise<RecsResult>(() => {}));
+
+      render(<CioPiaRecs {...getProps({ recsPodParameters: { numResults: 3 } })} />);
+
+      expect(screen.getAllByTestId('cio-pia-recs-skeleton-card')).toHaveLength(3);
     });
   });
 
@@ -459,9 +500,7 @@ describe('CioPiaRecs Component', () => {
 
       expect(view.getByTestId('custom-recs-pod')).toBeInTheDocument();
       expect(view.getByTestId('custom-title')).toHaveTextContent(firstResult.title);
-      expect(view.getByTestId('custom-count')).toHaveTextContent(
-        String(firstResult.items!.length),
-      );
+      expect(view.getByTestId('custom-count')).toHaveTextContent(String(firstResult.items!.length));
       expect(view.getByTestId('custom-options')).toHaveTextContent(
         String(firstResult.refinement!.options.length),
       );

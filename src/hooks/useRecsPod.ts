@@ -12,6 +12,15 @@ import { AgentRequestError } from '../errors';
 import { translate } from '../utils/translate';
 import { RECS_FALLBACK_TITLE, RECS_LOADING_TITLE, RECS_UNSUPPORTED_REQUEST } from '../constants';
 
+/**
+ * What the shopper did to ask for this refinement.
+ *
+ * Worth distinguishing because a rejected request is only the shopper's business when the text
+ * came from them. An option is a label the API itself suggested, so a rejection there is ours to
+ * answer for, not something to flag under their input.
+ */
+export type RefinementSource = 'option' | 'input';
+
 export interface UseRecsPodProps {
   itemId: string;
   variationId?: string;
@@ -42,8 +51,11 @@ export interface UseRecsPodReturn {
   inputError: string | null;
   /** The text behind what is currently on screen. Empty when nothing has been refined. */
   lastShopperInput: string;
-  /** Fetches again, narrowed by `text`. Used by both the options and the free-text input. */
-  refine: (text: string) => void;
+  /**
+   * Fetches again, narrowed by `text`. Used by both the options and the free-text input, and
+   * `source` is how a rejected request finds the right place to be reported.
+   */
+  refine: (text: string, source: RefinementSource) => void;
 }
 
 const DEFAULT_STRATEGY = 'complementary_items';
@@ -89,7 +101,7 @@ export default function useRecsPod({
   const { numResults, defaultTitle } = parameters || {};
 
   const fetchResult = useCallback(
-    (shopperInput?: string) => {
+    (shopperInput?: string, source?: RefinementSource) => {
       // Nothing to ask, so settle the loading state rather than leaving the caller in a skeleton
       // that never resolves.
       if (!cioClient) {
@@ -135,7 +147,9 @@ export default function useRecsPod({
           }
 
           // A rejected input changes nothing but the input, so the response on screen stays.
-          if (status === 422) {
+          // Only text the shopper wrote can be rejected this way: an option is a label the API
+          // suggested, so blaming their input for it would point at the wrong thing entirely.
+          if (status === 422 && source === 'input') {
             setHasUnsupportedInput(true);
             return;
           }
@@ -159,11 +173,11 @@ export default function useRecsPod({
   }, [fetchResult]);
 
   const refine = useCallback(
-    (text: string) => {
+    (text: string, source: RefinementSource) => {
       const refinementText = text.trim();
       if (!refinementText) return;
 
-      fetchResult(refinementText);
+      fetchResult(refinementText, source);
     },
     [fetchResult],
   );

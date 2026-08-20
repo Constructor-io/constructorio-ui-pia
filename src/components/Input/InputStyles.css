@@ -21,6 +21,16 @@
     1px 1px 1px 0px rgba(18, 18, 105, 0.05) inset;
 }
 
+/*
+ * Input Without A Send Button
+ *
+ * The right padding above is room for the Send button. With no button there is nothing to keep
+ * clear of, and leaving it would truncate what the shopper typed well short of the border.
+ */
+.cio-pia-input--no-send {
+  padding-right: 12px;
+}
+
 /* Input Hover */
 .cio-pia-input:hover {
   border: 1px solid #c8cad0;

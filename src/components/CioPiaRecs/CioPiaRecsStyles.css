@@ -66,24 +66,50 @@
   width: 100%;
 }
 
+/*
+ * This one holds the real carousel, arrows and all, so nothing in it is clickable while its
+ * contents are being replaced.
+ */
 .cio-pia-recs-skeleton--carousel {
   flex: 1 1 auto;
+  pointer-events: none;
 }
 
 /*
- * `min-height` approximates a product card, so the refinement row below moves as little as
- * possible when the real products land. Tune this one number if it drifts from the card.
- *
- * `height: auto` is what lets the blocks fill the row at all: the shared `.skeleton-bar` sets
- * `height: 16px` for text-sized bars, and a definite height on a flex item overrides
- * `align-items: stretch`.
+ * The only two measurements taken from the package, both from the card's own image
+ * (`min-h-[224px] rounded-2xl`). The image is what gives a card its height, so these are what stop
+ * the refinement row moving when the products land. Everything else about the card - its
+ * background, radius, shadow, padding, and how many fit across - comes from the carousel itself.
  */
-.cio-pia-recs-skeleton--carousel .cio-pia-recs-skeleton__block {
-  height: auto;
-  min-height: 280px;
-  min-width: 0;
-  flex: 1 1 0;
-  border-radius: 8px;
+.cio-pia-recs-skeleton__image {
+  min-height: 224px;
+  border-radius: 16px;
+}
+
+/* Bar heights are the line boxes of the text they stand in for, so the card totals the same */
+.cio-pia-recs-skeleton__price {
+  width: 40%;
+  height: 28px;
+}
+
+.cio-pia-recs-skeleton__title {
+  width: 80%;
+  height: 24px;
+}
+
+.cio-pia-recs-skeleton__desc {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cio-pia-recs-skeleton__desc .skeleton-bar {
+  height: 18px;
+}
+
+/* Short last line, the way a wrapped sentence ends */
+.cio-pia-recs-skeleton__desc .skeleton-bar:last-child {
+  width: 60%;
 }
 
 .cio-pia-recs-skeleton--options {
@@ -101,6 +127,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .cio-pia-recs-skeleton__block,
+  .cio-pia-recs-skeleton__image,
+  .cio-pia-recs-skeleton__price,
+  .cio-pia-recs-skeleton__title,
+  .cio-pia-recs-skeleton__desc .skeleton-bar,
   .cio-pia-recs-pod__title {
     animation: none;
   }

@@ -18,6 +18,12 @@ interface InputProps {
   componentOverride?: ComponentOverrideProps<InputRenderProps>;
   error?: string;
   placeholderKey?: string;
+  /**
+   * Render the Send button after the field.
+   *
+   * @default true
+   */
+  showSendButton?: boolean;
 }
 
 function Input({
@@ -30,6 +36,7 @@ function Input({
   componentOverride,
   error,
   placeholderKey = 'Ask anything',
+  showSendButton = true,
 }: InputProps) {
   const [value, setValue] = useState(providedValue || '');
   const errorId = `${useId()}-error`;
@@ -65,6 +72,12 @@ function Input({
       ? translate(placeholderKey, translations)
       : (placeholder ?? translate(placeholderKey));
 
+  // The field reserves room on its right for the Send button, so it has to give that room back
+  // when there is no button to reserve it for.
+  const inputClassNames = ['cio-pia-input'];
+  if (error) inputClassNames.push('cio-pia-input--error');
+  if (!showSendButton) inputClassNames.push('cio-pia-input--no-send');
+
   return (
     <RenderPropsWrapper
       props={{
@@ -86,18 +99,20 @@ function Input({
             onFocus={onFocus}
             placeholder={resolvedPlaceholder}
             disabled={disabled}
-            className={error ? 'cio-pia-input cio-pia-input--error' : 'cio-pia-input'}
+            className={inputClassNames.join(' ')}
             aria-invalid={error ? true : undefined}
             aria-describedby={error ? errorId : undefined}
           />
-          <button
-            type='button'
-            onClick={() => handleSubmit(value)}
-            className='cio-pia-send-button'
-            disabled={disabled}>
-            {translate('Send', translations)}
-            <SendIcon />
-          </button>
+          {showSendButton && (
+            <button
+              type='button'
+              onClick={() => handleSubmit(value)}
+              className='cio-pia-send-button'
+              disabled={disabled}>
+              {translate('Send', translations)}
+              <SendIcon />
+            </button>
+          )}
         </div>
         {error && (
           <span className='cio-pia-input-error' id={errorId} role='alert'>
