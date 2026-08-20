@@ -13,7 +13,9 @@ import {
 } from './types';
 import { GetRecsProps, RecsResult } from '../../types';
 import { AgentRequestError } from '../../errors';
-import { adaptLegacyAnswerToRecs, PROVISIONAL_STRATEGY_QUESTIONS } from '../../utils/recs';
+
+/** Kept to one warning per page load, so a re-rendering pod cannot flood the console. */
+let warnedNoRecsEndpoint = false;
 
 // Create URL for PIA API
 function createAgentUrl({
@@ -159,31 +161,26 @@ class MockAgent {
   }
 
   /**
-   * Fetches one set of recommendations, already converted to the shape the pod renders.
+   * Fetches one set of recommendations, in the shape the pod renders.
    *
-   * ⚠ PROVISIONAL data source. There is no recommendations endpoint yet, so this asks the
-   * answers endpoint a question that stands in for the strategy and converts the reply. See
-   * `adaptLegacyAnswerToRecs` for what that costs. Swapping the endpoint later changes this
-   * method and `src/utils/recs.ts` only.
+   * Recommendations are not available yet: there is no endpoint to ask, so nothing is requested and
+   * an empty result is returned. The pod renders nothing in that state, which leaves whatever the
+   * retailer already had in that slot showing through. Supply a `cioClient` with your own
+   * `agent.getRecs` to drive the pod from your own data in the meantime.
+   *
+   * `props` is still declared, because it is the contract a caller's own `getRecs` implements and
+   * `useRecsPod` passes it - there is simply nothing here to send it to yet.
    */
-  async getRecs({
-    itemId,
-    variationId,
-    threadId,
-    strategy = 'complementary_items',
-    shopperInput,
-    numResults,
-    formatImageUrl,
-  }: GetRecsProps): Promise<RecsResult> {
-    const data = await this.getAnswerResults({
-      itemId,
-      variationId,
-      threadId,
-      question: shopperInput || PROVISIONAL_STRATEGY_QUESTIONS[strategy],
-      ...(numResults !== undefined && { parameters: { num_results: numResults } }),
-    });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getRecs(props: GetRecsProps): Promise<RecsResult> {
+    if (!warnedNoRecsEndpoint) {
+      warnedNoRecsEndpoint = true;
+      console.warn(
+        "[cio-pia] mode: 'recommendations' is not available yet. Please use other modes instead.",
+      );
+    }
 
-    return adaptLegacyAnswerToRecs(data, formatImageUrl);
+    return { title: '', items: null, refinement: null, status: 'complete' };
   }
 
   async getAnswerResultsStream({

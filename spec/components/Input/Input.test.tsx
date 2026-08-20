@@ -230,6 +230,11 @@ describe('Input Component', () => {
 
       expect(first).toHaveTextContent('First problem');
       expect(second).toHaveTextContent('Second problem');
+
+      // The ids are hand-generated, so guard the property `aria-describedby` depends on: each box
+      // has to point at its own message and no other.
+      expect(first.id).toBeTruthy();
+      expect(first.id).not.toBe(second.id);
     });
 
     it('puts the message beside the box rather than inside it', () => {

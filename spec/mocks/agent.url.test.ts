@@ -1,6 +1,5 @@
 import MockConstructorIOClient from '../../src/hooks/mocks/MockConstructorIOClient';
 import { AgentRequestError } from '../../src/errors';
-import { PROVISIONAL_STRATEGY_QUESTIONS } from '../../src/utils/recs';
 
 describe('MockAgent: URL parameters', () => {
   let requestedUrl: string;
@@ -291,83 +290,34 @@ describe('MockAgent: failed requests', () => {
 
 describe('MockAgent: getRecs', () => {
   const originalFetch = globalThis.fetch;
-  let requestedUrl: string;
-
-  const answerResponse = {
-    qna_result_id: 'recs-result-id',
-    value: 'Since you prefer slim fits, more shirts like this',
-    thread_id: 'thread-id',
-    follow_up_questions: [{ value: 'Slim fit' }, { value: 'Oxford' }],
-  };
+  let fetchMock: jest.Mock;
 
   beforeEach(() => {
-    requestedUrl = '';
-    globalThis.fetch = jest.fn(async (url: RequestInfo | URL) => {
-      requestedUrl = url.toString();
-      return { ok: true, json: async () => answerResponse } as Response;
-    });
+    fetchMock = jest.fn();
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {
     globalThis.fetch = originalFetch;
   });
 
-  function createClient() {
-    return new MockConstructorIOClient({ apiKey: 'test-key', sendTrackingEvents: false });
-  }
+  // There is no recommendations endpoint yet, so there is no URL left to assert - only that we do
+  // not go asking a different endpoint in its place.
+  it('requests nothing, resolves to an empty result, and warns only once', async () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const client = new MockConstructorIOClient({ apiKey: 'test-key', sendTrackingEvents: false });
 
-  it('returns the pod shape rather than the raw response', async () => {
-    const result = await createClient().agent.getRecs({ itemId: 'item-123' });
+    const first = await client.agent.getRecs({ itemId: 'item-123' });
+    const second = await client.agent.getRecs({ itemId: 'item-123', strategy: 'bestsellers' });
 
-    expect(result).toEqual({
-      title: answerResponse.value,
-      items: null,
-      refinement: { options: ['Slim fit', 'Oxford'] },
-      resultId: answerResponse.qna_result_id,
-      threadId: answerResponse.thread_id,
-      status: 'complete',
-    });
-  });
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(first).toEqual({ title: '', items: null, refinement: null, status: 'complete' });
+    expect(second).toEqual(first);
 
-  it('asks for complementary items by default', async () => {
-    await createClient().agent.getRecs({ itemId: 'item-123' });
+    // One warning per page load, so a re-rendering pod cannot flood the console.
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn.mock.calls[0][0]).toContain('is not available yet');
 
-    expect(decodeURIComponent(new URL(requestedUrl).pathname)).toContain(
-      PROVISIONAL_STRATEGY_QUESTIONS.complementary_items,
-    );
-  });
-
-  it('sends the phrasing that stands in for the requested strategy', async () => {
-    await createClient().agent.getRecs({ itemId: 'item-123', strategy: 'bestsellers' });
-
-    expect(decodeURIComponent(new URL(requestedUrl).pathname)).toContain(
-      PROVISIONAL_STRATEGY_QUESTIONS.bestsellers,
-    );
-  });
-
-  it('sends the shopper text instead of the strategy phrasing when there is some', async () => {
-    await createClient().agent.getRecs({ itemId: 'item-123', shopperInput: 'something in linen' });
-
-    const path = decodeURIComponent(new URL(requestedUrl).pathname);
-    expect(path).toContain('something in linen');
-    expect(path).not.toContain(PROVISIONAL_STRATEGY_QUESTIONS.complementary_items);
-  });
-
-  it('forwards the requested number of results', async () => {
-    await createClient().agent.getRecs({ itemId: 'item-123', numResults: 6 });
-
-    expect(new URL(requestedUrl).searchParams.get('num_results')).toBe('6');
-  });
-
-  it('omits the result count when none was asked for', async () => {
-    await createClient().agent.getRecs({ itemId: 'item-123' });
-
-    expect(new URL(requestedUrl).searchParams.has('num_results')).toBe(false);
-  });
-
-  it('reuses the guard clauses of the request it delegates to', async () => {
-    await expect(createClient().agent.getRecs({ itemId: '' })).rejects.toThrow(
-      'Item ID is required',
-    );
+    warn.mockRestore();
   });
 });
