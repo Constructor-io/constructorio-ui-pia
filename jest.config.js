@@ -10,6 +10,7 @@ const commonConfig = {
       statements: 85,
     },
   },
+  testPathIgnorePatterns: ['/node_modules/', '/test/react-compat/'],
 };
 
 module.exports = {
