@@ -76,9 +76,7 @@ export default function useRecsPod({
   translations,
 }: UseRecsPodProps): UseRecsPodReturn {
   const [result, setResult] = useState<RecsResult | null>(null);
-  // Seeded from the client, because with nothing to ask there is nothing to wait for and the
-  // first render would otherwise report a load that never happens.
-  const [isLoading, setIsLoading] = useState<boolean>(() => !!cioClient);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
   const [hasUnsupportedInput, setHasUnsupportedInput] = useState<boolean>(false);
   const [lastShopperInput, setLastShopperInput] = useState<string>('');
