@@ -74,14 +74,6 @@ The component supports multiple display modes via the `displayConfigs` prop:
   itemId='PRODUCT_ITEM_ID'
   displayConfigs={{ type: 'modal' }}
 />
-
-// Recommendations mode
-<CioPia
-  apiKey='YOUR_API_KEY'
-  itemId='PRODUCT_ITEM_ID'
-  displayConfigs={{ mode: 'recommendations' }}
-  recsPodParameters={{ strategy: 'complementary_items' }}
-/>
 ```
 
 #### Configuration Options
@@ -93,7 +85,6 @@ The component supports multiple display modes via the `displayConfigs` prop:
 | `variationId` | `string` | Optional variation ID |
 | `threadId` | `string` | Optional thread ID for conversation context (must be a valid UUID) |
 | `displayConfigs` | `object` | Display configuration options (see below) |
-| `recsPodParameters` | `object` | Options for `mode: 'recommendations'` (see below) |
 | `callbacks` | `object` | Callback handlers for user interactions |
 | `translations` | `object` | UI string translations for internationalization |
 | `componentOverrides` | `object` | Custom component overrides |
@@ -102,20 +93,11 @@ The component supports multiple display modes via the `displayConfigs` prop:
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `mode` | `'default' \| 'conversation' \| 'recommendations'` | `'default'` | Display mode. |
+| `mode` | `'default' \| 'conversation'` | `'default'` | Display mode |
 | `type` | `'inline' \| 'modal'` | `'inline'` | Component type |
 | `showFeedback` | `boolean` | `false` | Show feedback controls on answers |
 | `showPreviousItems` | `boolean` | `true` | Show product carousels from previous conversation entries |
 | `learnMoreUrl` | `string` | - | URL for the "Learn More" disclaimer link |
-
-**Recs Pod Parameters** (only read when `mode` is `'recommendations'`):
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `strategy` | `RecsStrategy` | `'complementary_items'` | Which kind of recommendations to fetch. One of `'complementary_items'`, `'alternative_items'`, `'bestsellers'`, `'bundles'`, `'buy_it_again'`, `'recently_viewed_items'`, `'visually_similar_items'` |
-| `defaultTitle` | `string` | - | Last-resort title, used only when the API returns products but no title of its own |
-| `showInput` | `boolean` | `true` | Render the free-text box after the options |
-| `numResults` | `number` | - | How many products to request |
 
 **Callbacks:**
 

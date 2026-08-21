@@ -287,4 +287,3 @@ describe('MockAgent: failed requests', () => {
     expect(error.message).toBe('network down');
   });
 });
-
