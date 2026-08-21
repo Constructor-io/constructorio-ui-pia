@@ -45,8 +45,10 @@ export default function CioPiaQna(props: CioPiaProps) {
     type = 'inline',
     showPreviousItems,
     disclaimerPosition = 'bottom',
+    designVersion = 'v1',
   } = displayConfigs || {};
   const isConversation = mode === 'conversation' || type === 'modal';
+  const isV2 = designVersion === 'v2';
 
   const { priceCurrency } = productCardProps || {};
 
@@ -147,22 +149,24 @@ export default function CioPiaQna(props: CioPiaProps) {
         translations={translations}
         onInputFocus={handleInputFocus}
         onClose={resetState}>
-        <PiaConversation {...conversationHistoryProps} />
+        <PiaConversation {...conversationHistoryProps} isV2={isV2} />
       </PiaModal>
     );
   }
 
-  if (isConversation) return <PiaConversation {...conversationHistoryProps} />;
+  if (isConversation) return <PiaConversation {...conversationHistoryProps} isV2={isV2} />;
+
+  const containerClass = `cio-pia-container${isV2 ? ' cio-pia-v2' : ''}`;
 
   // Default inline mode
   return (
-    <div ref={containerRef} className='cio-pia-container' data-testid='cio-pia-container'>
+    <div ref={containerRef} className={containerClass} data-testid='cio-pia-container'>
       <RenderPropsWrapper props={renderProps} override={children || componentOverrides?.reactNode}>
         <p className='cio-pia-title' data-testid='cio-pia-title'>
           {translate('Any questions about this product?', translations)}
         </p>
 
-        {!isLoading && !error && (
+        {isV2 && !isLoading && !error && (
           <SuggestedQuestionsContainer
             questions={displayedQuestions}
             onQuestionClick={handleQuestionClick}
@@ -170,11 +174,21 @@ export default function CioPiaQna(props: CioPiaProps) {
           />
         )}
 
-        {!isLoading && !error && !currentAnswer && (
+        {isV2 && !isLoading && !error && !currentAnswer && (
           <Disclaimer
             learnMoreUrl={learnMoreUrl}
             translations={translations}
             componentOverride={componentOverrides?.disclaimer}
+          />
+        )}
+
+        {!isV2 && (
+          <Input
+            onSubmit={handleSubmitQuestion}
+            onFocus={handleInputFocus}
+            value={currentQuestion}
+            translations={translations}
+            componentOverride={componentOverrides?.input}
           />
         )}
 
@@ -200,14 +214,25 @@ export default function CioPiaQna(props: CioPiaProps) {
           />
         )}
 
-        <Input
-          onSubmit={handleSubmitQuestion}
-          onFocus={handleInputFocus}
-          value={currentQuestion}
-          translations={translations}
-          componentOverride={componentOverrides?.input}
-        />
-        <PoweredBy />
+        {!isV2 && !isLoading && !error && (
+          <SuggestedQuestionsContainer
+            questions={displayedQuestions}
+            onQuestionClick={handleQuestionClick}
+            componentOverride={componentOverrides?.suggestedQuestions}
+          />
+        )}
+
+        {isV2 && (
+          <Input
+            onSubmit={handleSubmitQuestion}
+            onFocus={handleInputFocus}
+            value={currentQuestion}
+            placeholder='Type your question here...'
+            translations={translations}
+            componentOverride={componentOverrides?.input}
+          />
+        )}
+        {isV2 && <PoweredBy />}
       </RenderPropsWrapper>
     </div>
   );

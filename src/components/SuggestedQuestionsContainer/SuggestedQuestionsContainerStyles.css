@@ -1,7 +1,7 @@
 .cio-pia-suggested-questions-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 8px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
   width: 100%;
 }
 
@@ -14,9 +14,12 @@
 
 @media (max-width: 768px) {
   .cio-pia-suggested-questions-container {
+    display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
+    gap: 8px;
     padding: 4px 0px;
+    width: 100%;
     max-width: 85vw;
 
     scroll-behavior: smooth;
@@ -25,8 +28,8 @@
 }
 
 .cio-pia-suggested-question-skeleton {
-  height: 36px;
-  border-radius: 6px;
+  height: 28px;
+  border-radius: 4px;
   background-color: rgba(0, 0, 0, 0.05);
   animation: loading-animation 2s infinite ease-in-out;
   &:nth-child(1) {
@@ -38,4 +41,17 @@
   &:nth-child(3) {
     animation-delay: 0.9s;
   }
+}
+
+/* ─── Design V2 ─── */
+
+.cio-pia-v2 .cio-pia-suggested-questions-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+}
+
+.cio-pia-v2 .cio-pia-suggested-question-skeleton {
+  height: 36px;
+  border-radius: 6px;
 }

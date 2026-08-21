@@ -1,21 +1,23 @@
 .cio-pia-suggested-question {
   background: #ffffff;
-  border: 1px solid #E7E5E4;
-  border-radius: 6px;
-  padding: 8px 12px;
+  border: 1px solid #dee0e3;
+  border-radius: 4px;
+  padding: 4px 12px 4px 4px;
   display: flex;
   flex: 0 0 auto;
   justify-content: center;
   align-items: center;
   min-width: fit-content;
-  font-size: 14px;
+  font-size: 12px;
   font-style: normal;
   font-weight: 500;
-  line-height: 1.43;
-  color: #1C1917;
+  color: #14151a;
   cursor: pointer;
-  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
-  gap: 6px;
+  box-shadow:
+    0px 0.4px 1px 0px rgba(18, 18, 105, 0.13),
+    0px 0.9px 6px 0px rgba(18, 18, 105, 0.05),
+    0px 1px 3px 0px rgba(18, 18, 105, 0.05);
+  gap: 2px;
   transition: all 0.2s ease;
 }
 
@@ -27,4 +29,22 @@
 
 .cio-pia-suggested-question-icon {
   display: flex;
+  padding: 4px;
+}
+
+/* ─── Design V2 ─── */
+
+.cio-pia-v2 .cio-pia-suggested-question {
+  border: 1px solid #E7E5E4;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 1.43;
+  color: #1C1917;
+  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
+  gap: 6px;
+}
+
+.cio-pia-v2 .cio-pia-suggested-question-icon {
+  padding: 0;
 }

@@ -12,16 +12,22 @@
 
 .cio-pia-container {
   font-family: 'Inter', sans-serif;
-  --cio-pia-chat-question-bg: #1C1917;
-  --cio-pia-chat-question-color: #FFFFFF;
-  --cio-pia-chat-answer-bg: transparent;
+  --cio-pia-chat-question-bg: #f0f0f5;
+  --cio-pia-chat-answer-bg: #f8f8fa;
   --cio-pia-conversation-max-height: 600px;
   --cio-pia-modal-height: 80vh;
   --cio-pia-modal-max-width: 640px;
   --cio-pia-modal-min-width: 320px;
-  --cio-pia-container-background: #F5F5F4;
 }
 
 .cio-pia-container * {
   font-family: inherit;
+}
+
+/* ─── Design V2 variable overrides ─── */
+
+.cio-pia-v2 {
+  --cio-pia-chat-question-bg: #1C1917;
+  --cio-pia-chat-question-color: #FFFFFF;
+  --cio-pia-chat-answer-bg: transparent;
 }

@@ -11,11 +11,14 @@
 .cio-pia-input {
   width: 100%;
   padding: 8px 80px 8px 12px;
-  border: 1px solid #E7E5E4;
-  border-radius: 6px;
+  border: 1px solid #dee0e3;
+  border-radius: 4px;
   font-size: 14px;
-  line-height: 1.43;
   background: #ffffff;
+  box-shadow:
+    1px 1px 2px 0px rgba(18, 18, 105, 0.1) inset,
+    0px 1px 4px 0px rgba(18, 18, 105, 0.05) inset,
+    1px 1px 1px 0px rgba(18, 18, 105, 0.05) inset;
 }
 
 /* Input Hover */
@@ -34,12 +37,15 @@
 .cio-pia-input:focus:active {
   outline: none;
   border: 1px solid #000000;
-  box-shadow: none;
+  box-shadow:
+    0px 1px 4px 0px rgba(18, 18, 105, 0.14) inset,
+    2.1px 2px 2px 0px rgba(18, 18, 105, 0.1) inset,
+    0px 1.5px 3px 0px rgba(18, 18, 105, 0.05) inset;
 }
 
 /* Input Placeholder */
 .cio-pia-input::placeholder {
-  color: #A8A29E;
+  display: none;
 }
 
 /* Input Disabled */
@@ -93,4 +99,22 @@
 /* Send Button Disabled SVG */
 .cio-pia-send-button:disabled svg path {
   fill: #0a0f2940;
+}
+
+/* ─── Design V2 ─── */
+
+.cio-pia-v2 .cio-pia-input {
+  border: 1px solid #E7E5E4;
+  border-radius: 6px;
+  line-height: 1.43;
+  box-shadow: none;
+}
+
+.cio-pia-v2 .cio-pia-input::placeholder {
+  display: inline;
+  color: #A8A29E;
+}
+
+.cio-pia-v2 .cio-pia-input:focus:active {
+  box-shadow: none;
 }

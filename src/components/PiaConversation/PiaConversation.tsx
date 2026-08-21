@@ -18,6 +18,7 @@ export interface PiaConversationProps extends ConversationHistoryProps {
   onResultClick?: (item: Item, position: number, question: string, qnaResultId?: string) => void;
   qnaResultId?: string;
   onInputFocus?: () => void;
+  isV2?: boolean;
 }
 
 export default function PiaConversation({
@@ -41,14 +42,13 @@ export default function PiaConversation({
   qnaResultId,
   onInputFocus,
   priceCurrency,
+  isV2,
 }: PiaConversationProps) {
   const hasHistory = conversationHistory.length > 0;
+  const containerClass = `cio-pia-container cio-pia-conversation${isV2 ? ' cio-pia-v2' : ''}`;
 
   return (
-    <div
-      ref={containerRef}
-      className='cio-pia-container cio-pia-conversation'
-      data-testid='cio-pia-container'>
+    <div ref={containerRef} className={containerClass} data-testid='cio-pia-container'>
       {!hasHistory && (
         <p className='cio-pia-title' data-testid='cio-pia-title'>
           {translate('Any questions about this product?', translations)}
@@ -89,7 +89,7 @@ export default function PiaConversation({
           translations={translations}
           componentOverride={componentOverrides?.input}
         />
-        <PoweredBy />
+        {isV2 && <PoweredBy />}
       </div>
     </div>
   );

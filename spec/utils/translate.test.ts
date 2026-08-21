@@ -6,7 +6,7 @@ describe('translate', () => {
     expect(translate('Any questions about this product?')).toBe(
       'Any questions about this product?',
     );
-    expect(translate('Ask anything')).toBe('Type your question here...');
+    expect(translate('Ask anything')).toBe('Ask anything');
     expect(translate('Send')).toBe('Send');
     expect(translate(DISCLAIMER_TEXT)).toBe(DISCLAIMER_TEXT);
     expect(translate('Is this answer useful?')).toBe('Is this answer useful?');

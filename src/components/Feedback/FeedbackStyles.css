@@ -2,15 +2,15 @@
   display: flex;
   align-items: center;
   justify-content: start;
+  height: 20px;
   gap: 8px;
-  padding: 4px 0;
 }
 
 .cio-pia-feedback-text {
   font-size: 12px;
   font-weight: 400;
-  line-height: 1.33;
-  color: #57534E;
+  letter-spacing: -0.5%;
+  color: rgba(15, 19, 36, 0.7);
 }
 
 .cio-pia-feedback-button {
@@ -28,4 +28,16 @@
 
 .cio-pia-feedback-button:hover {
   opacity: 0.8;
+}
+
+/* ─── Design V2 ─── */
+
+.cio-pia-v2 .cio-pia-feedback-container {
+  height: auto;
+  padding: 4px 0;
+}
+
+.cio-pia-v2 .cio-pia-feedback-text {
+  color: #57534E;
+  line-height: 1.33;
 }
