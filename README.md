@@ -75,8 +75,7 @@ The component supports multiple display modes via the `displayConfigs` prop:
   displayConfigs={{ type: 'modal' }}
 />
 
-// Recommendations pod: a title, a row of products, and short options for narrowing them down.
-// Asks no questions and makes no Q&A requests, so it can be used without PIA Q&A enabled.
+// Recommendations mode
 <CioPia
   apiKey='YOUR_API_KEY'
   itemId='PRODUCT_ITEM_ID'
@@ -84,13 +83,6 @@ The component supports multiple display modes via the `displayConfigs` prop:
   recsPodParameters={{ strategy: 'complementary_items' }}
 />
 ```
-
-> **`mode: 'recommendations'` has no data source yet.** The recommendations endpoint is not deployed,
-> so the built-in client requests nothing, returns an empty result, and the pod renders nothing —
-> whatever the retailer already had in that slot shows through. To drive the pod from your own data in
-> the meantime, pass a `cioClient` with your own `agent.getRecs`. See the
-> [CioPia docs](https://constructor-io.github.io/constructorio-ui-pia/?path=/docs/components-ciopia--docs)
-> for the recommendations examples.
 
 #### Configuration Options
 
@@ -110,7 +102,7 @@ The component supports multiple display modes via the `displayConfigs` prop:
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `mode` | `'default' \| 'conversation' \| 'recommendations'` | `'default'` | Display mode. `type: 'modal'` takes precedence over `'recommendations'` |
+| `mode` | `'default' \| 'conversation' \| 'recommendations'` | `'default'` | Display mode. |
 | `type` | `'inline' \| 'modal'` | `'inline'` | Component type |
 | `showFeedback` | `boolean` | `false` | Show feedback controls on answers |
 | `showPreviousItems` | `boolean` | `true` | Show product carousels from previous conversation entries |
