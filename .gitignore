@@ -16,4 +16,5 @@ storybook-static
 # React compat fixtures
 test/react-compat/*/node_modules
 test/react-compat/*/dist
+test/react-compat/*/package-lock.json
 constructorio-ui-pia.tgz
