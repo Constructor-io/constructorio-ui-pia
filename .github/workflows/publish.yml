@@ -23,8 +23,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  react_compat:
+    name: React compat matrix
+    uses: ./.github/workflows/react-compat.yml
+
   update_package_version:
     name: Update package version
+    needs: react_compat
     runs-on: ubuntu-latest
     steps:
       - name: Notify Slack about new release
