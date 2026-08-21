@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { RenderPropsWrapper } from '@constructor-io/constructorio-ui-components';
 import Input from '../Input/Input';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
+import SuggestedQuestionsSkeleton from '../SuggestedQuestionsContainer/SuggestedQuestionsSkeleton';
 import useCioPia from '../../hooks/useCioPia';
 import useConversation from '../../hooks/useConversation';
 import useTracking from '../../hooks/useTracking';
@@ -98,6 +99,8 @@ export default function CioPiaQna(props: CioPiaProps) {
   );
 
   const qnaResultId = pia.answers.data?.qna_result_id;
+  // Narrower than the combined `isLoading`: only an in-flight answer warrants the answer-shaped skeleton.
+  const isAnswerLoading = pia.answers.isLoading;
 
   const renderProps: CioPiaRenderProps = {
     items: currentItems,
@@ -167,37 +170,40 @@ export default function CioPiaQna(props: CioPiaProps) {
           componentOverride={componentOverrides?.input}
         />
 
-        {isLoading && <LoadingSkeleton componentOverride={componentOverrides?.loading} />}
+        {/* Text bars stand in for the answer block, so they only belong here while an answer is in flight. */}
+        {isAnswerLoading && <LoadingSkeleton componentOverride={componentOverrides?.loading} />}
 
         {!isLoading && error && <ErrorBlock message={error?.message || 'Unexpected error'} />}
 
-        {!isLoading && !error && (
-          <>
-            {currentAnswer && (
-              <PiaInlineAnswer
-                currentAnswer={currentAnswer}
-                currentItems={currentItems}
-                showFeedback={showFeedback}
-                learnMoreUrl={learnMoreUrl}
-                disclaimerPosition={disclaimerPosition}
-                translations={translations}
-                callbacks={callbacks}
-                componentOverrides={componentOverrides}
-                onFeedback={handleFeedback}
-                onResultClick={tracking.trackResultClick}
-                question={currentQuestion}
-                qnaResultId={qnaResultId}
-                priceCurrency={priceCurrency}
-              />
-            )}
+        {!isLoading && !error && currentAnswer && (
+          <PiaInlineAnswer
+            currentAnswer={currentAnswer}
+            currentItems={currentItems}
+            showFeedback={showFeedback}
+            learnMoreUrl={learnMoreUrl}
+            disclaimerPosition={disclaimerPosition}
+            translations={translations}
+            callbacks={callbacks}
+            componentOverrides={componentOverrides}
+            onFeedback={handleFeedback}
+            onResultClick={tracking.trackResultClick}
+            question={currentQuestion}
+            qnaResultId={qnaResultId}
+            priceCurrency={priceCurrency}
+          />
+        )}
 
+        {/* The question row is never empty: pills hold the slot until the real buttons arrive. */}
+        {!error &&
+          (isLoading ? (
+            <SuggestedQuestionsSkeleton />
+          ) : (
             <SuggestedQuestionsContainer
               questions={displayedQuestions}
               onQuestionClick={handleQuestionClick}
               componentOverride={componentOverrides?.suggestedQuestions}
             />
-          </>
-        )}
+          ))}
       </RenderPropsWrapper>
     </div>
   );

@@ -246,12 +246,22 @@ describe('CioPia Component', () => {
       });
     });
 
-    it('displays loading state when loading', () => {
-      mockUseCioPiaHook.mockReturnValue(mockLoadingResponse);
+    it('displays question placeholders, not answer bars, while suggested questions load', () => {
+      mockUseCioPia({ questionsData: [], questionIsLoading: true });
+
+      const { getByTestId, queryByTestId } = render(<CioPia {...mockProps} />);
+
+      expect(getByTestId('suggested-questions-skeleton')).toBeInTheDocument();
+      expect(queryByTestId('loading-skeleton')).not.toBeInTheDocument();
+    });
+
+    it('displays answer bars and question placeholders while an answer loads', () => {
+      mockUseCioPia({ answerIsLoading: true });
 
       const { getByTestId } = render(<CioPia {...mockProps} />);
 
       expect(getByTestId('loading-skeleton')).toBeInTheDocument();
+      expect(getByTestId('suggested-questions-skeleton')).toBeInTheDocument();
     });
 
     it('displays error message when there is an error', () => {

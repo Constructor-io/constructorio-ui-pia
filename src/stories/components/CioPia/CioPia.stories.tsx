@@ -6,9 +6,8 @@ import { prependCdnBase } from '../../utils';
 const meta = {
   title: 'Components/CioPia',
   component: CioPia,
-  parameters: {
-    layout: 'centered',
-  },
+  // No `layout: 'centered'` — a centered story root is shrink-to-fit, which makes the
+  // width: 100% widget resize as its content loads. The default padded layout keeps it stable.
   tags: ['autodocs'],
   argTypes: {
     cioClient: {

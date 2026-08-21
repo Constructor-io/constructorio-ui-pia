@@ -21,7 +21,10 @@
 }
 
 .cio-pia-suggested-question-skeleton {
-  height: 28px;
+  /* Matches the loaded button: 24px icon box + 8px padding + 2px border. */
+  height: 34px;
+  /* Empty divs have no content width, so the mobile flex row would collapse them to zero. */
+  min-width: 96px;
   border-radius: 4px;
   background-color: rgba(0, 0, 0, 0.05);
   animation: loading-animation 2s infinite ease-in-out;
