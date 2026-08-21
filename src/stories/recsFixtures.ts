@@ -17,7 +17,7 @@ interface ProductSpec {
 
 /**
  * The image is generated from the name, so a card can never show one product and name another.
- * placehold.co takes the caption in the query string and reads `+` as a space.
+ * url takes the caption in the query string and reads `+` as a space.
  */
 const buildItems = (groupId: string, specs: ProductSpec[]): Item[] =>
   specs.map(({ name, price, description, salePrice }, index) => {
