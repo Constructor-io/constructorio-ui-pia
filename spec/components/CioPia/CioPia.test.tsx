@@ -255,13 +255,16 @@ describe('CioPia Component', () => {
       expect(queryByTestId('loading-skeleton')).not.toBeInTheDocument();
     });
 
-    it('displays answer bars and question placeholders while an answer loads', () => {
+    it('displays answer bars but keeps question buttons while an answer loads', () => {
       mockUseCioPia({ answerIsLoading: true });
 
-      const { getByTestId } = render(<CioPia {...mockProps} />);
+      const { getByTestId, queryByTestId, getByText } = render(<CioPia {...mockProps} />);
 
       expect(getByTestId('loading-skeleton')).toBeInTheDocument();
-      expect(getByTestId('suggested-questions-skeleton')).toBeInTheDocument();
+      expect(queryByTestId('suggested-questions-skeleton')).not.toBeInTheDocument();
+      mockSuggestedQuestions.forEach((question) => {
+        expect(getByText(question.value)).toBeInTheDocument();
+      });
     });
 
     it('displays error message when there is an error', () => {
