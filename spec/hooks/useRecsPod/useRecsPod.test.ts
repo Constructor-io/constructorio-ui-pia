@@ -119,8 +119,8 @@ describe('Testing Hook: useRecsPod', () => {
   it('does not fetch when no client is provided', async () => {
     const { result } = renderHook(() => useRecsPod({ itemId: testItemId, cioClient: undefined }));
 
-    // Asserted before anything settles: with nothing to ask there is nothing to wait for, so the
-    // caller must not be handed a skeleton on the first render either.
+    // Asserted before the promise turnaround: the mount effect finds nothing to ask and settles
+    // straight away, so a caller is never left holding a skeleton for a request that never went out.
     expect(result.current.isLoading).toBe(false);
 
     await settle();
