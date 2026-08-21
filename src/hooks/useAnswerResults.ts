@@ -2,14 +2,14 @@ import { useCallback, useMemo, useState } from 'react';
 import { Nullable } from '@constructor-io/constructorio-client-javascript';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 import { Formatters, Item, GetAnswerResultsResponse } from '../types';
-import { transformResultItem } from '../utils/transformers';
+import { extractAndTransformItems } from '../utils/transformers';
 
 export interface UseAnswerResultsProps {
   itemId: string;
   variationId?: string;
   threadId?: string;
   cioClient: MockConstructorIOClient;
-  parameters?: Record<string, any>;
+  parameters?: Record<string, string | number | boolean>;
   formatImageUrl?: Formatters['formatImageUrl'];
 }
 
@@ -27,27 +27,8 @@ interface FetchAnswerResultsParams {
   question: string;
   variationId?: string;
   threadId?: string;
+  parameters?: Record<string, string | number | boolean>;
 }
-
-const extractAndTransformItems = (
-  data: Nullable<GetAnswerResultsResponse>,
-  formatImageUrl?: Formatters['formatImageUrl'],
-): Array<Item> | null => {
-  if (!data?.item_results?.response?.results) {
-    return null;
-  }
-
-  const { results } = data.item_results.response;
-  if (!Array.isArray(results) || results.length === 0) {
-    return null;
-  }
-
-  const transformedItems = results
-    .map((item) => transformResultItem(item, formatImageUrl))
-    .filter((item): item is Item => item !== null);
-
-  return transformedItems.length > 0 ? transformedItems : null;
-};
 
 const fetchAnswerResults = async ({
   client,
@@ -55,12 +36,14 @@ const fetchAnswerResults = async ({
   question,
   variationId,
   threadId,
+  parameters,
 }: FetchAnswerResultsParams) => {
   const response: GetAnswerResultsResponse = await client.agent.getAnswerResults({
     itemId,
     variationId,
     threadId,
     question,
+    parameters,
   });
   return response;
 };
@@ -70,6 +53,7 @@ export default function useAnswerResults({
   variationId,
   threadId,
   cioClient,
+  parameters,
   formatImageUrl,
 }: UseAnswerResultsProps): UseAnswerResultsReturn {
   const [answerResults, setAnswerResults] = useState<GetAnswerResultsResponse | null>(null);
@@ -89,7 +73,7 @@ export default function useAnswerResults({
       setError(null);
       setAnswerResults(null);
 
-      fetchAnswerResults({ client: cioClient, itemId, question, variationId, threadId })
+      fetchAnswerResults({ client: cioClient, itemId, question, variationId, threadId, parameters })
         .then((fetchedAnswerResults) => {
           setAnswerResults(fetchedAnswerResults);
           setError(null);
@@ -102,7 +86,7 @@ export default function useAnswerResults({
           setIsLoading(false);
         });
     },
-    [cioClient, itemId, variationId, threadId],
+    [cioClient, itemId, variationId, threadId, parameters],
   );
 
   return {

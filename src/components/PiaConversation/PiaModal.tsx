@@ -126,6 +126,7 @@ export default function PiaModal({
           onFocus={onInputFocus}
           disabled={isLoading || isOpen}
           translations={translations}
+          componentOverride={componentOverrides?.input}
         />
       </div>
 

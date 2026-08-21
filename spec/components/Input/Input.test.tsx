@@ -40,6 +40,11 @@ describe('Input Component', () => {
     expect(getByPlaceholderText('From translations')).toBeInTheDocument();
   });
 
+  it('renders the send icon inside the send button', () => {
+    const { container } = render(<Input onSubmit={mockSubmit} />);
+    expect(container.querySelector('.cio-pia-send-button svg')).toBeInTheDocument();
+  });
+
   it('handles text input', () => {
     const { queryByRole } = render(<Input onSubmit={mockSubmit} />);
     const input = queryByRole('textbox')! as HTMLInputElement;
@@ -125,5 +130,50 @@ describe('Input Component', () => {
 
     expect(mockSubmit).toHaveBeenCalledWith('A different question');
     expect(input.value).toBe('');
+  });
+
+  describe('componentOverride', () => {
+    it('renders the override and passes render props', () => {
+      const override = jest.fn(() => <div data-testid='custom-input'>Custom</div>);
+      const mockFocus = jest.fn();
+      const { getByTestId, queryByRole } = render(
+        <Input
+          onSubmit={mockSubmit}
+          onFocus={mockFocus}
+          disabled
+          translations={{ 'Ask anything': 'Type here' }}
+          componentOverride={{ reactNode: override }}
+        />,
+      );
+
+      expect(getByTestId('custom-input')).toBeInTheDocument();
+      expect(queryByRole('textbox')).not.toBeInTheDocument();
+      expect(override).toHaveBeenCalledWith(
+        expect.objectContaining({
+          disabled: true,
+          placeholder: 'Type here',
+          onSubmit: expect.any(Function),
+          onFocus: mockFocus,
+          translations: { 'Ask anything': 'Type here' },
+        }),
+      );
+    });
+
+    it('trims and guards empty values in override onSubmit', () => {
+      let capturedSubmit: (val: string) => void = () => {};
+      const override = jest.fn((props) => {
+        capturedSubmit = props.onSubmit;
+        return <div data-testid='custom-input' />;
+      });
+
+      render(<Input onSubmit={mockSubmit} componentOverride={{ reactNode: override }} />);
+      expect(override).toHaveBeenCalled();
+
+      act(() => { capturedSubmit('   '); });
+      expect(mockSubmit).not.toHaveBeenCalled();
+
+      act(() => { capturedSubmit('  hello world  '); });
+      expect(mockSubmit).toHaveBeenCalledWith('hello world');
+    });
   });
 });

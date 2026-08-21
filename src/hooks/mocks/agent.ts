@@ -11,6 +11,7 @@ import {
   GetAnswerResultsProps,
   GetAnswerResultsResponse,
 } from './types';
+import { AgentRequestError } from '../../errors';
 
 // Create URL for PIA API
 function createAgentUrl({
@@ -90,6 +91,7 @@ class MockAgent {
     variationId,
     threadId,
     parameters = {},
+    requestParameters = {},
   }: GetSuggestedQuestionsProps): Promise<QuestionResponse> {
     if (!itemId) throw new Error('Item ID is required');
     if (!this.options.apiKey) throw new Error('API key is required');
@@ -99,21 +101,22 @@ class MockAgent {
       variationId,
       threadId,
       options: this.options,
-      parameters: mapSuggestedQuestionsParams(parameters),
+      parameters: { ...requestParameters, ...mapSuggestedQuestionsParams(parameters) },
     });
 
     try {
       const response = await fetch(url);
 
-      if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
+      if (!response.ok) throw new AgentRequestError(response.status);
 
       const data = await response.json();
 
       return data;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      // Rethrow untouched so the status code and the original stack survive.
+      if (error instanceof Error) throw error;
 
-      throw new Error(errorMessage);
+      throw new Error(String(error));
     }
   }
 
@@ -140,15 +143,16 @@ class MockAgent {
     try {
       const response = await fetch(url);
 
-      if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
+      if (!response.ok) throw new AgentRequestError(response.status);
 
       const data = await response.json();
 
       return data;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      // Rethrow untouched so the status code and the original stack survive.
+      if (error instanceof Error) throw error;
 
-      throw new Error(errorMessage);
+      throw new Error(String(error));
     }
   }
 

@@ -13,6 +13,11 @@ export interface UseCioPiaProps {
   threadId?: string;
   cioClient?: MockConstructorIOClient;
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
+  /**
+   * Extra query parameters appended to PIA API requests (e.g. `ef-*` test cell params).
+   * Define outside the component or wrap with useMemo to avoid unnecessary re-renders.
+   */
+  parameters?: Record<string, string | number | boolean>;
   /** Define outside the component or wrap with useCallback to avoid unnecessary re-renders. */
   formatImageUrl?: Formatters['formatImageUrl'];
 }
@@ -32,6 +37,7 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     threadId: providedThreadId,
     cioClient: providedClient,
     suggestedQuestionsParameters,
+    parameters,
     formatImageUrl,
   } = props;
 
@@ -53,6 +59,7 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     threadId,
     cioClient: client,
     parameters: suggestedQuestionsParameters,
+    requestParameters: parameters,
   });
 
   const answers = useAnswerResults({
@@ -60,6 +67,7 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     variationId,
     threadId,
     cioClient: client,
+    parameters,
     formatImageUrl,
   });
 

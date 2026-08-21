@@ -10,6 +10,9 @@ export type { CioPiaProps } from './components/CioPia';
 export { sanitizeHtml, renderMarkdown } from './utils/contentTransformers';
 export type { RenderMarkdownOptions, SanitizeOptions } from './utils/contentTransformers';
 
+// Errors
+export { AgentRequestError } from './errors';
+
 // Default
 export * from './types';
 export default CioPia;

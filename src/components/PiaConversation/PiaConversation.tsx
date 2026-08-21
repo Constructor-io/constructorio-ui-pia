@@ -42,51 +42,54 @@ export default function PiaConversation({
   onInputFocus,
   priceCurrency,
 }: PiaConversationProps) {
+  const hasHistory = conversationHistory.length > 0;
+
   return (
     <div
       ref={containerRef}
       className='cio-pia-container cio-pia-conversation'
       data-testid='cio-pia-container'>
-      <p className='cio-pia-title' data-testid='cio-pia-title'>
-        {translate('Any questions about this product?', translations)}
-      </p>
+      {!hasHistory && (
+        <p className='cio-pia-title' data-testid='cio-pia-title'>
+          {translate('Any questions about this product?', translations)}
+        </p>
+      )}
 
-      <div className='cio-pia-conversation-body'>
-        <ConversationHistory
-          conversationHistory={conversationHistory}
-          isLoading={isLoading}
-          error={error}
-          currentItems={currentItems}
-          showFeedback={showFeedback}
-          showPreviousItems={showPreviousItems}
-          learnMoreUrl={learnMoreUrl}
-          disclaimerPosition={disclaimerPosition}
-          translations={translations}
-          callbacks={callbacks}
-          componentOverrides={componentOverrides}
-          handleFeedback={handleFeedback}
-          onResultClick={onResultClick}
-          qnaResultId={qnaResultId}
-          priceCurrency={priceCurrency}
-        />
+      <ConversationHistory
+        conversationHistory={conversationHistory}
+        isLoading={isLoading}
+        error={error}
+        currentItems={currentItems}
+        showFeedback={showFeedback}
+        showPreviousItems={showPreviousItems}
+        learnMoreUrl={learnMoreUrl}
+        disclaimerPosition={disclaimerPosition}
+        translations={translations}
+        callbacks={callbacks}
+        componentOverrides={componentOverrides}
+        handleFeedback={handleFeedback}
+        onResultClick={onResultClick}
+        qnaResultId={qnaResultId}
+        priceCurrency={priceCurrency}
+      />
 
-        <div className='cio-pia-conversation-footer'>
-          {isLoading && !error && <SuggestedQuestionsSkeleton />}
-          {!isLoading && !error && (
-            <SuggestedQuestionsContainer
-              questions={displayedQuestions}
-              onQuestionClick={handleQuestionClick}
-              componentOverride={componentOverrides?.suggestedQuestions}
-            />
-          )}
-          <Input
-            onSubmit={handleSubmitQuestion}
-            onFocus={onInputFocus}
-            disabled={isLoading}
-            translations={translations}
+      <div className='cio-pia-conversation-footer'>
+        {isLoading && !error && <SuggestedQuestionsSkeleton />}
+        {!isLoading && !error && (
+          <SuggestedQuestionsContainer
+            questions={displayedQuestions}
+            onQuestionClick={handleQuestionClick}
+            componentOverride={componentOverrides?.suggestedQuestions}
           />
-          <PoweredBy />
-        </div>
+        )}
+        <Input
+          onSubmit={handleSubmitQuestion}
+          onFocus={onInputFocus}
+          disabled={isLoading}
+          translations={translations}
+          componentOverride={componentOverrides?.input}
+        />
+        <PoweredBy />
       </div>
     </div>
   );
