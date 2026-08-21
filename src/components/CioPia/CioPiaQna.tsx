@@ -99,10 +99,8 @@ export default function CioPiaQna(props: CioPiaProps) {
   );
 
   const qnaResultId = pia.answers.data?.qna_result_id;
-  // Narrower than the combined `isLoading`: only an in-flight answer warrants the answer-shaped
-  // skeleton, and only an in-flight questions fetch should replace the buttons with pills.
+  // Narrower than the combined `isLoading`: only an in-flight answer warrants the answer-shaped skeleton.
   const isAnswerLoading = pia.answers.isLoading;
-  const isQuestionsLoading = pia.suggestedQuestions.isLoading;
 
   const renderProps: CioPiaRenderProps = {
     items: currentItems,
@@ -195,9 +193,9 @@ export default function CioPiaQna(props: CioPiaProps) {
           />
         )}
 
-        {/* Pills hold the slot until the buttons first arrive; after that the buttons stay put. */}
+        {/* The question row is never empty: pills hold the slot until the real buttons arrive. */}
         {!error &&
-          (isQuestionsLoading ? (
+          (isLoading ? (
             <SuggestedQuestionsSkeleton />
           ) : (
             <SuggestedQuestionsContainer
