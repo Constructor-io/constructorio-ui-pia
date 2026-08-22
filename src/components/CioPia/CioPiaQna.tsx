@@ -99,8 +99,9 @@ export default function CioPiaQna(props: CioPiaProps) {
   );
 
   const qnaResultId = pia.answers.data?.qna_result_id;
-  // Narrower than the combined `isLoading`: only an in-flight answer warrants the answer-shaped skeleton.
+  // The two requests load independently: text bars stand in for the answer, pills for the question row.
   const isAnswerLoading = pia.answers.isLoading;
+  const isQuestionsLoading = pia.suggestedQuestions.isLoading;
 
   const renderProps: CioPiaRenderProps = {
     items: currentItems,
@@ -170,12 +171,11 @@ export default function CioPiaQna(props: CioPiaProps) {
           componentOverride={componentOverrides?.input}
         />
 
-        {/* Text bars stand in for the answer block, so they only belong here while an answer is in flight. */}
         {isAnswerLoading && <LoadingSkeleton componentOverride={componentOverrides?.loading} />}
 
-        {!isLoading && error && <ErrorBlock message={error?.message || 'Unexpected error'} />}
+        {!isAnswerLoading && error && <ErrorBlock message={error?.message || 'Unexpected error'} />}
 
-        {!isLoading && !error && currentAnswer && (
+        {!isAnswerLoading && !error && currentAnswer && (
           <PiaInlineAnswer
             currentAnswer={currentAnswer}
             currentItems={currentItems}
@@ -193,9 +193,8 @@ export default function CioPiaQna(props: CioPiaProps) {
           />
         )}
 
-        {/* The question row is never empty: pills hold the slot until the real buttons arrive. */}
         {!error &&
-          (isLoading ? (
+          (isQuestionsLoading ? (
             <SuggestedQuestionsSkeleton />
           ) : (
             <SuggestedQuestionsContainer
