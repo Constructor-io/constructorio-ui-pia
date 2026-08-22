@@ -99,9 +99,10 @@ export default function CioPiaQna(props: CioPiaProps) {
   );
 
   const qnaResultId = pia.answers.data?.qna_result_id;
-  // The two requests load independently: text bars stand in for the answer, pills for the question row.
+  // The text bars stand in for the answer alone, so they track the answer request only. The question
+  // row keeps the combined `isLoading`: the follow-up questions that refill it arrive with the
+  // answer, so the row is waiting on either request.
   const isAnswerLoading = pia.answers.isLoading;
-  const isQuestionsLoading = pia.suggestedQuestions.isLoading;
 
   const renderProps: CioPiaRenderProps = {
     items: currentItems,
@@ -193,16 +194,17 @@ export default function CioPiaQna(props: CioPiaProps) {
           />
         )}
 
-        {!error &&
-          (isQuestionsLoading ? (
-            <SuggestedQuestionsSkeleton />
-          ) : (
-            <SuggestedQuestionsContainer
-              questions={displayedQuestions}
-              onQuestionClick={handleQuestionClick}
-              componentOverride={componentOverrides?.suggestedQuestions}
-            />
-          ))}
+        {/* The row is occupied either way, so it never collapses and shifts the layout. An error
+            replaces it, since there are no questions left to offer. */}
+        {isLoading && <SuggestedQuestionsSkeleton />}
+
+        {!isLoading && !error && (
+          <SuggestedQuestionsContainer
+            questions={displayedQuestions}
+            onQuestionClick={handleQuestionClick}
+            componentOverride={componentOverrides?.suggestedQuestions}
+          />
+        )}
       </RenderPropsWrapper>
     </div>
   );

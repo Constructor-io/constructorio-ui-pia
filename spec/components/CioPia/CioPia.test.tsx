@@ -255,14 +255,16 @@ describe('CioPia Component', () => {
       expect(queryByTestId('loading-skeleton')).not.toBeInTheDocument();
     });
 
-    it('keeps the loaded question buttons while an answer loads', () => {
+    it('shows the answer bars and the question placeholders at the same time while an answer loads', () => {
       mockUseCioPia({ answerIsLoading: true });
 
-      const { getByTestId, queryByTestId, getByText } = render(<CioPia {...mockProps} />);
+      const { getByTestId, queryByTestId, queryByText } = render(<CioPia {...mockProps} />);
 
       expect(getByTestId('loading-skeleton')).toBeInTheDocument();
-      expect(queryByTestId('suggested-questions-skeleton')).not.toBeInTheDocument();
-      mockSuggestedQuestions.forEach((q) => expect(getByText(q.value)).toBeInTheDocument());
+      expect(getByTestId('suggested-questions-skeleton')).toBeInTheDocument();
+      // The follow-up questions arrive with the answer, so the previous buttons stand down.
+      expect(queryByTestId('suggested-questions-list')).not.toBeInTheDocument();
+      mockSuggestedQuestions.forEach((q) => expect(queryByText(q.value)).not.toBeInTheDocument());
     });
 
     it('displays error message when there is an error', () => {
