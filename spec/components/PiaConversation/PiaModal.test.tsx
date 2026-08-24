@@ -229,6 +229,30 @@ describe('PiaModal Component', () => {
 
       expect(document.activeElement).toBe(questionButton);
     });
+
+    it('does not steal focus when nothing meaningful was focused before opening', () => {
+      const { container } = render(<PiaModal {...defaultProps} />);
+
+      const baseInput = container.querySelector(BASE_INPUT)! as HTMLInputElement;
+      fireEvent.change(baseInput, { target: { value: 'What is this product?' } });
+      (document.activeElement as HTMLElement | null)?.blur();
+      expect(document.activeElement).toBe(document.body);
+
+      const bodyFocus = jest.spyOn(document.body, 'focus');
+
+      fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
+
+      const dialog = container.querySelector('dialog')!;
+      const closeButton = within(dialog).getByRole('button', { name: 'Close' });
+      (closeButton as HTMLButtonElement).focus();
+
+      fireEvent.click(closeButton);
+
+    
+      expect(bodyFocus).not.toHaveBeenCalled();
+
+      bodyFocus.mockRestore();
+    });
   });
 
   describe('Suggested questions visibility', () => {

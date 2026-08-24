@@ -53,7 +53,11 @@ export default function PiaModal({
   const triggerRef = useRef<HTMLElement | null>(null);
 
   const openModal = useCallback(() => {
-    triggerRef.current = document.activeElement as HTMLElement | null;
+    const active = document.activeElement as HTMLElement | null;
+    const isRealTrigger =
+      !!active && active !== document.body && active !== document.documentElement;
+
+    triggerRef.current = isRealTrigger ? active : null;
     setIsOpen(true);
   }, []);
 
