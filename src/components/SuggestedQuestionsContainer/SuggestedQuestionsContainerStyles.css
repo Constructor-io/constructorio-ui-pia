@@ -20,6 +20,16 @@
   }
 }
 
+/* ─── Design V2 ─── */
+
+.cio-pia-v2 .cio-pia-suggested-questions-skeleton-container {
+  flex-wrap: initial;
+}
+
+.cio-pia-suggested-questions-skeleton-container > .cio-pia-suggested-question-skeleton {
+  width: 100%;
+}
+
 .cio-pia-suggested-question-skeleton {
   height: 28px;
   border-radius: 4px;
@@ -34,4 +44,10 @@
   &:nth-child(3) {
     animation-delay: 0.9s;
   }
+}
+
+/* ─── Design V2 ─── */
+.cio-pia-v2 .cio-pia-suggested-question-skeleton {
+  height: 36px;
+  border-radius: 6px;
 }

@@ -60,6 +60,14 @@ export type CioPiaDisplayConfigs = {
    * @default 'bottom'
    */
   disclaimerPosition?: DisclaimerPosition;
+  /**
+   * Design version to render.
+   * - `'v1'` — original design (default).
+   * - `'v2'` — refreshed design with updated layout and styling.
+   *
+   * @default 'v1'
+   */
+  designVersion?: 'v1' | 'v2';
 };
 
 /**

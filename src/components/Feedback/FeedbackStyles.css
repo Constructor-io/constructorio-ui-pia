@@ -29,3 +29,15 @@
 .cio-pia-feedback-button:hover {
   opacity: 0.8;
 }
+
+/* ─── Design V2 ─── */
+
+.cio-pia-v2 .cio-pia-feedback-container {
+  height: auto;
+  padding: 4px 0;
+}
+
+.cio-pia-v2 .cio-pia-feedback-text {
+  color: #57534E;
+  line-height: 1.33;
+}

@@ -100,3 +100,21 @@
 .cio-pia-send-button:disabled svg path {
   fill: #0a0f2940;
 }
+
+/* ─── Design V2 ─── */
+
+.cio-pia-v2 .cio-pia-input {
+  border: 1px solid #E7E5E4;
+  border-radius: 6px;
+  line-height: 1.43;
+  box-shadow: none;
+}
+
+.cio-pia-v2 .cio-pia-input::placeholder {
+  display: inline;
+  color: #A8A29E;
+}
+
+.cio-pia-v2 .cio-pia-input:focus:active {
+  box-shadow: none;
+}

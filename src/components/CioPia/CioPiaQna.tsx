@@ -14,6 +14,8 @@ import { translate } from '../../utils/translate';
 import PiaInlineAnswer from '../PiaInlineAnswer/PiaInlineAnswer';
 import PiaModal from '../PiaConversation/PiaModal';
 import PiaConversation from '../PiaConversation/PiaConversation';
+import PoweredBy from './PoweredBy';
+import Disclaimer from './Disclaimer';
 import type { CioPiaProps } from './types';
 
 /** The question-and-answer experience: `mode: 'default'`, `mode: 'conversation'`, and the modal. */
@@ -43,8 +45,10 @@ export default function CioPiaQna(props: CioPiaProps) {
     type = 'inline',
     showPreviousItems,
     disclaimerPosition = 'bottom',
+    designVersion = 'v1',
   } = displayConfigs || {};
   const isConversation = mode === 'conversation' || type === 'modal';
+  const isV2 = designVersion === 'v2';
 
   const { priceCurrency } = productCardProps || {};
 
@@ -145,59 +149,90 @@ export default function CioPiaQna(props: CioPiaProps) {
         translations={translations}
         onInputFocus={handleInputFocus}
         onClose={resetState}>
-        <PiaConversation {...conversationHistoryProps} />
+        <PiaConversation {...conversationHistoryProps} isV2={isV2} />
       </PiaModal>
     );
   }
 
-  if (isConversation) return <PiaConversation {...conversationHistoryProps} />;
+  if (isConversation) return <PiaConversation {...conversationHistoryProps} isV2={isV2} />;
+
+  const containerClass = `cio-pia-container${isV2 ? ' cio-pia-v2' : ''}`;
 
   // Default inline mode
   return (
-    <div ref={containerRef} className='cio-pia-container' data-testid='cio-pia-container'>
+    <div ref={containerRef} className={containerClass} data-testid='cio-pia-container'>
       <RenderPropsWrapper props={renderProps} override={children || componentOverrides?.reactNode}>
         <p className='cio-pia-title' data-testid='cio-pia-title'>
           {translate('Any questions about this product?', translations)}
         </p>
-        <Input
-          onSubmit={handleSubmitQuestion}
-          onFocus={handleInputFocus}
-          value={currentQuestion}
-          translations={translations}
-          componentOverride={componentOverrides?.input}
-        />
+
+        {isV2 && !isLoading && !error && (
+          <SuggestedQuestionsContainer
+            questions={displayedQuestions}
+            onQuestionClick={handleQuestionClick}
+            componentOverride={componentOverrides?.suggestedQuestions}
+          />
+        )}
+
+        {isV2 && !isLoading && !error && !currentAnswer && (
+          <Disclaimer
+            learnMoreUrl={learnMoreUrl}
+            translations={translations}
+            componentOverride={componentOverrides?.disclaimer}
+          />
+        )}
+
+        {!isV2 && (
+          <Input
+            onSubmit={handleSubmitQuestion}
+            onFocus={handleInputFocus}
+            value={currentQuestion}
+            translations={translations}
+            componentOverride={componentOverrides?.input}
+          />
+        )}
 
         {isLoading && <LoadingSkeleton componentOverride={componentOverrides?.loading} />}
 
         {!isLoading && error && <ErrorBlock message={error?.message || 'Unexpected error'} />}
 
-        {!isLoading && !error && (
-          <>
-            {currentAnswer && (
-              <PiaInlineAnswer
-                currentAnswer={currentAnswer}
-                currentItems={currentItems}
-                showFeedback={showFeedback}
-                learnMoreUrl={learnMoreUrl}
-                disclaimerPosition={disclaimerPosition}
-                translations={translations}
-                callbacks={callbacks}
-                componentOverrides={componentOverrides}
-                onFeedback={handleFeedback}
-                onResultClick={tracking.trackResultClick}
-                question={currentQuestion}
-                qnaResultId={qnaResultId}
-                priceCurrency={priceCurrency}
-              />
-            )}
-
-            <SuggestedQuestionsContainer
-              questions={displayedQuestions}
-              onQuestionClick={handleQuestionClick}
-              componentOverride={componentOverrides?.suggestedQuestions}
-            />
-          </>
+        {!isLoading && !error && currentAnswer && (
+          <PiaInlineAnswer
+            currentAnswer={currentAnswer}
+            currentItems={currentItems}
+            showFeedback={showFeedback}
+            learnMoreUrl={learnMoreUrl}
+            disclaimerPosition={disclaimerPosition}
+            translations={translations}
+            callbacks={callbacks}
+            componentOverrides={componentOverrides}
+            onFeedback={handleFeedback}
+            onResultClick={tracking.trackResultClick}
+            question={currentQuestion}
+            qnaResultId={qnaResultId}
+            priceCurrency={priceCurrency}
+          />
         )}
+
+        {!isV2 && !isLoading && !error && (
+          <SuggestedQuestionsContainer
+            questions={displayedQuestions}
+            onQuestionClick={handleQuestionClick}
+            componentOverride={componentOverrides?.suggestedQuestions}
+          />
+        )}
+
+        {isV2 && (
+          <Input
+            onSubmit={handleSubmitQuestion}
+            onFocus={handleInputFocus}
+            value={currentQuestion}
+            placeholder='Type your question here...'
+            translations={translations}
+            componentOverride={componentOverrides?.input}
+          />
+        )}
+        {isV2 && <PoweredBy />}
       </RenderPropsWrapper>
     </div>
   );

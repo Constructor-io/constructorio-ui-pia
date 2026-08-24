@@ -56,4 +56,37 @@
 .cio-pia-conversation-loading {
   align-self: flex-start;
   max-width: 80%;
+  width: 100%;
+}
+
+/* ─── Design V2 ─── */
+
+.cio-pia-v2 .cio-pia-conversation-history {
+  padding: 16px;
+}
+
+.cio-pia-v2 .cio-pia-chat-question {
+  background: var(--cio-pia-chat-question-bg);
+  color: var(--cio-pia-chat-question-color);
+  border-radius: 12px 12px 4px 12px;
+  padding: 6px 12px;
+  font-weight: 400;
+  line-height: 1.43;
+  transition: none;
+}
+
+.cio-pia-v2 .cio-pia-conversation-entry .cio-pia-answer-container {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  max-width: 100%;
+  transition: none;
+}
+
+.cio-pia-v2 .cio-pia-conversation-entry:last-child .cio-pia-chat-question {
+  border-bottom-right-radius: 4px;
+}
+
+.cio-pia-v2 .cio-pia-conversation-entry:last-child .cio-pia-answer-container {
+  border-bottom-left-radius: 0;
 }

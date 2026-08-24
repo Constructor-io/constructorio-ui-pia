@@ -9,6 +9,24 @@
   flex-shrink: 0;
 }
 
+/* ─── Design V2 overrides ─── */
+
+.cio-pia-v2.cio-pia-conversation {
+  --conversation-gap: 16px;
+}
+
+.cio-pia-v2 .cio-pia-conversation-body {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  gap: var(--conversation-gap);
+}
+
+.cio-pia-v2 .cio-pia-conversation-footer {
+  gap: 12px;
+  padding: 0 16px 16px 16px;
+}
+
 body.cio-pia-modal-open {
   overflow: hidden;
 }

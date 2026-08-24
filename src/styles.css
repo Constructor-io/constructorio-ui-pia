@@ -23,3 +23,11 @@
 .cio-pia-container * {
   font-family: inherit;
 }
+
+/* ─── Design V2 variable overrides ─── */
+
+.cio-pia-v2 {
+  --cio-pia-chat-question-bg: #1C1917;
+  --cio-pia-chat-question-color: #FFFFFF;
+  --cio-pia-chat-answer-bg: transparent;
+}

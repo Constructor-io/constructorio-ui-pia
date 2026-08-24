@@ -6,3 +6,9 @@
   color: #14151a;
   text-align: start;
 }
+
+/* ─── Design V2 ─── */
+
+.cio-pia-v2 .cio-pia-answer > p {
+  margin: 0;
+}

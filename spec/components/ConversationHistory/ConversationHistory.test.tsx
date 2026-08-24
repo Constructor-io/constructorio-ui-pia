@@ -16,11 +16,20 @@ describe('ConversationHistory Component', () => {
   });
 
   it('has role="log" and aria-label for accessibility', () => {
-    render(<ConversationHistory {...baseProps} conversationHistory={[]} />);
+    const conversationHistory = [
+      { id: 1, question: 'What is this?', answer: 'A product.' },
+    ];
+    render(<ConversationHistory {...baseProps} conversationHistory={conversationHistory} />);
 
     const historyContainer = screen.getByRole('log');
     expect(historyContainer).toBeInTheDocument();
     expect(historyContainer).toHaveAttribute('aria-label', 'Conversation history');
+  });
+
+  it('does not render the log container when history is empty', () => {
+    render(<ConversationHistory {...baseProps} conversationHistory={[]} />);
+
+    expect(screen.queryByRole('log')).not.toBeInTheDocument();
   });
 
   it('renders all conversation entries with question and answer', () => {
