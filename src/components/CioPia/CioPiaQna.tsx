@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { RenderPropsWrapper } from '@constructor-io/constructorio-ui-components';
 import Input from '../Input/Input';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
+import SuggestedQuestionsSkeleton from '../SuggestedQuestionsContainer/SuggestedQuestionsSkeleton';
 import useCioPia from '../../hooks/useCioPia';
 import useConversation from '../../hooks/useConversation';
 import useTracking from '../../hooks/useTracking';
@@ -98,6 +99,10 @@ export default function CioPiaQna(props: CioPiaProps) {
   );
 
   const qnaResultId = pia.answers.data?.qna_result_id;
+  // The text bars stand in for the answer alone, so they track the answer request only. The question
+  // row keeps the combined `isLoading`: the follow-up questions that refill it arrive with the
+  // answer, so the row is waiting on either request.
+  const isAnswerLoading = pia.answers.isLoading;
 
   const renderProps: CioPiaRenderProps = {
     items: currentItems,
@@ -167,36 +172,38 @@ export default function CioPiaQna(props: CioPiaProps) {
           componentOverride={componentOverrides?.input}
         />
 
-        {isLoading && <LoadingSkeleton componentOverride={componentOverrides?.loading} />}
+        {isAnswerLoading && <LoadingSkeleton componentOverride={componentOverrides?.loading} />}
 
-        {!isLoading && error && <ErrorBlock message={error?.message || 'Unexpected error'} />}
+        {!isAnswerLoading && error && <ErrorBlock message={error?.message || 'Unexpected error'} />}
+
+        {!isAnswerLoading && !error && currentAnswer && (
+          <PiaInlineAnswer
+            currentAnswer={currentAnswer}
+            currentItems={currentItems}
+            showFeedback={showFeedback}
+            learnMoreUrl={learnMoreUrl}
+            disclaimerPosition={disclaimerPosition}
+            translations={translations}
+            callbacks={callbacks}
+            componentOverrides={componentOverrides}
+            onFeedback={handleFeedback}
+            onResultClick={tracking.trackResultClick}
+            question={currentQuestion}
+            qnaResultId={qnaResultId}
+            priceCurrency={priceCurrency}
+          />
+        )}
+
+        {/* The row is occupied either way, so it never collapses and shifts the layout. An error
+            replaces it, since there are no questions left to offer. */}
+        {isLoading && <SuggestedQuestionsSkeleton />}
 
         {!isLoading && !error && (
-          <>
-            {currentAnswer && (
-              <PiaInlineAnswer
-                currentAnswer={currentAnswer}
-                currentItems={currentItems}
-                showFeedback={showFeedback}
-                learnMoreUrl={learnMoreUrl}
-                disclaimerPosition={disclaimerPosition}
-                translations={translations}
-                callbacks={callbacks}
-                componentOverrides={componentOverrides}
-                onFeedback={handleFeedback}
-                onResultClick={tracking.trackResultClick}
-                question={currentQuestion}
-                qnaResultId={qnaResultId}
-                priceCurrency={priceCurrency}
-              />
-            )}
-
-            <SuggestedQuestionsContainer
-              questions={displayedQuestions}
-              onQuestionClick={handleQuestionClick}
-              componentOverride={componentOverrides?.suggestedQuestions}
-            />
-          </>
+          <SuggestedQuestionsContainer
+            questions={displayedQuestions}
+            onQuestionClick={handleQuestionClick}
+            componentOverride={componentOverrides?.suggestedQuestions}
+          />
         )}
       </RenderPropsWrapper>
     </div>

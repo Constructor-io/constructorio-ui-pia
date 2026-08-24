@@ -246,12 +246,25 @@ describe('CioPia Component', () => {
       });
     });
 
-    it('displays loading state when loading', () => {
-      mockUseCioPiaHook.mockReturnValue(mockLoadingResponse);
+    it('displays question placeholders, not answer bars, while suggested questions load', () => {
+      mockUseCioPia({ questionsData: [], questionIsLoading: true });
 
-      const { getByTestId } = render(<CioPia {...mockProps} />);
+      const { getByTestId, queryByTestId } = render(<CioPia {...mockProps} />);
+
+      expect(getByTestId('suggested-questions-skeleton')).toBeInTheDocument();
+      expect(queryByTestId('loading-skeleton')).not.toBeInTheDocument();
+    });
+
+    it('shows the answer bars and the question placeholders at the same time while an answer loads', () => {
+      mockUseCioPia({ answerIsLoading: true });
+
+      const { getByTestId, queryByTestId, queryByText } = render(<CioPia {...mockProps} />);
 
       expect(getByTestId('loading-skeleton')).toBeInTheDocument();
+      expect(getByTestId('suggested-questions-skeleton')).toBeInTheDocument();
+      // The follow-up questions arrive with the answer, so the previous buttons stand down.
+      expect(queryByTestId('suggested-questions-list')).not.toBeInTheDocument();
+      mockSuggestedQuestions.forEach((q) => expect(queryByText(q.value)).not.toBeInTheDocument());
     });
 
     it('displays error message when there is an error', () => {
