@@ -306,6 +306,7 @@ function GrowingTextarea({ onSubmit, placeholder, disabled, onFocus }: InputRend
         }}
         onFocus={onFocus}
         placeholder={placeholder}
+        aria-label={placeholder}
         disabled={disabled}
         rows={1}
         style={{
