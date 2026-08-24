@@ -26,8 +26,10 @@
   "module": "lib/mjs/index.js",
   "exports": {
     "./styles.css": {
+      "style": "./lib/mjs/styles.css",
       "import": "./lib/mjs/styles.css",
-      "require": "./lib/cjs/styles.css"
+      "require": "./lib/cjs/styles.css",
+      "default": "./lib/mjs/styles.css"
     },
     "./constructorio-ui-pia-bundled": {
       "import": "./dist/constructorio-ui-pia-bundled.js",
@@ -68,7 +70,7 @@
     "prepare": "husky"
   },
   "peerDependencies": {
-    "@constructor-io/constructorio-client-javascript": "^2.89.0",
+    "@constructor-io/constructorio-client-javascript": "^2.91.0",
     "@constructor-io/constructorio-ui-components": "^1.5.0",
     "react": ">=16.12.0",
     "react-dom": ">=16.12.0",

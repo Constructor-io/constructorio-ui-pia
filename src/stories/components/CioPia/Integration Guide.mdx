@@ -419,6 +419,34 @@ const formatImageUrl = (url) =>
 />
 ```
 
+### Requesting Resized Images
+
+`image_url` values come from your catalog as-is and may point at full-resolution
+originals. If your image server or CDN supports resizing via URL parameters, use
+`formatImageUrl` to request a card-sized version (roughly 2x the rendered card width
+for high-DPI screens):
+
+```jsx
+// Example: Adobe Dynamic Media (Scene7)
+const formatImageUrl = (url) => {
+  try {
+    const resized = new URL(url);
+    resized.searchParams.set('wid', '400');
+    resized.searchParams.set('qlt', '75');
+    return resized.toString();
+  } catch {
+    return url; // relative paths and data URIs are left as-is
+  }
+};
+```
+
+Similar parameters exist on most platforms: Shopify (`?width=400`), Cloudinary
+(`w_400,f_auto,q_auto`), imgix (`?w=400&auto=format`). Return the URL unchanged for
+hosts you don't recognize; if the formatter throws, the original URL is used.
+
+If your catalog stores relative paths, prepend your CDN base before resizing (as in the
+previous example) — `new URL()` needs an absolute URL to parse.
+
 ---
 
 For more details on error handling, styling, and other topics see the [FAQ](?path=/docs/general-faq--docs).

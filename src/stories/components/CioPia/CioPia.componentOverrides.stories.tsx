@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import CioPia from '../../../components/CioPia/CioPia';
 import { DEMO_API_KEY, DEMO_ITEM_ID } from '../../../constants';
-import { FeedbackType } from '../../../types';
+import { FeedbackType, InputRenderProps } from '../../../types';
 import { CAROUSEL_A11Y } from '../../utils';
 
 const LOADING_MESSAGES = ['Thinking', 'Searching the catalog', 'Cooking up an answer'];
@@ -264,6 +264,90 @@ export const CustomLoadingWithSkeleton: Story = {
             {skeleton}
           </div>
         ),
+      },
+    },
+  },
+};
+
+function GrowingTextarea({ onSubmit, placeholder, disabled, onFocus }: InputRenderProps) {
+  const [text, setText] = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const resize = useCallback(() => {
+    const el = textareaRef.current;
+    if (el) {
+      el.style.height = 'auto';
+      el.style.height = `${el.scrollHeight}px`;
+    }
+  }, []);
+
+  const handleSubmit = useCallback(() => {
+    if (text.trim()) {
+      onSubmit(text.trim());
+      setText('');
+      if (textareaRef.current) textareaRef.current.style.height = 'auto';
+    }
+  }, [text, onSubmit]);
+
+  return (
+    <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end', width: '100%' }}>
+      <textarea
+        ref={textareaRef}
+        value={text}
+        onChange={(e) => {
+          setText(e.target.value);
+          resize();
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSubmit();
+          }
+        }}
+        onFocus={onFocus}
+        placeholder={placeholder}
+        disabled={disabled}
+        rows={1}
+        style={{
+          flex: 1,
+          resize: 'none',
+          overflow: 'hidden',
+          padding: '8px 12px',
+          border: '1px solid #E7E5E4',
+          borderRadius: '6px',
+          fontSize: '14px',
+          lineHeight: '1.43',
+          fontFamily: 'inherit',
+        }}
+      />
+      <button
+        type='button'
+        onClick={handleSubmit}
+        disabled={disabled}
+        style={{
+          padding: '8px 12px',
+          background: '#14151a',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '4px',
+          cursor: 'pointer',
+          fontSize: '13px',
+          fontWeight: 500,
+        }}>
+        Send
+      </button>
+    </div>
+  );
+}
+
+export const CustomInput: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: DEMO_ITEM_ID,
+    itemName: 'Demo Item',
+    componentOverrides: {
+      input: {
+        reactNode: GrowingTextarea,
       },
     },
   },

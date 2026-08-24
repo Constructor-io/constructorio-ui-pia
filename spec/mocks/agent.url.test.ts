@@ -1,4 +1,5 @@
 import MockConstructorIOClient from '../../src/hooks/mocks/MockConstructorIOClient';
+import { AgentRequestError } from '../../src/errors';
 
 describe('MockAgent: URL parameters', () => {
   let requestedUrl: string;
@@ -147,7 +148,7 @@ describe('MockAgent: URL parameters', () => {
     expect(url.searchParams.has('us')).toBe(false);
   });
 
-  it('does not send i or s params when clientId and sessionId are not provided', async () => {
+  it('sends browser-resolved i and s params when clientId and sessionId are not provided', async () => {
     const client = new MockConstructorIOClient({
       apiKey: 'test-key',
       sendTrackingEvents: false,
@@ -155,9 +156,29 @@ describe('MockAgent: URL parameters', () => {
 
     await client.agent.getSuggestedQuestions({ itemId: 'item-123' });
 
+    const cookieClientId = document.cookie.match(/ConstructorioID_client_id=([^;]+)/)?.[1];
+    expect(cookieClientId).toBeTruthy();
+
     const url = new URL(requestedUrl);
-    expect(url.searchParams.has('i')).toBe(false);
-    expect(url.searchParams.has('s')).toBe(false);
+    expect(url.searchParams.get('i')).toBe(cookieClientId);
+    expect(Number(url.searchParams.get('s'))).toBeGreaterThan(0);
+  });
+
+  it('uses the same identity for agent requests and tracking events', async () => {
+    const client = new MockConstructorIOClient({
+      apiKey: 'test-key',
+      sendTrackingEvents: false,
+    });
+
+    await client.agent.getSuggestedQuestions({ itemId: 'item-123' });
+
+    const cookieClientId = document.cookie.match(/ConstructorioID_client_id=([^;]+)/)?.[1];
+    const url = new URL(requestedUrl);
+
+    expect(client.options.clientId).toBe(cookieClientId);
+    expect(typeof client.options.sessionId).toBe('number');
+    expect(url.searchParams.get('i')).toBe(client.options.clientId);
+    expect(url.searchParams.get('s')).toBe(String(client.options.sessionId));
   });
 
   it('appends identity params (i, s, ui, c) to getAnswerResultsStream URL', async () => {
@@ -195,5 +216,72 @@ describe('MockAgent: URL parameters', () => {
     } finally {
       (globalThis as Record<string, unknown>).EventSource = originalEventSource;
     }
+  });
+});
+
+describe('MockAgent: failed requests', () => {
+  const originalFetch = globalThis.fetch;
+
+  function stubFetch(response: Partial<Response>) {
+    globalThis.fetch = jest.fn(async () => response as Response);
+  }
+
+  function createClient() {
+    return new MockConstructorIOClient({ apiKey: 'test-key', sendTrackingEvents: false });
+  }
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+  });
+
+  it('carries the status code, so a caller can tell one failure from another', async () => {
+    stubFetch({ ok: false, status: 422 });
+
+    // The status has to survive the catch block that wraps every request in this file.
+    await expect(
+      createClient().agent.getAnswerResults({ itemId: 'item-123', question: 'paint my house' }),
+    ).rejects.toMatchObject({ status: 422 });
+  });
+
+  it('throws an AgentRequestError, not a plain Error', async () => {
+    stubFetch({ ok: false, status: 422 });
+
+    const error = await createClient()
+      .agent.getAnswerResults({ itemId: 'item-123', question: 'paint my house' })
+      .catch((thrown) => thrown);
+
+    expect(error).toBeInstanceOf(AgentRequestError);
+    expect(error).toBeInstanceOf(Error);
+    expect(error.name).toBe('AgentRequestError');
+  });
+
+  it('keeps the message text callers may already be reading', async () => {
+    stubFetch({ ok: false, status: 422 });
+
+    await expect(
+      createClient().agent.getAnswerResults({ itemId: 'item-123', question: 'paint my house' }),
+    ).rejects.toThrow('Request failed with status 422');
+  });
+
+  it('reports the status for a server failure too', async () => {
+    stubFetch({ ok: false, status: 503 });
+
+    await expect(
+      createClient().agent.getSuggestedQuestions({ itemId: 'item-123' }),
+    ).rejects.toMatchObject({ status: 503 });
+  });
+
+  it('surfaces a thrown non-Error as an Error', async () => {
+    globalThis.fetch = jest.fn(() => {
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
+      throw 'network down';
+    });
+
+    const error = await createClient()
+      .agent.getSuggestedQuestions({ itemId: 'item-123' })
+      .catch((thrown) => thrown);
+
+    expect(error).toBeInstanceOf(Error);
+    expect(error.message).toBe('network down');
   });
 });
