@@ -1,20 +1,30 @@
 .cio-pia-conversation {
-  --conversation-gap: 16px;
   max-height: var(--cio-pia-conversation-max-height);
 }
 
-.cio-pia-conversation-body {
+.cio-pia-conversation-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ─── Design V2 overrides ─── */
+
+.cio-pia-v2.cio-pia-conversation {
+  --conversation-gap: 16px;
+}
+
+.cio-pia-v2 .cio-pia-conversation-body {
   display: flex;
   flex-direction: column;
   padding: 12px;
   gap: var(--conversation-gap);
 }
 
-.cio-pia-conversation-footer {
-  display: flex;
-  flex-direction: column;
+.cio-pia-v2 .cio-pia-conversation-footer {
   gap: 12px;
-  flex-shrink: 0;
+  padding: 0 16px 16px 16px;
 }
 
 body.cio-pia-modal-open {

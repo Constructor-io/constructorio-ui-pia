@@ -181,3 +181,26 @@ export const WithCustomCurrencyConversation: Story = {
     },
   },
 };
+
+export const DesignV2: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: DEMO_ITEM_ID,
+    itemName: DEMO_ITEM_NAME,
+    displayConfigs: {
+      designVersion: 'v2',
+    },
+  },
+};
+
+export const DesignV2Conversation: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: DEMO_ITEM_ID,
+    itemName: DEMO_ITEM_NAME,
+    displayConfigs: {
+      designVersion: 'v2',
+      mode: 'conversation',
+    },
+  },
+};

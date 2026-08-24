@@ -44,7 +44,7 @@ export default function PiaConversation({
   priceCurrency,
   isV2,
 }: PiaConversationProps) {
-  const hasHistory = conversationHistory.length > 0;
+  const hasHistory = !isV2 && conversationHistory.length > 0;
   const containerClass = `cio-pia-container cio-pia-conversation${isV2 ? ' cio-pia-v2' : ''}`;
 
   return (

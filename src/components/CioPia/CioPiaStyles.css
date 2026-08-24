@@ -56,7 +56,7 @@
   gap: unset;
   border: 1px solid #E7E5E4;
   border-radius: 12px;
-  background-color: var(--cio-pia-container-background);
+  background-color: #F5F5F4;
 }
 
 .cio-pia-v2 .cio-pia-title {

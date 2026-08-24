@@ -7,6 +7,8 @@
   text-align: start;
 }
 
-.cio-pia-answer > p {
+/* ─── Design V2 ─── */
+
+.cio-pia-v2 .cio-pia-answer > p {
   margin: 0;
 }
