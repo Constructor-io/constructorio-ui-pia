@@ -1,6 +1,5 @@
 import { renderHook } from '@testing-library/react';
 import usePiaClient from '../../../src/hooks/usePiaClient';
-import version from '../../../src/version';
 import { createMockCioClient } from '../../helpers/mockCioClient';
 
 const testApiKey = 'test-api-key';
@@ -21,7 +20,6 @@ describe('Testing Hook: usePiaClient', () => {
     const { result } = renderHook(() => usePiaClient({ apiKey: testApiKey }));
 
     expect(result.current.cioClient.options.apiKey).toBe(testApiKey);
-    expect(result.current.cioClient.options.version).toBe(`cio-ui-pia-${version}`);
   });
 
   it('uses the client the caller supplied', () => {

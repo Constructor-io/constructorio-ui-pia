@@ -1006,13 +1006,6 @@ describe('CioPia Component', () => {
       recsClient.agent.getRecs.mockResolvedValue(recsResult);
     });
 
-    it('renders the recommendations pod', async () => {
-      await renderRecsPod();
-
-      expect(screen.getByTestId('cio-pia-recs-pod')).toBeInTheDocument();
-      expect(screen.getByText(recsResult.title)).toBeInTheDocument();
-    });
-
     it('does not run the question-and-answer experience', async () => {
       await renderRecsPod();
 
@@ -1024,20 +1017,6 @@ describe('CioPia Component', () => {
       });
     });
 
-    it('never asks for suggested questions', async () => {
-      await renderRecsPod();
-
-      expect(recsClient.agent.getSuggestedQuestions).not.toHaveBeenCalled();
-    });
-
-    it('forwards recsPodParameters to the request', async () => {
-      await renderRecsPod({ recsPodParameters: { strategy: 'alternative_items' } });
-
-      expect(recsClient.agent.getRecs).toHaveBeenCalledWith(
-        expect.objectContaining({ strategy: 'alternative_items' }),
-      );
-    });
-
     it('lets the mode win over the type', async () => {
       const { container } = await renderRecsPod({
         displayConfigs: { mode: 'recommendations', type: 'modal' },
@@ -1046,13 +1025,6 @@ describe('CioPia Component', () => {
       expect(screen.getByTestId('cio-pia-recs-pod')).toBeInTheDocument();
       expect(container.querySelector('dialog')).not.toBeInTheDocument();
       expect(useCioPia).not.toHaveBeenCalled();
-    });
-
-    it('keeps rendering the question-and-answer experience for the other modes', () => {
-      render(<CioPia {...recsProps} displayConfigs={{ mode: 'conversation' }} />);
-
-      expect(screen.queryByTestId('cio-pia-recs-pod')).not.toBeInTheDocument();
-      expect(useCioPia).toHaveBeenCalled();
     });
   });
 

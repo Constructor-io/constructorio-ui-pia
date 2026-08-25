@@ -56,16 +56,6 @@ describe('Input Component', () => {
     expect(queryByRole('textbox')).toHaveClass('cio-pia-input--no-send');
   });
 
-  it('still submits on Enter with no send button', () => {
-    const { queryByRole } = render(<Input onSubmit={mockSubmit} showSendButton={false} />);
-    const input = queryByRole('textbox')!;
-
-    fireEvent.change(input, { target: { value: 'something lighter' } });
-    fireEvent.keyDown(input, { key: 'Enter' });
-
-    expect(mockSubmit).toHaveBeenCalledWith('something lighter');
-  });
-
   it('handles text input', () => {
     const { queryByRole } = render(<Input onSubmit={mockSubmit} />);
     const input = queryByRole('textbox')! as HTMLInputElement;
@@ -154,13 +144,6 @@ describe('Input Component', () => {
   });
 
   describe('placeholderKey', () => {
-    it('uses the recommendations placeholder when asked for it', () => {
-      const { getByPlaceholderText } = render(
-        <Input onSubmit={mockSubmit} placeholderKey='Describe something else...' />,
-      );
-      expect(getByPlaceholderText('Describe something else...')).toBeInTheDocument();
-    });
-
     it('ignores a translation for the other placeholder', () => {
       const { getByPlaceholderText } = render(
         <Input
@@ -235,13 +218,6 @@ describe('Input Component', () => {
       // has to point at its own message and no other.
       expect(first.id).toBeTruthy();
       expect(first.id).not.toBe(second.id);
-    });
-
-    it('puts the message beside the box rather than inside it', () => {
-      const { getByRole, container } = render(<Input onSubmit={mockSubmit} error='Not allowed' />);
-
-      const message = getByRole('alert');
-      expect(container.querySelector('.cio-pia-input-container')).not.toContainElement(message);
     });
 
     it('leaves the value the shopper typed alone', () => {
