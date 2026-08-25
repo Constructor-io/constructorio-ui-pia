@@ -4,7 +4,7 @@ import { describe, it, expect } from 'vitest';
 import { CioPia } from '@constructor-io/constructorio-ui-pia';
 import { DEMO_API_KEY, DEMO_ITEM_ID, DEMO_ITEM_NAME } from '../../constants';
 
-describe('react-compat-18: CioPia', () => {
+describe('react-compat: CioPia', () => {
   it('renders the CioPia container', () => {
     const { container } = render(
       <CioPia apiKey={DEMO_API_KEY} itemId={DEMO_ITEM_ID} itemName={DEMO_ITEM_NAME} />,

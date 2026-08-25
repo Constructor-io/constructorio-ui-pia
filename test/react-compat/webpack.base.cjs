@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = (dirname) => ({
   mode: 'production',
-  entry: path.join(dirname, 'src/index.tsx'),
+  entry: path.join(dirname, `src/${process.env.ENTRY || 'index-modern'}.tsx`),
   experiments: { outputModule: true },
   output: {
     path: path.join(dirname, 'dist'),

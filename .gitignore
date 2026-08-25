@@ -13,8 +13,8 @@ storybook-static
 .DS_Store
 *storybook.log
 
-# React compat fixtures
-test/react-compat/*/node_modules
-test/react-compat/*/dist
-test/react-compat/*/package-lock.json
+# React compat fixture
+test/react-compat/fixture/node_modules
+test/react-compat/fixture/dist
+test/react-compat/fixture/package-lock.json
 constructorio-ui-pia.tgz
