@@ -38,8 +38,7 @@ export default tseslint.config(
     },
     settings: {
       react: { version: 'detect' },
-      // Teach jsx-a11y about primitives re-exported from the components peer dep,
-      // so they are linted as the elements they actually render.
+      // Lint peer-dep primitives as the elements they render.
       'jsx-a11y': { components: { Button: 'button' } },
       'import/resolver': {
         typescript: {
@@ -69,12 +68,7 @@ export default tseslint.config(
       'jsx-a11y/control-has-associated-label': 'error',
       'jsx-a11y/no-aria-hidden-on-focusable': 'error',
       'jsx-a11y/no-autofocus': 'error',
-      // prefer-tag-over-role is deliberately NOT enabled: in this codebase it only
-      // ever fired on correct ARIA (role='group' on a button set, role='status' on
-      // a loading region), suggesting <fieldset>/<output> that carry the wrong
-      // semantics. A rule that only produces disable comments is noise.
-      // Scrollable regions must be keyboard focusable (WCAG 2.1.1), so allow
-      // tabIndex on the roles we use for scroll containers.
+      // Scrollable regions must be keyboard focusable (WCAG 2.1.1).
       'jsx-a11y/no-noninteractive-tabindex': [
         'error',
         { tags: [], roles: ['tabpanel', 'log'], allowExpressionValues: true },

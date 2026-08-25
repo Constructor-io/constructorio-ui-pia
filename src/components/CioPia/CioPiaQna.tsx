@@ -16,6 +16,19 @@ import PiaModal from '../PiaConversation/PiaModal';
 import PiaConversation from '../PiaConversation/PiaConversation';
 import type { CioPiaProps } from './types';
 
+/** Inline, not a class: consumers who ship their own styling still must not see it. */
+const SR_ONLY_STYLE: React.CSSProperties = {
+  position: 'absolute',
+  width: 1,
+  height: 1,
+  padding: 0,
+  margin: -1,
+  overflow: 'hidden',
+  clip: 'rect(0, 0, 0, 0)',
+  whiteSpace: 'nowrap',
+  border: 0,
+};
+
 /** The question-and-answer experience: `mode: 'default'`, `mode: 'conversation'`, and the modal. */
 // eslint-disable-next-line complexity
 export default function CioPiaQna(props: CioPiaProps) {
@@ -74,6 +87,7 @@ export default function CioPiaQna(props: CioPiaProps) {
     currentAnswer,
     currentItems,
     isLoading,
+    isAnswerLoading,
     error,
     context,
     handleSubmitQuestion,
@@ -98,6 +112,13 @@ export default function CioPiaQna(props: CioPiaProps) {
   );
 
   const qnaResultId = pia.answers.data?.qna_result_id;
+
+  // Inline mode renders the answer outside any live region, so nothing announces
+  // its arrival. The region below is always mounted - one created together with
+  // its content is announced inconsistently.
+  let answerStatus = '';
+  if (isAnswerLoading) answerStatus = translate('Loading answer', translations);
+  else if (currentAnswer) answerStatus = translate('Answer ready', translations);
 
   const renderProps: CioPiaRenderProps = {
     items: currentItems,
@@ -155,6 +176,13 @@ export default function CioPiaQna(props: CioPiaProps) {
   // Default inline mode
   return (
     <div ref={containerRef} className='cio-pia-container' data-testid='cio-pia-container'>
+      <div
+        className='cio-pia-sr-only'
+        style={SR_ONLY_STYLE}
+        role='status'
+        data-testid='answer-status'>
+        {answerStatus}
+      </div>
       <RenderPropsWrapper props={renderProps} override={children || componentOverrides?.reactNode}>
         <p className='cio-pia-title' data-testid='cio-pia-title'>
           {translate('Any questions about this product?', translations)}
@@ -167,12 +195,7 @@ export default function CioPiaQna(props: CioPiaProps) {
           componentOverride={componentOverrides?.input}
         />
 
-        {isLoading && (
-          <LoadingSkeleton
-            componentOverride={componentOverrides?.loading}
-            translations={translations}
-          />
-        )}
+        {isLoading && <LoadingSkeleton componentOverride={componentOverrides?.loading} />}
 
         {!isLoading && error && (
           <ErrorBlock message={error?.message || 'Unexpected error'} translations={translations} />
@@ -202,7 +225,6 @@ export default function CioPiaQna(props: CioPiaProps) {
               questions={displayedQuestions}
               onQuestionClick={handleQuestionClick}
               componentOverride={componentOverrides?.suggestedQuestions}
-              translations={translations}
             />
           </>
         )}

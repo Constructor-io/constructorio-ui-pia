@@ -26,6 +26,8 @@ export interface UseConversationReturn {
   currentAnswer: string;
   currentItems: Item[] | null;
   isLoading: boolean;
+  /** Answer request only, unlike `isLoading`. Drives the status announcement. */
+  isAnswerLoading: boolean;
   error: Error | null;
   context: PiaCallbackContext;
   handleSubmitQuestion: (question: string) => void;
@@ -188,7 +190,8 @@ export default function useConversation({
   const currentAnswer = answers.data?.value ?? '';
   const currentItems = answers.items ?? null;
   const error = answers.error || suggestedQuestions.error;
-  const isLoading = answers.isLoading || suggestedQuestions.isLoading;
+  const isAnswerLoading = answers.isLoading;
+  const isLoading = isAnswerLoading || suggestedQuestions.isLoading;
 
   return {
     currentQuestion,
@@ -197,6 +200,7 @@ export default function useConversation({
     currentAnswer,
     currentItems,
     isLoading,
+    isAnswerLoading,
     error,
     context,
     handleSubmitQuestion,

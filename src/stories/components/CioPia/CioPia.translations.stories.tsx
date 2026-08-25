@@ -44,6 +44,13 @@ export const AllCustomText: Story = {
       'Learn More.': 'Más información.',
       'Ask about this product': 'Pregunta sobre este producto',
       'Add to Cart': 'Añadir al carrito',
+      'thumbs up': 'Pulgar arriba',
+      'thumbs down': 'Pulgar abajo',
+      Close: 'Cerrar',
+      Retry: 'Reintentar',
+      'Conversation history': 'Historial de conversación',
+      'Loading answer': 'Cargando respuesta',
+      'Answer ready': 'Respuesta lista',
     },
   },
 };

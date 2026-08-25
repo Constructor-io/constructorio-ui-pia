@@ -60,7 +60,7 @@ function Input({
       ? translate('Ask anything', translations)
       : (placeholder ?? translate('Ask anything'));
 
-  const accessibleName = resolvedPlaceholder || translate('Ask anything', translations);
+  const accessibleName = resolvedPlaceholder || translate('Ask anything');
 
   return (
     <RenderPropsWrapper

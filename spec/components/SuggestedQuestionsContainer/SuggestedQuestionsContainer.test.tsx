@@ -24,24 +24,6 @@ describe('SuggestedQuestionsContainer Component', () => {
   });
 
   describe('accessibility', () => {
-    it('exposes the questions as a named group', () => {
-      render(<SuggestedQuestionsContainer {...defaultProps} />);
-
-      const group = screen.getByRole('group', { name: 'Suggested questions' });
-      expect(group).toBe(screen.getByTestId('suggested-questions-list'));
-    });
-
-    it('translates the group label', () => {
-      render(
-        <SuggestedQuestionsContainer
-          {...defaultProps}
-          translations={{ 'Suggested questions': 'Preguntas sugeridas' }}
-        />,
-      );
-
-      expect(screen.getByRole('group', { name: 'Preguntas sugeridas' })).toBeInTheDocument();
-    });
-
     it('hides the decorative question icons from assistive technology', () => {
       const { container } = render(<SuggestedQuestionsContainer {...defaultProps} />);
 

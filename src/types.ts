@@ -85,12 +85,10 @@ export type Translations = {
   Retry?: string;
   /** Accessible name for the conversation history region. */
   'Conversation history'?: string;
-  /** Accessible name for the suggested questions group. */
-  'Suggested questions'?: string;
-  /** Announced while suggested questions are loading. */
-  'Loading suggestions'?: string;
   /** Announced while an answer is loading. */
   'Loading answer'?: string;
+  /** Announced once an answer has finished loading. */
+  'Answer ready'?: string;
 };
 
 export type QuestionSource = 'user' | 'suggestion';

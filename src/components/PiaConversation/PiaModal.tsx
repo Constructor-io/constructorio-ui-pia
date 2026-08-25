@@ -79,15 +79,23 @@ export default function PiaModal({
     } else {
       if (dialog.open) dialog.close();
       document.body.classList.remove(OVERFLOW_HIDDEN_CLASS);
-
-      triggerRef.current?.focus?.();
-      triggerRef.current = null;
     }
 
     return () => {
       document.body.classList.remove(OVERFLOW_HIDDEN_CLASS);
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    if (isOpen) return;
+
+    const trigger = triggerRef.current;
+    if (!trigger || !trigger.isConnected) return;
+    if ((trigger as HTMLInputElement).disabled) return;
+
+    trigger.focus();
+    triggerRef.current = null;
+  }, [isOpen, isLoading]);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -137,7 +145,6 @@ export default function PiaModal({
             questions={initialQuestions}
             onQuestionClick={handleQuestionClicked}
             componentOverride={componentOverrides?.suggestedQuestions}
-            translations={translations}
           />
         )}
 
@@ -153,9 +160,9 @@ export default function PiaModal({
       <dialog ref={dialogRef} className='cio-pia-modal' aria-labelledby='cio-pia-modal-title'>
         <div className='cio-pia-modal-content'>
           <div className='cio-pia-modal-header'>
-            <h2 className='cio-pia-title' id='cio-pia-modal-title'>
+            <p className='cio-pia-title' id='cio-pia-modal-title'>
               {translate('Ask about this product', translations)}
-            </h2>
+            </p>
             <button
               type='button'
               className='cio-pia-modal-close-button'

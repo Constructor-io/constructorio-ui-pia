@@ -15,14 +15,16 @@ const defaultTranslations: Translations = {
   Close: 'Close',
   Retry: 'Retry',
   'Conversation history': 'Conversation history',
-  'Suggested questions': 'Suggested questions',
-  'Loading suggestions': 'Loading suggestions',
   'Loading answer': 'Loading answer',
+  'Answer ready': 'Answer ready',
 };
 
 /**
  * Translates a word using the provided translations object.
  * Falls back to English defaults if translation is not provided.
+ *
+ * An explicitly empty string is returned as-is: blanking out a string is how
+ * consumers hide it.
  *
  * @param word - The key to translate
  * @param translations - Optional user-provided translations object

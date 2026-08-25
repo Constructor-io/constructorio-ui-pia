@@ -6,7 +6,7 @@ import * as TranslationsStories from './CioPia.translations.stories';
 # Translations (i18n)
 
 The translations feature allows you to customize all UI text strings in the PIA component to support internationalization (i18n).
-All translation keys are optional - any non-provided translation will fallback to English defaults.
+All translation keys are optional - any key you do not provide falls back to the English default.
 
 > **Important Note:** Translations only apply to hardcoded UI strings within the library (e.g., "Any questions about this product?", "Ask anything", "Send", etc.).
 > They do **not** translate dynamic content from the API response, such as:
@@ -19,7 +19,12 @@ All translation keys are optional - any non-provided translation will fallback t
 
 ## Available Translation Keys
 
-All keys are optional. Here are the translatable strings:
+All keys are optional. A key you omit falls back to the English default.
+
+An **empty string is used as-is**, which is how a visible string is hidden. Note
+that the keys marked below as accessible names have no visible counterpart, so
+blanking one of those leaves the control with no name for screen reader and
+voice-control users - omit the key instead of setting it to `''`.
 
 ```typescript
 {
@@ -39,10 +44,32 @@ All keys are optional. Here are the translatable strings:
   "Is this answer useful?": "...",
 
   // Learn more link
-  "Learn More.": "..."
+  "Learn More.": "...",
 
   // Ask about this product
-  "Ask about this product": "..."
+  "Ask about this product": "...",
+
+  // Product card action
+  "Add to Cart": "...",
+
+  // Modal close button
+  "Close": "...",
+
+  // Error retry button (visible label and accessible name)
+  "Retry": "...",
+
+  // Accessible names for the feedback buttons
+  "thumbs up": "...",
+  "thumbs down": "...",
+
+  // Accessible name for the conversation history region
+  "Conversation history": "...",
+
+  // Announced to screen readers while loading
+  "Loading answer": "...",
+
+  // Announced once the answer has arrived
+  "Answer ready": "..."
 }
 ```
 
@@ -51,6 +78,9 @@ All keys are optional. Here are the translatable strings:
 <Canvas of={TranslationsStories.AllCustomText} />
 
 ## Basic Usage
+
+Only a few keys are shown here - see the Spanish example above for a complete
+translations object.
 
 ```jsx
 import { CioPia } from '@constructor-io/constructorio-ui-pia';

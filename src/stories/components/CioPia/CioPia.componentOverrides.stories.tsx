@@ -3,7 +3,6 @@ import type { Meta, StoryObj } from '@storybook/react';
 import CioPia from '../../../components/CioPia/CioPia';
 import { DEMO_API_KEY, DEMO_ITEM_ID } from '../../../constants';
 import { FeedbackType, InputRenderProps } from '../../../types';
-import { CAROUSEL_A11Y } from '../../utils';
 
 const LOADING_MESSAGES = ['Thinking', 'Searching the catalog', 'Cooking up an answer'];
 
@@ -66,7 +65,7 @@ const meta = {
   title: 'Components/CioPia/ComponentOverrides',
   component: CioPia,
   parameters: {
-    a11y: CAROUSEL_A11Y,
+    a11y: { test: 'error' },
     layout: 'centered',
   },
   tags: [],

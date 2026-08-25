@@ -170,13 +170,6 @@ describe('PiaModal Component', () => {
       expect(title).toHaveTextContent('Ask about this product');
     });
 
-    it('exposes the modal title as a heading', () => {
-      const { container } = render(<PiaModal {...defaultProps} />);
-
-      const title = container.querySelector('#cio-pia-modal-title')!;
-      expect(title.tagName).toBe('H2');
-    });
-
     it('translates the close button label', () => {
       const { container } = render(
         <PiaModal {...defaultProps} translations={{ Close: 'Cerrar' }} />,
@@ -252,6 +245,32 @@ describe('PiaModal Component', () => {
       expect(bodyFocus).not.toHaveBeenCalled();
 
       bodyFocus.mockRestore();
+    });
+
+    it('defers focus restore until the trigger stops being disabled', () => {
+      const { container, rerender } = render(<PiaModal {...defaultProps} />);
+
+      const baseInput = container.querySelector(BASE_INPUT)! as HTMLInputElement;
+      baseInput.focus();
+
+      fireEvent.change(baseInput, { target: { value: 'What is this product?' } });
+      fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
+
+      rerender(<PiaModal {...defaultProps} isLoading />);
+
+      const dialog = container.querySelector('dialog')!;
+      const closeButton = within(dialog).getByRole('button', { name: 'Close' });
+      (closeButton as HTMLButtonElement).focus();
+
+      fireEvent.click(closeButton);
+
+      expect(baseInput.disabled).toBe(true);
+      expect(document.activeElement).not.toBe(baseInput);
+
+      rerender(<PiaModal {...defaultProps} isLoading={false} />);
+
+      expect(baseInput.disabled).toBe(false);
+      expect(document.activeElement).toBe(baseInput);
     });
   });
 

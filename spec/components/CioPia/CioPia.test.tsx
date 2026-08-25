@@ -96,6 +96,23 @@ const mockLoadingResponse = {
   },
 };
 
+const mockAnswerLoadingResponse = {
+  threadId: mockGeneratedThreadId,
+  suggestedQuestions: {
+    data: mockSuggestedQuestions,
+    isLoading: false,
+    error: null,
+    getSuggestedQuestions: jest.fn(),
+  },
+  answers: {
+    data: null,
+    items: null,
+    isLoading: true,
+    error: null,
+    getAnswer: jest.fn(),
+  },
+};
+
 const mockErrorResponse = {
   threadId: mockGeneratedThreadId,
   suggestedQuestions: {
@@ -246,7 +263,47 @@ describe('CioPia Component', () => {
       });
     });
 
-    it('displays loading state when loading', () => {
+    it('displays the answer skeleton while an answer is loading', () => {
+      mockUseCioPiaHook.mockReturnValue(mockAnswerLoadingResponse);
+
+      const { getByTestId } = render(<CioPia {...mockProps} />);
+
+      expect(getByTestId('loading-skeleton')).toBeInTheDocument();
+    });
+
+    describe('answer status live region', () => {
+      it('is mounted before anything loads and is reused across states', () => {
+        const { getByTestId, rerender } = render(<CioPia {...mockProps} />);
+
+        const region = getByTestId('answer-status');
+        expect(region).toBeInTheDocument();
+        expect(region).toHaveAttribute('role', 'status');
+        expect(region).toBeEmptyDOMElement();
+
+        mockUseCioPia({ answerIsLoading: true });
+        rerender(<CioPia {...mockProps} />);
+        expect(getByTestId('answer-status')).toHaveTextContent('Loading answer');
+
+        mockUseCioPiaWithAnswerData();
+        rerender(<CioPia {...mockProps} />);
+        expect(getByTestId('answer-status')).toHaveTextContent('Answer ready');
+
+        // Recreating the region with its text would not announce reliably.
+        expect(getByTestId('answer-status')).toBe(region);
+      });
+
+      it('translates the status messages', () => {
+        mockUseCioPiaWithAnswerData();
+
+        const { getByTestId } = render(
+          <CioPia {...mockProps} translations={{ 'Answer ready': 'Respuesta lista' }} />,
+        );
+
+        expect(getByTestId('answer-status')).toHaveTextContent('Respuesta lista');
+      });
+    });
+
+    it('displays the skeleton while suggested questions are loading', () => {
       mockUseCioPiaHook.mockReturnValue(mockLoadingResponse);
 
       const { getByTestId } = render(<CioPia {...mockProps} />);
