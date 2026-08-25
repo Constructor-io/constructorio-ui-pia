@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { expect, userEvent, within } from '@storybook/test';
 import CioPia from '../../../components/CioPia/CioPia';
 import { AgentRequestError } from '../../../errors';
 import { DEMO_API_KEY, DEMO_ITEM_ID, DEMO_ITEM_NAME } from '../../../constants';
@@ -112,7 +113,7 @@ const meta = {
         '',
         '`"Add to Cart"` — Product card add-to-cart button label.',
         '',
-        'Recommendations mode only. These five are the strings the API cannot supply, because in those states there is no usable response yet:',
+        "Recommendations mode only. These six are the strings the API does not supply, either because there is no usable response yet or because the copy frames a value that is the shopper's own:",
         '',
         '`"Adapting recommendations to your preference"` — Title shown while a request is in flight.',
         '',
@@ -123,6 +124,8 @@ const meta = {
         '`"Not what you\'re looking for? Try:"` — Refinement prompt, used only when the API sends none of its own.',
         '',
         '`"Describe something else..."` — Refinement input placeholder. Separate from `"Ask anything"`, so the two inputs read differently.',
+        '',
+        '`"Refined by"` — Prefixes the line under the title naming what the products were narrowed by. The shopper\'s own words follow it in quotes and are never translated.',
       ].join('\n'),
       table: { type: { summary: 'Translations' } },
     },
@@ -143,6 +146,8 @@ const meta = {
         '`defaultTitle?: string` — Last-resort title, used only when the API returns products but no title of its own.',
         '',
         '`showInput?: boolean` — Render the free-text refinement box. Defaults to `true`.',
+        '',
+        '`showRefinedBy?: boolean` — Name the refinement the products were narrowed by under the title, e.g. `Refined by "Under $50"`. Nothing renders until the shopper has refined something. Defaults to `true`.',
         '',
         '`numResults?: number` — How many products to request.',
       ].join('\n'),
@@ -286,6 +291,33 @@ export const RecommendationsUnsupportedRequest: Story = {
   },
 };
 
+/**
+ * The refinement is only named once one has been applied, and every other story starts before that
+ * has happened - so this one clicks an option on its own, to leave the pod in the state where the
+ * line under the title is on screen.
+ */
+export const RecommendationsRefinedBy: Story = {
+  args: recsArgs({ delayMs: 200 }),
+  parameters: {
+    ...recsLayout,
+    docs: {
+      description: {
+        story:
+          'Already refined: `Refined by "Under $50"` sits under the title, naming what the ' +
+          'products below were narrowed by. It holds through the next request and is replaced ' +
+          'when that one lands. Set `recsPodParameters.showRefinedBy` to `false` to leave it out.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(await canvas.findByRole('button', { name: 'Under $50' }));
+
+    await expect(await canvas.findByText('Refined by "Under $50"')).toBeInTheDocument();
+  },
+};
+
 export const RecommendationsWithParameters: Story = {
   args: {
     ...recsArgs({ groups: RECS_SIX_GROUPS }),
@@ -293,6 +325,7 @@ export const RecommendationsWithParameters: Story = {
       strategy: 'bestsellers',
       defaultTitle: 'Our best sellers this week',
       showInput: false,
+      showRefinedBy: false,
       numResults: 6,
     },
   },
@@ -301,8 +334,8 @@ export const RecommendationsWithParameters: Story = {
     docs: {
       description: {
         story:
-          'Six products rather than four, no free-text box, and a `defaultTitle` standing in ' +
-          'because these responses carry no title of their own.',
+          'Six products rather than four, no free-text box, no line naming the refinement, and a ' +
+          '`defaultTitle` standing in because these responses carry no title of their own.',
       },
     },
   },

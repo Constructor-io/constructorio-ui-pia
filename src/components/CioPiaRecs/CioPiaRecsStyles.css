@@ -6,20 +6,38 @@
 }
 
 /*
- * The title is the one part of the pod that changes on a refinement, so it fades in rather than
- * snapping. `CioPiaRecs` keys the node on the title, which remounts it and replays this.
+ * The heading block: the title, and under it the line naming what the products were narrowed by. A
+ * column because the two read as one thing and arrive together, so they fade together and sit closer
+ * to each other than either does to the products below.
+ *
+ * This is the part of the pod that changes on a refinement, so it fades in rather than snapping.
+ * `CioPiaRecs` keys the node on the title, which remounts it and replays this.
  *
  * This is a fade-in on the arriving title, not a cross-fade: React removes the outgoing text
  * synchronously, so there is nothing left on screen to fade out.
  */
-.cio-pia-recs-pod__title {
+.cio-pia-recs-pod__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   min-height: 20px;
+  animation: recs-pod-title-fade-in 200ms ease-in;
+}
+
+/* An `h3`, so it arrives with a margin and a size of its own that a pod has no use for */
+.cio-pia-recs-pod__title {
   margin: 0;
   font-size: 16px;
   font-weight: 500;
   color: #14151a;
   text-align: start;
-  animation: recs-pod-title-fade-in 200ms ease-in;
+}
+
+/* Names the refinement behind the products on screen. Secondary to the title it sits under. */
+.cio-pia-recs-pod__refined-by {
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(15, 19, 36, 0.7);
 }
 
 @keyframes recs-pod-title-fade-in {
@@ -132,7 +150,7 @@
   .cio-pia-recs-skeleton__price,
   .cio-pia-recs-skeleton__title,
   .cio-pia-recs-skeleton__desc .skeleton-bar,
-  .cio-pia-recs-pod__title {
+  .cio-pia-recs-pod__heading {
     animation: none;
   }
 }

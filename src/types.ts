@@ -85,6 +85,11 @@ export type Translations = {
   "Not what you're looking for? Try:"?: string;
   /** Placeholder for the recommendations pod refinement input. */
   'Describe something else...'?: string;
+  /**
+   * Prefixes the recommendations pod line naming the refinement the products on screen were
+   * narrowed by. The shopper's own words follow it in quotes and are never translated.
+   */
+  'Refined by'?: string;
 };
 
 export type QuestionSource = 'user' | 'suggestion';
@@ -197,6 +202,13 @@ export interface RecsPodParameters {
    * @default true
    */
   showInput?: boolean;
+  /**
+   * Render a line under the title naming the refinement the products on screen were narrowed by,
+   * e.g. `Refined by "Under $50"`. Nothing is rendered until the shopper has refined something.
+   *
+   * @default true
+   */
+  showRefinedBy?: boolean;
   /** How many products to request. */
   numResults?: number;
 }

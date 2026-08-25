@@ -115,6 +115,7 @@ The component supports multiple display modes via the `displayConfigs` prop:
 | `strategy` | `RecsStrategy` | `'complementary_items'` | Which kind of recommendations to fetch. One of `'complementary_items'`, `'alternative_items'`, `'bestsellers'`, `'bundles'`, `'buy_it_again'`, `'recently_viewed_items'`, `'visually_similar_items'` |
 | `defaultTitle` | `string` | - | Last-resort title, used only when the API returns products but no title of its own |
 | `showInput` | `boolean` | `true` | Render the free-text box after the options |
+| `showRefinedBy` | `boolean` | `true` | Name the refinement the products were narrowed by under the title, e.g. `Refined by "Under $50"`. Nothing shows until the shopper has refined something |
 | `numResults` | `number` | - | How many products to request |
 
 **Callbacks:**

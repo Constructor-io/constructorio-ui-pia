@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { RenderPropsWrapper } from '@constructor-io/constructorio-ui-components';
 import PiaCustomCarousel from '../CioPia/PiaCustomCarousel';
+import RecsPodHeading from './RecsPodHeading';
 import RecsPodRefinement from './RecsPodRefinement';
 import RecsPodSkeleton from './RecsPodSkeleton';
 import usePiaClient from '../../hooks/usePiaClient';
@@ -36,7 +37,7 @@ export default function CioPiaRecs(props: CioPiaProps) {
     recsPodParameters,
   } = props;
   const { priceCurrency } = productCardProps || {};
-  const { showInput = true, numResults } = recsPodParameters || {};
+  const { showInput = true, showRefinedBy = true, numResults } = recsPodParameters || {};
   const {
     answer: answerOverride,
     carousel: carouselOverride,
@@ -101,13 +102,21 @@ export default function CioPiaRecs(props: CioPiaProps) {
   return (
     <div ref={containerRef} className={className} data-testid='cio-pia-recs-pod'>
       <RenderPropsWrapper props={renderProps} override={children || rootOverride}>
-        {title && (
-          <RenderPropsWrapper props={{ text: title }} override={answerOverride?.reactNode}>
-            <h3 key={title} className='cio-pia-recs-pod__title'>
-              {title}
-            </h3>
-          </RenderPropsWrapper>
-        )}
+        {/*
+          `key` is the title itself, so React remounts this block whenever the copy changes and
+          replays the fade rather than swapping the text in place.
+
+          Fed `lastShopperInput` rather than anything pending, so the line under the title always
+          names what the products below it were actually narrowed by.
+        */}
+        <RecsPodHeading
+          key={title}
+          title={title}
+          showRefinedBy={showRefinedBy}
+          refinedBy={lastShopperInput}
+          translations={translations}
+          componentOverride={answerOverride}
+        />
 
         <div className='cio-pia-recs-pod__products' data-testid='cio-pia-recs-pod-products'>
           {isLoading || !items ? (

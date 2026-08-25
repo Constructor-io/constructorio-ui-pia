@@ -1,5 +1,5 @@
-import { resolveRefinementQuestion } from '../../src/utils/recs';
-import { RECS_REFINEMENT_LABEL } from '../../src/constants';
+import { formatRefinedBy, resolveRefinementQuestion } from '../../src/utils/recs';
+import { RECS_REFINED_BY_LABEL, RECS_REFINEMENT_LABEL } from '../../src/constants';
 
 describe('Testing Recs Utils: resolveRefinementQuestion', () => {
   it('prefers the prompt the API sent', () => {
@@ -25,5 +25,24 @@ describe('Testing Recs Utils: resolveRefinementQuestion', () => {
         [RECS_REFINEMENT_LABEL]: 'Try one of these:',
       }),
     ).toBe('Refine by:');
+  });
+});
+
+describe('Testing Recs Utils: formatRefinedBy', () => {
+  it('quotes the value after the built-in label', () => {
+    expect(formatRefinedBy('Under $50')).toBe('Refined by "Under $50"');
+  });
+
+  it('translates the label', () => {
+    expect(formatRefinedBy('Under $50', { [RECS_REFINED_BY_LABEL]: 'Filtered by' })).toBe(
+      'Filtered by "Under $50"',
+    );
+  });
+
+  // The value is what the shopper picked or typed, so it is theirs to have repeated back exactly.
+  it('repeats the value back untouched', () => {
+    expect(formatRefinedBy('  something with more linen  ')).toBe(
+      'Refined by "  something with more linen  "',
+    );
   });
 });

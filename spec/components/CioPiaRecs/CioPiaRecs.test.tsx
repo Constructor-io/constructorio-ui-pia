@@ -9,6 +9,7 @@ import {
   RECS_FALLBACK_TITLE,
   RECS_INPUT_PLACEHOLDER,
   RECS_LOADING_TITLE,
+  RECS_REFINED_BY_LABEL,
   RECS_REFINEMENT_LABEL,
   RECS_UNSUPPORTED_REQUEST,
 } from '../../../src/constants';
@@ -56,6 +57,11 @@ async function renderSettled(overrides: Partial<CioPiaProps> = {}) {
   return view;
 }
 
+/** The line naming what the products on screen were refined by, or null when there is none. */
+function refinedByLine(container: HTMLElement) {
+  return container.querySelector('.cio-pia-recs-pod__refined-by');
+}
+
 /**
  * The product cards come from the components library and report a click as a DOM event on the
  * carousel wrapper rather than through a React prop, so this is how a click is simulated.
@@ -99,6 +105,14 @@ describe('CioPiaRecs Component', () => {
         RECS_REFINEMENT_LABEL,
       );
     });
+
+    // Nothing has been narrowed yet, so there is nothing to name. No reserved space either: the
+    // line appears with the first refinement and stays from then on.
+    it('shows no refined-by line before anything has been refined', async () => {
+      const { container } = await renderSettled();
+
+      expect(refinedByLine(container)).not.toBeInTheDocument();
+    });
   });
 
   describe('Success', () => {
@@ -109,9 +123,9 @@ describe('CioPiaRecs Component', () => {
       const children = Array.from(pod.children);
       const indexOf = (selector: string) => children.findIndex((el) => el.matches(selector));
 
-      expect(indexOf('.cio-pia-recs-pod__title')).toBe(0);
+      expect(indexOf('.cio-pia-recs-pod__heading')).toBe(0);
       expect(indexOf('.cio-pia-recs-pod__refinement')).toBeGreaterThan(
-        indexOf('.cio-pia-recs-pod__title'),
+        indexOf('.cio-pia-recs-pod__heading'),
       );
       expect(container.querySelector('[data-carousel]')).toBeInTheDocument();
     });
@@ -143,6 +157,7 @@ describe('CioPiaRecs Component', () => {
       const { container } = await renderSettled();
 
       expect(container.querySelector('.cio-pia-recs-pod__title')).not.toBeInTheDocument();
+      expect(container.querySelector('.cio-pia-recs-pod__heading')).not.toBeInTheDocument();
       expect(container.querySelector('[data-carousel]')).toBeInTheDocument();
     });
 
@@ -251,6 +266,100 @@ describe('CioPiaRecs Component', () => {
       const placeholders = screen.getByTestId('cio-pia-recs-skeleton-options');
       expect(placeholders.children).toHaveLength(firstResult.refinement!.options.length);
     });
+
+    it('names the option the shopper picked', async () => {
+      const { container } = await renderSettled();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Under $50' }));
+      });
+
+      expect(refinedByLine(container)).toHaveTextContent('Refined by "Under $50"');
+    });
+
+    it('names the text the shopper typed', async () => {
+      const { container } = await renderSettled();
+
+      const input = screen.getByRole('textbox');
+      fireEvent.change(input, { target: { value: 'something with more linen' } });
+      await act(async () => {
+        fireEvent.keyDown(input, { key: 'Enter' });
+      });
+
+      expect(refinedByLine(container)).toHaveTextContent(
+        'Refined by "something with more linen"',
+      );
+    });
+
+    it('replaces the value when the shopper refines again', async () => {
+      const { container } = await renderSettled();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Slim fit' }));
+      });
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Oxford' }));
+      });
+
+      expect(refinedByLine(container)).toHaveTextContent('Refined by "Oxford"');
+      expect(refinedByLine(container)).not.toHaveTextContent('Slim fit');
+    });
+
+    it('renders the refined-by line under the title, in the same block', async () => {
+      const { container } = await renderSettled();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Slim fit' }));
+      });
+
+      const headingBlock = container.querySelector('.cio-pia-recs-pod__heading')!;
+      const children = Array.from(headingBlock.children);
+      const indexOf = (selector: string) => children.findIndex((el) => el.matches(selector));
+
+      expect(indexOf('.cio-pia-recs-pod__title')).toBe(0);
+      expect(indexOf('.cio-pia-recs-pod__refined-by')).toBe(1);
+    });
+
+    // Beside the heading, not inside it: the line describes the products, so folding it into the
+    // heading's accessible name would leave a screen reader announcing both as the pod's name.
+    it('keeps the refined-by line out of the heading', async () => {
+      await renderSettled();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Slim fit' }));
+      });
+
+      expect(screen.getByRole('heading')).toHaveAccessibleName(firstResult.title);
+      expect(screen.getByRole('heading')).not.toHaveTextContent(RECS_REFINED_BY_LABEL);
+    });
+
+    // The products it names are still the ones on screen while the next request runs, so the line
+    // belongs with them rather than jumping ahead to a refinement that has not landed yet.
+    it('holds the applied value while the next refinement loads', async () => {
+      const pending = deferred<RecsResult>();
+      mockClient.agent.getRecs
+        .mockResolvedValueOnce(firstResult)
+        .mockResolvedValueOnce(firstResult)
+        .mockReturnValueOnce(pending.promise);
+
+      const { container } = await renderSettled();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Slim fit' }));
+      });
+      act(() => {
+        fireEvent.click(screen.getByRole('button', { name: 'Oxford' }));
+      });
+
+      expect(screen.getByText(RECS_LOADING_TITLE)).toBeInTheDocument();
+      expect(refinedByLine(container)).toHaveTextContent('Refined by "Slim fit"');
+
+      await act(async () => {
+        pending.resolve(secondResult);
+      });
+
+      expect(refinedByLine(container)).toHaveTextContent('Refined by "Oxford"');
+    });
   });
 
   describe('Unsupported request', () => {
@@ -296,6 +405,30 @@ describe('CioPiaRecs Component', () => {
       firstResult.items!.forEach((item) => {
         expect(screen.getByText(item.name!)).toBeInTheDocument();
       });
+    });
+
+    // The rejected text narrowed nothing, so the line still describes the products that are up.
+    it('leaves the refinement already applied named on screen', async () => {
+      mockClient.agent.getRecs
+        .mockResolvedValueOnce(firstResult)
+        .mockResolvedValueOnce(firstResult)
+        .mockRejectedValueOnce(new AgentRequestError(422));
+
+      const { container } = await renderSettled();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Slim fit' }));
+      });
+
+      const input = screen.getByRole('textbox');
+      fireEvent.change(input, { target: { value: 'paint my house' } });
+      await act(async () => {
+        fireEvent.keyDown(input, { key: 'Enter' });
+      });
+      await settle();
+
+      expect(screen.getByRole('alert')).toHaveTextContent(RECS_UNSUPPORTED_REQUEST);
+      expect(refinedByLine(container)).toHaveTextContent('Refined by "Slim fit"');
     });
   });
 
@@ -381,6 +514,17 @@ describe('CioPiaRecs Component', () => {
       await renderSettled({ recsPodParameters: { showInput: false } });
 
       expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+    });
+
+    it('hides the refined-by line when showRefinedBy is false', async () => {
+      const { container } = await renderSettled({ recsPodParameters: { showRefinedBy: false } });
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Under $50' }));
+      });
+
+      expect(refinedByLine(container)).not.toBeInTheDocument();
+      expect(screen.getByText(firstResult.title)).toBeInTheDocument();
     });
 
     it('forwards the strategy and result count to the request', async () => {
@@ -472,6 +616,19 @@ describe('CioPiaRecs Component', () => {
       await settle();
 
       expect(screen.getByRole('alert')).toHaveTextContent('We cannot do that');
+    });
+
+    // Only the label is ours. The quoted part is the shopper's own words, so it is left alone.
+    it('overrides the refined-by label without touching the value', async () => {
+      const { container } = await renderSettled({
+        translations: { [RECS_REFINED_BY_LABEL]: 'Filtered by' },
+      });
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Under $50' }));
+      });
+
+      expect(refinedByLine(container)).toHaveTextContent('Filtered by "Under $50"');
     });
   });
 
