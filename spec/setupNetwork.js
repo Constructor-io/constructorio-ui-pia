@@ -1,7 +1,6 @@
 // Shared by the `client` and `server` Jest projects.
 //
-// Prevents real network requests. Tests that need specific responses should
-// mock the client using `createMockCioClient`.
+// Prevents real network requests.
 //
 // This must be assigned before the client is constructed because it reads
 // `global.fetch` during initialization. It resolves an empty response to avoid
