@@ -56,6 +56,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20.x"
+          cache: "npm"
       - name: Install library deps
         run: npm ci
       - name: Build library
@@ -79,9 +80,9 @@ jobs:
         working-directory: test/react-compat/fixture
         run: |
           npm install --no-audit --no-fund \
-            react@${{ matrix.react-version }} \
-            react-dom@${{ matrix.react-version }} \
-            ${{ matrix.testing-library }}
+            "react@${{ matrix.react-version }}" \
+            "react-dom@${{ matrix.react-version }}" \
+            "${{ matrix.testing-library }}"
       - name: Webpack build
         working-directory: test/react-compat/fixture
         env:
