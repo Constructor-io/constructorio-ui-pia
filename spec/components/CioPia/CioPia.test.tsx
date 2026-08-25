@@ -96,23 +96,6 @@ const mockLoadingResponse = {
   },
 };
 
-const mockAnswerLoadingResponse = {
-  threadId: mockGeneratedThreadId,
-  suggestedQuestions: {
-    data: mockSuggestedQuestions,
-    isLoading: false,
-    error: null,
-    getSuggestedQuestions: jest.fn(),
-  },
-  answers: {
-    data: null,
-    items: null,
-    isLoading: true,
-    error: null,
-    getAnswer: jest.fn(),
-  },
-};
-
 const mockErrorResponse = {
   threadId: mockGeneratedThreadId,
   suggestedQuestions: {
@@ -263,14 +246,6 @@ describe('CioPia Component', () => {
       });
     });
 
-    it('displays the answer skeleton while an answer is loading', () => {
-      mockUseCioPiaHook.mockReturnValue(mockAnswerLoadingResponse);
-
-      const { getByTestId } = render(<CioPia {...mockProps} />);
-
-      expect(getByTestId('loading-skeleton')).toBeInTheDocument();
-    });
-
     describe('answer status live region', () => {
       it('is mounted before anything loads and is reused across states', () => {
         const { getByTestId, rerender } = render(<CioPia {...mockProps} />);
@@ -303,12 +278,25 @@ describe('CioPia Component', () => {
       });
     });
 
-    it('displays the skeleton while suggested questions are loading', () => {
-      mockUseCioPiaHook.mockReturnValue(mockLoadingResponse);
+    it('displays question placeholders, not answer bars, while suggested questions load', () => {
+      mockUseCioPia({ questionsData: [], questionIsLoading: true });
 
-      const { getByTestId } = render(<CioPia {...mockProps} />);
+      const { getByTestId, queryByTestId } = render(<CioPia {...mockProps} />);
+
+      expect(getByTestId('suggested-questions-skeleton')).toBeInTheDocument();
+      expect(queryByTestId('loading-skeleton')).not.toBeInTheDocument();
+    });
+
+    it('shows the answer bars and the question placeholders at the same time while an answer loads', () => {
+      mockUseCioPia({ answerIsLoading: true });
+
+      const { getByTestId, queryByTestId, queryByText } = render(<CioPia {...mockProps} />);
 
       expect(getByTestId('loading-skeleton')).toBeInTheDocument();
+      expect(getByTestId('suggested-questions-skeleton')).toBeInTheDocument();
+      // The follow-up questions arrive with the answer, so the previous buttons stand down.
+      expect(queryByTestId('suggested-questions-list')).not.toBeInTheDocument();
+      mockSuggestedQuestions.forEach((q) => expect(queryByText(q.value)).not.toBeInTheDocument());
     });
 
     it('displays error message when there is an error', () => {
