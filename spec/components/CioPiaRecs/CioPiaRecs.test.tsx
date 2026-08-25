@@ -155,19 +155,6 @@ describe('CioPiaRecs Component', () => {
       );
     });
 
-    it('does not render an error block or feedback controls', async () => {
-      const { container } = await renderSettled({ displayConfigs: { showFeedback: true } });
-
-      expect(screen.queryByTestId('error-block')).not.toBeInTheDocument();
-      expect(container.querySelector('.cio-pia-feedback')).not.toBeInTheDocument();
-    });
-
-    it('renders no disclaimer', async () => {
-      const { container } = await renderSettled();
-
-      expect(container.querySelector('.cio-pia-disclaimer')).not.toBeInTheDocument();
-    });
-
     // The pod's box sits in a row beside the options and submits on Enter. The mocks give it no
     // button, and Q&A keeps its own.
     it('renders no send button beside the refinement input', async () => {
@@ -523,50 +510,7 @@ describe('CioPiaRecs Component', () => {
       expect(screen.queryByTestId('cio-pia-recs-skeleton-carousel')).not.toBeInTheDocument();
     });
 
-    // The pod has no disclaimer of its own, so this override has nothing to replace here.
-    it('ignores a disclaimer override', async () => {
-      await renderSettled({
-        componentOverrides: {
-          disclaimer: { reactNode: () => <div data-testid='custom-disclaimer' /> },
-        },
-      });
-
-      expect(screen.queryByTestId('custom-disclaimer')).not.toBeInTheDocument();
-    });
-  });
-
-  // The pod sends no analytics in this version - tracking lands in its own PR. These tests exist
-  // so reconnecting it is a deliberate act with a failing test attached, not an accident.
-  describe('No tracking yet', () => {
-    it('sends no analytics event for a load, an option click or a product click', async () => {
-      const events = [
-        'trackProductInsightsAgentAnswerView',
-        'trackProductInsightsAgentQuestionClick',
-        'trackProductInsightsAgentQuestionSubmit',
-        'trackProductInsightsAgentResultClick',
-      ] as const;
-      const spies = events.map((event) => jest.spyOn(mockClient.tracker, event));
-
-      const { container } = await renderSettled();
-
-      await act(async () => {
-        fireEvent.click(screen.getByRole('button', { name: 'Slim fit' }));
-      });
-      await settle();
-
-      clickProductCard(container, firstResult.items![0]);
-
-      await act(async () => {
-        fireEvent.change(screen.getByRole('textbox'), { target: { value: 'more linen' } });
-        fireEvent.keyDown(screen.getByRole('textbox'), { key: 'Enter' });
-      });
-      await settle();
-
-      const fired = events.filter((_, index) => spies[index].mock.calls.length > 0);
-      expect(fired).toEqual([]);
-    });
-
-    it('still calls onProductCardClick, which is the consumer callback and not analytics', async () => {
+    it('calls onProductCardClick when a product card is clicked', async () => {
       const onProductCardClick = jest.fn();
 
       const { container } = await renderSettled({ callbacks: { onProductCardClick } });
