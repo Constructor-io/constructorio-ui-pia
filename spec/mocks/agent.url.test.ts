@@ -3,18 +3,21 @@ import { AgentRequestError } from '../../src/errors';
 
 describe('MockAgent: URL parameters', () => {
   let requestedUrl: string;
-  const originalFetch = globalThis.fetch;
 
   beforeEach(() => {
     requestedUrl = '';
-    globalThis.fetch = jest.fn(async (url: RequestInfo | URL) => {
+    jest.spyOn(globalThis, 'fetch').mockImplementation(async (url: RequestInfo | URL) => {
       requestedUrl = url.toString();
-      return { ok: true, json: async () => ({ questions: [], qna_result_id: 'mock', value: '' }) } as Response;
+      return {
+        ok: true,
+        json: async () => ({ questions: [], qna_result_id: 'mock', value: '' }),
+      } as unknown as Response;
     });
   });
 
+  // Restores the spec/setupNetwork.js guard rather than a hand-saved reference.
   afterEach(() => {
-    globalThis.fetch = originalFetch;
+    jest.restoreAllMocks();
   });
 
   it('appends i, s, ui, c params from client options to getSuggestedQuestions URL', async () => {
@@ -220,18 +223,17 @@ describe('MockAgent: URL parameters', () => {
 });
 
 describe('MockAgent: failed requests', () => {
-  const originalFetch = globalThis.fetch;
-
   function stubFetch(response: Partial<Response>) {
-    globalThis.fetch = jest.fn(async () => response as Response);
+    jest.spyOn(globalThis, 'fetch').mockResolvedValue(response as Response);
   }
 
   function createClient() {
     return new MockConstructorIOClient({ apiKey: 'test-key', sendTrackingEvents: false });
   }
 
+  // Restores the spec/setupNetwork.js guard rather than a hand-saved reference.
   afterEach(() => {
-    globalThis.fetch = originalFetch;
+    jest.restoreAllMocks();
   });
 
   it('carries the status code, so a caller can tell one failure from another', async () => {
@@ -272,7 +274,7 @@ describe('MockAgent: failed requests', () => {
   });
 
   it('surfaces a thrown non-Error as an Error', async () => {
-    globalThis.fetch = jest.fn(() => {
+    jest.spyOn(globalThis, 'fetch').mockImplementation(() => {
       // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw 'network down';
     });

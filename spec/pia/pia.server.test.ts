@@ -4,10 +4,21 @@ import {
   DEMO_ITEM_ID,
   DEMO_QUESTION,
   DEMO_QUESTION_ALTERNATIVE_PRODUCTS,
+  MOCK_QUESTIONS,
 } from '../../src/constants';
+import { QuestionResponse, GetAnswerResultsResponse } from '../../src/hooks/mocks/types';
+import { testGetAnswersApiResponse } from '../localExamples';
 
 describe('Testing PIA Module', () => {
   let client;
+
+  const createClientWithResponse = (payload: QuestionResponse | GetAnswerResultsResponse) =>
+    new ConstructorIOClient({
+      apiKey: DEMO_API_KEY,
+      sessionId: 123,
+      clientId: 'test-client-id',
+      fetch: jest.fn(async () => ({ ok: true, json: async () => payload })),
+    });
 
   beforeEach(() => {
     client = new ConstructorIOClient({
@@ -19,7 +30,9 @@ describe('Testing PIA Module', () => {
 
   describe('getSuggestedQuestions', () => {
     it('fetches suggested questions given item_id', async () => {
-      const result = await client.agent.pia.getSuggestedQuestions(DEMO_ITEM_ID);
+      const result = await createClientWithResponse({
+        questions: MOCK_QUESTIONS,
+      }).agent.pia.getSuggestedQuestions(DEMO_ITEM_ID);
 
       expect(result).toBeDefined();
       expect(result.questions).toBeDefined();
@@ -37,10 +50,9 @@ describe('Testing PIA Module', () => {
 
   describe('getAnswerResults', () => {
     it('fetches answer given item_id and questions', async () => {
-      const result = await client.agent.pia.getAnswerResults(
-        DEMO_ITEM_ID,
-        DEMO_QUESTION_ALTERNATIVE_PRODUCTS,
-      );
+      const result = await createClientWithResponse(
+        testGetAnswersApiResponse,
+      ).agent.pia.getAnswerResults(DEMO_ITEM_ID, DEMO_QUESTION_ALTERNATIVE_PRODUCTS);
 
       expect(result).toBeDefined();
 
@@ -62,7 +74,7 @@ describe('Testing PIA Module', () => {
       expect(Array.isArray(result.follow_up_questions)).toBe(true);
       expect(result.follow_up_questions[0]).toHaveProperty('value');
       expect(typeof result.follow_up_questions[0].value).toBe('string');
-    }, 15000);
+    });
 
     it('throws an error if no item id is provided', async () => {
       await expect(client.agent.pia.getAnswerResults(undefined, DEMO_QUESTION)).rejects.toThrow(
