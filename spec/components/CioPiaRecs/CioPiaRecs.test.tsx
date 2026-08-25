@@ -126,6 +126,26 @@ describe('CioPiaRecs Component', () => {
       expect(screen.queryByTestId('cio-pia-recs-skeleton-carousel')).not.toBeInTheDocument();
     });
 
+    // The title is what names the row of products, so it is the pod's only handle for a screen
+    // reader jumping between landmarks and the only thing putting the pod in the page's outline.
+    it('renders the title as a heading', async () => {
+      await renderSettled();
+
+      expect(screen.getByRole('heading', { name: firstResult.title })).toHaveClass(
+        'cio-pia-recs-pod__title',
+      );
+    });
+
+    // No title means no node, not an empty one holding a line of blank space above the products.
+    it('renders no title at all when the response carries none', async () => {
+      mockClient.agent.getRecs.mockResolvedValue({ ...firstResult, title: '' });
+
+      const { container } = await renderSettled();
+
+      expect(container.querySelector('.cio-pia-recs-pod__title')).not.toBeInTheDocument();
+      expect(container.querySelector('[data-carousel]')).toBeInTheDocument();
+    });
+
     it('renders one option button per refinement option', async () => {
       await renderSettled();
 
@@ -491,6 +511,19 @@ describe('CioPiaRecs Component', () => {
         String(firstResult.refinement!.options.length),
       );
       expect(view.getByTestId('custom-loading')).toHaveTextContent('false');
+    });
+
+    // The heading is ours, but its level is a page-outline decision, so a retailer has to be able
+    // to supply its own. `componentOverrides.answer` is that seam, shared with question-and-answer.
+    it('renders a custom title from componentOverrides.answer', async () => {
+      const { container } = await renderSettled({
+        componentOverrides: {
+          answer: { reactNode: ({ text }) => <h2 data-testid='custom-title'>{text}</h2> },
+        },
+      });
+
+      expect(screen.getByTestId('custom-title')).toHaveTextContent(firstResult.title);
+      expect(container.querySelector('.cio-pia-recs-pod__title')).not.toBeInTheDocument();
     });
 
     it('renders a custom loading placeholder', () => {

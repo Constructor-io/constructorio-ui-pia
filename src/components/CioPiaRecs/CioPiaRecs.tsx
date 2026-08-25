@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
 import { RenderPropsWrapper } from '@constructor-io/constructorio-ui-components';
-import Answer from '../Answer/Answer';
 import PiaCustomCarousel from '../CioPia/PiaCustomCarousel';
 import RecsPodRefinement from './RecsPodRefinement';
 import RecsPodSkeleton from './RecsPodSkeleton';
@@ -102,13 +101,13 @@ export default function CioPiaRecs(props: CioPiaProps) {
   return (
     <div ref={containerRef} className={className} data-testid='cio-pia-recs-pod'>
       <RenderPropsWrapper props={renderProps} override={children || rootOverride}>
-        {/*
-          `key` is the title itself, so React remounts this node whenever the copy changes and
-          replays the fade rather than swapping the text in place.
-        */}
-        <div key={title} className='cio-pia-recs-pod__title'>
-          <Answer text={title} componentOverride={answerOverride} />
-        </div>
+        {title && (
+          <RenderPropsWrapper props={{ text: title }} override={answerOverride?.reactNode}>
+            <h3 key={title} className='cio-pia-recs-pod__title'>
+              {title}
+            </h3>
+          </RenderPropsWrapper>
+        )}
 
         <div className='cio-pia-recs-pod__products' data-testid='cio-pia-recs-pod-products'>
           {isLoading || !items ? (
