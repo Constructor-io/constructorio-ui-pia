@@ -299,3 +299,44 @@ Override the entire component using the top-level `reactNode`. Receives all rend
   }}
 />
 ```
+
+## Reading the `error` render prop
+
+When a request fails, the `error` render prop holds an `AgentRequestError`. It extends `Error`, so
+everything you already do with an error still works, and it adds one field:
+
+<Markdown>
+{`
+| Field     | Type     | Meaning                                    |
+|-----------|----------|--------------------------------------------|
+| \`status\`  | \`number\` | The HTTP status code of the failed request |
+| \`message\` | \`string\` | \`"Request failed with status <status>"\`     |
+| \`name\`    | \`string\` | \`"AgentRequestError"\`                      |
+`}
+</Markdown>
+
+`status` is there so you can tell one kind of failure from another without reading the message.
+
+```jsx
+import { AgentRequestError } from '@constructor-io/constructorio-ui-pia';
+
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId="YOUR_ITEM_ID"
+  componentOverrides={{
+    reactNode: ({ error, items }) => {
+      if (error instanceof AgentRequestError) {
+        // The request itself was rejected as unsuitable — nothing to retry.
+        if (error.status === 422) return <p>Try asking something else.</p>;
+        // Rate limited, or the service failed. A retry may work.
+        if (error.status === 429 || error.status >= 500) return <p>Please try again shortly.</p>;
+      }
+
+      return <MyResults items={items} />;
+    },
+  }}
+/>;
+```
+
+A network failure — offline, DNS — is a plain `Error` with no `status`, so check with `instanceof`
+before reading the field.

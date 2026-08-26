@@ -1,8 +1,9 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen, fireEvent, within, act } from '@testing-library/react';
 import { CIO_EVENTS } from '@constructor-io/constructorio-ui-components';
-import CioPia, { CioPiaProps } from '../../../src/components/CioPia/CioPia';
+import CioPia from '../../../src/components/CioPia/CioPia';
+import type { CioPiaProps } from '../../../src/components/CioPia/types';
 import useCioPia from '../../../src/hooks/useCioPia';
 import { DEMO_QUESTION } from '../../../src/constants';
 import { createMockCioClient } from '../../helpers/mockCioClient';
@@ -975,6 +976,55 @@ describe('CioPia Component', () => {
       mockSuggestedQuestions.forEach((question) => {
         expect(screen.getByText(question.value)).toBeInTheDocument();
       });
+    });
+  });
+
+  describe('Recommendations Mode', () => {
+    const recsClient = mockProps.cioClient as ReturnType<typeof createMockCioClient>;
+    const recsProps = { ...mockProps, itemName: 'Test Item' };
+    const recsResult = {
+      title: 'Since you prefer slim fits, more shirts like this',
+      items: mockItems,
+      refinement: { options: ['Slim fit'] },
+      resultId: 'recs-result-id',
+    };
+
+    /** Renders in recommendations mode and lets the request made on mount settle. */
+    async function renderRecsPod(props: Partial<CioPiaProps> = {}) {
+      const view = render(
+        <CioPia {...recsProps} displayConfigs={{ mode: 'recommendations' }} {...props} />,
+      );
+      await act(async () => {
+        await new Promise((resolve) => {
+          setTimeout(resolve, 0);
+        });
+      });
+      return view;
+    }
+
+    beforeEach(() => {
+      recsClient.agent.getRecs.mockResolvedValue(recsResult);
+    });
+
+    it('does not run the question-and-answer experience', async () => {
+      await renderRecsPod();
+
+      expect(useCioPia).not.toHaveBeenCalled();
+      expect(screen.queryByTestId('cio-pia-container')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('cio-pia-title')).not.toBeInTheDocument();
+      mockSuggestedQuestions.forEach((question) => {
+        expect(screen.queryByText(question.value)).not.toBeInTheDocument();
+      });
+    });
+
+    it('lets the mode win over the type', async () => {
+      const { container } = await renderRecsPod({
+        displayConfigs: { mode: 'recommendations', type: 'modal' },
+      });
+
+      expect(screen.getByTestId('cio-pia-recs-pod')).toBeInTheDocument();
+      expect(container.querySelector('dialog')).not.toBeInTheDocument();
+      expect(useCioPia).not.toHaveBeenCalled();
     });
   });
 

@@ -11,6 +11,7 @@ import {
   GetAnswerResultsProps,
   GetAnswerResultsResponse,
 } from './types';
+import { GetRecsProps, RecsResult } from '../../types';
 import { AgentRequestError } from '../../errors';
 
 // Create URL for PIA API
@@ -154,6 +155,22 @@ class MockAgent {
 
       throw new Error(String(error));
     }
+  }
+
+  /**
+   * Fetches one set of recommendations, in the shape the pod renders.
+   *
+   * Recommendations are not available yet: there is no endpoint to ask, so nothing is requested and
+   * an empty result is returned. The pod renders nothing in that state, which leaves whatever the
+   * retailer already had in that slot showing through. Supply a `cioClient` with your own
+   * `agent.getRecs` to drive the pod from your own data in the meantime.
+   *
+   * `props` is still declared, because it is the contract a caller's own `getRecs` implements and
+   * `useRecsPod` passes it - there is simply nothing here to send it to yet.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getRecs(props: GetRecsProps): Promise<RecsResult> {
+    return { title: '', items: null, refinement: null, status: 'complete' };
   }
 
   async getAnswerResultsStream({

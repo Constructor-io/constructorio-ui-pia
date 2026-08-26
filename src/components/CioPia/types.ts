@@ -10,6 +10,7 @@ import {
   CioPiaDisplayConfigs,
   Translations,
   SuggestedQuestionsParameters,
+  RecsPodParameters,
   Formatters,
   ProductCardDisplayProps,
 } from '../../types';
@@ -45,6 +46,8 @@ export interface CioPiaProps
   translations?: Translations;
   /** Parameters for the suggested questions request. */
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
+  /** Parameters for the recommendations request, used by `mode: 'recommendations'`. */
+  recsPodParameters?: RecsPodParameters;
   /**
    * Extra query parameters appended to PIA API requests (e.g. `ef-*` test cell params).
    * Define outside the component or wrap with useMemo to avoid unnecessary re-renders.
