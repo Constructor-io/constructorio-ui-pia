@@ -541,6 +541,7 @@ describe('CioPiaRecs Component', () => {
 
       expect(screen.getByTestId('custom-loading')).toBeInTheDocument();
       expect(screen.queryByTestId('cio-pia-recs-skeleton-carousel')).not.toBeInTheDocument();
+      expect(screen.getByTestId('cio-pia-recs-skeleton-options')).toBeInTheDocument();
     });
 
     it('calls onProductCardClick when a product card is clicked', async () => {

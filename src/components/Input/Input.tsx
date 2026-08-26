@@ -9,11 +9,15 @@ import { translate } from '../../utils/translate';
 import { SendIcon } from '../icons';
 
 /**
- * Counts instances so each error message can be given an id of its own, which `aria-describedby`
- * needs to point at it. `useId` would do this, but it is React 18+ and this package supports React
- * >= 16.12. Read once per instance through a lazy initializer, so it holds across renders.
+ * Numbers the `Input`s mounted on the page, so each one can give its error message a DOM `id` no
+ * other input will collide with. Nothing to do with messages or errors themselves - the id is
+ * needed because that is what the field's `aria-describedby` has to point at.
+ *
+ * `useId` is the built-in way to do this, but it is React 18+ and this package supports React
+ * >= 16.12. Read once per instance through a lazy initializer, so the number an input gets holds
+ * across its re-renders.
  */
-let inputInstanceCount = 0;
+let inputIdCounter = 0;
 
 interface InputProps {
   value?: string;
@@ -48,8 +52,8 @@ function Input({
 }: InputProps) {
   const [value, setValue] = useState(providedValue || '');
   const [errorId] = useState(() => {
-    inputInstanceCount += 1;
-    return `cio-pia-input-${inputInstanceCount}-error`;
+    inputIdCounter += 1;
+    return `cio-pia-input-${inputIdCounter}-error`;
   });
 
   useEffect(() => {
@@ -83,14 +87,6 @@ function Input({
       ? translate(placeholderKey, translations)
       : (placeholder ?? translate(placeholderKey));
 
-  // The field reserves room on its right for the Send button, so it has to give that room back
-  // when there is no button to reserve it for.
-  const inputClassName = cx(
-    'cio-pia-input',
-    error && 'cio-pia-input--error',
-    !showSendButton && 'cio-pia-input--no-send',
-  );
-
   return (
     <RenderPropsWrapper
       props={{
@@ -112,7 +108,11 @@ function Input({
             onFocus={onFocus}
             placeholder={resolvedPlaceholder}
             disabled={disabled}
-            className={inputClassName}
+            className={cx(
+              'cio-pia-input',
+              error && 'cio-pia-input--error',
+              !showSendButton && 'cio-pia-input--no-send',
+            )}
             aria-invalid={error ? true : undefined}
             aria-describedby={error ? errorId : undefined}
           />

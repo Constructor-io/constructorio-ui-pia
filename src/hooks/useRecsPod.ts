@@ -6,6 +6,7 @@ import {
   RecsPodParameters,
   RecsRefinement,
   RecsResult,
+  RecsStrategy,
   Translations,
 } from '../types';
 import { AgentRequestError } from '../errors';
@@ -56,7 +57,7 @@ export interface UseRecsPodReturn {
   refine: (text: string, source: RefinementSource) => void;
 }
 
-const DEFAULT_STRATEGY = 'complementary_items';
+const DEFAULT_STRATEGY: RecsStrategy = 'complementary_items';
 
 /**
  * Owns everything a recommendations pod shows: one request on mount, one on every refinement,

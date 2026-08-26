@@ -2,7 +2,7 @@ import React from 'react';
 import Input from '../Input/Input';
 import SuggestedQuestion from '../SuggestedQuestion/SuggestedQuestion';
 import { SparklesIcon } from '../icons';
-import RecsPodSkeleton from './RecsPodSkeleton';
+import RecsOptionsSkeleton from './RecsOptionsSkeleton';
 import { CioPiaComponentOverrides, RecsRefinement, Translations } from '../../types';
 import { resolveRefinementQuestion } from '../../utils/recs';
 import { RECS_INPUT_PLACEHOLDER } from '../../constants';
@@ -45,7 +45,7 @@ export default function RecsPodRefinement({
       </span>
 
       {isLoading ? (
-        <RecsPodSkeleton part='options' count={options.length || undefined} />
+        <RecsOptionsSkeleton count={options.length || undefined} />
       ) : (
         options.map((option) => (
           <SuggestedQuestion

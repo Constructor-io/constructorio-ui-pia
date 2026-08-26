@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { RenderPropsWrapper } from '@constructor-io/constructorio-ui-components';
 import PiaCustomCarousel from '../CioPia/PiaCustomCarousel';
 import RecsPodRefinement from './RecsPodRefinement';
-import RecsPodSkeleton from './RecsPodSkeleton';
+import RecsCarouselSkeleton from './RecsCarouselSkeleton';
 import usePiaClient from '../../hooks/usePiaClient';
 import useRecsPod from '../../hooks/useRecsPod';
 import useViewportCallbacks from '../../hooks/useViewportCallbacks';
@@ -92,14 +92,15 @@ export default function CioPiaRecs(props: CioPiaProps) {
   // its own message here.
   if (!isLoading && !items && !children && !rootOverride) return null;
 
-  const className = cx(
-    'cio-pia-container',
-    'cio-pia-recs-pod',
-    isLoading && 'cio-pia-recs-pod--loading',
-  );
-
   return (
-    <div ref={containerRef} className={className} data-testid='cio-pia-recs-pod'>
+    <div
+      ref={containerRef}
+      className={cx(
+        'cio-pia-container',
+        'cio-pia-recs-pod',
+        isLoading && 'cio-pia-recs-pod--loading',
+      )}
+      data-testid='cio-pia-recs-pod'>
       <RenderPropsWrapper props={renderProps} override={children || rootOverride}>
         {title && (
           <RenderPropsWrapper props={{ text: title }} override={answerOverride?.reactNode}>
@@ -111,10 +112,7 @@ export default function CioPiaRecs(props: CioPiaProps) {
 
         <div className='cio-pia-recs-pod__products' data-testid='cio-pia-recs-pod-products'>
           {isLoading || !items ? (
-            <RecsPodSkeleton
-              part='carousel'
-              // What was asked for, so the first skeleton is already the right width. `items` is
-              // the fallback for a response that carried a different number than requested.
+            <RecsCarouselSkeleton
               count={numResults ?? items?.length}
               componentOverride={loadingOverride}
             />
