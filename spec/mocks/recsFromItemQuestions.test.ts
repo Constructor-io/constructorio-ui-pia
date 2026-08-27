@@ -7,7 +7,7 @@ import {
   RECS_QUESTION_TAIL_ALTERNATIVE,
   RECS_QUESTION_TAIL_COMPLEMENTARY,
 } from '../../src/constants';
-import { GetAnswerResultsResponse } from '../../src/types';
+import { GetAnswerResultsResponse } from '../../src/hooks/mocks/types';
 import { testGetAnswersApiResponse } from '../localExamples';
 
 const testResponse = testGetAnswersApiResponse as GetAnswerResultsResponse;
