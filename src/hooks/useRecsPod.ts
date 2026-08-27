@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { CioClient } from './usePiaClient';
 import {
   Formatters,
+  GetRecsProps,
   Item,
   RecsPodParameters,
   RecsRefinement,
@@ -115,7 +116,8 @@ export default function useRecsPod({
       setError(null);
       setHasUnsupportedInput(false);
 
-      (cioClient.agent as any)
+      // TODO: remove cast once getRecs is added to the JS client SDK
+      (cioClient.agent as unknown as { getRecs: (props: GetRecsProps) => Promise<RecsResult> })
         .getRecs({
           itemId,
           variationId,
