@@ -36,6 +36,7 @@ export default function CioPiaQna(props: CioPiaProps) {
     translations,
     suggestedQuestionsParameters,
     parameters,
+    trackingConfigs,
   } = props;
   const {
     learnMoreUrl,
@@ -87,6 +88,7 @@ export default function CioPiaQna(props: CioPiaProps) {
   const { containerRef: viewportContainerRef } = useViewportTracking({
     tracking,
     questions: displayedQuestions,
+    viewThreshold: trackingConfigs?.viewThreshold,
   });
   const { containerRef: callbackContainerRef } = useViewportCallbacks({ callbacks, context });
 
