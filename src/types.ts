@@ -42,6 +42,14 @@ export type CioPiaType = 'inline' | 'modal';
 
 export type DisclaimerPosition = 'top' | 'bottom';
 
+export type CioPiaTrackingConfigs = {
+  /**
+   * Fraction of the container (0–1) that must be visible before the
+   * `product_insights_agent.view` event fires. Defaults to `0.5`.
+   */
+  viewThreshold?: number;
+};
+
 export type CioPiaDisplayConfigs = {
   learnMoreUrl?: string;
   showFeedback?: boolean;

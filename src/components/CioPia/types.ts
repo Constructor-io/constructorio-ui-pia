@@ -8,6 +8,7 @@ import {
   CioPiaComponentOverrides,
   Callbacks,
   CioPiaDisplayConfigs,
+  CioPiaTrackingConfigs,
   Translations,
   SuggestedQuestionsParameters,
   RecsPodParameters,
@@ -33,6 +34,8 @@ export interface CioPiaProps
   cioClient?: MockConstructorIOClient;
   /** Display configuration options (mode, type, showFeedback, etc.). */
   displayConfigs?: CioPiaDisplayConfigs;
+  /** Tracking configuration options (viewThreshold, etc.). */
+  trackingConfigs?: CioPiaTrackingConfigs;
   /** Callback handlers for user interactions (onQuestionSubmit, onProductCardClick, onFeedback). */
   callbacks?: Callbacks;
   // Redeclared from IncludeComponentOverrides for Storybook autodocs.
