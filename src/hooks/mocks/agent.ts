@@ -163,16 +163,12 @@ class MockAgent {
   }
 
   /**
-   * Fetches one set of recommendations, in the shape the pod renders.
+   * Fetches one set of recommendations, in the shape the pod renders. Asks the Q&A endpoint phrased
+   * as a request for recommendations - see `recsFromItemQuestions.ts`. Interim backing:
+   * `/v1/agent_insights` with `mode: 'recommendations'` replaces the body of this method.
    *
-   * Asks the Q&A endpoint, phrased as a request for recommendations - see
-   * `recsFromItemQuestions.ts` for why the wording matters and what the response gives up. This is
-   * an interim backing: `/v1/agent_insights` with `mode: 'recommendations'` is the endpoint the pod
-   * is designed for, and swapping to it means replacing the body of this method.
-   *
-   * `threadId` is passed straight through, and refinement depends on it. The endpoint narrows the
-   * products from the previous turn rather than searching the catalog again, so a refinement sent
-   * outside the thread that produced those products has nothing to narrow.
+   * `threadId` is passed straight through, and refinement depends on it - the endpoint narrows the
+   * previous turn's products rather than searching the catalog again.
    */
   async getRecs({
     itemId,
@@ -184,9 +180,7 @@ class MockAgent {
   }: GetRecsProps): Promise<RecsResult> {
     const question = buildRecsQuestion(strategy, shopperInput);
 
-    // Only some strategies have a question that asks for them. Rather than send a question that
-    // would answer the wrong thing, settle empty and say why - the pod then renders nothing, and
-    // whatever the retailer already had in that slot shows through.
+    // No question asks for this strategy, so settle empty rather than answer the wrong thing.
     if (!question) {
       console.warn(
         `Constructor PIA: the '${strategy}' recommendations strategy is not available yet. ` +

@@ -112,11 +112,15 @@ const meta = {
         '',
         '`"Add to Cart"` — Product card add-to-cart button label.',
         '',
-        'Recommendations mode only. These six are the strings the API cannot supply, either because in those states there is no usable response yet or because what the response carries is unusable:',
+        'Recommendations mode only — copy the API does not supply:',
         '',
         '`"Adapting recommendations to your preference"` — Title shown while a request is in flight.',
         '',
-        '`"Pairs well with"` — The pod title. Used whenever the response carries no title of its own, which is every response today, so it is the title throughout.',
+        '`"Products that work well with this one"` — The pod title for `"complementary_items"`, used whenever the response carries no title of its own, which is every response today.',
+        '',
+        '`"Similar products you might like"` — The pod title for `"alternative_items"`, same rule.',
+        '',
+        '`"Recommended for this item"` — The pod title for any other strategy, same rule.',
         '',
         '`"Best selling products"` — Title shown when a request failed or came back degraded.',
         '',
@@ -140,11 +144,11 @@ const meta = {
       description: [
         'Parameters for the recommendations pod. Ignored unless `displayConfigs.mode` is `"recommendations"`.',
         '',
-        '`strategy?: RecsStrategy` — Which kind of recommendations to fetch: `"complementary_items"`, `"alternative_items"`, `"bestsellers"`, `"bundles"`, `"buy_it_again"`, `"recently_viewed_items"` or `"visually_similar_items"`. Defaults to `"complementary_items"`. Only the first two are served today — see the Recommendations Live story.',
+        '`strategy?: RecsStrategy` — Which kind of recommendations to fetch: `"complementary_items"` or `"alternative_items"`. Defaults to `"complementary_items"`. Other `RecsStrategy` values are not served today and render nothing.',
         '',
-        '`defaultTitle?: string` — The pod title, used whenever the response carries no title of its own, which is every response today.',
+        '`defaultTitle?: string` — The pod title, used whenever the response carries no title of its own, which is every response today. Without it, each strategy has a built-in title.',
         '',
-        '`refinementOptions?: string[]` — The options the shopper can pick from, used whenever the response carries none of its own, which is every response today. Defaults to `["from a different brand", "organic"]`; pass `[]` for no options at all.',
+        '`refinementOptions?: string[]` — The options the shopper can pick from, used whenever the response carries none of its own, which is every response today. Defaults to `["From a different brand", "A lower price"]`; pass `[]` for no options at all. An option is answered in the context of the previous turn rather than as a fresh catalog search, so absolute thresholds such as `"under $50"` often leave nothing.',
         '',
         '`showInput?: boolean` — Render the free-text refinement box. Defaults to `true`.',
         '',
@@ -212,10 +216,8 @@ export const WithCustomCurrencyConversation: Story = {
 };
 
 /**
- * Recommendations mode. These stories supply their own client, because the endpoint that returns a
- * short title and refinement options of its own is not deployed yet - so `apiKey` is inert in them
- * and they reach no network. `RecommendationsLive` at the end of this file is the exception: it runs
- * against the API the pod is backed by today.
+ * Recommendations mode. These stories supply their own client, so `apiKey` is inert in them and they
+ * reach no network. `RecommendationsLive` at the end of the file is the exception.
  */
 const recsArgs = (stub: RecsStubOptions = {}) => ({
   apiKey: DEMO_API_KEY,
@@ -223,18 +225,12 @@ const recsArgs = (stub: RecsStubOptions = {}) => ({
   itemName: DEMO_ITEM_NAME,
   displayConfigs: { mode: 'recommendations' as const },
   cioClient: createRecsPodStubClient(stub),
-  // The stub answers with seven products, so the pod asks for seven. That is what lets the
-  // placeholders match the row replacing them card for card, with nothing sliding sideways: absent
-  // a `numResults`, the pod has only a guess to draw on the very first request.
+  // The stub answers with seven products, so the pod asks for seven and the placeholders match the
+  // row replacing them card for card.
   recsPodParameters: { numResults: 7 },
 });
 
-/**
- * The pod takes the width it is given, and the carousel inside it holds more products than fit -
- * that is what its arrows are for. `centered` makes Storybook's `body` a flex container, which sizes
- * a story to its contents rather than to the canvas, so the pod grows to the full width of the row
- * of cards and the page scrolls sideways. `padded` leaves it in a block, the way a page would.
- */
+/** `padded` leaves the pod in a block, the way a page would, rather than sizing it to its contents. */
 const recsLayout = { layout: 'padded' as const };
 
 export const RecommendationsPod: Story = {
@@ -295,8 +291,8 @@ export const RecommendationsWithParameters: Story = {
   args: {
     ...recsArgs({ groups: RECS_SIX_GROUPS }),
     recsPodParameters: {
-      strategy: 'bestsellers',
-      defaultTitle: 'Our best sellers this week',
+      strategy: 'alternative_items',
+      defaultTitle: 'Other options to consider',
       showInput: false,
       numResults: 6,
     },
@@ -313,10 +309,7 @@ export const RecommendationsWithParameters: Story = {
   },
 };
 
-/**
- * A product in the demo catalog this API answers well for, so the story shows a working pod rather
- * than the empty state. Tortilla chips: what comes back is the dips to eat them with.
- */
+/** A product this API answers well for, so the story shows a working pod rather than the empty state. */
 const LIVE_RECS_ITEM_ID = '109050174';
 const LIVE_RECS_ITEM_NAME = 'Tortilla Chips Scoops';
 
@@ -326,32 +319,14 @@ export const RecommendationsLive: Story = {
     itemId: LIVE_RECS_ITEM_ID,
     itemName: LIVE_RECS_ITEM_NAME,
     displayConfigs: { mode: 'recommendations' },
-    recsPodParameters: { numResults: 5 },
   },
   parameters: {
     ...recsLayout,
     docs: {
       description: {
-        story: [
+        story:
           'The only recommendations story with no `cioClient`, so this one reaches the API. Give it ' +
-            'a few seconds: the pod is backed by the question-answering endpoint until the ' +
-            'recommendations endpoint ships, and that is a language model round-trip.',
-          '',
-          'What that backing costs, and what to expect here:',
-          '',
-          "- The title and the options are the pod's own. The response carries a few sentences of " +
-            'prose and follow-ups phrased as questions, neither of which belongs in a pod, so both ' +
-            'are dropped. Override them with `defaultTitle` and `refinementOptions`.',
-          '- Only `"complementary_items"` and `"alternative_items"` come back with anything. The ' +
-            'other five strategies have no equivalent question to ask, so the pod renders nothing.',
-          '- Not every product has an answer. Roughly one PDP in five renders no pod at all on ' +
-            '`"complementary_items"`, which leaves whatever was already in that slot showing.',
-          '- The products rotate between loads, so a reload is not a like-for-like comparison.',
-          '- An option narrows the products already on screen rather than searching the catalog, ' +
-            'which is why `refinementOptions` is worth setting to categories from your own catalog. ' +
-            'A price is the weakest choice: if none of the four or five products on screen sit ' +
-            'under it, nothing is left.',
-        ].join('\n'),
+          'a few seconds - it is a language model round-trip, and the products rotate between loads.',
       },
     },
   },

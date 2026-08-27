@@ -13,8 +13,7 @@ import { testGetAnswersApiResponse } from '../localExamples';
 const testResponse = testGetAnswersApiResponse as GetAnswerResultsResponse;
 
 describe('Testing recsFromItemQuestions: buildRecsQuestion', () => {
-  // The wording is what decides whether products come back at all, so it is asserted whole rather
-  // than by shape.
+  // The wording decides whether products come back at all, so assert it whole.
   it('asks for complementary products', () => {
     expect(buildRecsQuestion('complementary_items')).toBe(
       `${RECS_QUESTION_PREFIX}${RECS_QUESTION_TAIL_COMPLEMENTARY}`,
@@ -40,8 +39,7 @@ describe('Testing recsFromItemQuestions: buildRecsQuestion', () => {
     );
   });
 
-  // The refinement narrows the products the previous turn returned, so restating the strategy
-  // alongside it would only compete with what the shopper asked for.
+  // Restating the strategy alongside the shopper's own text would only compete with it.
   it('drops the strategy tail once there is shopper text', () => {
     const question = buildRecsQuestion('alternative_items', 'under $50');
 
@@ -61,8 +59,7 @@ describe('Testing recsFromItemQuestions: buildRecsQuestion', () => {
     );
   });
 
-  // A strategy this endpoint cannot serve is still unserved once refined, but the shopper text is
-  // what the request is about by then, so it goes out.
+  // Once refined, the shopper's text is what the request is about, so it goes out regardless.
   it('serves a refinement even on a strategy it cannot ask for', () => {
     expect(buildRecsQuestion('bestsellers', 'organic')).toBe(`${RECS_QUESTION_PREFIX}are organic`);
   });
@@ -84,8 +81,7 @@ describe('Testing recsFromItemQuestions: adaptAnswerToRecsResult', () => {
     expect(result.resultId).toBe(testGetAnswersApiResponse.qna_result_id);
   });
 
-  // This endpoint answers as a chat assistant: `value` is a few sentences of prose and the
-  // follow-ups are full questions. Dropping both is what lets the pod's own copy show instead.
+  // `value` is prose and the follow-ups are full questions, so both are dropped for the pod's copy.
   it('drops the prose answer rather than using it as a title', () => {
     const result = adaptAnswerToRecsResult(testResponse);
 

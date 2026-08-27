@@ -82,9 +82,9 @@ The component supports multiple display modes via the `displayConfigs` prop:
   displayConfigs={{ mode: 'recommendations' }}
   recsPodParameters={{
     strategy: 'complementary_items',
-    defaultTitle: 'Complete the meal',
-    // Categories from your own catalog work best - see the notes under Recs Pod Parameters.
-    refinementOptions: ['gluten free', 'family size'],
+    defaultTitle: 'Complete the set',
+    // Options from your own catalog work best - see the notes under Recs Pod Parameters.
+    refinementOptions: ['From a different brand', 'A lower price'],
   }}
 />
 ```
@@ -117,26 +117,26 @@ The component supports multiple display modes via the `displayConfigs` prop:
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `strategy` | `RecsStrategy` | `'complementary_items'` | Which kind of recommendations to fetch. One of `'complementary_items'`, `'alternative_items'`, `'bestsellers'`, `'bundles'`, `'buy_it_again'`, `'recently_viewed_items'`, `'visually_similar_items'`. Only the first two are served today — see the note below |
-| `defaultTitle` | `string` | `'Pairs well with'` | The pod title, used whenever the API returns no title of its own — which is every response today |
-| `refinementOptions` | `string[]` | `['from a different brand', 'organic']` | The options the shopper can pick from to narrow the products, used whenever the API returns none of its own — which is every response today. Pass `[]` for no options at all |
+| `strategy` | `'complementary_items' \| 'alternative_items'` | `'complementary_items'` | Which kind of recommendations to fetch. Other `RecsStrategy` values are not served today and render nothing |
+| `defaultTitle` | `string` | per strategy, see below | The pod title, used whenever the API returns no title of its own — which is every response today |
+| `refinementOptions` | `string[]` | `['From a different brand', 'A lower price']` | The options the shopper can pick from to narrow the products, used whenever the API returns none of its own — which is every response today. Pass `[]` for no options at all |
 | `showInput` | `boolean` | `true` | Render the free-text box after the options |
 | `numResults` | `number` | - | How many products to show. Does not reach the API today, so it only sizes the loading skeleton |
+
+Without a `defaultTitle`, the pod supplies its own — "Products that work well with this one" for
+`'complementary_items'` and "Similar products you might like" for `'alternative_items'`. Both are
+`translations` keys, so they can be replaced that way too.
 
 **What recommendations mode gives you today.** The endpoint the pod is designed for is not deployed
 yet, so it is backed by the question-answering endpoint in the meantime. That backing is worth
 knowing about:
 
-- **Only `'complementary_items'` and `'alternative_items'` return anything.** The other five
-  strategies have no equivalent question to ask. Pass your own `cioClient` with an `agent.getRecs`
-  of your own to serve them from your own data.
 - **The title and the options are the pod's own,** which is what `defaultTitle` and
   `refinementOptions` are for. The API sends a few sentences of prose and follow-ups phrased as
   questions; neither belongs in a pod, so both are dropped.
-- **Set `refinementOptions` to categories from your own catalog.** An option narrows the products
-  already on screen rather than searching the catalog, so concrete nouns work far better than
-  qualifiers, and a price is the weakest choice of all: if none of the four or five products on
-  screen sit under it, nothing is left.
+- **An option is answered in the context of the previous turn,** not as a fresh catalog search, so
+  relative wording ("a lower price", "from a different brand") holds up where an absolute threshold
+  ("under $50") often leaves nothing. Options from your own catalog work best.
 - **Not every product has an answer.** Roughly one product page in five renders no pod at all on
   `'complementary_items'`. The component renders no markup in that case, so whatever your page
   already had in that slot shows through.

@@ -79,8 +79,12 @@ export type Translations = {
   'Adapting recommendations to your preference'?: string;
   /** Recommendations pod title shown when a request fails or comes back degraded. */
   'Best selling products'?: string;
-  /** Recommendations pod title, shown whenever the response carries no title of its own. */
-  'Pairs well with'?: string;
+  /** Recommendations pod title for `complementary_items`, used when the response carries none. */
+  'Products that work well with this one'?: string;
+  /** Recommendations pod title for `alternative_items`, used when the response carries none. */
+  'Similar products you might like'?: string;
+  /** Recommendations pod title for any other strategy, used when the response carries none. */
+  'Recommended for this item'?: string;
   /** Shown under the recommendations pod input when the request was rejected as unsuitable. */
   'Unsupported request, try a different feature.'?: string;
   /** Introduces the recommendations pod refinement options when the API sends no prompt of its own. */
@@ -154,7 +158,7 @@ export interface ConversationEntry {
   qnaResultId?: string;
 }
 
-/** Which kind of recommendations to fetch. */
+/** Which kind of recommendations to fetch. Only the first two are served today. */
 export type RecsStrategy =
   | 'complementary_items'
   | 'alternative_items'
@@ -184,20 +188,17 @@ export interface RecsResult {
 
 export interface RecsPodParameters {
   /**
-   * Which kind of recommendations to fetch.
-   *
-   * Only `complementary_items` and `alternative_items` are served today. The pod is backed by the
-   * Q&A endpoint until the recommendations endpoint ships, and the rest have no question that asks
-   * for them - those settle empty, so the pod renders nothing. Supply a `cioClient` with your own
-   * `agent.getRecs` to serve them from your own data in the meantime.
+   * Which kind of recommendations to fetch. Only `complementary_items` and `alternative_items` are
+   * served today; the other values settle empty, so the pod renders nothing. Supply a `cioClient`
+   * with your own `agent.getRecs` to serve them from your own data in the meantime.
    *
    * @default 'complementary_items'
    */
   strategy?: RecsStrategy;
   /**
-   * The pod's title. Used whenever the response carries no title of its own, which is every
-   * response today, so this is the title throughout - including after a refinement. Falls back to a
-   * translatable default.
+   * The pod's title. Used whenever the response carries no title of its own, which is every response
+   * today, so this is the title throughout - including after a refinement. Falls back to a
+   * translatable default per strategy.
    */
   defaultTitle?: string;
   /**
@@ -210,12 +211,10 @@ export interface RecsPodParameters {
    * The short labels the shopper can pick from to narrow the products, used whenever the response
    * carries none of its own - which is every response today. Pass `[]` for no options at all.
    *
-   * Worth setting to categories from your own catalog: concrete nouns narrow the results far more
-   * reliably than qualifiers. Price options are the weakest choice, because a refinement narrows
-   * the products already on screen rather than searching the catalog, so a price the current
-   * products miss leaves the pod empty.
+   * A refinement is answered in the context of the previous turn rather than as a fresh catalog
+   * search, so relative wording holds up and absolute thresholds ("under $50") often leave nothing.
    *
-   * @default ['from a different brand', 'organic']
+   * @default ['From a different brand', 'A lower price']
    */
   refinementOptions?: string[];
   /**

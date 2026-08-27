@@ -7,11 +7,11 @@ import type { CioPiaProps } from '../../../src/components/CioPia/types';
 import { AgentRequestError } from '../../../src/errors';
 import {
   RECS_DEFAULT_REFINEMENT_OPTIONS,
-  RECS_DEFAULT_TITLE,
   RECS_FALLBACK_TITLE,
   RECS_INPUT_PLACEHOLDER,
   RECS_LOADING_TITLE,
   RECS_REFINEMENT_LABEL,
+  RECS_TITLE_COMPLEMENTARY,
   RECS_UNSUPPORTED_REQUEST,
 } from '../../../src/constants';
 import { Item, RecsResult } from '../../../src/types';
@@ -138,14 +138,13 @@ describe('CioPiaRecs Component', () => {
       );
     });
 
-    // The products need naming whether or not the response named them, so the pod supplies its own
-    // title rather than leaving the row to sit there unlabelled.
+    // The row needs naming whether or not the response named it.
     it('falls back to the pod title when the response carries none', async () => {
       mockClient.agent.getRecs.mockResolvedValue({ ...firstResult, title: '' });
 
       const { container } = await renderSettled();
 
-      expect(screen.getByRole('heading', { name: RECS_DEFAULT_TITLE })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: RECS_TITLE_COMPLEMENTARY })).toBeInTheDocument();
       expect(container.querySelector('[data-carousel]')).toBeInTheDocument();
     });
 

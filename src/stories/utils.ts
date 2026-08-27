@@ -14,27 +14,18 @@ export interface RecsStubOptions {
   /** When set, every request after the first is rejected with it. */
   failAfterFirst?: Error;
   /**
-   * What to do with text that is not one of the options currently on screen - that is, with
-   * something the shopper typed rather than clicked.
-   *
-   * `'reject422'` is how a story shows a rejected input while its options keep working.
+   * What to do with text the shopper typed rather than clicked. `'reject422'` is how a story shows a
+   * rejected input while its options keep working.
    */
   freeText?: 'rotate' | 'reject422';
-  /** How long each request takes. Long enough to see the loading state, short enough to sit through. */
+  /** How long each request takes. */
   delayMs?: number;
 }
 
 /**
  * A stand-in client for the recommendations stories, so a story can show any appearance of the pod
- * without waiting on the API to support it.
- *
- * Every refinement moves on to the next group, so the title, the products and the options all
- * change every single time. That matters more than it sounds: a stub that answered twice with the
- * same response made a working pod look like a broken one.
- *
- * It carries no tracker on purpose: the pod sends no analytics in this version, so there is nothing
- * to stub and a story cannot send anything to a real dashboard. Tracking lands in its own PR, and
- * this stub will need a tracker then.
+ * without waiting on the API to support it. Every refinement moves on to the next group, so the
+ * title, products and options all change. No tracker: the pod sends no analytics in this version.
  */
 export const createRecsPodStubClient = (options: RecsStubOptions = {}): MockConstructorIOClient => {
   const {
@@ -46,8 +37,7 @@ export const createRecsPodStubClient = (options: RecsStubOptions = {}): MockCons
   } = options;
 
   let requestCount = 0;
-  // What the pod is showing, which is what tells a clicked option from typed text: the options are
-  // the ones the last response sent.
+  // What the pod is showing, which is what tells a clicked option from typed text.
   let onScreen: RecsResult | null = null;
 
   const after = (outcome: RecsResult | Error): Promise<RecsResult> =>

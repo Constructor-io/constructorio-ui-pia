@@ -13,9 +13,11 @@ import { AgentRequestError } from '../errors';
 import { translate } from '../utils/translate';
 import {
   RECS_DEFAULT_REFINEMENT_OPTIONS,
-  RECS_DEFAULT_TITLE,
   RECS_FALLBACK_TITLE,
   RECS_LOADING_TITLE,
+  RECS_TITLE_ALTERNATIVE,
+  RECS_TITLE_COMPLEMENTARY,
+  RECS_TITLE_GENERIC,
   RECS_UNSUPPORTED_REQUEST,
 } from '../constants';
 
@@ -66,6 +68,15 @@ export interface UseRecsPodReturn {
 const DEFAULT_STRATEGY: RecsStrategy = 'complementary_items';
 
 /**
+ * The pod's own title, per strategy. Kept here rather than in the adapter so it survives the swap to
+ * `/v1/agent_insights`, which sends a title of its own only sometimes.
+ */
+const STRATEGY_TITLES: Partial<Record<RecsStrategy, string>> = {
+  complementary_items: RECS_TITLE_COMPLEMENTARY,
+  alternative_items: RECS_TITLE_ALTERNATIVE,
+};
+
+/**
  * Owns everything a recommendations pod shows: one request on mount, one on every refinement,
  * and the title that belongs to whichever of those is happening right now.
  *
@@ -104,9 +115,7 @@ export default function useRecsPod({
   const strategy = parameters?.strategy || DEFAULT_STRATEGY;
   const { numResults, defaultTitle, refinementOptions } = parameters || {};
 
-  // The options to offer when a response carries none of its own, which is every response today.
-  // An empty list is the caller asking for no options at all, so it stays `null` rather than
-  // rendering an empty row.
+  // Options to offer when a response carries none. An empty list means no options at all.
   const configuredRefinement = useMemo<RecsRefinement | null>(() => {
     const options = refinementOptions ?? RECS_DEFAULT_REFINEMENT_OPTIONS;
 
@@ -193,10 +202,12 @@ export default function useRecsPod({
     [fetchResult],
   );
 
-  // The title belonging to the last response we kept. A response that carried items but no title of
-  // its own falls to the caller's `defaultTitle`, then to ours. Today no response carries a title,
-  // so this is the pod's title throughout, including after a refinement settles.
-  const settledTitle = result?.title || defaultTitle || translate(RECS_DEFAULT_TITLE, translations);
+  // A response carrying no title of its own falls to the caller's `defaultTitle`, then to ours for
+  // this strategy. No response carries one today, so this is the title throughout.
+  const settledTitle =
+    result?.title ||
+    defaultTitle ||
+    translate(STRATEGY_TITLES[strategy] || RECS_TITLE_GENERIC, translations);
 
   let title = settledTitle;
   if (isLoading) {

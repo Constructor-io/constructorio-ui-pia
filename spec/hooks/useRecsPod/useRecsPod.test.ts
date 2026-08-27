@@ -3,9 +3,11 @@ import useRecsPod from '../../../src/hooks/useRecsPod';
 import { AgentRequestError } from '../../../src/errors';
 import {
   RECS_DEFAULT_REFINEMENT_OPTIONS,
-  RECS_DEFAULT_TITLE,
   RECS_FALLBACK_TITLE,
   RECS_LOADING_TITLE,
+  RECS_TITLE_ALTERNATIVE,
+  RECS_TITLE_COMPLEMENTARY,
+  RECS_TITLE_GENERIC,
   RECS_UNSUPPORTED_REQUEST,
 } from '../../../src/constants';
 import { RecsResult } from '../../../src/types';
@@ -481,13 +483,12 @@ describe('Testing Hook: useRecsPod', () => {
     });
   });
 
-  // Every response from the endpoint backing the pod today carries neither a title nor options, so
-  // this is what a shopper actually sees.
+  // Every response from the endpoint backing the pod today carries neither, so this is what ships.
   describe('a response carrying no title or options', () => {
-    const titleless: RecsResult = { ...testRecsPodResult, title: '', refinement: null };
+    const bareResult: RecsResult = { ...testRecsPodResult, title: '', refinement: null };
 
     it('shows the built-in title', async () => {
-      mockClient.agent.getRecs.mockResolvedValueOnce(titleless);
+      mockClient.agent.getRecs.mockResolvedValueOnce(bareResult);
 
       const { result } = renderHook(() =>
         useRecsPod({ itemId: testItemId, cioClient: mockClient }),
@@ -495,18 +496,50 @@ describe('Testing Hook: useRecsPod', () => {
 
       await settle();
 
-      expect(result.current.title).toBe(RECS_DEFAULT_TITLE);
-      expect(result.current.items).toEqual(titleless.items);
+      expect(result.current.title).toBe(RECS_TITLE_COMPLEMENTARY);
+      expect(result.current.items).toEqual(bareResult.items);
     });
 
-    it('translates the built-in title', async () => {
-      mockClient.agent.getRecs.mockResolvedValueOnce(titleless);
+    // The built-in title names what the products are, so it belongs to the strategy that asked.
+    it.each([
+      ['alternative_items', RECS_TITLE_ALTERNATIVE],
+      ['visually_similar_items', RECS_TITLE_GENERIC],
+    ] as const)('shows the built-in title for %s', async (strategy, expected) => {
+      mockClient.agent.getRecs.mockResolvedValueOnce(bareResult);
+
+      const { result } = renderHook(() =>
+        useRecsPod({ itemId: testItemId, cioClient: mockClient, parameters: { strategy } }),
+      );
+
+      await settle();
+
+      expect(result.current.title).toBe(expected);
+    });
+
+    it('prefers defaultTitle over the built-in one for the strategy', async () => {
+      mockClient.agent.getRecs.mockResolvedValueOnce(bareResult);
 
       const { result } = renderHook(() =>
         useRecsPod({
           itemId: testItemId,
           cioClient: mockClient,
-          translations: { [RECS_DEFAULT_TITLE]: 'Goes well with' },
+          parameters: { strategy: 'alternative_items', defaultTitle: 'Other options' },
+        }),
+      );
+
+      await settle();
+
+      expect(result.current.title).toBe('Other options');
+    });
+
+    it('translates the built-in title', async () => {
+      mockClient.agent.getRecs.mockResolvedValueOnce(bareResult);
+
+      const { result } = renderHook(() =>
+        useRecsPod({
+          itemId: testItemId,
+          cioClient: mockClient,
+          translations: { [RECS_TITLE_COMPLEMENTARY]: 'Goes well with' },
         }),
       );
 
@@ -516,7 +549,7 @@ describe('Testing Hook: useRecsPod', () => {
     });
 
     it('offers the built-in options', async () => {
-      mockClient.agent.getRecs.mockResolvedValueOnce(titleless);
+      mockClient.agent.getRecs.mockResolvedValueOnce(bareResult);
 
       const { result } = renderHook(() =>
         useRecsPod({ itemId: testItemId, cioClient: mockClient }),
@@ -528,7 +561,7 @@ describe('Testing Hook: useRecsPod', () => {
     });
 
     it('offers the configured options instead when the caller supplies them', async () => {
-      mockClient.agent.getRecs.mockResolvedValueOnce(titleless);
+      mockClient.agent.getRecs.mockResolvedValueOnce(bareResult);
 
       const { result } = renderHook(() =>
         useRecsPod({
@@ -545,7 +578,7 @@ describe('Testing Hook: useRecsPod', () => {
 
     // An empty list is the caller asking for no options at all, rather than falling back to ours.
     it('offers no options at all for an empty list', async () => {
-      mockClient.agent.getRecs.mockResolvedValueOnce(titleless);
+      mockClient.agent.getRecs.mockResolvedValueOnce(bareResult);
 
       const { result } = renderHook(() =>
         useRecsPod({
@@ -560,8 +593,7 @@ describe('Testing Hook: useRecsPod', () => {
       expect(result.current.refinement).toBeNull();
     });
 
-    // The fallbacks are for a response that brought nothing of its own, so once the endpoint starts
-    // sending a real title and real options they have to take over untouched.
+    // Once the endpoint sends a real title and real options, they have to take over untouched.
     it('still prefers a title and options the response does carry', async () => {
       mockClient.agent.getRecs.mockResolvedValueOnce(firstResult);
 

@@ -195,8 +195,7 @@ describe('Testing Mocks: Agent', () => {
       );
     });
 
-    // Refinement is a post-filter over the products the previous turn returned, so a request sent
-    // outside that thread has nothing to narrow.
+    // A refinement post-filters the previous turn's products, so out of thread it has nothing to narrow.
     it('sends the refinement on the thread that produced the products', async () => {
       await client.agent.getRecs({
         itemId: DEMO_ITEM_ID,
@@ -208,8 +207,7 @@ describe('Testing Mocks: Agent', () => {
       expect(askedQuestion()).toContain('organic');
     });
 
-    // Sending a question that would answer the wrong thing is worse than sending none, so the
-    // request is skipped and the pod renders nothing.
+    // A question that would answer the wrong thing is worse than no question at all.
     it('settles empty without a request for a strategy it cannot ask for', async () => {
       const consoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
