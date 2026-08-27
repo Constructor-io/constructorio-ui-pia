@@ -14,3 +14,15 @@ export const MOCK_QUESTIONS = [
 ];
 export const DISCLAIMER_TEXT =
   'AI-generated answers aim to help, but they may occasionally miss details or be inaccurate. Double-check important information before purchasing.';
+
+/**
+ * Recommendations pod strings the API cannot supply, because in these states there is either
+ * no response yet or no usable response at all. Everything else the pod shows comes from the
+ * API. All five are `Translations` keys, so reference the constants instead of retyping the
+ * literals - a mistyped key falls back to itself with no warning.
+ */
+export const RECS_LOADING_TITLE = 'Adapting recommendations to your preference';
+export const RECS_FALLBACK_TITLE = 'Best selling products';
+export const RECS_UNSUPPORTED_REQUEST = 'Unsupported request, try a different feature.';
+export const RECS_REFINEMENT_LABEL = "Not what you're looking for? Try:";
+export const RECS_INPUT_PLACEHOLDER = 'Describe something else...';

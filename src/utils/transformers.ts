@@ -1,5 +1,5 @@
 import { Nullable } from '@constructor-io/constructorio-client-javascript';
-import { ApiItem, Formatters, Item } from '../types';
+import { ApiItem, Formatters, GetAnswerResultsResponse, Item } from '../types';
 
 /**
  * Converts a raw ApiItem from the Get Answers API response into an Item object
@@ -61,4 +61,30 @@ export function transformResultItem(
     data: { ...otherMetadataFields },
     ...otherFields,
   };
+}
+
+/**
+ * Pulls the product results out of an answers response and converts them to Items.
+ *
+ * Returns `null` rather than an empty array whenever there is nothing to render, so callers
+ * can treat "no products" as a single case.
+ */
+export function extractAndTransformItems(
+  data: Nullable<GetAnswerResultsResponse>,
+  formatImageUrl?: Formatters['formatImageUrl'],
+): Array<Item> | null {
+  if (!data?.item_results?.response?.results) {
+    return null;
+  }
+
+  const { results } = data.item_results.response;
+  if (!Array.isArray(results) || results.length === 0) {
+    return null;
+  }
+
+  const transformedItems = results
+    .map((item) => transformResultItem(item, formatImageUrl))
+    .filter((item): item is Item => item !== null);
+
+  return transformedItems.length > 0 ? transformedItems : null;
 }

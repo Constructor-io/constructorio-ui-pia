@@ -1,0 +1,40 @@
+{
+  "title": "Since you prefer slim fits, more shirts like this in your style",
+  "items": [
+    {
+      "id": "CSHRT00463-black",
+      "name": "Knit Button-Down (Black)",
+      "url": "https://example.com/knit-button-down-black",
+      "imageUrl": "https://example.com/knit-button-down-black.jpg",
+      "price": 89
+    },
+    {
+      "id": "CSHRT00463-green",
+      "name": "Knit Button-Down (Green Pine Floral)",
+      "url": "https://example.com/knit-button-down-green",
+      "imageUrl": "https://example.com/knit-button-down-green.jpg",
+      "price": 88
+    },
+    {
+      "id": "CSHRT00512-oxford",
+      "name": "Oxford Shirt (White)",
+      "url": "https://example.com/oxford-shirt-white",
+      "imageUrl": "https://example.com/oxford-shirt-white.jpg",
+      "price": 74
+    },
+    {
+      "id": "CSHRT00590-linen",
+      "name": "Linen Camp Shirt (Sand)",
+      "url": "https://example.com/linen-camp-shirt-sand",
+      "imageUrl": "https://example.com/linen-camp-shirt-sand.jpg",
+      "price": 68
+    }
+  ],
+  "refinement": {
+    "question": "Not quite right? Refine by:",
+    "options": ["Slim fit", "Oxford", "Under $50"]
+  },
+  "resultId": "recs-result-id",
+  "threadId": "550e8400-e29b-41d4-a716-446655440000",
+  "status": "complete"
+}

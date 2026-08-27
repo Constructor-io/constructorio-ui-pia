@@ -4,10 +4,20 @@ import {
   DEMO_ITEM_ID,
   DEMO_QUESTION,
   DEMO_QUESTION_ALTERNATIVE_PRODUCTS,
+  MOCK_QUESTIONS,
 } from '../../src/constants';
+import { QuestionResponse, GetAnswerResultsResponse } from '../../src/hooks/mocks/types';
+import { testGetAnswersApiResponse } from '../localExamples';
 
 describe('Testing Mocks: Agent', () => {
   let client;
+
+  const stubFetchWith = (payload: QuestionResponse | GetAnswerResultsResponse) => {
+    jest.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => payload,
+    } as unknown as Response);
+  };
 
   beforeEach(() => {
     client = new MockConstructorIOClient({
@@ -16,8 +26,15 @@ describe('Testing Mocks: Agent', () => {
     });
   });
 
+  // Restores the spec/setupNetwork.js guard, so the error-path tests below still run behind it.
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   describe('getSuggestedQuestions', () => {
     it('fetches suggested questions given item_id', async () => {
+      stubFetchWith({ questions: MOCK_QUESTIONS });
+
       const result = await client.agent.getSuggestedQuestions({ itemId: DEMO_ITEM_ID });
 
       expect(result).toBeDefined();
@@ -56,6 +73,8 @@ describe('Testing Mocks: Agent', () => {
 
   describe('getAnswerResults', () => {
     it('fetches answer given item_id and questions', async () => {
+      stubFetchWith(testGetAnswersApiResponse);
+
       // Verify structure of item_results and follow_up_questions for alternative products
       const result = await client.agent.getAnswerResults({
         itemId: DEMO_ITEM_ID,
@@ -82,7 +101,7 @@ describe('Testing Mocks: Agent', () => {
       expect(Array.isArray(result.follow_up_questions)).toBe(true);
       expect(result.follow_up_questions[0]).toHaveProperty('value');
       expect(typeof result.follow_up_questions[0].value).toBe('string');
-    }, 30000); // Answer API can take 15s+ to respond
+    });
 
     it('throws an error if no agentServiceUrl is provided', async () => {
       const clientWithoutUrl = new MockConstructorIOClient({

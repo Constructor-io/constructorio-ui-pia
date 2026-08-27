@@ -11,6 +11,8 @@ import {
   GetAnswerResultsProps,
   GetAnswerResultsResponse,
 } from './types';
+import { GetRecsProps, RecsResult } from '../../types';
+import { AgentRequestError } from '../../errors';
 
 // Create URL for PIA API
 function createAgentUrl({
@@ -90,6 +92,7 @@ class MockAgent {
     variationId,
     threadId,
     parameters = {},
+    requestParameters = {},
   }: GetSuggestedQuestionsProps): Promise<QuestionResponse> {
     if (!itemId) throw new Error('Item ID is required');
     if (!this.options.apiKey) throw new Error('API key is required');
@@ -99,21 +102,22 @@ class MockAgent {
       variationId,
       threadId,
       options: this.options,
-      parameters: mapSuggestedQuestionsParams(parameters),
+      parameters: { ...requestParameters, ...mapSuggestedQuestionsParams(parameters) },
     });
 
     try {
       const response = await fetch(url);
 
-      if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
+      if (!response.ok) throw new AgentRequestError(response.status);
 
       const data = await response.json();
 
       return data;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      // Rethrow untouched so the status code and the original stack survive.
+      if (error instanceof Error) throw error;
 
-      throw new Error(errorMessage);
+      throw new Error(String(error));
     }
   }
 
@@ -140,16 +144,33 @@ class MockAgent {
     try {
       const response = await fetch(url);
 
-      if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
+      if (!response.ok) throw new AgentRequestError(response.status);
 
       const data = await response.json();
 
       return data;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      // Rethrow untouched so the status code and the original stack survive.
+      if (error instanceof Error) throw error;
 
-      throw new Error(errorMessage);
+      throw new Error(String(error));
     }
+  }
+
+  /**
+   * Fetches one set of recommendations, in the shape the pod renders.
+   *
+   * Recommendations are not available yet: there is no endpoint to ask, so nothing is requested and
+   * an empty result is returned. The pod renders nothing in that state, which leaves whatever the
+   * retailer already had in that slot showing through. Supply a `cioClient` with your own
+   * `agent.getRecs` to drive the pod from your own data in the meantime.
+   *
+   * `props` is still declared, because it is the contract a caller's own `getRecs` implements and
+   * `useRecsPod` passes it - there is simply nothing here to send it to yet.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getRecs(props: GetRecsProps): Promise<RecsResult> {
+    return { title: '', items: null, refinement: null, status: 'complete' };
   }
 
   async getAnswerResultsStream({

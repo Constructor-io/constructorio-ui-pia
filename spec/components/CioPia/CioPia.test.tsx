@@ -1,8 +1,9 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen, fireEvent, within, act } from '@testing-library/react';
 import { CIO_EVENTS } from '@constructor-io/constructorio-ui-components';
-import CioPia, { CioPiaProps } from '../../../src/components/CioPia/CioPia';
+import CioPia from '../../../src/components/CioPia/CioPia';
+import type { CioPiaProps } from '../../../src/components/CioPia/types';
 import useCioPia from '../../../src/hooks/useCioPia';
 import { DEMO_QUESTION } from '../../../src/constants';
 import { createMockCioClient } from '../../helpers/mockCioClient';
@@ -246,12 +247,25 @@ describe('CioPia Component', () => {
       });
     });
 
-    it('displays loading state when loading', () => {
-      mockUseCioPiaHook.mockReturnValue(mockLoadingResponse);
+    it('displays question placeholders, not answer bars, while suggested questions load', () => {
+      mockUseCioPia({ questionsData: [], questionIsLoading: true });
 
-      const { getByTestId } = render(<CioPia {...mockProps} />);
+      const { getByTestId, queryByTestId } = render(<CioPia {...mockProps} />);
+
+      expect(getByTestId('suggested-questions-skeleton')).toBeInTheDocument();
+      expect(queryByTestId('loading-skeleton')).not.toBeInTheDocument();
+    });
+
+    it('shows the answer bars and the question placeholders at the same time while an answer loads', () => {
+      mockUseCioPia({ answerIsLoading: true });
+
+      const { getByTestId, queryByTestId, queryByText } = render(<CioPia {...mockProps} />);
 
       expect(getByTestId('loading-skeleton')).toBeInTheDocument();
+      expect(getByTestId('suggested-questions-skeleton')).toBeInTheDocument();
+      // The follow-up questions arrive with the answer, so the previous buttons stand down.
+      expect(queryByTestId('suggested-questions-list')).not.toBeInTheDocument();
+      mockSuggestedQuestions.forEach((q) => expect(queryByText(q.value)).not.toBeInTheDocument());
     });
 
     it('displays error message when there is an error', () => {
@@ -962,6 +976,55 @@ describe('CioPia Component', () => {
       mockSuggestedQuestions.forEach((question) => {
         expect(screen.getByText(question.value)).toBeInTheDocument();
       });
+    });
+  });
+
+  describe('Recommendations Mode', () => {
+    const recsClient = mockProps.cioClient as ReturnType<typeof createMockCioClient>;
+    const recsProps = { ...mockProps, itemName: 'Test Item' };
+    const recsResult = {
+      title: 'Since you prefer slim fits, more shirts like this',
+      items: mockItems,
+      refinement: { options: ['Slim fit'] },
+      resultId: 'recs-result-id',
+    };
+
+    /** Renders in recommendations mode and lets the request made on mount settle. */
+    async function renderRecsPod(props: Partial<CioPiaProps> = {}) {
+      const view = render(
+        <CioPia {...recsProps} displayConfigs={{ mode: 'recommendations' }} {...props} />,
+      );
+      await act(async () => {
+        await new Promise((resolve) => {
+          setTimeout(resolve, 0);
+        });
+      });
+      return view;
+    }
+
+    beforeEach(() => {
+      recsClient.agent.getRecs.mockResolvedValue(recsResult);
+    });
+
+    it('does not run the question-and-answer experience', async () => {
+      await renderRecsPod();
+
+      expect(useCioPia).not.toHaveBeenCalled();
+      expect(screen.queryByTestId('cio-pia-container')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('cio-pia-title')).not.toBeInTheDocument();
+      mockSuggestedQuestions.forEach((question) => {
+        expect(screen.queryByText(question.value)).not.toBeInTheDocument();
+      });
+    });
+
+    it('lets the mode win over the type', async () => {
+      const { container } = await renderRecsPod({
+        displayConfigs: { mode: 'recommendations', type: 'modal' },
+      });
+
+      expect(screen.getByTestId('cio-pia-recs-pod')).toBeInTheDocument();
+      expect(container.querySelector('dialog')).not.toBeInTheDocument();
+      expect(useCioPia).not.toHaveBeenCalled();
     });
   });
 

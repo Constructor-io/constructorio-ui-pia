@@ -24,6 +24,8 @@ export type GetSuggestedQuestionsProps = {
   /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000") */
   threadId?: string;
   parameters?: SuggestedQuestionsParameters;
+  /** Extra query parameters appended verbatim to the request (e.g. `ef-*` test cell params). */
+  requestParameters?: Record<string, string | number | boolean>;
 };
 
 export interface Question {
