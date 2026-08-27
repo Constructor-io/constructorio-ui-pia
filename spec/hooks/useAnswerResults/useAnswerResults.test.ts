@@ -221,7 +221,7 @@ describe('Testing Hook: useAnswerResults', () => {
   });
 
   it('passes parameters to getAnswerResults', async () => {
-    const parameters = { features: { pia_v2: true }, guard: true };
+    const parameters = { preFilterExpression: { brand: 'Nike' }, guard: true };
     const propsWithParams = {
       ...testProps,
       parameters,
@@ -242,7 +242,7 @@ describe('Testing Hook: useAnswerResults', () => {
     expect(mockClient.agent.pia.getAnswerResults).toHaveBeenCalledWith(
       testProps.itemId,
       testQuestion,
-      { threadId: undefined, variationId: undefined, features: { pia_v2: true }, guard: true },
+      { threadId: undefined, variationId: undefined, preFilterExpression: { brand: 'Nike' }, guard: true },
     );
   });
 

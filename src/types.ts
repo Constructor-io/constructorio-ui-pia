@@ -301,18 +301,15 @@ export interface QuestionResponse {
   questions: Array<Question>;
 }
 
-export interface PiaRequestParameters {
-  features?: Record<string, boolean>;
-  featureVariants?: Record<string, string>;
+export interface SuggestedQuestionsParameters {
+  numResults?: number;
   preFilterExpression?: Record<string, any>;
 }
 
-export interface SuggestedQuestionsParameters extends PiaRequestParameters {
-  numResults?: number;
-}
-
-export interface AnswerRequestParameters extends PiaRequestParameters {
+export interface AnswerRequestParameters {
+  preFilterExpression?: Record<string, any>;
   guard?: boolean;
+  fmtOptions?: Record<string, any>;
 }
 
 export interface ApiItemVariation extends Record<string, any> {

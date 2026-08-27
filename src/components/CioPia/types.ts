@@ -55,8 +55,9 @@ export interface CioPiaProps
   /** Parameters for the recommendations request, used by `mode: 'recommendations'`. */
   recsPodParameters?: RecsPodParameters;
   /**
-   * Extra query parameters appended to PIA API requests (e.g. `ef-*` test cell params).
-   * Define outside the component or wrap with useMemo to avoid unnecessary re-renders.
+   * @deprecated Use `answerParameters` and `suggestedQuestionsParameters` instead.
+   * Extra query parameters appended to PIA API requests.
+   * These are merged into both answer and suggested-questions calls (typed params take precedence).
    */
   parameters?: Record<string, string | number | boolean>;
 }

@@ -6,6 +6,41 @@ import useSuggestedQuestions, { UseSuggestedQuestionsReturn } from './useSuggest
 
 export type { CioClient };
 
+// TODO: remove SUPPORTED_DEPRECATED_PARAMS and mapDeprecatedParameters once the
+// deprecated `parameters` prop is removed from CioPiaProps.
+const SUPPORTED_DEPRECATED_PARAMS: Record<string, { camelKey: string; isObject: boolean }> = {
+  guard: { camelKey: 'guard', isObject: false },
+  num_results: { camelKey: 'numResults', isObject: false },
+  numResults: { camelKey: 'numResults', isObject: false },
+  pre_filter_expression: { camelKey: 'preFilterExpression', isObject: true },
+  preFilterExpression: { camelKey: 'preFilterExpression', isObject: true },
+  fmt_options: { camelKey: 'fmtOptions', isObject: true },
+  fmtOptions: { camelKey: 'fmtOptions', isObject: true },
+};
+
+function mapDeprecatedParameters(
+  params: Record<string, string | number | boolean> | undefined,
+): Record<string, unknown> | undefined {
+  if (!params) return undefined;
+  const mapped: Record<string, unknown> = {};
+  let hasEntries = false;
+  for (const [key, value] of Object.entries(params)) {
+    const config = SUPPORTED_DEPRECATED_PARAMS[key];
+    if (!config) continue;
+    hasEntries = true;
+    if (config.isObject && typeof value === 'string') {
+      try {
+        mapped[config.camelKey] = JSON.parse(value);
+      } catch {
+        mapped[config.camelKey] = value;
+      }
+    } else {
+      mapped[config.camelKey] = value;
+    }
+  }
+  return hasEntries ? mapped : undefined;
+}
+
 export interface UseCioPiaProps {
   apiKey: string;
   itemId: string;
@@ -14,6 +49,12 @@ export interface UseCioPiaProps {
   cioClient?: CioClient;
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
   answerParameters?: AnswerRequestParameters;
+  /**
+   * @deprecated Use `answerParameters` and `suggestedQuestionsParameters` instead.
+   * Extra query parameters merged into both answer and suggested-questions calls.
+   * Typed parameters take precedence over values specified here.
+   */
+  parameters?: Record<string, string | number | boolean>;
   /** Define outside the component or wrap with useCallback to avoid unnecessary re-renders. */
   formatImageUrl?: Formatters['formatImageUrl'];
 }
@@ -34,6 +75,7 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     cioClient: providedClient,
     suggestedQuestionsParameters,
     answerParameters,
+    parameters,
     formatImageUrl,
   } = props;
 
@@ -43,12 +85,22 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     cioClient: providedClient,
   });
 
+  const mappedDeprecated = mapDeprecatedParameters(parameters);
+
+  const mergedSuggestedParams =
+    mappedDeprecated || suggestedQuestionsParameters
+      ? { ...mappedDeprecated, ...suggestedQuestionsParameters }
+      : undefined;
+
+  const mergedAnswerParams =
+    mappedDeprecated || answerParameters ? { ...mappedDeprecated, ...answerParameters } : undefined;
+
   const suggestedQuestions = useSuggestedQuestions({
     itemId,
     variationId,
     threadId,
     cioClient: client,
-    parameters: suggestedQuestionsParameters,
+    parameters: mergedSuggestedParams,
   });
 
   const answers = useAnswerResults({
@@ -56,7 +108,7 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     variationId,
     threadId,
     cioClient: client,
-    parameters: answerParameters,
+    parameters: mergedAnswerParams,
     formatImageUrl,
   });
 
