@@ -1,0 +1,31 @@
+{
+  "title": "Trending right now",
+  "items": [
+    {
+      "id": "CSHRT00777-hoodie",
+      "name": "Fleece Hoodie (Heather Grey)",
+      "url": "https://example.com/fleece-hoodie-heather-grey",
+      "imageUrl": "https://example.com/fleece-hoodie-heather-grey.jpg",
+      "price": 96
+    },
+    {
+      "id": "CSHRT00778-jogger",
+      "name": "Tapered Jogger (Black)",
+      "url": "https://example.com/tapered-jogger-black",
+      "imageUrl": "https://example.com/tapered-jogger-black.jpg",
+      "price": 82
+    },
+    {
+      "id": "CSHRT00779-cap",
+      "name": "Canvas Cap (Olive)",
+      "url": "https://example.com/canvas-cap-olive",
+      "imageUrl": "https://example.com/canvas-cap-olive.jpg",
+      "price": 28
+    }
+  ],
+  "refinement": {
+    "options": ["Best sellers", "New arrivals"]
+  },
+  "resultId": "recs-no-history-id",
+  "status": "complete"
+}

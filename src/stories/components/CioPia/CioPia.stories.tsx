@@ -6,9 +6,6 @@ import { prependCdnBase } from '../../utils';
 const meta = {
   title: 'Components/CioPia',
   component: CioPia,
-  parameters: {
-    layout: 'centered',
-  },
   tags: ['autodocs'],
   argTypes: {
     cioClient: {
@@ -119,7 +116,7 @@ const meta = {
       description: [
         'Parameters for the suggested questions request.',
         '',
-        '`numResults: number` — Number of suggested questions to fetch.',
+        '`numResults?: number` — Number of suggested questions to fetch.',
       ].join('\n'),
       table: { type: { summary: 'SuggestedQuestionsParameters' } },
     },

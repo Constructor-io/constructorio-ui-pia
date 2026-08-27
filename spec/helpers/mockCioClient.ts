@@ -6,7 +6,7 @@ export type MockPia = {
 };
 
 export type TestMockClient = {
-  agent: { pia: MockPia };
+  agent: { pia: MockPia; getRecs: jest.Mock };
   tracker: Record<string, jest.Mock>;
 };
 
@@ -17,6 +17,7 @@ export function createMockCioClient(): TestMockClient {
         getSuggestedQuestions: jest.fn().mockResolvedValue({ questions: [] }),
         getAnswerResults: jest.fn().mockResolvedValue({ qna_result_id: 'mock-id', value: '' }),
       },
+      getRecs: jest.fn().mockResolvedValue({ title: '', items: null, refinement: null }),
     },
     tracker: {
       trackProductInsightsAgentViews: jest.fn(),

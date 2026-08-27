@@ -344,6 +344,22 @@ The `callbacks` prop accepts any function, so you can plug in your own analytics
 />
 ```
 
+### View Event Threshold
+
+The PIA `product_insights_agent.view` event fires when the container becomes visible in the viewport. By default it requires 50% of the container to be visible; you can lower this per placement via `trackingConfigs.viewThreshold` (any value between `0` and `1`).
+
+This is useful when PIA sits in a taller placement where 50% visibility would rarely be reached, or when you want the view event to fire on the smallest hint of visibility (for example, in A/B tests where impression parity across variants matters).
+
+```jsx
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId={itemId}
+  trackingConfigs={{ viewThreshold: 0.01 }}
+/>
+```
+
+Omit the prop (or the whole `trackingConfigs` object) to keep the default of `0.5`.
+
 ### Memoizing Callbacks
 
 Since `callbacks` is an object prop, define handlers outside the component or wrap them in `useMemo` / `useCallback` to avoid unnecessary re-renders:

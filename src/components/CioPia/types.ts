@@ -7,9 +7,11 @@ import {
   CioPiaComponentOverrides,
   Callbacks,
   CioPiaDisplayConfigs,
+  CioPiaTrackingConfigs,
   Translations,
   SuggestedQuestionsParameters,
   AnswerRequestParameters,
+  RecsPodParameters,
   Formatters,
   ProductCardDisplayProps,
 } from '../../types';
@@ -33,6 +35,8 @@ export interface CioPiaProps
   cioClient?: CioClient;
   /** Display configuration options (mode, type, showFeedback, etc.). */
   displayConfigs?: CioPiaDisplayConfigs;
+  /** Tracking configuration options (viewThreshold, etc.). */
+  trackingConfigs?: CioPiaTrackingConfigs;
   /** Callback handlers for user interactions (onQuestionSubmit, onProductCardClick, onFeedback). */
   callbacks?: Callbacks;
   // Redeclared from IncludeComponentOverrides for Storybook autodocs.
@@ -48,4 +52,11 @@ export interface CioPiaProps
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
   /** Parameters for the answer request. */
   answerParameters?: AnswerRequestParameters;
+  /** Parameters for the recommendations request, used by `mode: 'recommendations'`. */
+  recsPodParameters?: RecsPodParameters;
+  /**
+   * Extra query parameters appended to PIA API requests (e.g. `ef-*` test cell params).
+   * Define outside the component or wrap with useMemo to avoid unnecessary re-renders.
+   */
+  parameters?: Record<string, string | number | boolean>;
 }

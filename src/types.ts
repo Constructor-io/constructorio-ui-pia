@@ -37,10 +37,18 @@ export interface CioPiaProviderProps {
   cioClient?: Nullable<CioClient>;
 }
 
-export type CioPiaMode = 'default' | 'conversation';
+export type CioPiaMode = 'default' | 'conversation' | 'recommendations';
 export type CioPiaType = 'inline' | 'modal';
 
 export type DisclaimerPosition = 'top' | 'bottom';
+
+export type CioPiaTrackingConfigs = {
+  /**
+   * Fraction of the container (0–1) that must be visible before the
+   * `product_insights_agent.view` event fires. Defaults to `0.5`.
+   */
+  viewThreshold?: number;
+};
 
 export type CioPiaDisplayConfigs = {
   learnMoreUrl?: string;
@@ -75,6 +83,16 @@ export type Translations = {
   'Learn More.'?: string;
   'Ask about this product'?: string;
   'Add to Cart'?: string;
+  /** Recommendations pod title shown while a request is in flight. */
+  'Adapting recommendations to your preference'?: string;
+  /** Recommendations pod title shown when a request fails or comes back degraded. */
+  'Best selling products'?: string;
+  /** Shown under the recommendations pod input when the request was rejected as unsuitable. */
+  'Unsupported request, try a different feature.'?: string;
+  /** Introduces the recommendations pod refinement options when the API sends no prompt of its own. */
+  "Not what you're looking for? Try:"?: string;
+  /** Placeholder for the recommendations pod refinement input. */
+  'Describe something else...'?: string;
 };
 
 export type QuestionSource = 'user' | 'suggestion';
@@ -142,6 +160,74 @@ export interface ConversationEntry {
   qnaResultId?: string;
 }
 
+/** Which kind of recommendations to fetch. */
+export type RecsStrategy =
+  | 'complementary_items'
+  | 'alternative_items'
+  | 'bestsellers'
+  | 'bundles'
+  | 'buy_it_again'
+  | 'recently_viewed_items'
+  | 'visually_similar_items';
+
+/** A prompt line plus the short labels the shopper can pick from to narrow the results. */
+export interface RecsRefinement {
+  /** Introduces the options. Falls back to a translatable default when absent. */
+  question?: string;
+  options: string[];
+}
+
+/** One recommendations response, in the shape the pod renders. */
+export interface RecsResult {
+  title: string;
+  items: Item[] | null;
+  refinement: RecsRefinement | null;
+  resultId?: string;
+  threadId?: string;
+  /** `'partial'` means the response is degraded, but any items it carries are still usable. */
+  status?: 'complete' | 'partial';
+}
+
+export interface RecsPodParameters {
+  /**
+   * Which kind of recommendations to fetch. Inert until the recommendations endpoint ships: it is
+   * forwarded to `agent.getRecs`, which has nothing to send it to yet, so only a caller's own
+   * `getRecs` acts on it today.
+   *
+   * @default 'complementary_items'
+   */
+  strategy?: RecsStrategy;
+  /** Last-resort title, used when the API returns items but no title of its own. */
+  defaultTitle?: string;
+  /**
+   * Render the free-text refinement input next to the refinement options.
+   *
+   * @default true
+   */
+  showInput?: boolean;
+  /** How many products to request. */
+  numResults?: number;
+}
+
+/** Arguments for one recommendations request. */
+export interface GetRecsProps {
+  itemId: string;
+  variationId?: string;
+  /** Thread ID for conversation context. Must be a valid UUID. */
+  threadId?: string;
+  /** @default 'complementary_items' */
+  strategy?: RecsStrategy;
+  /** Free text the shopper submitted to narrow the results. Absent on the first request. */
+  shopperInput?: string;
+  numResults?: number;
+  /**
+   * Applied while the raw results are converted to Items. It lives on the request rather than
+   * in the component because the raw response shape is provisional, and keeping the conversion
+   * behind this one call is what makes the endpoint swappable later.
+   */
+  formatImageUrl?: Formatters['formatImageUrl'];
+}
+
 /**
  * Render props passed to CioPia children function
  */
@@ -188,6 +274,8 @@ export interface InputRenderProps {
   onSubmit: (value: string) => void;
   onFocus?: () => void;
   translations?: Translations;
+  /** Validation message for the value that was just submitted, when there is one. */
+  error?: string;
 }
 
 /**
