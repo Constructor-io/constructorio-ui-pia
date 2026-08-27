@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Question, SuggestedQuestionsParameters } from '../types';
-import type { CioClient } from './useCioPia';
+import type { CioClient } from './usePiaClient';
 
 export interface UseSuggestedQuestionsProps {
   itemId: string;

@@ -15,7 +15,7 @@ import {
   Formatters,
   ProductCardDisplayProps,
 } from '../../types';
-import type { CioClient } from '../../hooks/useCioPia';
+import type { CioClient } from '../../hooks/usePiaClient';
 
 export interface CioPiaProps
   extends

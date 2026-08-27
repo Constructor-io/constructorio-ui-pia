@@ -9,7 +9,7 @@ import {
   ItemData,
   Nullable,
 } from '@constructor-io/constructorio-client-javascript';
-import type { CioClient } from './hooks/useCioPia';
+import type { CioClient } from './hooks/usePiaClient';
 
 export enum FeedbackType {
   UP = 'up',
