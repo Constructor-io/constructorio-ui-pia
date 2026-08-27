@@ -13,11 +13,8 @@ import {
 } from './types';
 import { GetRecsProps, RecsResult } from '../../types';
 import { AgentRequestError } from '../../errors';
-import {
-  EMPTY_RECS_RESULT,
-  adaptAnswerToRecsResult,
-  buildRecsQuestion,
-} from './recsFromItemQuestions';
+import { adaptAnswerToRecsResult, buildRecsQuestion } from './recsFromItemQuestions';
+import { RECS_DEFAULT_STRATEGY } from '../../constants';
 
 // Create URL for PIA API
 function createAgentUrl({
@@ -174,22 +171,11 @@ class MockAgent {
     itemId,
     variationId,
     threadId,
-    strategy = 'complementary_items',
+    strategy = RECS_DEFAULT_STRATEGY,
     shopperInput,
     formatImageUrl,
   }: GetRecsProps): Promise<RecsResult> {
     const question = buildRecsQuestion(strategy, shopperInput);
-
-    // No question asks for this strategy, so settle empty rather than answer the wrong thing.
-    if (!question) {
-      console.warn(
-        `Constructor PIA: the '${strategy}' recommendations strategy is not available yet. ` +
-          "Use 'complementary_items' or 'alternative_items', or supply a cioClient with your own " +
-          'agent.getRecs.',
-      );
-
-      return EMPTY_RECS_RESULT;
-    }
 
     const response = await this.getAnswerResults({ itemId, variationId, threadId, question });
 

@@ -13,11 +13,11 @@ import { AgentRequestError } from '../errors';
 import { translate } from '../utils/translate';
 import {
   RECS_DEFAULT_REFINEMENT_OPTIONS,
+  RECS_DEFAULT_STRATEGY,
   RECS_FALLBACK_TITLE,
   RECS_LOADING_TITLE,
   RECS_TITLE_ALTERNATIVE,
   RECS_TITLE_COMPLEMENTARY,
-  RECS_TITLE_GENERIC,
   RECS_UNSUPPORTED_REQUEST,
 } from '../constants';
 
@@ -65,13 +65,11 @@ export interface UseRecsPodReturn {
   refine: (text: string, source: RefinementSource) => void;
 }
 
-const DEFAULT_STRATEGY: RecsStrategy = 'complementary_items';
-
 /**
  * The pod's own title, per strategy. Kept here rather than in the adapter so it survives the swap to
  * `/v1/agent_insights`, which sends a title of its own only sometimes.
  */
-const STRATEGY_TITLES: Partial<Record<RecsStrategy, string>> = {
+const STRATEGY_TITLES: Record<RecsStrategy, string> = {
   complementary_items: RECS_TITLE_COMPLEMENTARY,
   alternative_items: RECS_TITLE_ALTERNATIVE,
 };
@@ -112,7 +110,7 @@ export default function useRecsPod({
     formatImageUrlRef.current = formatImageUrl;
   }, [formatImageUrl]);
 
-  const strategy = parameters?.strategy || DEFAULT_STRATEGY;
+  const strategy = parameters?.strategy || RECS_DEFAULT_STRATEGY;
   const { numResults, defaultTitle, refinementOptions } = parameters || {};
 
   // Options to offer when a response carries none. An empty list means no options at all.
@@ -205,9 +203,7 @@ export default function useRecsPod({
   // A response carrying no title of its own falls to the caller's `defaultTitle`, then to ours for
   // this strategy. No response carries one today, so this is the title throughout.
   const settledTitle =
-    result?.title ||
-    defaultTitle ||
-    translate(STRATEGY_TITLES[strategy] || RECS_TITLE_GENERIC, translations);
+    result?.title || defaultTitle || translate(STRATEGY_TITLES[strategy], translations);
 
   let title = settledTitle;
   if (isLoading) {
@@ -222,10 +218,12 @@ export default function useRecsPod({
 
   return {
     title,
-    // Normalized so every caller can treat "nothing to render" as a single case. Our own adapter
-    // never returns an empty array, but `cioClient` is a public prop and a consumer-supplied client
-    // can. Note `[]` is truthy, so `|| null` would not catch it.
+    // Items are normalized so every caller can treat "nothing to render" as a single case. Our own
+    // adapter never returns an empty array, but `cioClient` is a public prop and a consumer-supplied
+    // client can - and `[]` is truthy, so it takes `.length` to catch rather than a falsy check.
     items: result?.items?.length ? result.items : null,
+    // A refinement the response carries wins, empty options included: a client that sends
+    // `{ options: [] }` is saying it wants none, which is not the same as carrying nothing.
     refinement: result?.refinement || configuredRefinement,
     isLoading,
     error,

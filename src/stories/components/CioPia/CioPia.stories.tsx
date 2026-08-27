@@ -120,8 +120,6 @@ const meta = {
         '',
         '`"Similar products you might like"` — The pod title for `"alternative_items"`, same rule.',
         '',
-        '`"Recommended for this item"` — The pod title for any other strategy, same rule.',
-        '',
         '`"Best selling products"` — Title shown when a request failed or came back degraded.',
         '',
         '`"Unsupported request, try a different feature."` — Message shown under the input when the agent rejects what was submitted.',
@@ -144,7 +142,7 @@ const meta = {
       description: [
         'Parameters for the recommendations pod. Ignored unless `displayConfigs.mode` is `"recommendations"`.',
         '',
-        '`strategy?: RecsStrategy` — Which kind of recommendations to fetch: `"complementary_items"` or `"alternative_items"`. Defaults to `"complementary_items"`. Other `RecsStrategy` values are not served today and render nothing.',
+        '`strategy?: RecsStrategy` — Which kind of recommendations to fetch: `"complementary_items"` or `"alternative_items"`. Defaults to `"complementary_items"`. To serve another kind, supply a `cioClient` with your own `agent.getRecs`.',
         '',
         '`defaultTitle?: string` — The pod title, used whenever the response carries no title of its own, which is every response today. Without it, each strategy has a built-in title.',
         '',

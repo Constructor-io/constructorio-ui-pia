@@ -13,33 +13,22 @@ import {
  * in this file, so the swap later is confined to it.
  */
 
-/** The tail of the question, per strategy. A strategy absent here has no equivalent to ask for. */
-const QUESTION_TAILS: Partial<Record<RecsStrategy, string>> = {
+/** The tail of the question, per strategy. Total: every strategy we serve has one measured. */
+const QUESTION_TAILS: Record<RecsStrategy, string> = {
   complementary_items: RECS_QUESTION_TAIL_COMPLEMENTARY,
   alternative_items: RECS_QUESTION_TAIL_ALTERNATIVE,
 };
 
 /**
- * The question to send, or `null` when this endpoint cannot serve the strategy. A refinement
- * replaces the tail rather than extending it: restating the strategy competes with the shopper.
+ * The question to send. A refinement replaces the tail rather than extending it: restating the
+ * strategy competes with the shopper.
  */
-export function buildRecsQuestion(strategy: RecsStrategy, shopperInput?: string): string | null {
+export function buildRecsQuestion(strategy: RecsStrategy, shopperInput?: string): string {
   const refinement = shopperInput?.trim();
   if (refinement) return `${RECS_QUESTION_PREFIX}are ${refinement}`;
 
-  const tail = QUESTION_TAILS[strategy];
-  if (!tail) return null;
-
-  return `${RECS_QUESTION_PREFIX}${tail}`;
+  return `${RECS_QUESTION_PREFIX}${QUESTION_TAILS[strategy]}`;
 }
-
-/** A settled response carrying nothing to render. The pod renders no markup in this state. */
-export const EMPTY_RECS_RESULT: RecsResult = {
-  title: '',
-  items: null,
-  refinement: null,
-  status: 'complete',
-};
 
 /**
  * Converts one Q&A answer into the shape the pod renders.
@@ -56,8 +45,8 @@ export function adaptAnswerToRecsResult(
     title: '',
     items: extractAndTransformItems(response, formatImageUrl),
     refinement: null,
-    resultId: response?.qna_result_id,
-    threadId: response?.thread_id,
+    resultId: response.qna_result_id,
+    threadId: response.thread_id,
     status: 'complete',
   };
 }

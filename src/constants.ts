@@ -26,10 +26,15 @@ export const RECS_UNSUPPORTED_REQUEST = 'Unsupported request, try a different fe
 export const RECS_REFINEMENT_LABEL = "Not what you're looking for? Try:";
 export const RECS_INPUT_PLACEHOLDER = 'Describe something else...';
 
-/** Pod titles, one per strategy. `RECS_TITLE_GENERIC` covers strategies with no wording of their own. */
+/** The strategies served today. `RecsStrategy` is derived from this list. */
+export const RECS_STRATEGIES = ['complementary_items', 'alternative_items'] as const;
+
+/** Used when a caller names no strategy of its own. */
+export const RECS_DEFAULT_STRATEGY = RECS_STRATEGIES[0];
+
+/** Pod titles, one per strategy. */
 export const RECS_TITLE_COMPLEMENTARY = 'Products that work well with this one';
 export const RECS_TITLE_ALTERNATIVE = 'Similar products you might like';
-export const RECS_TITLE_GENERIC = 'Recommended for this item';
 
 /**
  * The question sent to `/v1/item_questions`: `PREFIX + tail` on the first request,

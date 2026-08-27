@@ -394,10 +394,10 @@ describe('CioPiaRecs Component', () => {
     });
 
     it('forwards the strategy and result count to the request', async () => {
-      await renderSettled({ recsPodParameters: { strategy: 'bestsellers', numResults: 6 } });
+      await renderSettled({ recsPodParameters: { strategy: 'alternative_items', numResults: 6 } });
 
       expect(mockClient.agent.getRecs).toHaveBeenCalledWith(
-        expect.objectContaining({ strategy: 'bestsellers', numResults: 6 }),
+        expect.objectContaining({ strategy: 'alternative_items', numResults: 6 }),
       );
     });
 

@@ -8,6 +8,7 @@ import {
   ConstructorClientOptions,
   Nullable,
 } from '@constructor-io/constructorio-client-javascript';
+import { RECS_STRATEGIES } from './constants';
 import { Question } from './hooks/mocks/types';
 import MockConstructorIOClient from './hooks/mocks/MockConstructorIOClient';
 
@@ -83,8 +84,6 @@ export type Translations = {
   'Products that work well with this one'?: string;
   /** Recommendations pod title for `alternative_items`, used when the response carries none. */
   'Similar products you might like'?: string;
-  /** Recommendations pod title for any other strategy, used when the response carries none. */
-  'Recommended for this item'?: string;
   /** Shown under the recommendations pod input when the request was rejected as unsuitable. */
   'Unsupported request, try a different feature.'?: string;
   /** Introduces the recommendations pod refinement options when the API sends no prompt of its own. */
@@ -158,15 +157,12 @@ export interface ConversationEntry {
   qnaResultId?: string;
 }
 
-/** Which kind of recommendations to fetch. Only the first two are served today. */
-export type RecsStrategy =
-  | 'complementary_items'
-  | 'alternative_items'
-  | 'bestsellers'
-  | 'bundles'
-  | 'buy_it_again'
-  | 'recently_viewed_items'
-  | 'visually_similar_items';
+/**
+ * Which kind of recommendations to fetch. Carries only what is served: each value names a question
+ * measured to return products for the item itself. Derived from `RECS_STRATEGIES` so the type and
+ * the runtime check share one definition.
+ */
+export type RecsStrategy = (typeof RECS_STRATEGIES)[number];
 
 /** A prompt line plus the short labels the shopper can pick from to narrow the results. */
 export interface RecsRefinement {
@@ -188,9 +184,8 @@ export interface RecsResult {
 
 export interface RecsPodParameters {
   /**
-   * Which kind of recommendations to fetch. Only `complementary_items` and `alternative_items` are
-   * served today; the other values settle empty, so the pod renders nothing. Supply a `cioClient`
-   * with your own `agent.getRecs` to serve them from your own data in the meantime.
+   * Which kind of recommendations to fetch. Supply a `cioClient` with your own `agent.getRecs` to
+   * serve a kind this does not carry from your own data.
    *
    * @default 'complementary_items'
    */

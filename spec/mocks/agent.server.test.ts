@@ -9,7 +9,6 @@ import {
   RECS_QUESTION_TAIL_ALTERNATIVE,
   RECS_QUESTION_TAIL_COMPLEMENTARY,
 } from '../../src/constants';
-import { EMPTY_RECS_RESULT } from '../../src/hooks/mocks/recsFromItemQuestions';
 import { QuestionResponse, GetAnswerResultsResponse } from '../../src/hooks/mocks/types';
 import { testGetAnswersApiResponse } from '../localExamples';
 
@@ -205,20 +204,6 @@ describe('Testing Mocks: Agent', () => {
 
       expect(new URL(requestedUrls[0]).searchParams.get('thread_id')).toBe('test-thread-id');
       expect(askedQuestion()).toContain('organic');
-    });
-
-    // A question that would answer the wrong thing is worse than no question at all.
-    it('settles empty without a request for a strategy it cannot ask for', async () => {
-      const consoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-      const result = await client.agent.getRecs({
-        itemId: DEMO_ITEM_ID,
-        strategy: 'bestsellers',
-      });
-
-      expect(requestedUrls).toEqual([]);
-      expect(result).toEqual(EMPTY_RECS_RESULT);
-      expect(consoleWarn).toHaveBeenCalledWith(expect.stringContaining('bestsellers'));
     });
   });
 });

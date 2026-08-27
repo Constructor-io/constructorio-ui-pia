@@ -26,13 +26,6 @@ describe('Testing recsFromItemQuestions: buildRecsQuestion', () => {
     );
   });
 
-  it.each(['bestsellers', 'bundles', 'buy_it_again', 'recently_viewed_items'] as const)(
-    'has nothing to ask for %s',
-    (strategy) => {
-      expect(buildRecsQuestion(strategy)).toBeNull();
-    },
-  );
-
   it('folds the shopper text into the question', () => {
     expect(buildRecsQuestion('complementary_items', 'organic')).toBe(
       `${RECS_QUESTION_PREFIX}are organic`,
@@ -57,11 +50,6 @@ describe('Testing recsFromItemQuestions: buildRecsQuestion', () => {
     expect(buildRecsQuestion('complementary_items', '   ')).toBe(
       `${RECS_QUESTION_PREFIX}${RECS_QUESTION_TAIL_COMPLEMENTARY}`,
     );
-  });
-
-  // Once refined, the shopper's text is what the request is about, so it goes out regardless.
-  it('serves a refinement even on a strategy it cannot ask for', () => {
-    expect(buildRecsQuestion('bestsellers', 'organic')).toBe(`${RECS_QUESTION_PREFIX}are organic`);
   });
 });
 

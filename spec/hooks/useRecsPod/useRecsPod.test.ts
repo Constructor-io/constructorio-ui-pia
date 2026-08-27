@@ -7,7 +7,6 @@ import {
   RECS_LOADING_TITLE,
   RECS_TITLE_ALTERNATIVE,
   RECS_TITLE_COMPLEMENTARY,
-  RECS_TITLE_GENERIC,
   RECS_UNSUPPORTED_REQUEST,
 } from '../../../src/constants';
 import { RecsResult } from '../../../src/types';
@@ -106,7 +105,7 @@ describe('Testing Hook: useRecsPod', () => {
         variationId: 'test-variation-id',
         threadId: 'test-thread-id',
         cioClient: mockClient,
-        parameters: { strategy: 'bestsellers', numResults: 6 },
+        parameters: { strategy: 'alternative_items', numResults: 6 },
       }),
     );
 
@@ -116,7 +115,7 @@ describe('Testing Hook: useRecsPod', () => {
       expect.objectContaining({
         variationId: 'test-variation-id',
         threadId: 'test-thread-id',
-        strategy: 'bestsellers',
+        strategy: 'alternative_items',
         numResults: 6,
       }),
     );
@@ -501,19 +500,20 @@ describe('Testing Hook: useRecsPod', () => {
     });
 
     // The built-in title names what the products are, so it belongs to the strategy that asked.
-    it.each([
-      ['alternative_items', RECS_TITLE_ALTERNATIVE],
-      ['visually_similar_items', RECS_TITLE_GENERIC],
-    ] as const)('shows the built-in title for %s', async (strategy, expected) => {
+    it('shows the built-in title for the strategy that asked', async () => {
       mockClient.agent.getRecs.mockResolvedValueOnce(bareResult);
 
       const { result } = renderHook(() =>
-        useRecsPod({ itemId: testItemId, cioClient: mockClient, parameters: { strategy } }),
+        useRecsPod({
+          itemId: testItemId,
+          cioClient: mockClient,
+          parameters: { strategy: 'alternative_items' },
+        }),
       );
 
       await settle();
 
-      expect(result.current.title).toBe(expected);
+      expect(result.current.title).toBe(RECS_TITLE_ALTERNATIVE);
     });
 
     it('prefers defaultTitle over the built-in one for the strategy', async () => {
