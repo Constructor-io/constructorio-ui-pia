@@ -112,9 +112,11 @@ const meta = {
         '',
         '`"Add to Cart"` — Product card add-to-cart button label.',
         '',
-        'Recommendations mode only. These five are the strings the API cannot supply, because in those states there is no usable response yet:',
+        'Recommendations mode only. These six are the strings the API cannot supply, either because in those states there is no usable response yet or because what the response carries is unusable:',
         '',
         '`"Adapting recommendations to your preference"` — Title shown while a request is in flight.',
+        '',
+        '`"Pairs well with"` — The pod title. Used whenever the response carries no title of its own, which is every response today, so it is the title throughout.',
         '',
         '`"Best selling products"` — Title shown when a request failed or came back degraded.',
         '',
@@ -138,13 +140,15 @@ const meta = {
       description: [
         'Parameters for the recommendations pod. Ignored unless `displayConfigs.mode` is `"recommendations"`.',
         '',
-        '`strategy?: RecsStrategy` — Which kind of recommendations to fetch: `"complementary_items"`, `"alternative_items"`, `"bestsellers"`, `"bundles"`, `"buy_it_again"`, `"recently_viewed_items"` or `"visually_similar_items"`. Defaults to `"complementary_items"`.',
+        '`strategy?: RecsStrategy` — Which kind of recommendations to fetch: `"complementary_items"`, `"alternative_items"`, `"bestsellers"`, `"bundles"`, `"buy_it_again"`, `"recently_viewed_items"` or `"visually_similar_items"`. Defaults to `"complementary_items"`. Only the first two are served today — see the Recommendations Live story.',
         '',
-        '`defaultTitle?: string` — Last-resort title, used only when the API returns products but no title of its own.',
+        '`defaultTitle?: string` — The pod title, used whenever the response carries no title of its own, which is every response today.',
+        '',
+        '`refinementOptions?: string[]` — The options the shopper can pick from, used whenever the response carries none of its own, which is every response today. Defaults to `["from a different brand", "organic"]`; pass `[]` for no options at all.',
         '',
         '`showInput?: boolean` — Render the free-text refinement box. Defaults to `true`.',
         '',
-        '`numResults?: number` — How many products to request.',
+        '`numResults?: number` — How many products to show. Does not reach the API today, so it only sizes the loading skeleton.',
       ].join('\n'),
       table: { type: { summary: 'RecsPodParameters' } },
     },
@@ -208,9 +212,10 @@ export const WithCustomCurrencyConversation: Story = {
 };
 
 /**
- * Recommendations mode. Each story supplies its own client, because the endpoint that returns a
- * short title and refinement options is not deployed yet - so `apiKey` is inert here and nothing
- * below reaches the network.
+ * Recommendations mode. These stories supply their own client, because the endpoint that returns a
+ * short title and refinement options of its own is not deployed yet - so `apiKey` is inert in them
+ * and they reach no network. `RecommendationsLive` at the end of this file is the exception: it runs
+ * against the API the pod is backed by today.
  */
 const recsArgs = (stub: RecsStubOptions = {}) => ({
   apiKey: DEMO_API_KEY,
@@ -303,6 +308,50 @@ export const RecommendationsWithParameters: Story = {
         story:
           'Six products rather than four, no free-text box, and a `defaultTitle` standing in ' +
           'because these responses carry no title of their own.',
+      },
+    },
+  },
+};
+
+/**
+ * A product in the demo catalog this API answers well for, so the story shows a working pod rather
+ * than the empty state. Tortilla chips: what comes back is the dips to eat them with.
+ */
+const LIVE_RECS_ITEM_ID = '109050174';
+const LIVE_RECS_ITEM_NAME = 'Tortilla Chips Scoops';
+
+export const RecommendationsLive: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: LIVE_RECS_ITEM_ID,
+    itemName: LIVE_RECS_ITEM_NAME,
+    displayConfigs: { mode: 'recommendations' },
+    recsPodParameters: { numResults: 5 },
+  },
+  parameters: {
+    ...recsLayout,
+    docs: {
+      description: {
+        story: [
+          'The only recommendations story with no `cioClient`, so this one reaches the API. Give it ' +
+            'a few seconds: the pod is backed by the question-answering endpoint until the ' +
+            'recommendations endpoint ships, and that is a language model round-trip.',
+          '',
+          'What that backing costs, and what to expect here:',
+          '',
+          "- The title and the options are the pod's own. The response carries a few sentences of " +
+            'prose and follow-ups phrased as questions, neither of which belongs in a pod, so both ' +
+            'are dropped. Override them with `defaultTitle` and `refinementOptions`.',
+          '- Only `"complementary_items"` and `"alternative_items"` come back with anything. The ' +
+            'other five strategies have no equivalent question to ask, so the pod renders nothing.',
+          '- Not every product has an answer. Roughly one PDP in five renders no pod at all on ' +
+            '`"complementary_items"`, which leaves whatever was already in that slot showing.',
+          '- The products rotate between loads, so a reload is not a like-for-like comparison.',
+          '- An option narrows the products already on screen rather than searching the catalog, ' +
+            'which is why `refinementOptions` is worth setting to categories from your own catalog. ' +
+            'A price is the weakest choice: if none of the four or five products on screen sit ' +
+            'under it, nothing is left.',
+        ].join('\n'),
       },
     },
   },

@@ -2,6 +2,8 @@ import { renderHook, act } from '@testing-library/react';
 import useRecsPod from '../../../src/hooks/useRecsPod';
 import { AgentRequestError } from '../../../src/errors';
 import {
+  RECS_DEFAULT_REFINEMENT_OPTIONS,
+  RECS_DEFAULT_TITLE,
   RECS_FALLBACK_TITLE,
   RECS_LOADING_TITLE,
   RECS_UNSUPPORTED_REQUEST,
@@ -53,7 +55,9 @@ describe('Testing Hook: useRecsPod', () => {
     expect(result.current.isLoading).toBe(true);
     expect(result.current.title).toBe(RECS_LOADING_TITLE);
     expect(result.current.items).toBeNull();
-    expect(result.current.refinement).toBeNull();
+    // The configured options stand in until a response brings its own, so the pod has something to
+    // offer from the first paint rather than growing a row of buttons once the request settles.
+    expect(result.current.refinement).toEqual({ options: RECS_DEFAULT_REFINEMENT_OPTIONS });
     expect(result.current.error).toBeNull();
     expect(result.current.inputError).toBeNull();
   });
@@ -474,6 +478,108 @@ describe('Testing Hook: useRecsPod', () => {
       expect(result.current.title).toBe(RECS_FALLBACK_TITLE);
       expect(result.current.items).toEqual(firstResult.items);
       expect(result.current.error).toBeNull();
+    });
+  });
+
+  // Every response from the endpoint backing the pod today carries neither a title nor options, so
+  // this is what a shopper actually sees.
+  describe('a response carrying no title or options', () => {
+    const titleless: RecsResult = { ...testRecsPodResult, title: '', refinement: null };
+
+    it('shows the built-in title', async () => {
+      mockClient.agent.getRecs.mockResolvedValueOnce(titleless);
+
+      const { result } = renderHook(() =>
+        useRecsPod({ itemId: testItemId, cioClient: mockClient }),
+      );
+
+      await settle();
+
+      expect(result.current.title).toBe(RECS_DEFAULT_TITLE);
+      expect(result.current.items).toEqual(titleless.items);
+    });
+
+    it('translates the built-in title', async () => {
+      mockClient.agent.getRecs.mockResolvedValueOnce(titleless);
+
+      const { result } = renderHook(() =>
+        useRecsPod({
+          itemId: testItemId,
+          cioClient: mockClient,
+          translations: { [RECS_DEFAULT_TITLE]: 'Goes well with' },
+        }),
+      );
+
+      await settle();
+
+      expect(result.current.title).toBe('Goes well with');
+    });
+
+    it('offers the built-in options', async () => {
+      mockClient.agent.getRecs.mockResolvedValueOnce(titleless);
+
+      const { result } = renderHook(() =>
+        useRecsPod({ itemId: testItemId, cioClient: mockClient }),
+      );
+
+      await settle();
+
+      expect(result.current.refinement).toEqual({ options: RECS_DEFAULT_REFINEMENT_OPTIONS });
+    });
+
+    it('offers the configured options instead when the caller supplies them', async () => {
+      mockClient.agent.getRecs.mockResolvedValueOnce(titleless);
+
+      const { result } = renderHook(() =>
+        useRecsPod({
+          itemId: testItemId,
+          cioClient: mockClient,
+          parameters: { refinementOptions: ['gluten free', 'family size'] },
+        }),
+      );
+
+      await settle();
+
+      expect(result.current.refinement).toEqual({ options: ['gluten free', 'family size'] });
+    });
+
+    // An empty list is the caller asking for no options at all, rather than falling back to ours.
+    it('offers no options at all for an empty list', async () => {
+      mockClient.agent.getRecs.mockResolvedValueOnce(titleless);
+
+      const { result } = renderHook(() =>
+        useRecsPod({
+          itemId: testItemId,
+          cioClient: mockClient,
+          parameters: { refinementOptions: [] },
+        }),
+      );
+
+      await settle();
+
+      expect(result.current.refinement).toBeNull();
+    });
+
+    // The fallbacks are for a response that brought nothing of its own, so once the endpoint starts
+    // sending a real title and real options they have to take over untouched.
+    it('still prefers a title and options the response does carry', async () => {
+      mockClient.agent.getRecs.mockResolvedValueOnce(firstResult);
+
+      const { result } = renderHook(() =>
+        useRecsPod({
+          itemId: testItemId,
+          cioClient: mockClient,
+          parameters: {
+            defaultTitle: 'Complete the look',
+            refinementOptions: ['gluten free'],
+          },
+        }),
+      );
+
+      await settle();
+
+      expect(result.current.title).toBe(firstResult.title);
+      expect(result.current.refinement).toEqual(firstResult.refinement);
     });
   });
 

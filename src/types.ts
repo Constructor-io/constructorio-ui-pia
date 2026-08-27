@@ -79,6 +79,8 @@ export type Translations = {
   'Adapting recommendations to your preference'?: string;
   /** Recommendations pod title shown when a request fails or comes back degraded. */
   'Best selling products'?: string;
+  /** Recommendations pod title, shown whenever the response carries no title of its own. */
+  'Pairs well with'?: string;
   /** Shown under the recommendations pod input when the request was rejected as unsuitable. */
   'Unsupported request, try a different feature.'?: string;
   /** Introduces the recommendations pod refinement options when the API sends no prompt of its own. */
@@ -182,14 +184,21 @@ export interface RecsResult {
 
 export interface RecsPodParameters {
   /**
-   * Which kind of recommendations to fetch. Inert until the recommendations endpoint ships: it is
-   * forwarded to `agent.getRecs`, which has nothing to send it to yet, so only a caller's own
-   * `getRecs` acts on it today.
+   * Which kind of recommendations to fetch.
+   *
+   * Only `complementary_items` and `alternative_items` are served today. The pod is backed by the
+   * Q&A endpoint until the recommendations endpoint ships, and the rest have no question that asks
+   * for them - those settle empty, so the pod renders nothing. Supply a `cioClient` with your own
+   * `agent.getRecs` to serve them from your own data in the meantime.
    *
    * @default 'complementary_items'
    */
   strategy?: RecsStrategy;
-  /** Last-resort title, used when the API returns items but no title of its own. */
+  /**
+   * The pod's title. Used whenever the response carries no title of its own, which is every
+   * response today, so this is the title throughout - including after a refinement. Falls back to a
+   * translatable default.
+   */
   defaultTitle?: string;
   /**
    * Render the free-text refinement input next to the refinement options.
@@ -197,7 +206,24 @@ export interface RecsPodParameters {
    * @default true
    */
   showInput?: boolean;
-  /** How many products to request. */
+  /**
+   * The short labels the shopper can pick from to narrow the products, used whenever the response
+   * carries none of its own - which is every response today. Pass `[]` for no options at all.
+   *
+   * Worth setting to categories from your own catalog: concrete nouns narrow the results far more
+   * reliably than qualifiers. Price options are the weakest choice, because a refinement narrows
+   * the products already on screen rather than searching the catalog, so a price the current
+   * products miss leaves the pod empty.
+   *
+   * @default ['from a different brand', 'organic']
+   */
+  refinementOptions?: string[];
+  /**
+   * How many products to show.
+   *
+   * Does not reach the API today - the endpoint backing the pod decides how many products to
+   * return. It sizes the loading skeleton, so it is still worth setting to the number you expect.
+   */
   numResults?: number;
 }
 
@@ -215,7 +241,8 @@ export interface GetRecsProps {
   /**
    * Applied while the raw results are converted to Items. It lives on the request rather than
    * in the component because the raw response shape is provisional, and keeping the conversion
-   * behind this one call is what makes the endpoint swappable later.
+   * behind this one call is what makes the endpoint swappable later - see
+   * `hooks/mocks/recsFromItemQuestions.ts` for the conversion in place today.
    */
   formatImageUrl?: Formatters['formatImageUrl'];
 }

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 import {
   Formatters,
@@ -11,7 +11,13 @@ import {
 } from '../types';
 import { AgentRequestError } from '../errors';
 import { translate } from '../utils/translate';
-import { RECS_FALLBACK_TITLE, RECS_LOADING_TITLE, RECS_UNSUPPORTED_REQUEST } from '../constants';
+import {
+  RECS_DEFAULT_REFINEMENT_OPTIONS,
+  RECS_DEFAULT_TITLE,
+  RECS_FALLBACK_TITLE,
+  RECS_LOADING_TITLE,
+  RECS_UNSUPPORTED_REQUEST,
+} from '../constants';
 
 /**
  * What the shopper did to ask for this refinement.
@@ -96,7 +102,16 @@ export default function useRecsPod({
   }, [formatImageUrl]);
 
   const strategy = parameters?.strategy || DEFAULT_STRATEGY;
-  const { numResults, defaultTitle } = parameters || {};
+  const { numResults, defaultTitle, refinementOptions } = parameters || {};
+
+  // The options to offer when a response carries none of its own, which is every response today.
+  // An empty list is the caller asking for no options at all, so it stays `null` rather than
+  // rendering an empty row.
+  const configuredRefinement = useMemo<RecsRefinement | null>(() => {
+    const options = refinementOptions ?? RECS_DEFAULT_REFINEMENT_OPTIONS;
+
+    return options.length ? { options } : null;
+  }, [refinementOptions]);
 
   const fetchResult = useCallback(
     (shopperInput?: string, source?: RefinementSource) => {
@@ -178,9 +193,10 @@ export default function useRecsPod({
     [fetchResult],
   );
 
-  // The title belonging to the last response we kept. `defaultTitle` is the caller's last resort
-  // for a response that carried items but no title of its own.
-  const settledTitle = result?.title || defaultTitle || '';
+  // The title belonging to the last response we kept. A response that carried items but no title of
+  // its own falls to the caller's `defaultTitle`, then to ours. Today no response carries a title,
+  // so this is the pod's title throughout, including after a refinement settles.
+  const settledTitle = result?.title || defaultTitle || translate(RECS_DEFAULT_TITLE, translations);
 
   let title = settledTitle;
   if (isLoading) {
@@ -199,7 +215,7 @@ export default function useRecsPod({
     // never returns an empty array, but `cioClient` is a public prop and a consumer-supplied client
     // can. Note `[]` is truthy, so `|| null` would not catch it.
     items: result?.items?.length ? result.items : null,
-    refinement: result?.refinement || null,
+    refinement: result?.refinement || configuredRefinement,
     isLoading,
     error,
     inputError: hasUnsupportedInput ? translate(RECS_UNSUPPORTED_REQUEST, translations) : null,

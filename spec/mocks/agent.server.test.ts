@@ -5,7 +5,11 @@ import {
   DEMO_QUESTION,
   DEMO_QUESTION_ALTERNATIVE_PRODUCTS,
   MOCK_QUESTIONS,
+  RECS_QUESTION_PREFIX,
+  RECS_QUESTION_TAIL_ALTERNATIVE,
+  RECS_QUESTION_TAIL_COMPLEMENTARY,
 } from '../../src/constants';
+import { EMPTY_RECS_RESULT } from '../../src/hooks/mocks/recsFromItemQuestions';
 import { QuestionResponse, GetAnswerResultsResponse } from '../../src/hooks/mocks/types';
 import { testGetAnswersApiResponse } from '../localExamples';
 
@@ -149,6 +153,74 @@ describe('Testing Mocks: Agent', () => {
           question: undefined,
         }),
       ).rejects.toThrow('Question is required');
+    });
+  });
+
+  describe('getRecs', () => {
+    // Collected here rather than read off the spy, because `spec/setupNetwork.js` already installs
+    // a mock `fetch` and `jest.spyOn` hands back that same mock along with its call history.
+    let requestedUrls: string[];
+
+    beforeEach(() => {
+      requestedUrls = [];
+      jest.spyOn(globalThis, 'fetch').mockImplementation(async (url: RequestInfo | URL) => {
+        requestedUrls.push(url.toString());
+        return {
+          ok: true,
+          json: async () => testGetAnswersApiResponse,
+        } as unknown as Response;
+      });
+    });
+
+    /** The question, decoded back out of the path it was sent in. */
+    const askedQuestion = () => decodeURIComponent(new URL(requestedUrls[0]).pathname);
+
+    it('asks the Q&A endpoint and returns products', async () => {
+      const result = await client.agent.getRecs({
+        itemId: DEMO_ITEM_ID,
+        strategy: 'alternative_items',
+      });
+
+      expect(askedQuestion()).toContain(`${RECS_QUESTION_PREFIX}${RECS_QUESTION_TAIL_ALTERNATIVE}`);
+      expect(result.items).toHaveLength(
+        testGetAnswersApiResponse.item_results.response.results.length,
+      );
+    });
+
+    it('defaults to complementary products', async () => {
+      await client.agent.getRecs({ itemId: DEMO_ITEM_ID });
+
+      expect(askedQuestion()).toContain(
+        `${RECS_QUESTION_PREFIX}${RECS_QUESTION_TAIL_COMPLEMENTARY}`,
+      );
+    });
+
+    // Refinement is a post-filter over the products the previous turn returned, so a request sent
+    // outside that thread has nothing to narrow.
+    it('sends the refinement on the thread that produced the products', async () => {
+      await client.agent.getRecs({
+        itemId: DEMO_ITEM_ID,
+        threadId: 'test-thread-id',
+        shopperInput: 'organic',
+      });
+
+      expect(new URL(requestedUrls[0]).searchParams.get('thread_id')).toBe('test-thread-id');
+      expect(askedQuestion()).toContain('organic');
+    });
+
+    // Sending a question that would answer the wrong thing is worse than sending none, so the
+    // request is skipped and the pod renders nothing.
+    it('settles empty without a request for a strategy it cannot ask for', async () => {
+      const consoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const result = await client.agent.getRecs({
+        itemId: DEMO_ITEM_ID,
+        strategy: 'bestsellers',
+      });
+
+      expect(requestedUrls).toEqual([]);
+      expect(result).toEqual(EMPTY_RECS_RESULT);
+      expect(consoleWarn).toHaveBeenCalledWith(expect.stringContaining('bestsellers'));
     });
   });
 });

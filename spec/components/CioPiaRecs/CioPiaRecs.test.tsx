@@ -6,6 +6,8 @@ import CioPiaRecs from '../../../src/components/CioPiaRecs/CioPiaRecs';
 import type { CioPiaProps } from '../../../src/components/CioPia/types';
 import { AgentRequestError } from '../../../src/errors';
 import {
+  RECS_DEFAULT_REFINEMENT_OPTIONS,
+  RECS_DEFAULT_TITLE,
   RECS_FALLBACK_TITLE,
   RECS_INPUT_PLACEHOLDER,
   RECS_LOADING_TITLE,
@@ -136,14 +138,23 @@ describe('CioPiaRecs Component', () => {
       );
     });
 
-    // No title means no node, not an empty one holding a line of blank space above the products.
-    it('renders no title at all when the response carries none', async () => {
+    // The products need naming whether or not the response named them, so the pod supplies its own
+    // title rather than leaving the row to sit there unlabelled.
+    it('falls back to the pod title when the response carries none', async () => {
       mockClient.agent.getRecs.mockResolvedValue({ ...firstResult, title: '' });
 
       const { container } = await renderSettled();
 
-      expect(container.querySelector('.cio-pia-recs-pod__title')).not.toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: RECS_DEFAULT_TITLE })).toBeInTheDocument();
       expect(container.querySelector('[data-carousel]')).toBeInTheDocument();
+    });
+
+    it('prefers the caller defaultTitle over the built-in one', async () => {
+      mockClient.agent.getRecs.mockResolvedValue({ ...firstResult, title: '' });
+
+      await renderSettled({ recsPodParameters: { defaultTitle: 'Complete the look' } });
+
+      expect(screen.getByRole('heading', { name: 'Complete the look' })).toBeInTheDocument();
     });
 
     it('renders one option button per refinement option', async () => {

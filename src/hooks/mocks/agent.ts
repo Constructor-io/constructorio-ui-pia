@@ -13,6 +13,11 @@ import {
 } from './types';
 import { GetRecsProps, RecsResult } from '../../types';
 import { AgentRequestError } from '../../errors';
+import {
+  EMPTY_RECS_RESULT,
+  adaptAnswerToRecsResult,
+  buildRecsQuestion,
+} from './recsFromItemQuestions';
 
 // Create URL for PIA API
 function createAgentUrl({
@@ -160,17 +165,41 @@ class MockAgent {
   /**
    * Fetches one set of recommendations, in the shape the pod renders.
    *
-   * Recommendations are not available yet: there is no endpoint to ask, so nothing is requested and
-   * an empty result is returned. The pod renders nothing in that state, which leaves whatever the
-   * retailer already had in that slot showing through. Supply a `cioClient` with your own
-   * `agent.getRecs` to drive the pod from your own data in the meantime.
+   * Asks the Q&A endpoint, phrased as a request for recommendations - see
+   * `recsFromItemQuestions.ts` for why the wording matters and what the response gives up. This is
+   * an interim backing: `/v1/agent_insights` with `mode: 'recommendations'` is the endpoint the pod
+   * is designed for, and swapping to it means replacing the body of this method.
    *
-   * `props` is still declared, because it is the contract a caller's own `getRecs` implements and
-   * `useRecsPod` passes it - there is simply nothing here to send it to yet.
+   * `threadId` is passed straight through, and refinement depends on it. The endpoint narrows the
+   * products from the previous turn rather than searching the catalog again, so a refinement sent
+   * outside the thread that produced those products has nothing to narrow.
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getRecs(props: GetRecsProps): Promise<RecsResult> {
-    return { title: '', items: null, refinement: null, status: 'complete' };
+  async getRecs({
+    itemId,
+    variationId,
+    threadId,
+    strategy = 'complementary_items',
+    shopperInput,
+    formatImageUrl,
+  }: GetRecsProps): Promise<RecsResult> {
+    const question = buildRecsQuestion(strategy, shopperInput);
+
+    // Only some strategies have a question that asks for them. Rather than send a question that
+    // would answer the wrong thing, settle empty and say why - the pod then renders nothing, and
+    // whatever the retailer already had in that slot shows through.
+    if (!question) {
+      console.warn(
+        `Constructor PIA: the '${strategy}' recommendations strategy is not available yet. ` +
+          "Use 'complementary_items' or 'alternative_items', or supply a cioClient with your own " +
+          'agent.getRecs.',
+      );
+
+      return EMPTY_RECS_RESULT;
+    }
+
+    const response = await this.getAnswerResults({ itemId, variationId, threadId, question });
+
+    return adaptAnswerToRecsResult(response, formatImageUrl);
   }
 
   async getAnswerResultsStream({
