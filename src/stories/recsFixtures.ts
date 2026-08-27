@@ -1,8 +1,12 @@
 import { Item, RecsResult } from '../types';
 
 /**
- * Stand-in responses for the recommendations stories: what we expect the recommendations endpoint to
- * send once it ships. Every title and option here belongs to the API, not to the library.
+ * Stand-in responses for the recommendations stories.
+ *
+ * The endpoint that returns a short title and refinement options is not deployed yet, so these are
+ * what we expect it to send. Every title and every option here belongs to the API, which is why it
+ * lives in a fixture - what the pod supplies when a response carries none of its own is in
+ * `constants.ts` instead.
  */
 
 interface ProductSpec {
@@ -12,7 +16,10 @@ interface ProductSpec {
   salePrice?: number;
 }
 
-/** The image is generated from the name, so a card can never show one product and name another. */
+/**
+ * The image is generated from the name, so a card can never show one product and name another.
+ * url takes the caption in the query string and reads `+` as a space.
+ */
 const buildItems = (groupId: string, specs: ProductSpec[]): Item[] =>
   specs.map(({ name, price, description, salePrice }, index) => {
     const id = `${groupId}-${index + 1}`;
@@ -43,9 +50,16 @@ const complete = (
 });
 
 /**
- * Four responses sharing no title, product or option, cycled one per request, so a refinement never
- * looks like a pod that ignored the shopper. Seven products each: the carousel fits six at its
- * widest, so the seventh is what earns both arrows.
+ * Four responses that share no title, no product and no option, cycled through one per request.
+ *
+ * Being wholly different is the point: a refinement that returned the same three things would look
+ * like a pod that had ignored the shopper, which is exactly how a stub that repeated itself used to
+ * read.
+ *
+ * Seven products a response, here and in the two single responses below, because an arrow with
+ * nothing to do is hidden but still holds its place - which reads as an unexplained gap beside the
+ * cards. Six is one short: the carousel fits six across at its widest, and the sliver left over is
+ * not enough for it to wrap around, so the back arrow stays hidden. The seventh earns both arrows.
  */
 export const RECS_GROUPS: RecsResult[] = [
   complete(
@@ -124,8 +138,12 @@ export const RECS_TRENDING: RecsResult = complete(
 );
 
 /**
- * For the story that configures `numResults: 6`, so it holds the parameter honestly. Neither response
- * carries a title, which is what makes `defaultTitle` visible - it is a last resort.
+ * For the story that configures `numResults: 6` and `strategy: 'alternative_items'`. Six, so it
+ * holds the parameter honestly - which is also what makes it the one story whose back arrow starts
+ * hidden.
+ *
+ * None of these carries a title, which is what makes `defaultTitle` visible: a response that
+ * carried one of its own would be preferred over it.
  */
 export const RECS_SIX_GROUPS: RecsResult[] = [
   complete(
