@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import MockConstructorIOClient from './mocks/MockConstructorIOClient';
 import {
   Formatters,
@@ -74,6 +74,9 @@ const STRATEGY_TITLES: Record<RecsStrategy, string> = {
   alternative_items: RECS_TITLE_ALTERNATIVE,
 };
 
+/** The pod's own options, offered whenever a response carries none. Same reasoning as the titles. */
+const DEFAULT_REFINEMENT: RecsRefinement = { options: RECS_DEFAULT_REFINEMENT_OPTIONS };
+
 /**
  * Owns everything a recommendations pod shows: one request on mount, one on every refinement,
  * and the title that belongs to whichever of those is happening right now.
@@ -111,14 +114,7 @@ export default function useRecsPod({
   }, [formatImageUrl]);
 
   const strategy = parameters?.strategy || RECS_DEFAULT_STRATEGY;
-  const { numResults, defaultTitle, refinementOptions } = parameters || {};
-
-  // Options to offer when a response carries none. An empty list means no options at all.
-  const configuredRefinement = useMemo<RecsRefinement | null>(() => {
-    const options = refinementOptions ?? RECS_DEFAULT_REFINEMENT_OPTIONS;
-
-    return options.length ? { options } : null;
-  }, [refinementOptions]);
+  const { numResults, defaultTitle } = parameters || {};
 
   const fetchResult = useCallback(
     (shopperInput?: string, source?: RefinementSource) => {
@@ -222,9 +218,9 @@ export default function useRecsPod({
     // adapter never returns an empty array, but `cioClient` is a public prop and a consumer-supplied
     // client can - and `[]` is truthy, so it takes `.length` to catch rather than a falsy check.
     items: result?.items?.length ? result.items : null,
-    // A refinement the response carries wins, empty options included: a client that sends
-    // `{ options: [] }` is saying it wants none, which is not the same as carrying nothing.
-    refinement: result?.refinement || configuredRefinement,
+    // A refinement the response carries wins; ours stands in until the endpoint sends one, which is
+    // every response today.
+    refinement: result?.refinement || DEFAULT_REFINEMENT,
     isLoading,
     error,
     inputError: hasUnsupportedInput ? translate(RECS_UNSUPPORTED_REQUEST, translations) : null,

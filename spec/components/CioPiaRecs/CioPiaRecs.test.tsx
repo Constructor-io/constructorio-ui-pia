@@ -164,6 +164,17 @@ describe('CioPiaRecs Component', () => {
       });
     });
 
+    // No response carries options of its own today, so these are the buttons the pod actually shows.
+    it('falls back to the built-in options when the response carries none', async () => {
+      mockClient.agent.getRecs.mockResolvedValue({ ...firstResult, refinement: undefined });
+
+      await renderSettled();
+
+      RECS_DEFAULT_REFINEMENT_OPTIONS.forEach((option) => {
+        expect(screen.getByRole('button', { name: option })).toBeInTheDocument();
+      });
+    });
+
     it('prefers the refinement prompt the API sent over the built-in label', async () => {
       const { container } = await renderSettled();
 

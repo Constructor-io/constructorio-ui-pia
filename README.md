@@ -83,8 +83,6 @@ The component supports multiple display modes via the `displayConfigs` prop:
   recsPodParameters={{
     strategy: 'complementary_items',
     defaultTitle: 'Complete the set',
-    // Options from your own catalog work best - see the notes under Recs Pod Parameters.
-    refinementOptions: ['From a different brand', 'A lower price'],
   }}
 />
 ```
@@ -119,7 +117,6 @@ The component supports multiple display modes via the `displayConfigs` prop:
 |--------|------|---------|-------------|
 | `strategy` | `'complementary_items' \| 'alternative_items'` | `'complementary_items'` | Which kind of recommendations to fetch. Other `RecsStrategy` values are not served today and render nothing |
 | `defaultTitle` | `string` | per strategy, see below | The pod title, used whenever the API returns no title of its own — which is every response today |
-| `refinementOptions` | `string[]` | `['From a different brand', 'A lower price']` | The options the shopper can pick from to narrow the products, used whenever the API returns none of its own — which is every response today. Pass `[]` for no options at all |
 | `showInput` | `boolean` | `true` | Render the free-text box after the options |
 | `numResults` | `number` | - | How many products to show. Does not reach the API today, so it only sizes the loading skeleton |
 
@@ -127,16 +124,20 @@ Without a `defaultTitle`, the pod supplies its own — "Products that work well 
 `'complementary_items'` and "Similar products you might like" for `'alternative_items'`. Both are
 `translations` keys, so they can be replaced that way too.
 
+The refinement options are the pod's own as well — "From a different brand" and "A lower price" —
+and are fixed in this version: they are not configurable, and unlike the titles they are not
+`translations` keys either.
+
 **What recommendations mode gives you today.** The endpoint the pod is designed for is not deployed
 yet, so it is backed by the question-answering endpoint in the meantime. That backing is worth
 knowing about:
 
-- **The title and the options are the pod's own,** which is what `defaultTitle` and
-  `refinementOptions` are for. The API sends a few sentences of prose and follow-ups phrased as
-  questions; neither belongs in a pod, so both are dropped.
-- **An option is answered in the context of the previous turn,** not as a fresh catalog search, so
-  relative wording ("a lower price", "from a different brand") holds up where an absolute threshold
-  ("under $50") often leaves nothing. Options from your own catalog work best.
+- **The title and the options are the pod's own.** The API sends a few sentences of prose and
+  follow-ups phrased as questions; neither belongs in a pod, so both are dropped. `defaultTitle` is
+  there to replace the title; the options are fixed.
+- **A refinement is answered in the context of the previous turn,** not as a fresh catalog search.
+  That is why the two built-in options are worded relatively ("a lower price", "from a different
+  brand"): an absolute threshold typed into the free-text box ("under $50") often leaves nothing.
 - **Not every product has an answer.** Roughly one product page in five renders no pod at all on
   `'complementary_items'`. The component renders no markup in that case, so whatever your page
   already had in that slot shows through.

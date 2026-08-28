@@ -203,16 +203,6 @@ export interface RecsPodParameters {
    */
   showInput?: boolean;
   /**
-   * The short labels the shopper can pick from to narrow the products, used whenever the response
-   * carries none of its own - which is every response today. Pass `[]` for no options at all.
-   *
-   * A refinement is answered in the context of the previous turn rather than as a fresh catalog
-   * search, so relative wording holds up and absolute thresholds ("under $50") often leave nothing.
-   *
-   * @default ['From a different brand', 'A lower price']
-   */
-  refinementOptions?: string[];
-  /**
    * How many products to show.
    *
    * Does not reach the API today - the endpoint backing the pod decides how many products to

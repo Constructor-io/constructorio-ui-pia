@@ -560,39 +560,6 @@ describe('Testing Hook: useRecsPod', () => {
       expect(result.current.refinement).toEqual({ options: RECS_DEFAULT_REFINEMENT_OPTIONS });
     });
 
-    it('offers the configured options instead when the caller supplies them', async () => {
-      mockClient.agent.getRecs.mockResolvedValueOnce(bareResult);
-
-      const { result } = renderHook(() =>
-        useRecsPod({
-          itemId: testItemId,
-          cioClient: mockClient,
-          parameters: { refinementOptions: ['gluten free', 'family size'] },
-        }),
-      );
-
-      await settle();
-
-      expect(result.current.refinement).toEqual({ options: ['gluten free', 'family size'] });
-    });
-
-    // An empty list is the caller asking for no options at all, rather than falling back to ours.
-    it('offers no options at all for an empty list', async () => {
-      mockClient.agent.getRecs.mockResolvedValueOnce(bareResult);
-
-      const { result } = renderHook(() =>
-        useRecsPod({
-          itemId: testItemId,
-          cioClient: mockClient,
-          parameters: { refinementOptions: [] },
-        }),
-      );
-
-      await settle();
-
-      expect(result.current.refinement).toBeNull();
-    });
-
     // Once the endpoint sends a real title and real options, they have to take over untouched.
     it('still prefers a title and options the response does carry', async () => {
       mockClient.agent.getRecs.mockResolvedValueOnce(firstResult);
@@ -601,10 +568,7 @@ describe('Testing Hook: useRecsPod', () => {
         useRecsPod({
           itemId: testItemId,
           cioClient: mockClient,
-          parameters: {
-            defaultTitle: 'Complete the look',
-            refinementOptions: ['gluten free'],
-          },
+          parameters: { defaultTitle: 'Complete the look' },
         }),
       );
 
