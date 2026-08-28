@@ -71,6 +71,18 @@ jobs:
             exit 1
           fi
           mv "${tarballs[0]}" constructorio-ui-pia.tgz
+      - name: Verify fixture deps match main
+        shell: bash
+        run: |
+          for pkg in @constructor-io/constructorio-client-javascript @constructor-io/constructorio-ui-components; do
+            main_ver=$(node -e "const p=require('./package.json'); console.log(p.peerDependencies?.['$pkg'] || p.dependencies?.['$pkg'] || p.devDependencies?.['$pkg'] || '')")
+            fixture_ver=$(node -e "const p=require('./test/react-compat/fixture/package.json'); console.log(p.devDependencies?.['$pkg'] || '')")
+            if [ "$main_ver" != "$fixture_ver" ]; then
+              echo "::error::Version mismatch for $pkg: main has $main_ver, fixture has $fixture_ver. Update test/react-compat/fixture/package.json."
+              exit 1
+            fi
+          done
+          echo "Fixture dependency versions match main."
       - name: Install fixture deps
         working-directory: test/react-compat/fixture
         # npm install (not ci) because lock files are gitignored — the tarball
@@ -90,7 +102,7 @@ jobs:
         run: npm run build
       - name: Typecheck fixture
         working-directory: test/react-compat/fixture
-        run: npm run typecheck
+        run: npx tsc --noEmit -p tsconfig.${{ matrix.entry == 'index-legacy' && 'legacy' || 'modern' }}.json
       - name: Run fixture tests
         working-directory: test/react-compat/fixture
         run: npm test
