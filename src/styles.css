@@ -9,6 +9,7 @@
 @import './components/CioPia/CioPiaStyles.css';
 @import './components/ConversationHistory/ConversationHistoryStyles.css';
 @import './components/PiaConversation/PiaConversationStyles.css';
+@import './components/CioPiaRecs/CioPiaRecsStyles.css';
 
 .cio-pia-container {
   font-family: 'Inter', sans-serif;

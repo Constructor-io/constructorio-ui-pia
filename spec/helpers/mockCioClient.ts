@@ -1,23 +1,34 @@
-import MockConstructorIOClient from '../../src/hooks/mocks/MockConstructorIOClient';
-import MockAgent from '../../src/hooks/mocks/agent';
+import { CioClient } from '../../src/hooks/useCioPia';
 
-type MockedAgent = {
-  [K in keyof MockAgent]: MockAgent[K] extends (...args: infer A) => infer R
-    ? jest.MockedFunction<(...args: A) => R>
-    : MockAgent[K];
+export type MockPia = {
+  getSuggestedQuestions: jest.MockedFunction<CioClient['agent']['pia']['getSuggestedQuestions']>;
+  getAnswerResults: jest.MockedFunction<CioClient['agent']['pia']['getAnswerResults']>;
 };
 
-export type TestMockClient = Omit<MockConstructorIOClient, 'agent'> & { agent: MockedAgent };
+export type TestMockClient = {
+  agent: { pia: MockPia; getRecs: jest.Mock };
+  tracker: Record<string, jest.Mock>;
+};
 
-const TEST_API_KEY = 'test-api-key';
-
-export function createMockCioClient(apiKey = TEST_API_KEY): TestMockClient {
-  const client = new MockConstructorIOClient({
-    apiKey,
-    sendTrackingEvents: false,
-    fetch: jest.fn(),
-  });
-  jest.spyOn(client.agent, 'getSuggestedQuestions').mockResolvedValue({ questions: [] });
-  jest.spyOn(client.agent, 'getAnswerResults').mockResolvedValue({ qna_result_id: 'mock-id', value: '' });
-  return { ...client, agent: client.agent as unknown as MockedAgent } as TestMockClient;
+export function createMockCioClient(): TestMockClient {
+  return {
+    agent: {
+      pia: {
+        getSuggestedQuestions: jest.fn().mockResolvedValue({ questions: [] }),
+        getAnswerResults: jest.fn().mockResolvedValue({ qna_result_id: 'mock-id', value: '' }),
+      },
+      getRecs: jest.fn().mockResolvedValue({ title: '', items: null, refinement: null }),
+    },
+    tracker: {
+      trackProductInsightsAgentViews: jest.fn(),
+      trackProductInsightsAgentView: jest.fn(),
+      trackProductInsightsAgentOutOfView: jest.fn(),
+      trackProductInsightsAgentFocus: jest.fn(),
+      trackProductInsightsAgentQuestionClick: jest.fn(),
+      trackProductInsightsAgentQuestionSubmit: jest.fn(),
+      trackProductInsightsAgentAnswerView: jest.fn(),
+      trackProductInsightsAgentAnswerFeedback: jest.fn(),
+      trackProductInsightsAgentResultClick: jest.fn(),
+    },
+  } as unknown as TestMockClient;
 }

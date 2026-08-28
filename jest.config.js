@@ -20,7 +20,7 @@ module.exports = {
       displayName: 'client',
       testEnvironment: 'jsdom',
       testMatch: ['**/**/*.test.(js|jsx|ts|tsx)', '!**/**/*.server.test.(js|jsx|ts|tsx)'],
-      setupFiles: ['<rootDir>/spec/jest.setup.js'],
+      setupFiles: ['<rootDir>/spec/setupNetwork.js', '<rootDir>/spec/jest.setup.js'],
       moduleNameMapper: {
         '\\.(svg|png|jpg|jpeg|gif)$': '<rootDir>/spec/__mocks__/fileMock.js',
         'embla-carousel-react': '<rootDir>/spec/__mocks__/embla-carousel-react.js',
@@ -31,6 +31,9 @@ module.exports = {
       displayName: 'server',
       testEnvironment: 'node',
       testMatch: ['**/**/*.server.test.(js|jsx|ts|tsx)'],
+      // Only the network guard: spec/jest.setup.js touches Element,
+      // HTMLDialogElement and IntersectionObserver, which don't exist here.
+      setupFiles: ['<rootDir>/spec/setupNetwork.js'],
       moduleNameMapper: {
         '\\.(svg|png|jpg|jpeg|gif)$': '<rootDir>/spec/__mocks__/fileMock.js',
         'embla-carousel-react': '<rootDir>/spec/__mocks__/embla-carousel-react.js',

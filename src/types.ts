@@ -6,10 +6,11 @@ import {
 } from '@constructor-io/constructorio-ui-components';
 import {
   ConstructorClientOptions,
+  FilterExpression,
+  ItemData,
   Nullable,
 } from '@constructor-io/constructorio-client-javascript';
-import { Question } from './hooks/mocks/types';
-import MockConstructorIOClient from './hooks/mocks/MockConstructorIOClient';
+import type { CioClient } from './hooks/usePiaClient';
 
 export enum FeedbackType {
   UP = 'up',
@@ -17,7 +18,7 @@ export enum FeedbackType {
 }
 
 export interface PiaContextValue {
-  cioClient: Nullable<MockConstructorIOClient>;
+  cioClient: Nullable<CioClient>;
   cioClientOptions: CioClientOptions;
   setCioClientOptions: React.Dispatch<CioClientOptions>;
   itemId: string;
@@ -34,13 +35,21 @@ export interface CioPiaProviderProps {
   variationId?: string;
   /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000") */
   threadId?: string;
-  cioClient?: Nullable<MockConstructorIOClient>;
+  cioClient?: Nullable<CioClient>;
 }
 
-export type CioPiaMode = 'default' | 'conversation';
+export type CioPiaMode = 'default' | 'conversation' | 'recommendations';
 export type CioPiaType = 'inline' | 'modal';
 
 export type DisclaimerPosition = 'top' | 'bottom';
+
+export type CioPiaTrackingConfigs = {
+  /**
+   * Fraction of the container (0–1) that must be visible before the
+   * `product_insights_agent.view` event fires. Defaults to `0.5`.
+   */
+  viewThreshold?: number;
+};
 
 export type CioPiaDisplayConfigs = {
   learnMoreUrl?: string;
@@ -75,6 +84,16 @@ export type Translations = {
   'Learn More.'?: string;
   'Ask about this product'?: string;
   'Add to Cart'?: string;
+  /** Recommendations pod title shown while a request is in flight. */
+  'Adapting recommendations to your preference'?: string;
+  /** Recommendations pod title shown when a request fails or comes back degraded. */
+  'Best selling products'?: string;
+  /** Shown under the recommendations pod input when the request was rejected as unsuitable. */
+  'Unsupported request, try a different feature.'?: string;
+  /** Introduces the recommendations pod refinement options when the API sends no prompt of its own. */
+  "Not what you're looking for? Try:"?: string;
+  /** Placeholder for the recommendations pod refinement input. */
+  'Describe something else...'?: string;
 };
 
 export type QuestionSource = 'user' | 'suggestion';
@@ -142,6 +161,74 @@ export interface ConversationEntry {
   qnaResultId?: string;
 }
 
+/** Which kind of recommendations to fetch. */
+export type RecsStrategy =
+  | 'complementary_items'
+  | 'alternative_items'
+  | 'bestsellers'
+  | 'bundles'
+  | 'buy_it_again'
+  | 'recently_viewed_items'
+  | 'visually_similar_items';
+
+/** A prompt line plus the short labels the shopper can pick from to narrow the results. */
+export interface RecsRefinement {
+  /** Introduces the options. Falls back to a translatable default when absent. */
+  question?: string;
+  options: string[];
+}
+
+/** One recommendations response, in the shape the pod renders. */
+export interface RecsResult {
+  title: string;
+  items: Item[] | null;
+  refinement: RecsRefinement | null;
+  resultId?: string;
+  threadId?: string;
+  /** `'partial'` means the response is degraded, but any items it carries are still usable. */
+  status?: 'complete' | 'partial';
+}
+
+export interface RecsPodParameters {
+  /**
+   * Which kind of recommendations to fetch. Inert until the recommendations endpoint ships: it is
+   * forwarded to `agent.getRecs`, which has nothing to send it to yet, so only a caller's own
+   * `getRecs` acts on it today.
+   *
+   * @default 'complementary_items'
+   */
+  strategy?: RecsStrategy;
+  /** Last-resort title, used when the API returns items but no title of its own. */
+  defaultTitle?: string;
+  /**
+   * Render the free-text refinement input next to the refinement options.
+   *
+   * @default true
+   */
+  showInput?: boolean;
+  /** How many products to request. */
+  numResults?: number;
+}
+
+/** Arguments for one recommendations request. */
+export interface GetRecsProps {
+  itemId: string;
+  variationId?: string;
+  /** Thread ID for conversation context. Must be a valid UUID. */
+  threadId?: string;
+  /** @default 'complementary_items' */
+  strategy?: RecsStrategy;
+  /** Free text the shopper submitted to narrow the results. Absent on the first request. */
+  shopperInput?: string;
+  numResults?: number;
+  /**
+   * Applied while the raw results are converted to Items. It lives on the request rather than
+   * in the component because the raw response shape is provisional, and keeping the conversion
+   * behind this one call is what makes the endpoint swappable later.
+   */
+  formatImageUrl?: Formatters['formatImageUrl'];
+}
+
 /**
  * Render props passed to CioPia children function
  */
@@ -188,6 +275,8 @@ export interface InputRenderProps {
   onSubmit: (value: string) => void;
   onFocus?: () => void;
   translations?: Translations;
+  /** Validation message for the value that was just submitted, when there is one. */
+  error?: string;
 }
 
 /**
@@ -204,4 +293,50 @@ export interface CioPiaComponentOverrides extends ComponentOverrideProps<CioPiaR
   loading?: ComponentOverrideProps<LoadingRenderProps>;
 }
 
-export * from './hooks/mocks/types';
+// PIA API types
+export interface Question {
+  value: string;
+}
+
+export interface QuestionResponse {
+  questions: Array<Question>;
+}
+
+export interface SuggestedQuestionsParameters {
+  numResults?: number;
+  preFilterExpression?: FilterExpression;
+}
+
+export interface AnswerRequestParameters {
+  preFilterExpression?: FilterExpression;
+  guard?: boolean;
+  fmtOptions?: Record<string, any>;
+}
+
+export interface ApiItemVariation extends Record<string, any> {
+  value: string;
+  data?: ItemData;
+}
+
+export interface ApiItem extends Record<string, any> {
+  value: string;
+  matched_terms: Array<string>;
+  data: ItemData;
+  variations?: Array<ApiItemVariation> | null;
+  variations_map?: Record<string, any> | Array<Record<string, any>> | null;
+}
+
+export interface AnswerItemResults {
+  request?: Record<string, any>;
+  response: {
+    results: Array<ApiItem>;
+  };
+}
+
+export interface GetAnswerResultsResponse {
+  qna_result_id: string;
+  value: string;
+  item_results?: AnswerItemResults;
+  follow_up_questions?: Array<Question>;
+  thread_id?: string;
+}
