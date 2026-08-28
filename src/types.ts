@@ -6,6 +6,7 @@ import {
 } from '@constructor-io/constructorio-ui-components';
 import {
   ConstructorClientOptions,
+  FilterExpression,
   ItemData,
   Nullable,
 } from '@constructor-io/constructorio-client-javascript';
@@ -303,11 +304,11 @@ export interface QuestionResponse {
 
 export interface SuggestedQuestionsParameters {
   numResults?: number;
-  preFilterExpression?: Record<string, any>;
+  preFilterExpression?: FilterExpression;
 }
 
 export interface AnswerRequestParameters {
-  preFilterExpression?: Record<string, any>;
+  preFilterExpression?: FilterExpression;
   guard?: boolean;
   fmtOptions?: Record<string, any>;
 }
