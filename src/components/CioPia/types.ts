@@ -56,8 +56,20 @@ export interface CioPiaProps
   recsPodParameters?: RecsPodParameters;
   /**
    * @deprecated Use `answerParameters` and `suggestedQuestionsParameters` instead.
-   * Extra query parameters appended to PIA API requests.
-   * These are merged into both answer and suggested-questions calls (typed params take precedence).
+   *
+   * Only the following keys are forwarded (snake_case or camelCase accepted):
+   *
+   * Suggested-questions endpoint:
+   * - `num_results` / `numResults` → numResults
+   * - `pre_filter_expression` / `preFilterExpression` → preFilterExpression (JSON-parsed if string)
+   *
+   * Answer endpoint:
+   * - `guard` → guard
+   * - `pre_filter_expression` / `preFilterExpression` → preFilterExpression (JSON-parsed if string)
+   * - `fmt_options` / `fmtOptions` → fmtOptions (JSON-parsed if string)
+   *
+   * All other keys (e.g. `ef-*`) are silently dropped.
+   * Typed parameters take precedence over values specified here.
    */
   parameters?: Record<string, string | number | boolean>;
 }
