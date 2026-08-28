@@ -108,6 +108,9 @@ export default function useRecsPod({
         | undefined;
 
       if (!cioClient || !getRecs) {
+        if (cioClient && !getRecs) {
+          console.info('[CioPia] getRecs is not available on the client SDK yet.');
+        }
         setIsLoading(false);
         return;
       }

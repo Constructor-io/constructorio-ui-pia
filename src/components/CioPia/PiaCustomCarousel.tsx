@@ -147,7 +147,7 @@ export default function PiaCustomCarousel({
   const mergedOverrides = useMemo((): CarouselOverrides<Item> => {
     const baseOverrides = buildMergedOverrides(componentOverrides, priceSectionOverride);
 
-    // Inject click handlers into override render props so custom overrides can call them.
+    // Override priority: carousel.reactNode → item.reactNode → item.productCard.reactNode → default ProductCard.
     // The casts are required because the override signatures don't declare these extra props,
     // but consumers receive them as part of the render-props contract documented in CioPiaProps.
     const carouselOverride = baseOverrides.reactNode;

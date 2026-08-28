@@ -51,6 +51,7 @@ export default function useSuggestedQuestions({
       .finally(() => {
         setIsLoading(false);
       });
+    // parameters is serialized via serializedParameters to prevent refetch on identity changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cioClient, itemId, variationId, threadId, serializedParameters]);
 

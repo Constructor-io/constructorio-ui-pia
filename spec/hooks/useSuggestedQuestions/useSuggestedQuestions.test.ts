@@ -50,7 +50,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     expect(result.current.error).toBeNull();
     expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(
       testItemId,
-      { threadId: undefined, variationId: undefined, numResults: undefined },
+      { threadId: undefined, variationId: undefined },
     );
   });
 
@@ -77,7 +77,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     expect(result.current.error!.message).toBe('Mock error');
     expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(
       testItemId,
-      { threadId: undefined, variationId: undefined, numResults: undefined },
+      { threadId: undefined, variationId: undefined },
     );
   });
 
@@ -170,11 +170,11 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     expect(result.current.data).toEqual(newTestQuestions);
     expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(
       testItemId,
-      { threadId: undefined, variationId: undefined, numResults: undefined },
+      { threadId: undefined, variationId: undefined },
     );
     expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(
       newTestItemId,
-      { threadId: undefined, variationId: undefined, numResults: undefined },
+      { threadId: undefined, variationId: undefined },
     );
   });
 
@@ -200,7 +200,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
 
     expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(
       testItemId,
-      { threadId: 'test-thread-id', variationId: 'test-variation-id', numResults: undefined },
+      { threadId: 'test-thread-id', variationId: 'test-variation-id' },
     );
     expect(result.current.data).toEqual(testQuestions);
   });
@@ -319,7 +319,7 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledTimes(2);
     expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenLastCalledWith(
       testItemId,
-      { threadId: undefined, variationId: undefined, numResults: undefined },
+      { threadId: undefined, variationId: undefined },
     );
   });
 });
