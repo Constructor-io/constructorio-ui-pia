@@ -6,7 +6,7 @@ import {
   DEMO_QUESTION_ALTERNATIVE_PRODUCTS,
   MOCK_QUESTIONS,
 } from '../../src/constants';
-import { QuestionResponse, GetAnswerResultsResponse } from '../../src/hooks/mocks/types';
+import { QuestionResponse, GetAnswerResultsResponse } from '../../src/types';
 import { testGetAnswersApiResponse } from '../localExamples';
 
 describe('Testing PIA Module', () => {

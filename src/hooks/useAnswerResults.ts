@@ -1,15 +1,15 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Nullable } from '@constructor-io/constructorio-client-javascript';
-import MockConstructorIOClient from './mocks/MockConstructorIOClient';
-import { Formatters, Item, GetAnswerResultsResponse } from '../types';
+import { AnswerRequestParameters, Formatters, Item, GetAnswerResultsResponse } from '../types';
 import { extractAndTransformItems } from '../utils/transformers';
+import type { CioClient } from './usePiaClient';
 
 export interface UseAnswerResultsProps {
   itemId: string;
   variationId?: string;
   threadId?: string;
-  cioClient: MockConstructorIOClient;
-  parameters?: Record<string, string | number | boolean>;
+  cioClient: CioClient;
+  parameters?: AnswerRequestParameters;
   formatImageUrl?: Formatters['formatImageUrl'];
 }
 
@@ -20,33 +20,6 @@ export interface UseAnswerResultsReturn {
   error: Error | null;
   getAnswer: (question: string) => void;
 }
-
-interface FetchAnswerResultsParams {
-  client: MockConstructorIOClient;
-  itemId: string;
-  question: string;
-  variationId?: string;
-  threadId?: string;
-  parameters?: Record<string, string | number | boolean>;
-}
-
-const fetchAnswerResults = async ({
-  client,
-  itemId,
-  question,
-  variationId,
-  threadId,
-  parameters,
-}: FetchAnswerResultsParams) => {
-  const response: GetAnswerResultsResponse = await client.agent.getAnswerResults({
-    itemId,
-    variationId,
-    threadId,
-    question,
-    parameters,
-  });
-  return response;
-};
 
 export default function useAnswerResults({
   itemId,
@@ -73,9 +46,10 @@ export default function useAnswerResults({
       setError(null);
       setAnswerResults(null);
 
-      fetchAnswerResults({ client: cioClient, itemId, question, variationId, threadId, parameters })
-        .then((fetchedAnswerResults) => {
-          setAnswerResults(fetchedAnswerResults);
+      cioClient.agent.pia
+        .getAnswerResults(itemId, question, { threadId, variationId, ...parameters })
+        .then((response) => {
+          setAnswerResults(response as GetAnswerResultsResponse);
           setError(null);
         })
         .catch((err) => {

@@ -1,7 +1,6 @@
 import React from 'react';
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent, act } from '@testing-library/react';
-import { CIO_EVENTS } from '@constructor-io/constructorio-ui-components';
 import CioPiaRecs from '../../../src/components/CioPiaRecs/CioPiaRecs';
 import type { CioPiaProps } from '../../../src/components/CioPia/types';
 import { AgentRequestError } from '../../../src/errors';
@@ -56,17 +55,11 @@ async function renderSettled(overrides: Partial<CioPiaProps> = {}) {
   return view;
 }
 
-/**
- * The product cards come from the components library and report a click as a DOM event on the
- * carousel wrapper rather than through a React prop, so this is how a click is simulated.
- */
 function clickProductCard(container: HTMLElement, product: Item) {
-  const wrapper = container.querySelector('[data-carousel]')?.parentElement;
-  if (!wrapper) throw new Error('No carousel on screen to click a product card in');
+  const card = container.querySelector(`[data-cnstrc-item-id="${product.id}"]`);
+  if (!card) throw new Error('No product card found for the given product');
 
-  wrapper.dispatchEvent(
-    new CustomEvent(CIO_EVENTS.productCard.click, { detail: { product }, bubbles: true }),
-  );
+  fireEvent.click(card);
 }
 
 describe('CioPiaRecs Component', () => {

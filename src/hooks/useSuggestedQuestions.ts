@@ -1,14 +1,13 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Question, QuestionResponse, SuggestedQuestionsParameters } from '../types';
-import MockConstructorIOClient from './mocks/MockConstructorIOClient';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Question, SuggestedQuestionsParameters } from '../types';
+import type { CioClient } from './usePiaClient';
 
 export interface UseSuggestedQuestionsProps {
   itemId: string;
   variationId?: string;
   threadId?: string;
-  cioClient?: MockConstructorIOClient;
+  cioClient?: CioClient;
   parameters?: SuggestedQuestionsParameters;
-  requestParameters?: Record<string, string | number | boolean>;
 }
 
 export interface UseSuggestedQuestionsReturn {
@@ -18,48 +17,17 @@ export interface UseSuggestedQuestionsReturn {
   getSuggestedQuestions: () => void;
 }
 
-interface FetchSuggestedQuestionsParams {
-  client: MockConstructorIOClient;
-  itemId: string;
-  variationId?: string;
-  threadId?: string;
-  parameters?: SuggestedQuestionsParameters;
-  requestParameters?: Record<string, string | number | boolean>;
-}
-
-const fetchSuggestedQuestions = async ({
-  client,
-  itemId,
-  variationId,
-  threadId,
-  parameters,
-  requestParameters,
-}: FetchSuggestedQuestionsParams) => {
-  const response: QuestionResponse = await client.agent.getSuggestedQuestions({
-    itemId,
-    variationId,
-    threadId,
-    parameters,
-    requestParameters,
-  });
-
-  return response.questions;
-};
-
 export default function useSuggestedQuestions({
   itemId,
   variationId,
   threadId,
   cioClient,
   parameters,
-  requestParameters,
 }: UseSuggestedQuestionsProps): UseSuggestedQuestionsReturn {
   const [questions, setQuestions] = useState<Array<Question>>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
-
-  // Serialize to a primitive so an object-literal prop doesn't retrigger the auto-fetch effect each render.
-  const requestParametersKey = JSON.stringify(requestParameters);
+  const serializedParameters = useMemo(() => JSON.stringify(parameters), [parameters]);
 
   const fetchResult = useCallback(() => {
     if (!cioClient) return;
@@ -67,16 +35,14 @@ export default function useSuggestedQuestions({
     setIsLoading(true);
     setError(null);
 
-    fetchSuggestedQuestions({
-      client: cioClient,
-      itemId,
-      variationId,
-      threadId,
-      parameters,
-      requestParameters,
-    })
-      .then((fetchedQuestions) => {
-        setQuestions(fetchedQuestions);
+    cioClient.agent.pia
+      .getSuggestedQuestions(itemId, {
+        threadId,
+        variationId,
+        ...parameters,
+      })
+      .then((response) => {
+        setQuestions(response.questions);
         setError(null);
       })
       .catch((err) => {
@@ -85,8 +51,9 @@ export default function useSuggestedQuestions({
       .finally(() => {
         setIsLoading(false);
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- primitive deps prevent refetch loop
-  }, [cioClient, itemId, variationId, threadId, parameters?.numResults, requestParametersKey]);
+    // parameters is serialized via serializedParameters to prevent refetch on identity changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cioClient, itemId, variationId, threadId, serializedParameters]);
 
   useEffect(() => {
     fetchResult();

@@ -7,7 +7,7 @@ import type { CioPiaProps } from '../../../src/components/CioPia/types';
 import useCioPia from '../../../src/hooks/useCioPia';
 import { DEMO_QUESTION } from '../../../src/constants';
 import { createMockCioClient } from '../../helpers/mockCioClient';
-import { GetAnswerResultsResponse } from '../../../src/hooks/mocks/types';
+import { GetAnswerResultsResponse } from '../../../src/types';
 import { Item } from '../../../src/types';
 
 jest.mock('../../../src/hooks/useCioPia', () => jest.fn());
@@ -16,26 +16,14 @@ const mockUseCioPiaHook = useCioPia as jest.MockedFunction<typeof useCioPia>;
 
 const CAROUSEL_SELECTOR = '[data-carousel]';
 
-function dispatchProductCardClickEvent(element: HTMLElement, product: Item) {
-  const event = new CustomEvent(CIO_EVENTS.productCard.click, {
-    detail: { product },
-    bubbles: true,
-  });
-  element.dispatchEvent(event);
+function getProductCards(container: HTMLElement) {
+  return container.querySelectorAll<HTMLElement>('.cio-product-card');
 }
 
-function getCarouselWrapper(container: HTMLElement) {
-  const carousel = container.querySelector(CAROUSEL_SELECTOR);
-  return carousel?.parentElement;
-}
-
-// Returns true if event was dispatched, false if wrapper not found
-function dispatchEventOnCarouselWrapper(container: HTMLElement, product: Item) {
-  const wrapper = getCarouselWrapper(container);
-  if (!wrapper) return false;
-
-  dispatchProductCardClickEvent(wrapper, product);
-
+function clickProductCard(container: HTMLElement, index: number) {
+  const cards = getProductCards(container);
+  if (!cards[index]) return false;
+  fireEvent.click(cards[index]);
   return true;
 }
 
@@ -369,7 +357,7 @@ describe('CioPia Component', () => {
 
       const { container } = render(<CioPia {...mockProps} />);
 
-      dispatchEventOnCarouselWrapper(container, mockItems[0]);
+      clickProductCard(container, 0);
       expect(windowOpenSpy).toHaveBeenCalledWith(mockItems[0].url, '_blank', 'noopener,noreferrer');
 
       windowOpenSpy.mockRestore();
@@ -383,7 +371,7 @@ describe('CioPia Component', () => {
         <CioPia {...mockProps} callbacks={{ onProductCardClick: mockOnProductCardClick }} />,
       );
 
-      expect(dispatchEventOnCarouselWrapper(container, mockItems[0])).toBe(true);
+      expect(clickProductCard(container, 0)).toBe(true);
       expect(mockOnProductCardClick).toHaveBeenCalledTimes(1);
       expect(mockOnProductCardClick).toHaveBeenCalledWith(mockItems[0]);
     });
@@ -396,10 +384,10 @@ describe('CioPia Component', () => {
         <CioPia {...mockProps} callbacks={{ onProductCardClick: mockOnProductCardClick }} />,
       );
 
-      dispatchEventOnCarouselWrapper(container, mockItems[0]);
+      clickProductCard(container, 0);
       expect(mockOnProductCardClick).toHaveBeenLastCalledWith(mockItems[0]);
 
-      dispatchEventOnCarouselWrapper(container, mockItems[1]);
+      clickProductCard(container, 1);
       expect(mockOnProductCardClick).toHaveBeenLastCalledWith(mockItems[1]);
       expect(mockOnProductCardClick).toHaveBeenCalledTimes(2);
     });
@@ -411,11 +399,11 @@ describe('CioPia Component', () => {
 
       const { container, rerender } = render(<CioPia {...mockProps} callbacks={callbacks} />);
 
-      dispatchEventOnCarouselWrapper(container, mockItems[0]);
+      clickProductCard(container, 0);
       expect(mockOnProductCardClick).toHaveBeenCalledTimes(1);
 
       rerender(<CioPia {...mockProps} callbacks={callbacks} />);
-      dispatchEventOnCarouselWrapper(container, mockItems[0]);
+      clickProductCard(container, 0);
       expect(mockOnProductCardClick).toHaveBeenCalledTimes(2);
     });
 
@@ -428,12 +416,12 @@ describe('CioPia Component', () => {
         <CioPia {...mockProps} callbacks={{ onProductCardClick: firstCallback }} />,
       );
 
-      dispatchEventOnCarouselWrapper(container, mockItems[0]);
+      clickProductCard(container, 0);
       expect(firstCallback).toHaveBeenCalledTimes(1);
       expect(secondCallback).not.toHaveBeenCalled();
 
       rerender(<CioPia {...mockProps} callbacks={{ onProductCardClick: secondCallback }} />);
-      dispatchEventOnCarouselWrapper(container, mockItems[0]);
+      clickProductCard(container, 0);
       expect(firstCallback).toHaveBeenCalledTimes(1);
       expect(secondCallback).toHaveBeenCalledTimes(1);
     });
@@ -462,7 +450,7 @@ describe('CioPia Component', () => {
         <CioPia {...mockProps} callbacks={{ onProductCardClick: mockOnProductCardClick }} />,
       );
 
-      dispatchEventOnCarouselWrapper(container, firstItem);
+      clickProductCard(container, 0);
       expect(mockOnProductCardClick).toHaveBeenLastCalledWith(firstItem);
 
       mockUseCioPiaWithItems([secondItem]);
@@ -470,44 +458,14 @@ describe('CioPia Component', () => {
         <CioPia {...mockProps} callbacks={{ onProductCardClick: mockOnProductCardClick }} />,
       );
 
-      dispatchEventOnCarouselWrapper(container, secondItem);
+      clickProductCard(container, 0);
       expect(mockOnProductCardClick).toHaveBeenLastCalledWith(secondItem);
       expect(mockOnProductCardClick).toHaveBeenCalledTimes(2);
     });
   });
 
-  describe('Event Listener Tests', () => {
-    it('attaches event listener to carousel wrapper on mount', () => {
-      mockUseCioPiaWithItems();
-      const addEventListenerSpy = jest.spyOn(HTMLDivElement.prototype, 'addEventListener');
-
-      render(<CioPia {...mockProps} />);
-
-      expect(addEventListenerSpy).toHaveBeenCalledWith(
-        CIO_EVENTS.productCard.click,
-        expect.any(Function),
-      );
-
-      addEventListenerSpy.mockRestore();
-    });
-
-    it('removes event listener on unmount', () => {
-      mockUseCioPiaWithItems();
-      const removeEventListenerSpy = jest.spyOn(HTMLDivElement.prototype, 'removeEventListener');
-
-      const { unmount } = render(<CioPia {...mockProps} />);
-
-      unmount();
-
-      expect(removeEventListenerSpy).toHaveBeenCalledWith(
-        CIO_EVENTS.productCard.click,
-        expect.any(Function),
-      );
-
-      removeEventListenerSpy.mockRestore();
-    });
-
-    it('only handles events from within carousel wrapper (scoped events)', () => {
+  describe('Product Card Click Tests', () => {
+    it('handles multiple product card clicks in sequence', () => {
       mockUseCioPiaWithItems();
       const mockOnProductCardClick = jest.fn();
 
@@ -515,29 +473,9 @@ describe('CioPia Component', () => {
         <CioPia {...mockProps} callbacks={{ onProductCardClick: mockOnProductCardClick }} />,
       );
 
-      dispatchEventOnCarouselWrapper(container, mockItems[0]);
-      expect(mockOnProductCardClick).toHaveBeenCalledTimes(1);
-
-      // Dispatch event outside carousel (should not trigger)
-      const outsideElement = document.createElement('div');
-      document.body.appendChild(outsideElement);
-      dispatchProductCardClickEvent(outsideElement, mockItems[1]);
-      expect(mockOnProductCardClick).toHaveBeenCalledTimes(1); // Still 1
-
-      document.body.removeChild(outsideElement);
-    });
-
-    it('handles multiple product card click events in sequence', () => {
-      mockUseCioPiaWithItems();
-      const mockOnProductCardClick = jest.fn();
-
-      const { container } = render(
-        <CioPia {...mockProps} callbacks={{ onProductCardClick: mockOnProductCardClick }} />,
-      );
-
-      dispatchEventOnCarouselWrapper(container, mockItems[0]);
-      dispatchEventOnCarouselWrapper(container, mockItems[1]);
-      dispatchEventOnCarouselWrapper(container, mockItems[0]);
+      clickProductCard(container, 0);
+      clickProductCard(container, 1);
+      clickProductCard(container, 0);
 
       expect(mockOnProductCardClick).toHaveBeenCalledTimes(3);
       expect(mockOnProductCardClick).toHaveBeenNthCalledWith(1, mockItems[0]);
@@ -545,7 +483,7 @@ describe('CioPia Component', () => {
       expect(mockOnProductCardClick).toHaveBeenNthCalledWith(3, mockItems[0]);
     });
 
-    it('updates event listener when callbacks change', () => {
+    it('updates callback when callbacks prop changes', () => {
       mockUseCioPiaWithItems();
       const firstCallback = jest.fn();
       const secondCallback = jest.fn();
@@ -554,17 +492,17 @@ describe('CioPia Component', () => {
         <CioPia {...mockProps} callbacks={{ onProductCardClick: firstCallback }} />,
       );
 
-      dispatchEventOnCarouselWrapper(container, mockItems[0]);
+      clickProductCard(container, 0);
       expect(firstCallback).toHaveBeenCalledTimes(1);
       expect(secondCallback).toHaveBeenCalledTimes(0);
 
       rerender(<CioPia {...mockProps} callbacks={{ onProductCardClick: secondCallback }} />);
-      dispatchEventOnCarouselWrapper(container, mockItems[0]);
+      clickProductCard(container, 0);
       expect(firstCallback).toHaveBeenCalledTimes(1);
       expect(secondCallback).toHaveBeenCalledTimes(1);
     });
 
-    it('handles events when no items have url property', () => {
+    it('does not call window.open when items have no url property', () => {
       const itemsWithoutUrl: Item[] = [
         {
           id: 'item-1',
@@ -579,44 +517,21 @@ describe('CioPia Component', () => {
 
       const { container } = render(<CioPia {...mockProps} />);
 
-      dispatchEventOnCarouselWrapper(container, itemsWithoutUrl[0]);
+      clickProductCard(container, 0);
       expect(windowOpenSpy).not.toHaveBeenCalled();
 
       windowOpenSpy.mockRestore();
     });
 
-    it('does not call callback when event detail is missing product', () => {
-      mockUseCioPiaWithItems();
-      const mockOnProductCardClick = jest.fn();
-
-      const { container } = render(
-        <CioPia {...mockProps} callbacks={{ onProductCardClick: mockOnProductCardClick }} />,
-      );
-
-      const wrapper = getCarouselWrapper(container);
-      const event = new CustomEvent(CIO_EVENTS.productCard.click, {
-        detail: {},
-        bubbles: true,
-      });
-
-      expect(() => wrapper?.dispatchEvent(event)).not.toThrow();
-      expect(mockOnProductCardClick).not.toHaveBeenCalled();
-    });
-
-    it('does not attach event listener when carousel is not rendered', () => {
+    it('does not render carousel when items are empty', () => {
       mockUseCioPiaWithItems([]);
-      const addEventListenerSpy = jest.spyOn(HTMLDivElement.prototype, 'addEventListener');
 
-      render(<CioPia {...mockProps} />);
+      const { container } = render(<CioPia {...mockProps} />);
 
-      expect(document.querySelector(CAROUSEL_SELECTOR)).not.toBeInTheDocument();
-      // Event listener should still be called (on wrapper), but carousel shouldn't render
-      expect(addEventListenerSpy).toHaveBeenCalled();
-
-      addEventListenerSpy.mockRestore();
+      expect(getProductCards(container).length).toBe(0);
     });
 
-    it('event listeners work with custom componentOverrides', () => {
+    it('passes onProductClick to custom item overrides', () => {
       mockUseCioPiaWithItems();
       const mockOnProductCardClick = jest.fn();
 
@@ -627,7 +542,13 @@ describe('CioPia Component', () => {
           componentOverrides={{
             carousel: {
               item: {
-                reactNode: ({ item }) => <div data-testid='custom-item'>Custom: {item?.name}</div>,
+                reactNode: ({ item, onProductClick }: { item?: Item; onProductClick?: (item: Item) => void }) => (
+                  <div
+                    data-testid='custom-item'
+                    onClick={() => item && onProductClick?.(item)}>
+                    Custom: {item?.name}
+                  </div>
+                ),
               },
             },
           }}
@@ -637,7 +558,7 @@ describe('CioPia Component', () => {
       const customItems = container.querySelectorAll('[data-testid="custom-item"]');
       expect(customItems.length).toBe(mockItems.length);
 
-      dispatchEventOnCarouselWrapper(container, mockItems[0]);
+      fireEvent.click(customItems[0]);
       expect(mockOnProductCardClick).toHaveBeenCalledWith(mockItems[0]);
     });
   });
