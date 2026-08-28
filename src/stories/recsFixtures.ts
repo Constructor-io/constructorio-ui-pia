@@ -4,8 +4,9 @@ import { Item, RecsResult } from '../types';
  * Stand-in responses for the recommendations stories.
  *
  * The endpoint that returns a short title and refinement options is not deployed yet, so these are
- * what we expect it to send. Every title and every option here belongs to the API - the library
- * writes none of this copy - which is why it lives in a fixture rather than in `constants.ts`.
+ * what we expect it to send. Every title and every option here belongs to the API, which is why it
+ * lives in a fixture - what the pod supplies when a response carries none of its own is in
+ * `constants.ts` instead.
  */
 
 interface ProductSpec {
@@ -137,11 +138,12 @@ export const RECS_TRENDING: RecsResult = complete(
 );
 
 /**
- * For the story that configures `numResults: 6` and `strategy: 'bestsellers'`. Six, so it holds the
- * parameter honestly - which is also what makes it the one story whose back arrow starts hidden.
+ * For the story that configures `numResults: 6` and `strategy: 'alternative_items'`. Six, so it
+ * holds the parameter honestly - which is also what makes it the one story whose back arrow starts
+ * hidden.
  *
- * None of these carries a title, which is what makes `defaultTitle` visible: it is a last resort,
- * so it only shows for a response that has no title of its own to prefer over it.
+ * None of these carries a title, which is what makes `defaultTitle` visible: a response that
+ * carried one of its own would be preferred over it.
  */
 export const RECS_SIX_GROUPS: RecsResult[] = [
   complete(

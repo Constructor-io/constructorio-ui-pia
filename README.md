@@ -80,7 +80,10 @@ The component supports multiple display modes via the `displayConfigs` prop:
   apiKey='YOUR_API_KEY'
   itemId='PRODUCT_ITEM_ID'
   displayConfigs={{ mode: 'recommendations' }}
-  recsPodParameters={{ strategy: 'complementary_items' }}
+  recsPodParameters={{
+    strategy: 'complementary_items',
+    defaultTitle: 'Complete the set',
+  }}
 />
 ```
 
@@ -112,10 +115,35 @@ The component supports multiple display modes via the `displayConfigs` prop:
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `strategy` | `RecsStrategy` | `'complementary_items'` | Which kind of recommendations to fetch. One of `'complementary_items'`, `'alternative_items'`, `'bestsellers'`, `'bundles'`, `'buy_it_again'`, `'recently_viewed_items'`, `'visually_similar_items'` |
-| `defaultTitle` | `string` | - | Last-resort title, used only when the API returns products but no title of its own |
+| `strategy` | `'complementary_items' \| 'alternative_items'` | `'complementary_items'` | Which kind of recommendations to fetch. Other `RecsStrategy` values are not served today and render nothing |
+| `defaultTitle` | `string` | per strategy, see below | The pod title, used whenever the API returns no title of its own — which is every response today |
 | `showInput` | `boolean` | `true` | Render the free-text box after the options |
-| `numResults` | `number` | - | How many products to request |
+| `numResults` | `number` | - | How many products to show. Does not reach the API today, so it only sizes the loading skeleton |
+
+Without a `defaultTitle`, the pod supplies its own — "Products that work well with this one" for
+`'complementary_items'` and "Similar products you might like" for `'alternative_items'`. Both are
+`translations` keys, so they can be replaced that way too.
+
+The refinement options are the pod's own as well — "From a different brand" and "A lower price" —
+and are fixed in this version: they are not configurable, and unlike the titles they are not
+`translations` keys either.
+
+**What recommendations mode gives you today.** The endpoint the pod is designed for is not deployed
+yet, so it is backed by the question-answering endpoint in the meantime. That backing is worth
+knowing about:
+
+- **The title and the options are the pod's own.** The API sends a few sentences of prose and
+  follow-ups phrased as questions; neither belongs in a pod, so both are dropped. `defaultTitle` is
+  there to replace the title; the options are fixed.
+- **A refinement is answered in the context of the previous turn,** not as a fresh catalog search.
+  That is why the two built-in options are worded relatively ("a lower price", "from a different
+  brand"): an absolute threshold typed into the free-text box ("under $50") often leaves nothing.
+- **Not every product has an answer.** Roughly one product page in five renders no pod at all on
+  `'complementary_items'`. The component renders no markup in that case, so whatever your page
+  already had in that slot shows through.
+- **First render takes several seconds,** and the products rotate between loads.
+- **Pass `threadId` only if you mean to.** The component generates its own per mount. Sharing one
+  with a chat widget on the same page leaks that conversation into the recommendations.
 
 **Callbacks:**
 

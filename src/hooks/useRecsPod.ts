@@ -11,7 +11,15 @@ import {
 } from '../types';
 import { AgentRequestError } from '../errors';
 import { translate } from '../utils/translate';
-import { RECS_FALLBACK_TITLE, RECS_LOADING_TITLE, RECS_UNSUPPORTED_REQUEST } from '../constants';
+import {
+  RECS_DEFAULT_REFINEMENT_OPTIONS,
+  RECS_DEFAULT_STRATEGY,
+  RECS_FALLBACK_TITLE,
+  RECS_LOADING_TITLE,
+  RECS_TITLE_ALTERNATIVE,
+  RECS_TITLE_COMPLEMENTARY,
+  RECS_UNSUPPORTED_REQUEST,
+} from '../constants';
 
 /**
  * What the shopper did to ask for this refinement.
@@ -57,7 +65,17 @@ export interface UseRecsPodReturn {
   refine: (text: string, source: RefinementSource) => void;
 }
 
-const DEFAULT_STRATEGY: RecsStrategy = 'complementary_items';
+/**
+ * The pod's own title, per strategy. Kept here rather than in the adapter so it survives the swap to
+ * `/v1/agent_insights`, which sends a title of its own only sometimes.
+ */
+const STRATEGY_TITLES: Record<RecsStrategy, string> = {
+  complementary_items: RECS_TITLE_COMPLEMENTARY,
+  alternative_items: RECS_TITLE_ALTERNATIVE,
+};
+
+/** The pod's own options, offered whenever a response carries none. Same reasoning as the titles. */
+const DEFAULT_REFINEMENT: RecsRefinement = { options: RECS_DEFAULT_REFINEMENT_OPTIONS };
 
 /**
  * Owns everything a recommendations pod shows: one request on mount, one on every refinement,
@@ -95,7 +113,7 @@ export default function useRecsPod({
     formatImageUrlRef.current = formatImageUrl;
   }, [formatImageUrl]);
 
-  const strategy = parameters?.strategy || DEFAULT_STRATEGY;
+  const strategy = parameters?.strategy || RECS_DEFAULT_STRATEGY;
   const { numResults, defaultTitle } = parameters || {};
 
   const fetchResult = useCallback(
@@ -178,9 +196,10 @@ export default function useRecsPod({
     [fetchResult],
   );
 
-  // The title belonging to the last response we kept. `defaultTitle` is the caller's last resort
-  // for a response that carried items but no title of its own.
-  const settledTitle = result?.title || defaultTitle || '';
+  // A response carrying no title of its own falls to the caller's `defaultTitle`, then to ours for
+  // this strategy. No response carries one today, so this is the title throughout.
+  const settledTitle =
+    result?.title || defaultTitle || translate(STRATEGY_TITLES[strategy], translations);
 
   let title = settledTitle;
   if (isLoading) {
@@ -195,11 +214,13 @@ export default function useRecsPod({
 
   return {
     title,
-    // Normalized so every caller can treat "nothing to render" as a single case. Our own adapter
-    // never returns an empty array, but `cioClient` is a public prop and a consumer-supplied client
-    // can. Note `[]` is truthy, so `|| null` would not catch it.
+    // Items are normalized so every caller can treat "nothing to render" as a single case. Our own
+    // adapter never returns an empty array, but `cioClient` is a public prop and a consumer-supplied
+    // client can - and `[]` is truthy, so it takes `.length` to catch rather than a falsy check.
     items: result?.items?.length ? result.items : null,
-    refinement: result?.refinement || null,
+    // A refinement the response carries wins; ours stands in until the endpoint sends one, which is
+    // every response today.
+    refinement: result?.refinement || DEFAULT_REFINEMENT,
     isLoading,
     error,
     inputError: hasUnsupportedInput ? translate(RECS_UNSUPPORTED_REQUEST, translations) : null,

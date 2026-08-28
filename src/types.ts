@@ -8,6 +8,7 @@ import {
   ConstructorClientOptions,
   Nullable,
 } from '@constructor-io/constructorio-client-javascript';
+import { RECS_STRATEGIES } from './constants';
 import { Question } from './hooks/mocks/types';
 import MockConstructorIOClient from './hooks/mocks/MockConstructorIOClient';
 
@@ -79,6 +80,10 @@ export type Translations = {
   'Adapting recommendations to your preference'?: string;
   /** Recommendations pod title shown when a request fails or comes back degraded. */
   'Best selling products'?: string;
+  /** Recommendations pod title for `complementary_items`, used when the response carries none. */
+  'Products that work well with this one'?: string;
+  /** Recommendations pod title for `alternative_items`, used when the response carries none. */
+  'Similar products you might like'?: string;
   /** Shown under the recommendations pod input when the request was rejected as unsuitable. */
   'Unsupported request, try a different feature.'?: string;
   /** Introduces the recommendations pod refinement options when the API sends no prompt of its own. */
@@ -152,15 +157,12 @@ export interface ConversationEntry {
   qnaResultId?: string;
 }
 
-/** Which kind of recommendations to fetch. */
-export type RecsStrategy =
-  | 'complementary_items'
-  | 'alternative_items'
-  | 'bestsellers'
-  | 'bundles'
-  | 'buy_it_again'
-  | 'recently_viewed_items'
-  | 'visually_similar_items';
+/**
+ * Which kind of recommendations to fetch. Carries only what is served: each value names a question
+ * measured to return products for the item itself. Derived from `RECS_STRATEGIES` so the type and
+ * the runtime check share one definition.
+ */
+export type RecsStrategy = (typeof RECS_STRATEGIES)[number];
 
 /** A prompt line plus the short labels the shopper can pick from to narrow the results. */
 export interface RecsRefinement {
@@ -182,14 +184,17 @@ export interface RecsResult {
 
 export interface RecsPodParameters {
   /**
-   * Which kind of recommendations to fetch. Inert until the recommendations endpoint ships: it is
-   * forwarded to `agent.getRecs`, which has nothing to send it to yet, so only a caller's own
-   * `getRecs` acts on it today.
+   * Which kind of recommendations to fetch. Supply a `cioClient` with your own `agent.getRecs` to
+   * serve a kind this does not carry from your own data.
    *
    * @default 'complementary_items'
    */
   strategy?: RecsStrategy;
-  /** Last-resort title, used when the API returns items but no title of its own. */
+  /**
+   * The pod's title. Used whenever the response carries no title of its own, which is every response
+   * today, so this is the title throughout - including after a refinement. Falls back to a
+   * translatable default per strategy.
+   */
   defaultTitle?: string;
   /**
    * Render the free-text refinement input next to the refinement options.
@@ -197,7 +202,12 @@ export interface RecsPodParameters {
    * @default true
    */
   showInput?: boolean;
-  /** How many products to request. */
+  /**
+   * How many products to show.
+   *
+   * Does not reach the API today - the endpoint backing the pod decides how many products to
+   * return. It sizes the loading skeleton, so it is still worth setting to the number you expect.
+   */
   numResults?: number;
 }
 
@@ -215,7 +225,8 @@ export interface GetRecsProps {
   /**
    * Applied while the raw results are converted to Items. It lives on the request rather than
    * in the component because the raw response shape is provisional, and keeping the conversion
-   * behind this one call is what makes the endpoint swappable later.
+   * behind this one call is what makes the endpoint swappable later - see
+   * `hooks/mocks/recsFromItemQuestions.ts` for the conversion in place today.
    */
   formatImageUrl?: Formatters['formatImageUrl'];
 }
