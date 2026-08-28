@@ -88,6 +88,9 @@ jobs:
         env:
           ENTRY: ${{ matrix.entry }}
         run: npm run build
+      - name: Typecheck fixture
+        working-directory: test/react-compat/fixture
+        run: npm run typecheck
       - name: Run fixture tests
         working-directory: test/react-compat/fixture
         run: npm test
