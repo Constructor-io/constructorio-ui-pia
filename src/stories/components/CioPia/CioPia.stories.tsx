@@ -1,7 +1,10 @@
+import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
+import { Button } from '@constructor-io/constructorio-ui-components';
 import CioPia from '../../../components/CioPia/CioPia';
 import { AgentRequestError } from '../../../errors';
 import { DEMO_API_KEY, DEMO_ITEM_ID, DEMO_ITEM_NAME } from '../../../constants';
+import { Item } from '../../../types';
 import { createRecsPodStubClient, prependCdnBase, RecsStubOptions } from '../../utils';
 import { RECS_SIX_GROUPS, RECS_TRENDING } from '../../recsFixtures';
 
@@ -145,8 +148,6 @@ const meta = {
         '`strategy?: RecsStrategy` — Which kind of recommendations to fetch: `"complementary_items"` or `"alternative_items"`. Defaults to `"complementary_items"`. To serve another kind, supply a `cioClient` with your own `agent.getRecs`.',
         '',
         '`defaultTitle?: string` — The pod title, used whenever the response carries no title of its own, which is every response today. Without it, each strategy has a built-in title.',
-        '',
-        '`refinementOptions?: string[]` — The options the shopper can pick from, used whenever the response carries none of its own, which is every response today. Defaults to `["From a different brand", "A lower price"]`; pass `[]` for no options at all. An option is answered in the context of the previous turn rather than as a fresh catalog search, so absolute thresholds such as `"under $50"` often leave nothing.',
         '',
         '`showInput?: boolean` — Render the free-text refinement box. Defaults to `true`.',
         '',
@@ -323,8 +324,196 @@ export const RecommendationsLive: Story = {
     docs: {
       description: {
         story:
-          'The only recommendations story with no `cioClient`, so this one reaches the API. Give it ' +
-          'a few seconds - it is a language model round-trip, and the products rotate between loads.',
+          'One of the two recommendations stories with no `cioClient`, so this one reaches the API. ' +
+          'Give it a few seconds - it is a language model round-trip, and the products rotate ' +
+          'between loads.',
+      },
+    },
+  },
+};
+
+/**
+ * The options and the free-text box: rounded, and in indigo rather than the default grey. Both are
+ * rendered by the pod itself with no override to pass, so this is a stylesheet against the class
+ * names in the package CSS - what a retailer would write - scoped to the wrapper below so it stays
+ * inside this one story.
+ *
+ * The option's leading icon is a fixed dark fill, so the hover here changes the background and
+ * leaves the text where it is rather than inverting the whole thing and stranding the icon.
+ */
+const THEMED_RECS_CLASS = 'cio-pia-themed-recs';
+const THEMED_RECS_CSS = `
+  .${THEMED_RECS_CLASS} .cio-pia-suggested-question {
+    border-radius: 999px;
+    border-color: #c7d2fe;
+    background: #eef2ff;
+    box-shadow: none;
+  }
+
+  .${THEMED_RECS_CLASS} .cio-pia-suggested-question:hover {
+    border-color: #6366f1;
+    background: #e0e7ff;
+  }
+
+  .${THEMED_RECS_CLASS} .cio-pia-input {
+    border-radius: 999px;
+    border-color: #c7d2fe;
+    background: #ffffff;
+    box-shadow: none;
+  }
+
+  .${THEMED_RECS_CLASS} .cio-pia-input:hover {
+    border-color: #6366f1;
+  }
+
+  .${THEMED_RECS_CLASS} .cio-pia-input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  }
+`;
+
+/**
+ * Stars for the card's rating slot.
+ *
+ * A catalog that sends `rating` and `reviews_count` renders its own numbers here. The demo catalog
+ * sends neither - a live response carries an id, a url, an image and a price and nothing else - so
+ * this stands one in, derived from the item id, purely so the slot is visible in the story. Delete
+ * the fallback when wiring this to a catalog that has ratings.
+ */
+function StarRating({ product }: { product?: Item }) {
+  if (!product) return null;
+
+  const stand = (Number(String(product.id).slice(-2)) || 0) % 4;
+  const rating = Number(product.rating ?? 3.5 + stand * 0.5);
+  const reviewsCount = Number(product.reviewsCount ?? 40 + stand * 37);
+  const filled = Math.round(rating);
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', margin: '2px 0' }}>
+      <span style={{ color: '#f59e0b', fontSize: '13px', letterSpacing: '1px' }}>
+        {'★'.repeat(filled)}
+        <span style={{ color: '#d1d5db' }}>{'★'.repeat(5 - filled)}</span>
+      </span>
+      <span style={{ fontSize: '12px', color: '#6b7280' }}>
+        {rating.toFixed(1)} ({reviewsCount})
+      </span>
+    </div>
+  );
+}
+
+export const RecommendationsLiveThemed: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: LIVE_RECS_ITEM_ID,
+    itemName: LIVE_RECS_ITEM_NAME,
+    displayConfigs: { mode: 'recommendations' },
+    recsPodParameters: { defaultTitle: 'Complete the set' },
+    // The footer cart button only renders when this is passed. A real integration would call its
+    // own cart API here.
+    callbacks: {
+      onAddToCart: (item) => {
+        window.alert(`Added to cart: ${item.name} (id: ${item.id})`);
+      },
+    },
+    componentOverrides: {
+      // The pod renders its title through the same `answer` seam question-and-answer uses.
+      answer: {
+        reactNode: ({ text }) => (
+          <h3
+            style={{
+              margin: 0,
+              paddingBottom: '8px',
+              borderBottom: '2px solid #111827',
+              fontSize: '13px',
+              fontWeight: 700,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: '#111827',
+            }}>
+            {text}
+          </h3>
+        ),
+      },
+      // The default card, with three of its slots swapped rather than the whole thing rebuilt. The
+      // navigation arrows are left alone, so they stay the ones the library ships.
+      carousel: {
+        item: {
+          productCard: {
+            content: {
+              title: {
+                reactNode: ({ product }) => (
+                  <p
+                    style={{
+                      margin: '8px 0 4px',
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      lineHeight: 1.25,
+                      color: '#111827',
+                    }}>
+                    {product?.name}
+                  </p>
+                ),
+              },
+              rating: {
+                reactNode: ({ product }) => <StarRating product={product as Item} />,
+              },
+            },
+            footer: {
+              addToCartButton: {
+                reactNode: ({ product, onAddToCart }) => (
+                  <Button
+                    size='sm'
+                    conversionType='add_to_cart'
+                    onClick={(event) => onAddToCart?.(event, product)}
+                    style={{
+                      background: '#111827',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: '999px',
+                      padding: '8px 18px',
+                      fontWeight: 600,
+                    }}>
+                    Add to bag
+                  </Button>
+                ),
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  // The options and the free-text box have no override of their own, so they are themed the way a
+  // retailer would theme them: a stylesheet against the class names the package ships, scoped here
+  // to one wrapper so it cannot leak into the story above.
+  decorators: [
+    (StoryFn) => (
+      <div className={THEMED_RECS_CLASS}>
+        <style>{THEMED_RECS_CSS}</style>
+        <StoryFn />
+      </div>
+    ),
+  ],
+  parameters: {
+    ...recsLayout,
+    docs: {
+      description: {
+        story:
+          'The same live pod as above under a different theme, so the two can be compared side by ' +
+          'side on the same data. `defaultTitle` changes the wording; ' +
+          '`componentOverrides.answer` gives the rule-under-caps title; and ' +
+          '`carousel.item.productCard` swaps three card slots - a tighter product name, a star ' +
+          'rating, and a black pill "Add to bag" button, which needs `callbacks.onAddToCart` to ' +
+          'render at all. The navigation arrows are left as the library ships them.\n\n' +
+          'The options and the free-text box are rounded and re-coloured with a stylesheet rather ' +
+          'than an override, because the pod renders both itself and exposes no seam for them. The ' +
+          'class names it targets - `cio-pia-suggested-question` and `cio-pia-input` - are the ones ' +
+          'in the package CSS, so the same rules work in a storefront.\n\n' +
+          'The star rating is the one thing here not backed by the response: this catalog sends no ' +
+          '`rating` or `reviews_count`, so the override stands a value in to show the slot. A ' +
+          'catalog that sends them renders its own.\n\n' +
+          'Reaches the API like `RecommendationsLive`, so give it a few seconds and expect ' +
+          'different products between loads.',
       },
     },
   },
