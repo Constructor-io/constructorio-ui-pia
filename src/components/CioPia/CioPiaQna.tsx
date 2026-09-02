@@ -15,20 +15,8 @@ import { translate } from '../../utils/translate';
 import PiaInlineAnswer from '../PiaInlineAnswer/PiaInlineAnswer';
 import PiaModal from '../PiaConversation/PiaModal';
 import PiaConversation from '../PiaConversation/PiaConversation';
+import StatusRegion, { answerStatusMessage } from '../StatusRegion/StatusRegion';
 import type { CioPiaProps } from './types';
-
-/** Inline, not a class: consumers who ship their own styling still must not see it. */
-const SR_ONLY_STYLE: React.CSSProperties = {
-  position: 'absolute',
-  width: 1,
-  height: 1,
-  padding: 0,
-  margin: -1,
-  overflow: 'hidden',
-  clip: 'rect(0, 0, 0, 0)',
-  whiteSpace: 'nowrap',
-  border: 0,
-};
 
 /** The question-and-answer experience: `mode: 'default'`, `mode: 'conversation'`, and the modal. */
 // eslint-disable-next-line complexity
@@ -117,12 +105,8 @@ export default function CioPiaQna(props: CioPiaProps) {
   // answer, so the row is waiting on either request.
   const isAnswerLoading = pia.answers.isLoading;
 
-  // Inline mode renders the answer outside any live region, so nothing announces
-  // its arrival. The region below is always mounted - one created together with
-  // its content is announced inconsistently.
-  let answerStatus = '';
-  if (isAnswerLoading) answerStatus = translate('Loading answer', translations);
-  else if (currentAnswer) answerStatus = translate('Answer ready', translations);
+  // Inline mode renders the answer outside any live region.
+  const answerStatus = answerStatusMessage(isAnswerLoading, !!currentAnswer, translations);
 
   const renderProps: CioPiaRenderProps = {
     items: currentItems,
@@ -180,13 +164,6 @@ export default function CioPiaQna(props: CioPiaProps) {
   // Default inline mode
   return (
     <div ref={containerRef} className='cio-pia-container' data-testid='cio-pia-container'>
-      <div
-        className='cio-pia-sr-only'
-        style={SR_ONLY_STYLE}
-        role='status'
-        data-testid='answer-status'>
-        {answerStatus}
-      </div>
       <RenderPropsWrapper props={renderProps} override={children || componentOverrides?.reactNode}>
         <p className='cio-pia-title' data-testid='cio-pia-title'>
           {translate('Any questions about this product?', translations)}
@@ -201,8 +178,9 @@ export default function CioPiaQna(props: CioPiaProps) {
 
         {isAnswerLoading && <LoadingSkeleton componentOverride={componentOverrides?.loading} />}
 
+        {/* `role='alert'` announces on insertion: remount when the message changes. */}
         {!isAnswerLoading && error && (
-          <ErrorBlock message={error?.message || 'Unexpected error'} translations={translations} />
+          <ErrorBlock key={error.message} message={error.message} translations={translations} />
         )}
 
         {!isAnswerLoading && !error && currentAnswer && (
@@ -235,6 +213,7 @@ export default function CioPiaQna(props: CioPiaProps) {
           />
         )}
       </RenderPropsWrapper>
+      <StatusRegion message={answerStatus} data-testid='answer-status' />
     </div>
   );
 }

@@ -41,6 +41,77 @@ describe('ConversationHistory Component', () => {
     expect(screen.getByRole('log')).toHaveAttribute('aria-label', 'Historial de conversación');
   });
 
+  describe('answer status live region', () => {
+    const entry = { id: 1, question: 'What is this product?', answer: '' };
+
+    it('is mounted before anything loads and is reused across states', () => {
+      const { rerender } = render(<ConversationHistory {...baseProps} />);
+
+      const region = screen.getByTestId('answer-status');
+      expect(region).toHaveAttribute('role', 'status');
+      expect(region).toBeEmptyDOMElement();
+
+      rerender(<ConversationHistory {...baseProps} conversationHistory={[entry]} isLoading />);
+      expect(screen.getByTestId('answer-status')).toHaveTextContent('Loading answer');
+
+      rerender(
+        <ConversationHistory
+          {...baseProps}
+          conversationHistory={[{ ...entry, answer: 'It is a rug.' }]}
+        />,
+      );
+      expect(screen.getByTestId('answer-status')).toHaveTextContent('Answer ready');
+
+      // Recreating the region with its text would not announce reliably.
+      expect(screen.getByTestId('answer-status')).toBe(region);
+    });
+
+    it('keeps the status region outside the conversation log', () => {
+      render(<ConversationHistory {...baseProps} isLoading />);
+
+      expect(screen.getByRole('log')).not.toContainElement(screen.getByTestId('answer-status'));
+    });
+
+    it('translates the status messages', () => {
+      render(
+        <ConversationHistory
+          {...baseProps}
+          isLoading
+          translations={{ 'Loading answer': 'Cargando respuesta' }}
+        />,
+      );
+
+      expect(screen.getByTestId('answer-status')).toHaveTextContent('Cargando respuesta');
+    });
+  });
+
+  it('remounts the error alert when a second failure has a different message', () => {
+    const entry = { id: 1, question: 'What is this product?', answer: '' };
+    const { rerender } = render(
+      <ConversationHistory
+        {...baseProps}
+        conversationHistory={[entry]}
+        error={new Error('First failure')}
+      />,
+    );
+
+    const firstAlert = screen.getByRole('alert');
+    expect(firstAlert).toHaveTextContent('First failure');
+
+    rerender(
+      <ConversationHistory
+        {...baseProps}
+        conversationHistory={[entry]}
+        error={new Error('Second failure')}
+      />,
+    );
+
+    // `role='alert'` only announces on insertion, so the node has to be a new one.
+    const secondAlert = screen.getByRole('alert');
+    expect(secondAlert).toHaveTextContent('Second failure');
+    expect(secondAlert).not.toBe(firstAlert);
+  });
+
   it('renders all conversation entries with question and answer', () => {
     const conversationHistory = [
       { id: 1, question: 'What is this product?', answer: 'It is a rug.' },
@@ -383,9 +454,7 @@ describe('ConversationHistory Component', () => {
   });
 
   describe('disclaimerPosition', () => {
-    const conversationHistory = [
-      { id: 1, question: 'First question', answer: 'First answer' },
-    ];
+    const conversationHistory = [{ id: 1, question: 'First question', answer: 'First answer' }];
 
     it('renders disclaimer after conversation entries by default', () => {
       const { container } = render(
@@ -395,9 +464,7 @@ describe('ConversationHistory Component', () => {
       const history = container.querySelector('.cio-pia-conversation-history')!;
       const children = Array.from(history.children);
       const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
-      const entriesIndex = children.findIndex((el) =>
-        el.matches('.cio-pia-conversation-entries'),
-      );
+      const entriesIndex = children.findIndex((el) => el.matches('.cio-pia-conversation-entries'));
       expect(disclaimerIndex).toBeGreaterThan(entriesIndex);
     });
 
@@ -413,9 +480,7 @@ describe('ConversationHistory Component', () => {
       const history = container.querySelector('.cio-pia-conversation-history')!;
       const children = Array.from(history.children);
       const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
-      const entriesIndex = children.findIndex((el) =>
-        el.matches('.cio-pia-conversation-entries'),
-      );
+      const entriesIndex = children.findIndex((el) => el.matches('.cio-pia-conversation-entries'));
       expect(disclaimerIndex).toBeLessThan(entriesIndex);
     });
 
@@ -431,9 +496,7 @@ describe('ConversationHistory Component', () => {
       const history = container.querySelector('.cio-pia-conversation-history')!;
       const children = Array.from(history.children);
       const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
-      const entriesIndex = children.findIndex((el) =>
-        el.matches('.cio-pia-conversation-entries'),
-      );
+      const entriesIndex = children.findIndex((el) => el.matches('.cio-pia-conversation-entries'));
       expect(disclaimerIndex).toBeGreaterThan(entriesIndex);
     });
   });

@@ -9,15 +9,16 @@ interface LoadingSkeletonProps {
   componentOverride?: ComponentOverrideProps<LoadingRenderProps>;
 }
 
-export default function LoadingSkeleton({ componentOverride }: LoadingSkeletonProps = {}) {
-  const skeleton = (
-    <div className='cio-pia-loading-skeleton' data-testid='loading-skeleton' aria-hidden='true'>
-      <div className='skeleton-bar' />
-      <div className='skeleton-bar' />
-      <div className='skeleton-bar skeleton-short' />
-    </div>
-  );
+// Decorative: loading is announced by the always-mounted status region.
+const skeleton = (
+  <div className='cio-pia-loading-skeleton' data-testid='loading-skeleton' aria-hidden='true'>
+    <div className='skeleton-bar' />
+    <div className='skeleton-bar' />
+    <div className='skeleton-bar skeleton-short' />
+  </div>
+);
 
+export default function LoadingSkeleton({ componentOverride }: LoadingSkeletonProps = {}) {
   return (
     <RenderPropsWrapper props={{ skeleton }} override={componentOverride?.reactNode}>
       {skeleton}

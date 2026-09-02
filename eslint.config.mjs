@@ -11,7 +11,14 @@ import globals from 'globals';
 
 export default tseslint.config(
   {
-    ignores: ['*.config.js', '*.config.mjs', 'lib/**/*.js', 'lib/**/*.d.ts', 'docs/**/*.js', 'src/bundled.jsx'],
+    ignores: [
+      '*.config.js',
+      '*.config.mjs',
+      'lib/**/*.js',
+      'lib/**/*.d.ts',
+      'docs/**/*.js',
+      'src/bundled.jsx',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -71,7 +78,7 @@ export default tseslint.config(
       // Scrollable regions must be keyboard focusable (WCAG 2.1.1).
       'jsx-a11y/no-noninteractive-tabindex': [
         'error',
-        { tags: [], roles: ['tabpanel', 'log'], allowExpressionValues: true },
+        { tags: [], roles: ['log'], allowExpressionValues: true },
       ],
 
       // TypeScript
@@ -133,7 +140,10 @@ export default tseslint.config(
     },
     rules: {
       'react/prop-types': 'off',
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
     },
   },
   ...storybook.configs['flat/recommended'],

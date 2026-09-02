@@ -45,6 +45,8 @@ function RetryIcon() {
 }
 
 function ErrorBlock({ message, onRetry = undefined, translations }: ErrorBlockProps) {
+  const resolvedMessage = message || translate('Unexpected error', translations);
+
   return (
     <div className='cio-pia-error-block-container' data-testid='error-block'>
       <div
@@ -54,7 +56,7 @@ function ErrorBlock({ message, onRetry = undefined, translations }: ErrorBlockPr
       </div>
       <div className='cio-pia-error-block-text-container'>
         <p className='cio-pia-error-block-text' role='alert'>
-          {message}
+          {resolvedMessage}
         </p>
         {onRetry && (
           <button type='button' onClick={onRetry} className='cio-pia-error-block-retry-button'>

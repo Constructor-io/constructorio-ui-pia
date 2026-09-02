@@ -241,7 +241,6 @@ describe('PiaModal Component', () => {
 
       fireEvent.click(closeButton);
 
-    
       expect(bodyFocus).not.toHaveBeenCalled();
 
       bodyFocus.mockRestore();

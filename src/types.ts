@@ -75,19 +75,13 @@ export type Translations = {
   'Learn More.'?: string;
   'Ask about this product'?: string;
   'Add to Cart'?: string;
-  /** Accessible name for the thumbs-up feedback button. */
+  'Unexpected error'?: string;
   'thumbs up'?: string;
-  /** Accessible name for the thumbs-down feedback button. */
   'thumbs down'?: string;
-  /** Accessible name for the modal close button. */
   Close?: string;
-  /** Visible label and accessible name for the error retry button. */
   Retry?: string;
-  /** Accessible name for the conversation history region. */
   'Conversation history'?: string;
-  /** Announced while an answer is loading. */
   'Loading answer'?: string;
-  /** Announced once an answer has finished loading. */
   'Answer ready'?: string;
 };
 

@@ -5,6 +5,7 @@ import Disclaimer from '../CioPia/Disclaimer';
 import ErrorBlock from '../Error/ErrorBlock';
 import LoadingSkeleton from '../LoadingSkeleton/LoadingSkeleton';
 import PiaCustomCarousel from '../CioPia/PiaCustomCarousel';
+import StatusRegion, { answerStatusMessage } from '../StatusRegion/StatusRegion';
 import { translate } from '../../utils/translate';
 import {
   ConversationEntry,
@@ -74,6 +75,9 @@ export default function ConversationHistory({
     return () => cancelAnimationFrame(frameId);
   }, [conversationHistory, isLoading]);
 
+  const lastEntry = conversationHistory[conversationHistory.length - 1];
+  const answerStatus = answerStatusMessage(isLoading, !!lastEntry?.answer, translations);
+
   const disclaimer = (
     <Disclaimer
       learnMoreUrl={learnMoreUrl}
@@ -107,9 +111,11 @@ export default function ConversationHistory({
                 </div>
               )}
 
+              {/* `role='alert'` announces on insertion: remount when the message changes. */}
               {isLast && !isLoading && error && (
                 <ErrorBlock
-                  message={error.message || 'Unexpected error'}
+                  key={error.message}
+                  message={error.message}
                   translations={translations}
                 />
               )}
@@ -143,6 +149,8 @@ export default function ConversationHistory({
         })}
       </div>
       {disclaimerPosition === 'bottom' && disclaimer}
+      {/* Kept outside the `role='log'` so the two live regions do not nest. */}
+      <StatusRegion message={answerStatus} data-testid='answer-status' />
     </div>
   );
 }

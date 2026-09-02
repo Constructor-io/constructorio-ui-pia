@@ -44,6 +44,7 @@ export const AllCustomText: Story = {
       'Learn More.': 'Más información.',
       'Ask about this product': 'Pregunta sobre este producto',
       'Add to Cart': 'Añadir al carrito',
+      'Unexpected error': 'Error inesperado',
       'thumbs up': 'Pulgar arriba',
       'thumbs down': 'Pulgar abajo',
       Close: 'Cerrar',

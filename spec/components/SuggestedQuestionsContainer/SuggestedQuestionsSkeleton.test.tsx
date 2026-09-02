@@ -16,8 +16,6 @@ describe('SuggestedQuestionsSkeleton Component', () => {
 
       const skeleton = screen.getByTestId('suggested-questions-skeleton');
       expect(skeleton).toHaveAttribute('aria-hidden', 'true');
-      // Suggested questions are ancillary to the answer: announcing their loading
-      // state competes with the answer status region for the same politeness queue.
       expect(skeleton).not.toHaveAttribute('role');
       expect(skeleton).not.toHaveAttribute('aria-busy');
       expect(screen.queryByRole('status')).not.toBeInTheDocument();

@@ -56,13 +56,25 @@ describe('ErrorBlock component', () => {
     });
 
     it('hides the decorative warning and retry icons from assistive technology', () => {
-      const { container } = render(
-        <ErrorBlock message={testErrorMessage} onRetry={() => {}} />,
-      );
+      const { container } = render(<ErrorBlock message={testErrorMessage} onRetry={() => {}} />);
 
       const icons = container.querySelectorAll('svg');
       expect(icons).toHaveLength(2);
       icons.forEach((icon) => expect(icon).toHaveAttribute('aria-hidden', 'true'));
+    });
+
+    it('falls back to a translated message when the error carries none', () => {
+      const { getByRole } = render(<ErrorBlock message='' />);
+
+      expect(getByRole('alert')).toHaveTextContent('Unexpected error');
+    });
+
+    it('translates the fallback message', () => {
+      const { getByRole } = render(
+        <ErrorBlock message='' translations={{ 'Unexpected error': 'Error inesperado' }} />,
+      );
+
+      expect(getByRole('alert')).toHaveTextContent('Error inesperado');
     });
 
     it('translates the retry button label', () => {

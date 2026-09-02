@@ -16,10 +16,6 @@ describe('LoadingSkeleton Component', () => {
 
       const skeleton = screen.getByTestId('loading-skeleton');
       expect(skeleton).toHaveAttribute('aria-hidden', 'true');
-      // The loading state is announced by the always-mounted status region in
-      // CioPiaQna and by the surrounding role='log' in conversation mode. A second
-      // live region here would duplicate that announcement or nest inside it, and
-      // the `aria-busy` it used to carry suppressed announcements outright.
       expect(skeleton).not.toHaveAttribute('role');
       expect(skeleton).not.toHaveAttribute('aria-busy');
       expect(screen.queryByRole('status')).not.toBeInTheDocument();

@@ -15,6 +15,7 @@
     "Alguna",
     "Añadir",
     "arriba",
+    "Cargando",
     "carrito",
     "Cerrar",
     "conversación",
@@ -28,7 +29,9 @@
     "Título",
     "Útil",
     "esta",
+    "inesperado",
     "información",
+    "lista",
     "precisas",
     "producto",
     "pueden",
@@ -38,14 +41,12 @@
     "respuestas",
     "siempre",
     "sobre",
+    "sugerencias",
     "útil",
     "ciopia",
     "componentoverrides",
     "piacustomcarousel",
     "timespan",
-    "timespans",
-    "Cargando",
-    "sugerencias",
-    "lista"
+    "timespans"
   ]
 }

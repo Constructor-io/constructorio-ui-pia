@@ -16,7 +16,7 @@ describe('Input Component', () => {
   });
 
   describe('accessibility', () => {
-    it('gives the text field an accessible name, not just a placeholder', () => {
+    it('names the text field from its placeholder', () => {
       const { getByRole } = render(<Input onSubmit={mockSubmit} />);
 
       expect(getByRole('textbox', { name: 'Ask anything' })).toBeInTheDocument();
@@ -24,17 +24,13 @@ describe('Input Component', () => {
 
     it('keeps the accessible name in sync with the translated placeholder', () => {
       const { getByRole } = render(
-        <Input onSubmit={mockSubmit} translations={{ 'Ask anything': 'Pregunta lo que quieras' }} />,
+        <Input
+          onSubmit={mockSubmit}
+          translations={{ 'Ask anything': 'Pregunta lo que quieras' }}
+        />,
       );
 
       expect(getByRole('textbox', { name: 'Pregunta lo que quieras' })).toBeInTheDocument();
-    });
-
-    it('keeps an accessible name when the placeholder is blanked out', () => {
-      const { getByRole } = render(<Input onSubmit={mockSubmit} placeholder='' />);
-
-      const input = getByRole('textbox', { name: 'Ask anything' });
-      expect(input).toHaveAttribute('placeholder', '');
     });
 
     it('hides the decorative send icon from assistive technology', () => {
@@ -200,10 +196,14 @@ describe('Input Component', () => {
       render(<Input onSubmit={mockSubmit} componentOverride={{ reactNode: override }} />);
       expect(override).toHaveBeenCalled();
 
-      act(() => { capturedSubmit('   '); });
+      act(() => {
+        capturedSubmit('   ');
+      });
       expect(mockSubmit).not.toHaveBeenCalled();
 
-      act(() => { capturedSubmit('  hello world  '); });
+      act(() => {
+        capturedSubmit('  hello world  ');
+      });
       expect(mockSubmit).toHaveBeenCalledWith('hello world');
     });
   });

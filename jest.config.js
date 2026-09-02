@@ -1,6 +1,6 @@
 // jest.config.js
 const commonConfig = {
-  collectCoverageFrom: ['src/{components,hooks}/**/*.[jt]s?(x)'],
+  collectCoverageFrom: ['src/(components|hooks)/**/*.[jt]s?(x)'],
   coverageDirectory: './coverage',
   coverageThreshold: {
     global: {

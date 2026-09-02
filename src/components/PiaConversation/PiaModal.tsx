@@ -62,9 +62,6 @@ export default function PiaModal({
   }, []);
 
   const closeModal = useCallback(() => {
-    const dialog = dialogRef.current;
-    if (dialog?.open) dialog.close();
-
     setIsOpen(false);
     onClose?.();
   }, [onClose]);
@@ -86,6 +83,8 @@ export default function PiaModal({
     };
   }, [isOpen]);
 
+  // Restore focus to the trigger. Re-runs on `isLoading`: the input trigger is
+  // disabled while a request is in flight and `focus()` would no-op.
   useEffect(() => {
     if (isOpen) return;
 
