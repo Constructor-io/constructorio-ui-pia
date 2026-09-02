@@ -36,7 +36,9 @@ export default function CioPiaQna(props: CioPiaProps) {
     children,
     translations,
     suggestedQuestionsParameters,
+    answerParameters,
     parameters,
+    trackingConfigs,
   } = props;
   const {
     learnMoreUrl,
@@ -57,6 +59,7 @@ export default function CioPiaQna(props: CioPiaProps) {
     variationId,
     cioClient,
     suggestedQuestionsParameters,
+    answerParameters,
     parameters,
     formatImageUrl: formatters?.formatImageUrl,
   });
@@ -88,6 +91,7 @@ export default function CioPiaQna(props: CioPiaProps) {
   const { containerRef: viewportContainerRef } = useViewportTracking({
     tracking,
     questions: displayedQuestions,
+    viewThreshold: trackingConfigs?.viewThreshold,
   });
   const { containerRef: callbackContainerRef } = useViewportCallbacks({ callbacks, context });
 

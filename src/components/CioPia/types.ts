@@ -2,17 +2,20 @@ import {
   IncludeComponentOverrides,
   IncludeRenderProps,
 } from '@constructor-io/constructorio-ui-components';
-import MockConstructorIOClient from '../../hooks/mocks/MockConstructorIOClient';
 import {
   CioPiaRenderProps,
   CioPiaComponentOverrides,
   Callbacks,
   CioPiaDisplayConfigs,
+  CioPiaTrackingConfigs,
   Translations,
   SuggestedQuestionsParameters,
+  AnswerRequestParameters,
+  RecsPodParameters,
   Formatters,
   ProductCardDisplayProps,
 } from '../../types';
+import type { CioClient } from '../../hooks/usePiaClient';
 
 export interface CioPiaProps
   extends
@@ -29,9 +32,11 @@ export interface CioPiaProps
   /** Optional variation ID for the product. */
   variationId?: string;
   /** Optional Constructor.io client instance. If not provided, one will be created internally. */
-  cioClient?: MockConstructorIOClient;
+  cioClient?: CioClient;
   /** Display configuration options (mode, type, showFeedback, etc.). */
   displayConfigs?: CioPiaDisplayConfigs;
+  /** Tracking configuration options (viewThreshold, etc.). */
+  trackingConfigs?: CioPiaTrackingConfigs;
   /** Callback handlers for user interactions (onQuestionSubmit, onProductCardClick, onFeedback). */
   callbacks?: Callbacks;
   // Redeclared from IncludeComponentOverrides for Storybook autodocs.
@@ -45,9 +50,26 @@ export interface CioPiaProps
   translations?: Translations;
   /** Parameters for the suggested questions request. */
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
+  /** Parameters for the answer request. */
+  answerParameters?: AnswerRequestParameters;
+  /** Parameters for the recommendations request, used by `mode: 'recommendations'`. */
+  recsPodParameters?: RecsPodParameters;
   /**
-   * Extra query parameters appended to PIA API requests (e.g. `ef-*` test cell params).
-   * Define outside the component or wrap with useMemo to avoid unnecessary re-renders.
+   * @deprecated Use `answerParameters` and `suggestedQuestionsParameters` instead.
+   *
+   * Only the following keys are forwarded (snake_case or camelCase accepted):
+   *
+   * Suggested-questions endpoint:
+   * - `num_results` / `numResults` → numResults
+   * - `pre_filter_expression` / `preFilterExpression` → preFilterExpression (JSON-parsed if string)
+   *
+   * Answer endpoint:
+   * - `guard` → guard
+   * - `pre_filter_expression` / `preFilterExpression` → preFilterExpression (JSON-parsed if string)
+   * - `fmt_options` / `fmtOptions` → fmtOptions (JSON-parsed if string)
+   *
+   * All other keys (e.g. `ef-*`) are silently dropped.
+   * Typed parameters take precedence over values specified here.
    */
   parameters?: Record<string, string | number | boolean>;
 }

@@ -3,10 +3,12 @@ import { Question } from '../types';
 import { UseTrackingReturn, TimeSpan } from './useTracking';
 
 const FLUSH_INTERVAL_MS = 5 * 60 * 1000;
+const DEFAULT_VIEW_THRESHOLD = 0.5;
 
 export interface UseViewportTrackingProps {
   tracking: UseTrackingReturn;
   questions: Question[];
+  viewThreshold?: number;
 }
 
 export interface UseViewportTrackingReturn {
@@ -16,6 +18,7 @@ export interface UseViewportTrackingReturn {
 export default function useViewportTracking({
   tracking,
   questions,
+  viewThreshold = DEFAULT_VIEW_THRESHOLD,
 }: UseViewportTrackingProps): UseViewportTrackingReturn {
   const nodeRef = useRef<HTMLDivElement | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -70,7 +73,7 @@ export default function useViewportTracking({
             trackingRef.current.trackOutOfView();
           }
         },
-        { threshold: 0.5 },
+        { threshold: viewThreshold },
       );
 
       observer.observe(element);

@@ -1,5 +1,12 @@
 import { Translations } from '../types';
-import { DISCLAIMER_TEXT } from '../constants';
+import {
+  DISCLAIMER_TEXT,
+  RECS_FALLBACK_TITLE,
+  RECS_INPUT_PLACEHOLDER,
+  RECS_LOADING_TITLE,
+  RECS_REFINEMENT_LABEL,
+  RECS_UNSUPPORTED_REQUEST,
+} from '../constants';
 
 const defaultTranslations: Translations = {
   'Any questions about this product?': 'Any questions about this product?',
@@ -18,6 +25,11 @@ const defaultTranslations: Translations = {
   'Conversation history': 'Conversation history',
   'Loading answer': 'Loading answer',
   'Answer ready': 'Answer ready',
+  [RECS_LOADING_TITLE]: RECS_LOADING_TITLE,
+  [RECS_FALLBACK_TITLE]: RECS_FALLBACK_TITLE,
+  [RECS_UNSUPPORTED_REQUEST]: RECS_UNSUPPORTED_REQUEST,
+  [RECS_REFINEMENT_LABEL]: RECS_REFINEMENT_LABEL,
+  [RECS_INPUT_PLACEHOLDER]: RECS_INPUT_PLACEHOLDER,
 };
 
 /**
