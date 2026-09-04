@@ -11,7 +11,14 @@ import globals from 'globals';
 
 export default tseslint.config(
   {
-    ignores: ['*.config.js', '*.config.mjs', 'lib/**/*.js', 'lib/**/*.d.ts', 'docs/**/*.js', 'src/bundled.jsx'],
+    ignores: [
+      '*.config.js',
+      '*.config.mjs',
+      'lib/**/*.js',
+      'lib/**/*.d.ts',
+      'docs/**/*.js',
+      'src/bundled.jsx',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -38,6 +45,8 @@ export default tseslint.config(
     },
     settings: {
       react: { version: 'detect' },
+      // Lint peer-dep primitives as the elements they render.
+      'jsx-a11y': { components: { Button: 'button' } },
       'import/resolver': {
         typescript: {
           project: 'tsconfig.eslint.json',
@@ -63,6 +72,14 @@ export default tseslint.config(
 
       // jsx-a11y
       ...jsxA11y.configs.recommended.rules,
+      'jsx-a11y/control-has-associated-label': 'error',
+      'jsx-a11y/no-aria-hidden-on-focusable': 'error',
+      'jsx-a11y/no-autofocus': 'error',
+      // Scrollable regions must be keyboard focusable (WCAG 2.1.1).
+      'jsx-a11y/no-noninteractive-tabindex': [
+        'error',
+        { tags: [], roles: ['log'], allowExpressionValues: true },
+      ],
 
       // TypeScript
       'no-unused-vars': 'off',
@@ -123,7 +140,10 @@ export default tseslint.config(
     },
     rules: {
       'react/prop-types': 'off',
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
     },
   },
   ...storybook.configs['flat/recommended'],

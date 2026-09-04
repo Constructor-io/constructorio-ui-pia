@@ -7,6 +7,7 @@ const meta = {
   title: 'Components/SuggestedQuestionsContainer',
   component: SuggestedQuestionsContainer,
   parameters: {
+    a11y: { test: 'error' },
     layout: 'centered',
   },
   tags: ['autodocs'],

@@ -78,12 +78,22 @@ export type CioPiaDisplayConfigs = {
 export type Translations = {
   'Any questions about this product?'?: string;
   'Ask anything'?: string;
+  /** Accessible name of the question field when its placeholder is blanked out. */
+  'Your question'?: string;
   Send?: string;
   'AI-generated answers aim to help, but they may occasionally miss details or be inaccurate. Double-check important information before purchasing.'?: string;
   'Is this answer useful?'?: string;
   'Learn More.'?: string;
   'Ask about this product'?: string;
   'Add to Cart'?: string;
+  'Unexpected error'?: string;
+  'thumbs up'?: string;
+  'thumbs down'?: string;
+  Close?: string;
+  Retry?: string;
+  'Conversation history'?: string;
+  'Loading answer'?: string;
+  'Answer ready'?: string;
   /** Recommendations pod title shown while a request is in flight. */
   'Adapting recommendations to your preference'?: string;
   /** Recommendations pod title shown when a request fails or comes back degraded. */

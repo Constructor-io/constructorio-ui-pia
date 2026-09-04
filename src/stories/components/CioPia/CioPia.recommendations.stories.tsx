@@ -8,6 +8,7 @@ const meta = {
   title: 'General/Integration Guide/Examples',
   component: CioPia,
   parameters: {
+    a11y: { test: 'error' },
     layout: 'centered',
   },
   tags: ['!autodocs'],

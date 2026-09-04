@@ -9,8 +9,9 @@ interface LoadingSkeletonProps {
   componentOverride?: ComponentOverrideProps<LoadingRenderProps>;
 }
 
+// Decorative: loading is announced by the always-mounted status region.
 const skeleton = (
-  <div className='cio-pia-loading-skeleton' data-testid='loading-skeleton'>
+  <div className='cio-pia-loading-skeleton' data-testid='loading-skeleton' aria-hidden='true'>
     <div className='skeleton-bar' />
     <div className='skeleton-bar' />
     <div className='skeleton-bar skeleton-short' />

@@ -235,6 +235,38 @@ describe('CioPia Component', () => {
       });
     });
 
+    describe('answer status live region', () => {
+      it('is mounted before anything loads and is reused across states', () => {
+        const { getByTestId, rerender } = render(<CioPia {...mockProps} />);
+
+        const region = getByTestId('answer-status');
+        expect(region).toBeInTheDocument();
+        expect(region).toHaveAttribute('role', 'status');
+        expect(region).toBeEmptyDOMElement();
+
+        mockUseCioPia({ answerIsLoading: true });
+        rerender(<CioPia {...mockProps} />);
+        expect(getByTestId('answer-status')).toHaveTextContent('Loading answer');
+
+        mockUseCioPiaWithAnswerData();
+        rerender(<CioPia {...mockProps} />);
+        expect(getByTestId('answer-status')).toHaveTextContent('Answer ready');
+
+        // Recreating the region with its text would not announce reliably.
+        expect(getByTestId('answer-status')).toBe(region);
+      });
+
+      it('translates the status messages', () => {
+        mockUseCioPiaWithAnswerData();
+
+        const { getByTestId } = render(
+          <CioPia {...mockProps} translations={{ 'Answer ready': 'Respuesta lista' }} />,
+        );
+
+        expect(getByTestId('answer-status')).toHaveTextContent('Respuesta lista');
+      });
+    });
+
     it('displays question placeholders, not answer bars, while suggested questions load', () => {
       mockUseCioPia({ questionsData: [], questionIsLoading: true });
 

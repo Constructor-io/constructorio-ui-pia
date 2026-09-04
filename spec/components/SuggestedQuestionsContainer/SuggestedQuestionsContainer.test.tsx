@@ -23,6 +23,16 @@ describe('SuggestedQuestionsContainer Component', () => {
     });
   });
 
+  describe('accessibility', () => {
+    it('hides the decorative question icons from assistive technology', () => {
+      const { container } = render(<SuggestedQuestionsContainer {...defaultProps} />);
+
+      const icons = container.querySelectorAll('.cio-pia-suggested-question svg');
+      expect(icons.length).toBe(MOCK_QUESTIONS.length);
+      icons.forEach((icon) => expect(icon).toHaveAttribute('aria-hidden', 'true'));
+    });
+  });
+
   it('does not render any questions when none is provided', async () => {
     const { container } = render(
       <SuggestedQuestionsContainer questions={[]} onQuestionClick={defaultProps.onQuestionClick} />,

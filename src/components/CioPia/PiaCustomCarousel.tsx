@@ -20,6 +20,14 @@ function HtmlDescription({ product }: { product: Item }) {
   );
 }
 
+// The card root is focusable and acts as a link, so Enter must do what a click does.
+// Only for the card itself: Enter on the Add to Cart button inside it is that button's.
+function handleCardKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+  if (event.key === 'Enter' && event.target === event.currentTarget) {
+    event.currentTarget.click();
+  }
+}
+
 function createPriceSectionOverride(priceCurrency: string) {
   return function PriceSectionOverride({ product }: { product: Item }) {
     const { price, salePrice } = product;
@@ -199,6 +207,12 @@ export default function PiaCustomCarousel({
             <ProductCard
               product={product}
               className='w-full h-full'
+              // Reachable by Tab. The name is the product name: a name computed from the
+              // card's content would also swallow the Add to Cart button's text.
+              role='link'
+              aria-label={product.name || undefined}
+              tabIndex={0}
+              onKeyDown={handleCardKeyDown}
               addToCartText={addToCartText}
               onAddToCart={clickHandlerProps.onAddToCart}
               onProductClick={clickHandlerProps.onProductClick}

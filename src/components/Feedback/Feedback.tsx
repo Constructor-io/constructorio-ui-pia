@@ -8,7 +8,14 @@ import { translate } from '../../utils/translate';
 
 function ThumbsUpIcon({ isSelected }: { isSelected: boolean }) {
   return (
-    <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
+    <svg
+      width='16'
+      height='16'
+      viewBox='0 0 16 16'
+      fill='none'
+      xmlns='http://www.w3.org/2000/svg'
+      aria-hidden='true'
+      focusable='false'>
       {isSelected ? (
         <path
           d='M3.33317 6.66667H0.666504V14.6667H3.33317V6.66667ZM5.99984 14.6667C5.2665 14.6667 4.6665 14.0667 4.6665 13.3333V6.66667C4.6665 6.3 4.81317 5.96667 5.05317 5.72667L9.4465 1.33333L10.1532 2.03333C10.3332 2.21333 10.4465 2.46667 10.4465 2.74L10.4265 2.95333L9.79317 6.00001H13.9998C14.7332 6.00001 15.3332 6.60001 15.3332 7.33334V8.66668C15.3332 8.84001 15.2998 9.00001 15.2398 9.15334L13.2265 13.8533C13.0265 14.3333 12.5532 14.6667 11.9998 14.6667H5.99984Z'
@@ -28,7 +35,14 @@ function ThumbsUpIcon({ isSelected }: { isSelected: boolean }) {
 
 function ThumbsDownIcon({ isSelected }: { isSelected: boolean }) {
   return (
-    <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
+    <svg
+      width='16'
+      height='16'
+      viewBox='0 0 16 16'
+      fill='none'
+      xmlns='http://www.w3.org/2000/svg'
+      aria-hidden='true'
+      focusable='false'>
       {isSelected ? (
         <path
           d='M12.6665 9.33334H15.3332V1.33334H12.6665V9.33334ZM9.99984 1.33334C10.7332 1.33334 11.3332 1.93334 11.3332 2.66668V9.33334C11.3332 9.70001 11.1865 10.0333 10.9465 10.2733L6.55317 14.6667L5.8465 13.9667C5.6665 13.7867 5.55317 13.5333 5.55317 13.26L5.57317 13.0467L6.2065 10H1.99984C1.2665 10 0.666504 9.40001 0.666504 8.66668V7.33334C0.666504 7.16001 0.699837 7.00001 0.759837 6.84668L2.77317 2.14668C2.97317 1.66668 3.4465 1.33334 3.99984 1.33334H9.99984Z'
@@ -69,14 +83,16 @@ export default function Feedback({ translations, onFeedback, componentOverride }
         <button
           type='button'
           className='cio-pia-feedback-button'
-          aria-label='thumbs up'
+          aria-label={translate('thumbs up', translations)}
+          aria-pressed={feedback === FeedbackType.UP}
           onClick={() => handleFeedback(FeedbackType.UP)}>
           <ThumbsUpIcon isSelected={feedback === FeedbackType.UP} />
         </button>
         <button
           type='button'
           className='cio-pia-feedback-button'
-          aria-label='thumbs down'
+          aria-label={translate('thumbs down', translations)}
+          aria-pressed={feedback === FeedbackType.DOWN}
           onClick={() => handleFeedback(FeedbackType.DOWN)}>
           <ThumbsDownIcon isSelected={feedback === FeedbackType.DOWN} />
         </button>

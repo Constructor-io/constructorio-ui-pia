@@ -87,6 +87,8 @@ function Input({
       ? translate(placeholderKey, translations)
       : (placeholder ?? translate(placeholderKey));
 
+  const accessibleName = resolvedPlaceholder || translate('Your question', translations);
+
   return (
     <RenderPropsWrapper
       props={{
@@ -107,6 +109,7 @@ function Input({
             onKeyDown={handleSubmitOnEnter}
             onFocus={onFocus}
             placeholder={resolvedPlaceholder}
+            aria-label={accessibleName}
             disabled={disabled}
             className={cx(
               'cio-pia-input',

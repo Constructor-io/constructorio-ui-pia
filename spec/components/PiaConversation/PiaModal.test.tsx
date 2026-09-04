@@ -109,6 +109,21 @@ describe('PiaModal Component', () => {
       expect(HTMLDialogElement.prototype.close).toHaveBeenCalled();
     });
 
+    it('unlocks body scroll when the modal is closed', () => {
+      const { container } = render(<PiaModal {...defaultProps} />);
+
+      const baseInput = container.querySelector(BASE_INPUT)!;
+      fireEvent.change(baseInput, { target: { value: 'What is this product?' } });
+      fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
+
+      expect(document.body).toHaveClass('cio-pia-modal-open');
+
+      const dialog = container.querySelector('dialog')!;
+      fireEvent.click(within(dialog).getByRole('button', { name: 'Close', hidden: true }));
+
+      expect(document.body).not.toHaveClass('cio-pia-modal-open');
+    });
+
     it('calls onClose when modal is closed', () => {
       const { container } = render(<PiaModal {...defaultProps} />);
 
@@ -153,6 +168,108 @@ describe('PiaModal Component', () => {
       const title = container.querySelector(`#${labelledBy}`);
       expect(title).toBeInTheDocument();
       expect(title).toHaveTextContent('Ask about this product');
+    });
+
+    it('translates the close button label', () => {
+      const { container } = render(
+        <PiaModal {...defaultProps} translations={{ Close: 'Cerrar' }} />,
+      );
+
+      const baseInput = container.querySelector(BASE_INPUT)!;
+      fireEvent.change(baseInput, { target: { value: 'What is this product?' } });
+      fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
+
+      const dialog = container.querySelector('dialog')!;
+      expect(within(dialog).getByRole('button', { name: 'Cerrar' })).toBeInTheDocument();
+    });
+
+    it('returns focus to the input that opened the modal when it closes', () => {
+      const { container } = render(<PiaModal {...defaultProps} />);
+
+      const baseInput = container.querySelector(BASE_INPUT)! as HTMLInputElement;
+      baseInput.focus();
+      expect(document.activeElement).toBe(baseInput);
+
+      fireEvent.change(baseInput, { target: { value: 'What is this product?' } });
+      fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
+
+      const dialog = container.querySelector('dialog')!;
+      const closeButton = within(dialog).getByRole('button', { name: 'Close' });
+
+      (closeButton as HTMLButtonElement).focus();
+      expect(document.activeElement).toBe(closeButton);
+
+      fireEvent.click(closeButton);
+
+      expect(baseInput.disabled).toBe(false);
+      expect(document.activeElement).toBe(baseInput);
+    });
+
+    it('returns focus to the suggested question that opened the modal when it closes', () => {
+      const { container } = render(<PiaModal {...defaultProps} />);
+
+      const questionButton = within(container.querySelector(BASE_QUESTIONS)!).getAllByRole(
+        'button',
+      )[0];
+      questionButton.focus();
+      fireEvent.click(questionButton);
+
+      const dialog = container.querySelector('dialog')!;
+      const closeButton = within(dialog).getByRole('button', { name: 'Close' });
+      (closeButton as HTMLButtonElement).focus();
+
+      fireEvent.click(closeButton);
+
+      expect(document.activeElement).toBe(questionButton);
+    });
+
+    it('does not steal focus when nothing meaningful was focused before opening', () => {
+      const { container } = render(<PiaModal {...defaultProps} />);
+
+      const baseInput = container.querySelector(BASE_INPUT)! as HTMLInputElement;
+      fireEvent.change(baseInput, { target: { value: 'What is this product?' } });
+      (document.activeElement as HTMLElement | null)?.blur();
+      expect(document.activeElement).toBe(document.body);
+
+      const bodyFocus = jest.spyOn(document.body, 'focus');
+
+      fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
+
+      const dialog = container.querySelector('dialog')!;
+      const closeButton = within(dialog).getByRole('button', { name: 'Close' });
+      (closeButton as HTMLButtonElement).focus();
+
+      fireEvent.click(closeButton);
+
+      expect(bodyFocus).not.toHaveBeenCalled();
+
+      bodyFocus.mockRestore();
+    });
+
+    it('defers focus restore until the trigger stops being disabled', () => {
+      const { container, rerender } = render(<PiaModal {...defaultProps} />);
+
+      const baseInput = container.querySelector(BASE_INPUT)! as HTMLInputElement;
+      baseInput.focus();
+
+      fireEvent.change(baseInput, { target: { value: 'What is this product?' } });
+      fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
+
+      rerender(<PiaModal {...defaultProps} isLoading />);
+
+      const dialog = container.querySelector('dialog')!;
+      const closeButton = within(dialog).getByRole('button', { name: 'Close' });
+      (closeButton as HTMLButtonElement).focus();
+
+      fireEvent.click(closeButton);
+
+      expect(baseInput.disabled).toBe(true);
+      expect(document.activeElement).not.toBe(baseInput);
+
+      rerender(<PiaModal {...defaultProps} isLoading={false} />);
+
+      expect(baseInput.disabled).toBe(false);
+      expect(document.activeElement).toBe(baseInput);
     });
   });
 
