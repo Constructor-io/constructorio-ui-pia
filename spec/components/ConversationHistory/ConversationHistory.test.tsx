@@ -66,6 +66,20 @@ describe('ConversationHistory Component', () => {
       expect(screen.getByTestId('answer-status')).toBe(region);
     });
 
+    it('stays silent while only the follow-up questions are loading', () => {
+      render(
+        <ConversationHistory
+          {...baseProps}
+          conversationHistory={[{ ...entry, answer: 'It is a rug.' }]}
+          isLoading
+          isAnswerLoading={false}
+        />,
+      );
+
+      expect(screen.getByTestId('answer-status')).toHaveTextContent('Answer ready');
+      expect(screen.getByTestId('answer-status')).not.toHaveTextContent('Loading answer');
+    });
+
     it('keeps the status region outside the conversation log', () => {
       render(<ConversationHistory {...baseProps} isLoading />);
 

@@ -104,7 +104,7 @@ export default function CioPiaQna(props: CioPiaProps) {
   );
 
   const qnaResultId = pia.answers.data?.qna_result_id;
-  // The text bars stand in for the answer alone, so they track the answer request only. The question
+  // The text bars and the "Loading answer" status track the answer request only. The question
   // row keeps the combined `isLoading`: the follow-up questions that refill it arrive with the
   // answer, so the row is waiting on either request.
   const isAnswerLoading = pia.answers.isLoading;
@@ -126,6 +126,7 @@ export default function CioPiaQna(props: CioPiaProps) {
   const conversationHistoryProps = {
     conversationHistory,
     isLoading,
+    isAnswerLoading,
     error,
     currentItems,
     showFeedback,

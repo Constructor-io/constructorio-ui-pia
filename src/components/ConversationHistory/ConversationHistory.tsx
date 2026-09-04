@@ -20,6 +20,12 @@ import {
 export interface ConversationHistoryProps {
   conversationHistory: ConversationEntry[];
   isLoading: boolean;
+  /**
+   * Whether the answer request itself is in flight. `isLoading` also covers the follow-up
+   * questions request, which is fine for the visible skeleton but would make the status region
+   * announce "Loading answer" while only the questions are loading. Defaults to `isLoading`.
+   */
+  isAnswerLoading?: boolean;
   error: Error | null;
   /**
    * Items for the latest conversation entry's carousel.
@@ -48,6 +54,7 @@ export interface ConversationHistoryProps {
 export default function ConversationHistory({
   conversationHistory,
   isLoading,
+  isAnswerLoading = isLoading,
   error,
   currentItems,
   showFeedback,
@@ -76,7 +83,7 @@ export default function ConversationHistory({
   }, [conversationHistory, isLoading]);
 
   const lastEntry = conversationHistory[conversationHistory.length - 1];
-  const answerStatus = answerStatusMessage(isLoading, !!lastEntry?.answer, translations);
+  const answerStatus = answerStatusMessage(isAnswerLoading, !!lastEntry?.answer, translations);
 
   const disclaimer = (
     <Disclaimer
