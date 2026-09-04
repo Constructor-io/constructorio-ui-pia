@@ -33,6 +33,26 @@ describe('Input Component', () => {
       expect(getByRole('textbox', { name: 'Pregunta lo que quieras' })).toBeInTheDocument();
     });
 
+    it('falls back to a translated name when the placeholder is blanked out', () => {
+      const { getByRole } = render(
+        <Input
+          onSubmit={mockSubmit}
+          translations={{ 'Ask anything': '', 'Your question': 'Tu pregunta' }}
+        />,
+      );
+
+      const input = getByRole('textbox', { name: 'Tu pregunta' });
+      expect(input).toHaveAttribute('placeholder', '');
+    });
+
+    it('falls back to the English name when the placeholder is blanked without translations', () => {
+      const { getByRole } = render(
+        <Input onSubmit={mockSubmit} translations={{ 'Ask anything': '' }} />,
+      );
+
+      expect(getByRole('textbox', { name: 'Your question' })).toBeInTheDocument();
+    });
+
     it('hides the decorative send icon from assistive technology', () => {
       const { getByRole } = render(<Input onSubmit={mockSubmit} />);
 

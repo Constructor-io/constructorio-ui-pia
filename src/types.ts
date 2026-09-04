@@ -78,6 +78,8 @@ export type CioPiaDisplayConfigs = {
 export type Translations = {
   'Any questions about this product?'?: string;
   'Ask anything'?: string;
+  /** Accessible name of the question field when its placeholder is blanked out. */
+  'Your question'?: string;
   Send?: string;
   'AI-generated answers aim to help, but they may occasionally miss details or be inaccurate. Double-check important information before purchasing.'?: string;
   'Is this answer useful?'?: string;

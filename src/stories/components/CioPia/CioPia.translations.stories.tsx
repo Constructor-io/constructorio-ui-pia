@@ -38,6 +38,7 @@ export const AllCustomText: Story = {
     translations: {
       'Any questions about this product?': '¿Alguna pregunta sobre este producto?',
       'Ask anything': 'Pregunta lo que quieras',
+      'Your question': 'Tu pregunta',
       Send: 'Enviar',
       [DISCLAIMER_TEXT]: 'Las respuestas de IA pueden no ser siempre precisas.',
       'Is this answer useful?': '¿Es útil esta respuesta?',

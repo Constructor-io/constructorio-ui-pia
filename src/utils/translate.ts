@@ -11,6 +11,7 @@ import {
 const defaultTranslations: Translations = {
   'Any questions about this product?': 'Any questions about this product?',
   'Ask anything': 'Ask anything',
+  'Your question': 'Your question',
   Send: 'Send',
   [DISCLAIMER_TEXT]: DISCLAIMER_TEXT,
   'Is this answer useful?': 'Is this answer useful?',

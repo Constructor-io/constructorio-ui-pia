@@ -87,7 +87,7 @@ function Input({
       ? translate(placeholderKey, translations)
       : (placeholder ?? translate(placeholderKey));
 
-  const accessibleName = resolvedPlaceholder || translate(placeholderKey);
+  const accessibleName = resolvedPlaceholder || translate('Your question', translations);
 
   return (
     <RenderPropsWrapper
