@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import CioPia from '../../../components/CioPia/CioPia';
 import { DEMO_API_KEY, DEMO_ITEM_ID } from '../../../constants';
 import { FeedbackType, InputRenderProps } from '../../../types';
+import { translate } from '../../../utils/translate';
 
 const LOADING_MESSAGES = ['Thinking', 'Searching the catalog', 'Cooking up an answer'];
 
@@ -268,7 +269,13 @@ export const CustomLoadingWithSkeleton: Story = {
   },
 };
 
-function GrowingTextarea({ onSubmit, placeholder, disabled, onFocus }: InputRenderProps) {
+function GrowingTextarea({
+  onSubmit,
+  placeholder,
+  disabled,
+  onFocus,
+  translations,
+}: InputRenderProps) {
   const [text, setText] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -305,7 +312,8 @@ function GrowingTextarea({ onSubmit, placeholder, disabled, onFocus }: InputRend
         }}
         onFocus={onFocus}
         placeholder={placeholder}
-        aria-label={placeholder}
+        // A consumer can blank the placeholder to hide it, so the name needs its own key.
+        aria-label={placeholder || translate('Your question', translations)}
         disabled={disabled}
         rows={1}
         style={{
