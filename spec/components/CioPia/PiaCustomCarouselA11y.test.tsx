@@ -61,51 +61,45 @@ describe('PiaCustomCarousel keyboard and screen reader access', () => {
     expect(ours.container.querySelector('.cio-product-card-title-section')!.tagName).toBe('P');
   });
 
-  it('reads price, name, description and rating on Tab, as rendered', () => {
+  it('is named by the product name alone', () => {
     const { container } = render(<PiaCustomCarousel items={items} />);
 
-    const [poles] = getCards(container);
-    // `\s`: the price section separates currency and amount with a non-breaking space.
-    expect(poles).toHaveAccessibleName(/\$\s59\.99 Trekking Poles Collapsible aluminum ?, pair\./);
-    expect(poles).toHaveAccessibleName(/4\.4/);
-    expect(poles).toHaveAccessibleName(/94 reviews/);
+    const [poles, jacket] = getCards(container);
+    expect(poles).toHaveAccessibleName('Trekking Poles');
+    expect(jacket).toHaveAccessibleName('Waterproof Jacket');
   });
 
-  it('reads the price the card shows, with no currency prop involved', () => {
-    const { container } = render(<PiaCustomCarousel items={items} />);
-
-    const [, jacket] = getCards(container);
-    // Sale price first, the struck-through original after it, as the card shows them.
-    expect(jacket).toHaveAccessibleName(/\$\s69 \$\s89 Waterproof Jacket/);
-  });
-
-  it('follows a consumer price override, since the name comes from what is rendered', () => {
+  it('keeps the Add to Cart button text out of the card name', () => {
     const { container } = render(
-      <PiaCustomCarousel
-        items={items}
-        componentOverrides={{
-          item: {
-            productCard: {
-              content: {
-                price: { reactNode: () => <span>from 59 dollars</span> },
-              },
-            },
-          },
-        }}
-      />,
+      <PiaCustomCarousel items={items} callbacks={{ onAddToCart: jest.fn() }} />,
     );
 
     const [poles] = getCards(container);
-    expect(poles).toHaveAccessibleName(/from 59 dollars Trekking Poles/);
-    expect(poles).not.toHaveAccessibleName(/59\.99/);
+    expect(poles).toHaveAccessibleName('Trekking Poles');
+    expect(poles).not.toHaveAccessibleName(/Add to Cart/);
+    // The button itself keeps its own name and stays reachable.
+    expect(container.querySelector('.cio-product-card-add-to-cart-btn')).toHaveAccessibleName(
+      'Add to Cart',
+    );
   });
 
-  it('reads the description as the text the browser rendered, not as markup', () => {
+  it('falls back to the rendered content when the product has no name', () => {
+    const { container } = render(<PiaCustomCarousel items={[{ ...items[0], name: '' }]} />);
+
+    const [poles] = getCards(container);
+    expect(poles).not.toHaveAttribute('aria-label');
+    // `\s`: the price section separates currency and amount with a non-breaking space.
+    expect(poles).toHaveAccessibleName(/\$\s59\.99/);
+  });
+
+  it('leaves price, description and rating readable inside the card', () => {
     const { container } = render(<PiaCustomCarousel items={items} />);
 
     const [poles] = getCards(container);
-    expect(poles).toHaveAccessibleName(/Collapsible aluminum ?, pair\./);
-    expect(poles).not.toHaveAccessibleName(/<b>/);
+    expect(poles).toHaveTextContent(/\$\s59\.99/);
+    expect(poles).toHaveTextContent('Collapsible aluminum, pair.');
+    expect(poles).not.toHaveTextContent('<b>');
+    expect(poles).toHaveTextContent('94 reviews');
   });
 
   it('activates the card on Enter, once', () => {

@@ -207,8 +207,10 @@ export default function PiaCustomCarousel({
             <ProductCard
               product={product}
               className='w-full h-full'
-              // Reachable by Tab; the name a screen reader hears is the card's own content.
+              // Reachable by Tab. The name is the product name: a name computed from the
+              // card's content would also swallow the Add to Cart button's text.
               role='link'
+              aria-label={product.name || undefined}
               tabIndex={0}
               onKeyDown={handleCardKeyDown}
               addToCartText={addToCartText}
