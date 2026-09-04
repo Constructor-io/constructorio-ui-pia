@@ -99,31 +99,48 @@ describe('ConversationHistory Component', () => {
     });
   });
 
-  it('remounts the error alert when a second failure has a different message', () => {
+  describe('error inside the conversation log', () => {
     const entry = { id: 1, question: 'What is this product?', answer: '' };
-    const { rerender } = render(
-      <ConversationHistory
-        {...baseProps}
-        conversationHistory={[entry]}
-        error={new Error('First failure')}
-      />,
-    );
 
-    const firstAlert = screen.getByRole('alert');
-    expect(firstAlert).toHaveTextContent('First failure');
+    it('is not a second live region nested in the log', () => {
+      render(
+        <ConversationHistory
+          {...baseProps}
+          conversationHistory={[entry]}
+          error={new Error('First failure')}
+        />,
+      );
 
-    rerender(
-      <ConversationHistory
-        {...baseProps}
-        conversationHistory={[entry]}
-        error={new Error('Second failure')}
-      />,
-    );
+      const errorBlock = screen.getByTestId('error-block');
+      expect(screen.getByRole('log')).toContainElement(errorBlock);
+      expect(errorBlock).toHaveTextContent('First failure');
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
 
-    // `role='alert'` only announces on insertion, so the node has to be a new one.
-    const secondAlert = screen.getByRole('alert');
-    expect(secondAlert).toHaveTextContent('Second failure');
-    expect(secondAlert).not.toBe(firstAlert);
+    it('remounts the error block when a second failure has a different message', () => {
+      const { rerender } = render(
+        <ConversationHistory
+          {...baseProps}
+          conversationHistory={[entry]}
+          error={new Error('First failure')}
+        />,
+      );
+
+      const firstBlock = screen.getByTestId('error-block');
+
+      rerender(
+        <ConversationHistory
+          {...baseProps}
+          conversationHistory={[entry]}
+          error={new Error('Second failure')}
+        />,
+      );
+
+      // The log announces insertions, so the node has to be a new one.
+      const secondBlock = screen.getByTestId('error-block');
+      expect(secondBlock).toHaveTextContent('Second failure');
+      expect(secondBlock).not.toBe(firstBlock);
+    });
   });
 
   it('renders all conversation entries with question and answer', () => {

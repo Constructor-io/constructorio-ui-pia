@@ -55,6 +55,15 @@ describe('ErrorBlock component', () => {
       expect(getByRole('alert')).toHaveTextContent(testErrorMessage);
     });
 
+    it('renders the message without a live role when announce is off', () => {
+      const { queryByRole, getByText } = render(
+        <ErrorBlock message={testErrorMessage} announce={false} />,
+      );
+
+      expect(queryByRole('alert')).not.toBeInTheDocument();
+      expect(getByText(testErrorMessage)).toHaveClass('cio-pia-error-block-text');
+    });
+
     it('hides the decorative warning and retry icons from assistive technology', () => {
       const { container } = render(<ErrorBlock message={testErrorMessage} onRetry={() => {}} />);
 

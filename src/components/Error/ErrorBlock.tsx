@@ -6,6 +6,12 @@ interface ErrorBlockProps {
   message: string;
   onRetry?: () => void;
   translations?: Translations;
+  /**
+   * Whether the message is a `role='alert'` live region. Turn off when the block is rendered
+   * inside another live region (such as the conversation `role='log'`), which already announces
+   * inserted text: nesting the two would announce the error twice. Defaults to true.
+   */
+  announce?: boolean;
 }
 
 function WarningIcon() {
@@ -44,7 +50,12 @@ function RetryIcon() {
   );
 }
 
-function ErrorBlock({ message, onRetry = undefined, translations }: ErrorBlockProps) {
+function ErrorBlock({
+  message,
+  onRetry = undefined,
+  translations,
+  announce = true,
+}: ErrorBlockProps) {
   const resolvedMessage = message || translate('Unexpected error', translations);
 
   return (
@@ -55,7 +66,7 @@ function ErrorBlock({ message, onRetry = undefined, translations }: ErrorBlockPr
         <WarningIcon />
       </div>
       <div className='cio-pia-error-block-text-container'>
-        <p className='cio-pia-error-block-text' role='alert'>
+        <p className='cio-pia-error-block-text' role={announce ? 'alert' : undefined}>
           {resolvedMessage}
         </p>
         {onRetry && (

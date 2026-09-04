@@ -118,12 +118,15 @@ export default function ConversationHistory({
                 </div>
               )}
 
-              {/* `role='alert'` announces on insertion: remount when the message changes. */}
+              {/* The surrounding `role='log'` announces inserted text, so the block must not
+                  be an alert as well. Remount when the message changes so the log sees a new
+                  insertion. */}
               {isLast && !isLoading && error && (
                 <ErrorBlock
                   key={error.message}
                   message={error.message}
                   translations={translations}
+                  announce={false}
                 />
               )}
 
