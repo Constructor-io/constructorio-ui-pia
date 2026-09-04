@@ -183,9 +183,13 @@ export default function CioPiaQna(props: CioPiaProps) {
 
         {isAnswerLoading && <LoadingSkeleton componentOverride={componentOverrides?.loading} />}
 
-        {/* `role='alert'` announces on insertion: remount when the message changes. */}
+        {/* `role='alert'` announces on insertion: remount when the rendered message changes. */}
         {!isAnswerLoading && error && (
-          <ErrorBlock key={error.message} message={error.message} translations={translations} />
+          <ErrorBlock
+            key={error.message || translate('Unexpected error', translations)}
+            message={error.message}
+            translations={translations}
+          />
         )}
 
         {!isAnswerLoading && !error && currentAnswer && (

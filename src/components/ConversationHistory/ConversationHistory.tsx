@@ -123,7 +123,7 @@ export default function ConversationHistory({
                   insertion. */}
               {isLast && !isLoading && error && (
                 <ErrorBlock
-                  key={error.message}
+                  key={error.message || translate('Unexpected error', translations)}
                   message={error.message}
                   translations={translations}
                   announce={false}
