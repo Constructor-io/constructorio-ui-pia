@@ -184,11 +184,6 @@ describe('renderMarkdown', () => {
       expect(result).not.toContain('<script>');
     });
 
-    // The purifier we hand to consumers must be a build that fixes
-    // GHSA-55q2-fjhq-7xh7. Before dompurify 3.4.13, a hook that detached a node
-    // during IN_PLACE sanitization left that subtree unsanitized, so a page
-    // holding a reference to it could re-attach live event handlers. This guards
-    // the floor in package.json against a silent downgrade.
     it('sanitizes a subtree that a hook detaches during IN_PLACE sanitization', () => {
       const wrapper = document.createElement('div');
       wrapper.innerHTML = '<span>Keep</span><section><img src="x" onerror="alert(1)"></section>';
