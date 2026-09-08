@@ -27,12 +27,13 @@ cd test/react-compat/fixture
 npm install
 
 # React 18+ (modern)
-npm install react@18.3.1 react-dom@18.3.1 @testing-library/react@latest
+# --no-save keeps the React pin out of the tracked fixture package.json
+npm install --no-save react@18.3.1 react-dom@18.3.1 @testing-library/react@latest
 ENTRY=index-modern npm run build
 npm test
 
 # React 16/17 (legacy)
-npm install react@16.14.0 react-dom@16.14.0 @testing-library/react@12.1.5
+npm install --no-save react@16.14.0 react-dom@16.14.0 @testing-library/react@12.1.5
 ENTRY=index-legacy npm run build
 npm test
 ```
