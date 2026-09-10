@@ -204,6 +204,7 @@ describe('renderMarkdown', () => {
       });
 
       expect(detached).toBeDefined();
+      expect(detached?.querySelector('img')?.getAttribute('onerror')).toBeNull();
       expect(detached?.outerHTML).toBe('<section><img src="x"></section>');
       expect(wrapper.outerHTML).toBe('<div><span>Keep</span></div>');
 
