@@ -52,7 +52,7 @@ export default function useConversation({
   const [conversationHistory, setConversationHistory] = useState<ConversationEntry[]>([]);
 
   const entryIdRef = useRef(0);
-  const prevAnswerValueRef = useRef(answers.data?.value);
+  const prevAnswerDataRef = useRef(answers.data);
   const hasTrackedCurrentAnswerRef = useRef(false);
   const answersRef = useRef(answers);
   const callbacksRef = useRef(callbacks);
@@ -126,14 +126,14 @@ export default function useConversation({
     setCurrentQuestion('');
     setDisplayedQuestions(suggestedQuestions.data);
     setConversationHistory([]);
-    prevAnswerValueRef.current = undefined;
+    prevAnswerDataRef.current = null;
   }, [suggestedQuestions.data]);
 
   useEffect(() => {
     setCurrentQuestion('');
     setDisplayedQuestions([]);
     setConversationHistory([]);
-    prevAnswerValueRef.current = undefined;
+    prevAnswerDataRef.current = null;
   }, [itemId]);
 
   useEffect(() => {
@@ -151,8 +151,10 @@ export default function useConversation({
   useEffect(() => {
     const answerValue = answers.data?.value ?? '';
     if (!answerValue) return;
-    if (answerValue === prevAnswerValueRef.current) return;
-    prevAnswerValueRef.current = answerValue;
+    // Compare by response object, not by text: two consecutive answers with
+    // identical text are still two answers and both must reach the history.
+    if (answers.data === prevAnswerDataRef.current) return;
+    prevAnswerDataRef.current = answers.data;
 
     const answerThreadId = answers.data?.thread_id;
     const qnaResultId = answers.data?.qna_result_id;
