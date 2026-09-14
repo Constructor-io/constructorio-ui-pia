@@ -183,5 +183,31 @@ describe('renderMarkdown', () => {
       expect(result).toContain('<p>Content</p>');
       expect(result).not.toContain('<script>');
     });
+
+    it('sanitizes a subtree that a hook detaches during IN_PLACE sanitization', () => {
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = '<span>Keep</span><section><img src="x" onerror="alert(1)"></section>';
+      document.body.appendChild(wrapper);
+
+      let detached: Element | undefined;
+      renderMarkdown('unused', {
+        sanitize: (purifier, _html, { config }) => {
+          purifier.addHook('uponSanitizeElement', (node) => {
+            if (node instanceof Element && node.nodeName === 'SECTION') {
+              detached = node;
+              node.remove();
+            }
+          });
+          purifier.sanitize(wrapper, { ...config, IN_PLACE: true });
+          return '';
+        },
+      });
+
+      expect(detached).toBeDefined();
+      expect(detached?.outerHTML).toBe('<section><img src="x"></section>');
+      expect(wrapper.outerHTML).toBe('<div><span>Keep</span></div>');
+
+      wrapper.remove();
+    });
   });
 });

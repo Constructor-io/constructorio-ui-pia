@@ -99,7 +99,6 @@
     "@storybook/testing-library": "^0.2.1",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
-    "@types/dompurify": "^3.0.5",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
@@ -127,17 +126,19 @@
     "typescript-eslint": "^8.59.2",
     "vite": "^6.4.3",
     "vite-plugin-css-injected-by-js": "^3.5.2",
-    "webpack": "^5.98.0"
+    "webpack": "^5.104.1"
   },
   "volta": {
     "node": "22.18.0",
     "npm": "10.9.3"
   },
   "dependencies": {
-    "dompurify": "^3.4.2",
+    "dompurify": "^3.4.15",
     "marked": "^15.0.12"
   },
   "overrides": {
-    "uuid": "^11.1.1"
+    "uuid": "^11.1.1",
+    "browserslist": "^4.28.9",
+    "postcss-selector-parser": "^7.1.6"
   }
 }
