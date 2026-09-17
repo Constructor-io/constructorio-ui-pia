@@ -1,7 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
 import useConversation from '../../../src/hooks/useConversation';
 import { UseCioPiaReturn } from '../../../src/hooks/useCioPia';
-import { GetAnswerResultsResponse } from '../../../src/hooks/mocks/types';
+import { GetAnswerResultsResponse } from '../../../src/types';
 import { FeedbackType } from '../../../src/types';
 import createMockTracking from '../../__mocks__/createMockTracking';
 
@@ -380,14 +380,49 @@ describe('Testing Hook: useConversation', () => {
       rerender({ pia, itemId: 'test-item', isConversation: true });
       const historyAfterFirst = result.current.conversationHistory;
 
-      // Re-render with same answer value
-      pia = createMockPia({
-        answers: { getAnswer, data: { value: mockAnswerValue } },
-      });
+      // Re-render with the same answer response object
       rerender({ pia, itemId: 'test-item', isConversation: true });
 
       // Should be the same reference (no unnecessary update)
-      expect(result.current.conversationHistory).toEqual(historyAfterFirst);
+      expect(result.current.conversationHistory).toBe(historyAfterFirst);
+    });
+
+    it('syncs a new answer whose text is identical to the previous answer', () => {
+      const getAnswer = jest.fn();
+      const onAnswer = jest.fn();
+      let pia = createMockPia({ answers: { getAnswer } });
+
+      const { result, rerender } = renderHook((props) => useConversation(props), {
+        initialProps: { pia, itemId: 'test-item', isConversation: true, callbacks: { onAnswer } },
+      });
+
+      act(() => {
+        result.current.handleSubmitQuestion('First question');
+      });
+      pia = createMockPia({
+        answers: { getAnswer, data: { qna_result_id: 'result-1', value: mockAnswerValue } },
+      });
+      rerender({ pia, itemId: 'test-item', isConversation: true, callbacks: { onAnswer } });
+
+      act(() => {
+        result.current.handleSubmitQuestion('Second question');
+      });
+      // The answers hook clears data while the next request is in flight
+      pia = createMockPia({ answers: { getAnswer, data: null } });
+      rerender({ pia, itemId: 'test-item', isConversation: true, callbacks: { onAnswer } });
+      expect(result.current.conversationHistory[1].answer).toBe('');
+
+      // Backend returns the same text for the second question
+      pia = createMockPia({
+        answers: { getAnswer, data: { qna_result_id: 'result-2', value: mockAnswerValue } },
+      });
+      rerender({ pia, itemId: 'test-item', isConversation: true, callbacks: { onAnswer } });
+
+      expect(result.current.conversationHistory).toHaveLength(2);
+      expect(result.current.conversationHistory[0].answer).toBe(mockAnswerValue);
+      expect(result.current.conversationHistory[1].answer).toBe(mockAnswerValue);
+      expect(result.current.conversationHistory[1].qnaResultId).toBe('result-2');
+      expect(onAnswer).toHaveBeenCalledTimes(2);
     });
 
     it('updates only the last entry when multiple questions are asked', () => {

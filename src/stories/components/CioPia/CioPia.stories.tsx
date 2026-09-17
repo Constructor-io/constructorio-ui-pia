@@ -6,6 +6,9 @@ import { prependCdnBase } from '../../utils';
 const meta = {
   title: 'Components/CioPia',
   component: CioPia,
+  parameters: {
+    a11y: { test: 'error' },
+  },
   tags: ['autodocs'],
   argTypes: {
     cioClient: {

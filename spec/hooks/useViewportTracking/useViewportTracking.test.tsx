@@ -12,8 +12,8 @@ describe('Testing Hook: useViewportTracking', () => {
   let mockTracking: ReturnType<typeof createMockTracking>;
   const testQuestions = [{ value: 'Question 1' }, { value: 'Question 2' }];
 
-  function TestComponent({ tracking, questions }: UseViewportTrackingProps) {
-    const { containerRef } = useViewportTracking({ tracking, questions });
+  function TestComponent({ tracking, questions, viewThreshold }: UseViewportTrackingProps) {
+    const { containerRef } = useViewportTracking({ tracking, questions, viewThreshold });
     return <div ref={containerRef} data-testid='viewport-target' />;
   }
 
@@ -45,13 +45,23 @@ describe('Testing Hook: useViewportTracking', () => {
     });
   }
 
-  it('creates IntersectionObserver with threshold 0.5', () => {
+  it('creates IntersectionObserver with default threshold 0.5', () => {
     render(<TestComponent tracking={mockTracking} questions={testQuestions} />);
 
     expect(global.IntersectionObserver).toHaveBeenCalledWith(expect.any(Function), {
       threshold: 0.5,
     });
     expect(observerInstance.observe).toHaveBeenCalled();
+  });
+
+  it('creates IntersectionObserver with a custom viewThreshold when provided', () => {
+    render(
+      <TestComponent tracking={mockTracking} questions={testQuestions} viewThreshold={0.01} />,
+    );
+
+    expect(global.IntersectionObserver).toHaveBeenCalledWith(expect.any(Function), {
+      threshold: 0.01,
+    });
   });
 
   it('disconnects observer on unmount', () => {

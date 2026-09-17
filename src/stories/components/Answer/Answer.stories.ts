@@ -5,6 +5,7 @@ const meta = {
   title: 'Components/Answer',
   component: Answer,
   parameters: {
+    a11y: { test: 'error' },
     layout: 'centered',
   },
   tags: ['autodocs'],

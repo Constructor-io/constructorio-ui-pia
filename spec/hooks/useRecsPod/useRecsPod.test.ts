@@ -45,6 +45,20 @@ describe('Testing Hook: useRecsPod', () => {
     jest.clearAllMocks();
   });
 
+  it('does not crash when getRecs is not available on the client', async () => {
+    const clientWithoutRecs = { agent: { pia: mockClient.agent.pia }, tracker: mockClient.tracker };
+
+    const { result } = renderHook(() =>
+      useRecsPod({ itemId: testItemId, cioClient: clientWithoutRecs }),
+    );
+
+    await settle();
+
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.items).toBeNull();
+    expect(result.current.error).toBeNull();
+  });
+
   it('shows the loading title with no products while the first request is in flight', () => {
     mockClient.agent.getRecs.mockReturnValueOnce(new Promise<RecsResult>(() => {}));
 

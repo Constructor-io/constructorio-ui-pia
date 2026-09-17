@@ -5,6 +5,8 @@ import Disclaimer from '../CioPia/Disclaimer';
 import ErrorBlock from '../Error/ErrorBlock';
 import LoadingSkeleton from '../LoadingSkeleton/LoadingSkeleton';
 import PiaCustomCarousel from '../CioPia/PiaCustomCarousel';
+import StatusRegion, { answerStatusMessage } from '../StatusRegion/StatusRegion';
+import { translate } from '../../utils/translate';
 import {
   ConversationEntry,
   FeedbackType,
@@ -18,6 +20,12 @@ import {
 export interface ConversationHistoryProps {
   conversationHistory: ConversationEntry[];
   isLoading: boolean;
+  /**
+   * Whether the answer request itself is in flight. `isLoading` also covers the follow-up
+   * questions request, which is fine for the visible skeleton but would make the status region
+   * announce "Loading answer" while only the questions are loading. Defaults to `isLoading`.
+   */
+  isAnswerLoading?: boolean;
   error: Error | null;
   /**
    * Items for the latest conversation entry's carousel.
@@ -46,6 +54,7 @@ export interface ConversationHistoryProps {
 export default function ConversationHistory({
   conversationHistory,
   isLoading,
+  isAnswerLoading = isLoading,
   error,
   currentItems,
   showFeedback,
@@ -73,6 +82,9 @@ export default function ConversationHistory({
     return () => cancelAnimationFrame(frameId);
   }, [conversationHistory, isLoading]);
 
+  const lastEntry = conversationHistory[conversationHistory.length - 1];
+  const answerStatus = answerStatusMessage(isAnswerLoading, !!lastEntry?.answer, translations);
+
   const disclaimer = (
     <Disclaimer
       learnMoreUrl={learnMoreUrl}
@@ -88,7 +100,8 @@ export default function ConversationHistory({
         ref={scrollContainerRef}
         className='cio-pia-conversation-entries'
         role='log'
-        aria-label='Conversation history'>
+        tabIndex={0}
+        aria-label={translate('Conversation history', translations)}>
         {conversationHistory.map((entry, index) => {
           const isLast = index === conversationHistory.length - 1;
           const previousEntryItems = showPreviousItems ? entry.items : null;
@@ -100,13 +113,21 @@ export default function ConversationHistory({
               <div className='cio-pia-chat-question'>{entry.question}</div>
 
               {isLast && isLoading && (
-                <div className='cio-pia-conversation-loading' aria-live='polite'>
+                <div className='cio-pia-conversation-loading'>
                   <LoadingSkeleton componentOverride={componentOverrides?.loading} />
                 </div>
               )}
 
+              {/* The surrounding `role='log'` announces inserted text, so the block must not
+                  be an alert as well. Remount when the message changes so the log sees a new
+                  insertion. */}
               {isLast && !isLoading && error && (
-                <ErrorBlock message={error.message || 'Unexpected error'} />
+                <ErrorBlock
+                  key={error.message || translate('Unexpected error', translations)}
+                  message={error.message}
+                  translations={translations}
+                  announce={false}
+                />
               )}
 
               {entry.answer && (
@@ -138,6 +159,8 @@ export default function ConversationHistory({
         })}
       </div>
       {disclaimerPosition === 'bottom' && disclaimer}
+      {/* Kept outside the `role='log'` so the two live regions do not nest. */}
+      <StatusRegion message={answerStatus} data-testid='answer-status' />
     </div>
   );
 }

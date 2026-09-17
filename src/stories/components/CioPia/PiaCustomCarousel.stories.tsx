@@ -93,6 +93,7 @@ const meta = {
   title: 'Components/PiaCustomCarousel',
   component: PiaCustomCarousel,
   parameters: {
+    a11y: { test: 'error' },
     layout: 'centered',
   },
   args: {

@@ -15,6 +15,53 @@ describe('Input Component', () => {
     expect(getByPlaceholderText('Ask anything')).toBeInTheDocument();
   });
 
+  describe('accessibility', () => {
+    it('names the text field from its placeholder', () => {
+      const { getByRole } = render(<Input onSubmit={mockSubmit} />);
+
+      expect(getByRole('textbox', { name: 'Ask anything' })).toBeInTheDocument();
+    });
+
+    it('keeps the accessible name in sync with the translated placeholder', () => {
+      const { getByRole } = render(
+        <Input
+          onSubmit={mockSubmit}
+          translations={{ 'Ask anything': 'Pregunta lo que quieras' }}
+        />,
+      );
+
+      expect(getByRole('textbox', { name: 'Pregunta lo que quieras' })).toBeInTheDocument();
+    });
+
+    it('falls back to a translated name when the placeholder is blanked out', () => {
+      const { getByRole } = render(
+        <Input
+          onSubmit={mockSubmit}
+          translations={{ 'Ask anything': '', 'Your question': 'Tu pregunta' }}
+        />,
+      );
+
+      const input = getByRole('textbox', { name: 'Tu pregunta' });
+      expect(input).toHaveAttribute('placeholder', '');
+    });
+
+    it('falls back to the English name when the placeholder is blanked without translations', () => {
+      const { getByRole } = render(
+        <Input onSubmit={mockSubmit} translations={{ 'Ask anything': '' }} />,
+      );
+
+      expect(getByRole('textbox', { name: 'Your question' })).toBeInTheDocument();
+    });
+
+    it('hides the decorative send icon from assistive technology', () => {
+      const { getByRole } = render(<Input onSubmit={mockSubmit} />);
+
+      const icon = getByRole('button', { name: 'Send' }).querySelector('svg');
+      expect(icon).toHaveAttribute('aria-hidden', 'true');
+      expect(icon).toHaveAttribute('focusable', 'false');
+    });
+  });
+
   it('renders with custom placeholder via translations', () => {
     const { getByPlaceholderText } = render(
       <Input onSubmit={mockSubmit} translations={{ 'Ask anything': 'Custom placeholder' }} />,

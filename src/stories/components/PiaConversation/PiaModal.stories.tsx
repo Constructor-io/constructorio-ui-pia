@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { within, userEvent, waitFor, expect } from '@storybook/test';
 import PiaModal from '../../../components/PiaConversation/PiaModal';
 import PiaConversation from '../../../components/PiaConversation/PiaConversation';
 import useCioPia from '../../../hooks/useCioPia';
@@ -34,6 +35,7 @@ const meta = {
   title: 'Components/PiaModal',
   component: PiaModal,
   parameters: {
+    a11y: { test: 'error' },
     layout: 'centered',
   },
   tags: ['autodocs'],
@@ -142,6 +144,34 @@ export const WithLearnMore: Story = {
       />
     </PiaModal>
   ),
+};
+
+// A closed <dialog> is display:none, so axe never sees the modal unless a story opens it.
+export const Opened: Story = {
+  args: {
+    initialQuestions: mockQuestions,
+    handleSubmitQuestion: action('handleSubmitQuestion'),
+    handleQuestionClick: action('handleQuestionClick'),
+    isLoading: false,
+  },
+  render: (args) => (
+    <PiaModal {...args}>
+      <PiaConversation
+        conversationHistory={mockConversationHistory}
+        isLoading={false}
+        error={null}
+        showFeedback
+        displayedQuestions={mockQuestions}
+        handleSubmitQuestion={args.handleSubmitQuestion}
+        handleQuestionClick={args.handleQuestionClick!}
+      />
+    </PiaModal>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('button', { name: mockQuestions[0].value }));
+    await waitFor(() => expect(canvasElement.querySelector('dialog')).toHaveAttribute('open'));
+  },
 };
 
 export const MultipleConversations: Story = {

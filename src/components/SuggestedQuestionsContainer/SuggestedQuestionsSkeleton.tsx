@@ -5,8 +5,7 @@ export default function SuggestedQuestionsSkeleton() {
     <div
       className='cio-pia-suggested-questions-container'
       data-testid='suggested-questions-skeleton'
-      aria-busy='true'
-      aria-label='Loading suggestions'>
+      aria-hidden='true'>
       <div className='cio-pia-suggested-question-skeleton' />
       <div className='cio-pia-suggested-question-skeleton' />
       <div className='cio-pia-suggested-question-skeleton' />

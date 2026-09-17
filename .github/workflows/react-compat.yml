@@ -1,0 +1,108 @@
+name: React compat matrix
+on:
+  pull_request:
+    branches:
+      - "**"
+  workflow_call:
+concurrency:
+  group: react-compat-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+jobs:
+  resolve-matrix:
+    name: Resolve React versions
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.result }}
+    steps:
+      - name: Discover React majors
+        id: matrix
+        shell: bash
+        run: |
+          # Get all stable React versions >= 16 from npm, pick latest patch per major
+          MATRIX=$(npm view react versions --json | python3 -c "
+          import json, sys
+          versions = json.load(sys.stdin)
+          majors = {}
+          for v in versions:
+              parts = v.split('.')
+              major = int(parts[0])
+              if major >= 16 and '-' not in v:
+                  majors[major] = v
+          result = []
+          for m in sorted(majors):
+              result.append({
+                  'react-version': majors[m],
+                  'entry': 'index-legacy' if m < 18 else 'index-modern',
+                  'testing-library': '@testing-library/react@12.1.5' if m < 18 else '@testing-library/react@latest'
+              })
+          if len(result) < 4:
+              print(f'Expected at least 4 React majors, found {len(result)}', file=sys.stderr)
+              sys.exit(1)
+          print(json.dumps({'include': result}))
+          ")
+          echo "result=$MATRIX" >> "$GITHUB_OUTPUT"
+
+  compat:
+    name: React ${{ matrix.react-version }}
+    needs: resolve-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.resolve-matrix.outputs.matrix) }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "npm"
+      - name: Install library deps
+        run: npm ci
+      - name: Build library
+        run: npm run compile
+      - name: Pack library
+        shell: bash
+        run: |
+          npm pack --pack-destination .
+          tarballs=(constructor-io-constructorio-ui-pia-*.tgz)
+          if [ ${#tarballs[@]} -ne 1 ]; then
+            echo "Expected exactly 1 tarball, found ${#tarballs[@]}: ${tarballs[*]}" >&2
+            exit 1
+          fi
+          mv "${tarballs[0]}" constructorio-ui-pia.tgz
+      - name: Verify fixture deps match main
+        shell: bash
+        run: |
+          for pkg in @constructor-io/constructorio-client-javascript @constructor-io/constructorio-ui-components; do
+            main_ver=$(node -e "const p=require('./package.json'); console.log(p.peerDependencies?.['$pkg'] || p.dependencies?.['$pkg'] || p.devDependencies?.['$pkg'] || '')")
+            fixture_ver=$(node -e "const p=require('./test/react-compat/fixture/package.json'); console.log(p.devDependencies?.['$pkg'] || '')")
+            if [ "$main_ver" != "$fixture_ver" ]; then
+              echo "::error::Version mismatch for $pkg: main has $main_ver, fixture has $fixture_ver. Update test/react-compat/fixture/package.json."
+              exit 1
+            fi
+          done
+          echo "Fixture dependency versions match main."
+      - name: Install fixture deps
+        working-directory: test/react-compat/fixture
+        # npm install (not ci) because lock files are gitignored — the tarball
+        # is freshly packed each run so its integrity hash always differs.
+        run: npm install --no-audit --no-fund
+      - name: Install React ${{ matrix.react-version }}
+        working-directory: test/react-compat/fixture
+        run: |
+          npm install --no-audit --no-fund \
+            "react@${{ matrix.react-version }}" \
+            "react-dom@${{ matrix.react-version }}" \
+            "${{ matrix.testing-library }}"
+      - name: Webpack build
+        working-directory: test/react-compat/fixture
+        env:
+          ENTRY: ${{ matrix.entry }}
+        run: npm run build
+      - name: Typecheck fixture
+        working-directory: test/react-compat/fixture
+        run: npx tsc --noEmit -p tsconfig.${{ matrix.entry == 'index-legacy' && 'legacy' || 'modern' }}.json
+      - name: Run fixture tests
+        working-directory: test/react-compat/fixture
+        run: npm test

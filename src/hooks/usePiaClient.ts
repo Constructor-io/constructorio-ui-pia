@@ -1,24 +1,20 @@
 import { useMemo, useState } from 'react';
-import MockConstructorIOClient from './mocks/MockConstructorIOClient';
+import ConstructorIOClient from '@constructor-io/constructorio-client-javascript';
 import version from '../version';
+
+export type CioClient = InstanceType<typeof ConstructorIOClient>;
 
 export interface UsePiaClientProps {
   apiKey: string;
-  /** Thread ID for conversation context. Must be a valid UUID. One is generated when absent. */
   threadId?: string;
-  cioClient?: MockConstructorIOClient;
+  cioClient?: CioClient;
 }
 
 export interface UsePiaClientReturn {
-  cioClient: MockConstructorIOClient;
+  cioClient: CioClient;
   threadId: string;
 }
 
-/**
- * Resolves the client and thread ID every mode needs: the caller's client when they supplied
- * one, otherwise a client built from the API key, plus a generated thread ID that stays stable
- * for the life of the component.
- */
 export default function usePiaClient({
   apiKey,
   threadId: providedThreadId,
@@ -29,7 +25,7 @@ export default function usePiaClient({
 
   const client = useMemo(() => {
     if (providedClient) return providedClient;
-    return new MockConstructorIOClient({
+    return new ConstructorIOClient({
       apiKey,
       sendTrackingEvents: true,
       version: `cio-ui-pia-${version}`,

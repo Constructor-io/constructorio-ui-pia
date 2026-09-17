@@ -6,6 +6,7 @@ const meta = {
   title: 'Components/CioPia/DisplayConfigs',
   component: CioPia,
   parameters: {
+    a11y: { test: 'error' },
     layout: 'centered',
   },
   tags: ['autodocs'],

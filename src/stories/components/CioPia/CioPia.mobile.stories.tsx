@@ -6,6 +6,7 @@ const meta = {
   title: 'Components/CioPia/Mobile',
   component: CioPia,
   parameters: {
+    a11y: { test: 'error' },
     layout: 'fullscreen',
     viewport: { defaultViewport: 'mobile1' },
   },

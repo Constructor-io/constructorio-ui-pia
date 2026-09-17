@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import MockConstructorIOClient from './mocks/MockConstructorIOClient';
+import type { CioClient } from './usePiaClient';
 import {
   Formatters,
+  GetRecsProps,
   Item,
   RecsPodParameters,
   RecsRefinement,
@@ -26,7 +27,7 @@ export interface UseRecsPodProps {
   itemId: string;
   variationId?: string;
   threadId?: string;
-  cioClient?: MockConstructorIOClient;
+  cioClient?: CioClient;
   parameters?: RecsPodParameters;
   formatImageUrl?: Formatters['formatImageUrl'];
   translations?: Translations;
@@ -100,9 +101,16 @@ export default function useRecsPod({
 
   const fetchResult = useCallback(
     (shopperInput?: string, source?: RefinementSource) => {
-      // Nothing to ask, so settle the loading state rather than leaving the caller in a skeleton
-      // that never resolves.
-      if (!cioClient) {
+      // TODO: once getRecs is added to the JS client SDK, replace this guard+cast
+      // with a direct call: cioClient.agent.getRecs({...})
+      const getRecs = (cioClient?.agent as any)?.getRecs as
+        | ((props: GetRecsProps) => Promise<RecsResult>)
+        | undefined;
+
+      if (!cioClient || !getRecs) {
+        if (cioClient && !getRecs) {
+          console.info('[CioPia] getRecs is not available on the client SDK yet.');
+        }
         setIsLoading(false);
         return;
       }
@@ -115,8 +123,8 @@ export default function useRecsPod({
       setError(null);
       setHasUnsupportedInput(false);
 
-      cioClient.agent
-        .getRecs({
+      getRecs
+        .call(cioClient.agent, {
           itemId,
           variationId,
           threadId,

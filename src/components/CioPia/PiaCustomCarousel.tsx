@@ -1,10 +1,9 @@
-import React, { useCallback, useRef, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   Carousel,
   CarouselOverrides,
   ProductCard,
   ProductCardProps,
-  CIO_EVENTS,
 } from '@constructor-io/constructorio-ui-components';
 import { Callbacks, Item, Translations } from '../../types';
 import { sanitizeHtml } from '../../utils/contentTransformers';
@@ -19,6 +18,14 @@ function HtmlDescription({ product }: { product: Item }) {
       dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
     />
   );
+}
+
+// The card root is focusable and acts as a link, so Enter must do what a click does.
+// Only for the card itself: Enter on the Add to Cart button inside it is that button's.
+function handleCardKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+  if (event.key === 'Enter' && event.target === event.currentTarget) {
+    event.currentTarget.click();
+  }
 }
 
 function createPriceSectionOverride(priceCurrency: string) {
@@ -106,7 +113,6 @@ export default function PiaCustomCarousel({
   translations,
   priceCurrency,
 }: PiaCustomCarouselProps) {
-  const wrapperRef = useRef<HTMLDivElement>(null);
   const { onAddToCart } = callbacks || {};
 
   const addToCartHandler = useCallback(
@@ -116,7 +122,6 @@ export default function PiaCustomCarousel({
     [onAddToCart],
   );
 
-  // Determine to use user-defined click handler or default behavior
   const productClickHandler = useCallback(
     (item: Item) => {
       const position = items.findIndex((i) => i.id === item.id);
@@ -134,41 +139,64 @@ export default function PiaCustomCarousel({
     [callbacks, items, onResultClick, question, qnaResultId],
   );
 
-  // Set up event listener for product card clicks
-  useEffect(() => {
-    const el = wrapperRef.current;
-    if (!el) return undefined;
-
-    const handleClick = (e: Event) => {
-      const { product } = (e as CustomEvent).detail;
-      if (product) {
-        productClickHandler(product as Item);
-      }
-    };
-
-    el.addEventListener(CIO_EVENTS.productCard.click, handleClick);
-    return () => {
-      el.removeEventListener(CIO_EVENTS.productCard.click, handleClick);
-    };
-  }, [productClickHandler]);
-
   const priceSectionOverride = useMemo(
     () => (priceCurrency ? createPriceSectionOverride(priceCurrency) : undefined),
     [priceCurrency],
   );
 
+  const clickHandlerProps = useMemo(
+    () => ({
+      onProductClick: productClickHandler,
+      onAddToCart: onAddToCart ? addToCartHandler : undefined,
+    }),
+    [productClickHandler, onAddToCart, addToCartHandler],
+  );
+
   const mergedOverrides = useMemo((): CarouselOverrides<Item> => {
     const baseOverrides = buildMergedOverrides(componentOverrides, priceSectionOverride);
-    const cardOverrides = baseOverrides.item?.productCard;
 
-    // The carousel never passes onAddToCart down and the card hides the button without it, so
-    // re-render the card with the handler. A full card override owns its own layout - skip it.
-    if (!onAddToCart || cardOverrides?.reactNode) {
-      return baseOverrides;
+    // Override priority: carousel.reactNode → item.reactNode → item.productCard.reactNode → default ProductCard.
+    // The casts are required because the override signatures don't declare these extra props,
+    // but consumers receive them as part of the render-props contract documented in CioPiaProps.
+    const carouselOverride = baseOverrides.reactNode;
+    if (typeof carouselOverride === 'function') {
+      return {
+        ...baseOverrides,
+        reactNode: (props: Record<string, unknown>) =>
+          carouselOverride({ ...props, ...clickHandlerProps } as typeof props),
+      };
     }
 
-    const addToCartText = translate('Add to Cart', translations);
+    const cardOverrides = baseOverrides.item?.productCard;
+    const itemOverride = baseOverrides.item?.reactNode;
+    if (typeof itemOverride === 'function') {
+      return {
+        ...baseOverrides,
+        item: {
+          ...baseOverrides.item,
+          reactNode: (props: Record<string, unknown>) =>
+            itemOverride({ ...props, ...clickHandlerProps } as typeof props),
+        },
+      };
+    }
 
+    if (typeof cardOverrides?.reactNode === 'function') {
+      const originalReactNode = cardOverrides.reactNode;
+      return {
+        ...baseOverrides,
+        item: {
+          ...baseOverrides.item,
+          productCard: {
+            ...cardOverrides,
+            reactNode: (props: ProductCardProps) =>
+              originalReactNode({ ...props, ...clickHandlerProps } as ProductCardProps),
+          },
+        },
+      };
+    }
+
+    // Default: render ProductCard with handlers directly
+    const addToCartText = onAddToCart ? translate('Add to Cart', translations) : undefined;
     return {
       ...baseOverrides,
       item: {
@@ -179,24 +207,26 @@ export default function PiaCustomCarousel({
             <ProductCard
               product={product}
               className='w-full h-full'
+              // Reachable by Tab. The name is the product name: a name computed from the
+              // card's content would also swallow the Add to Cart button's text.
+              role='link'
+              aria-label={product.name || undefined}
+              tabIndex={0}
+              onKeyDown={handleCardKeyDown}
               addToCartText={addToCartText}
-              onAddToCart={addToCartHandler}
+              onAddToCart={clickHandlerProps.onAddToCart}
+              onProductClick={clickHandlerProps.onProductClick}
               componentOverrides={cardOverrides}
             />
           ),
         },
       },
     };
-  }, [componentOverrides, priceSectionOverride, onAddToCart, translations, addToCartHandler]);
+  }, [componentOverrides, priceSectionOverride, clickHandlerProps, onAddToCart, translations]);
 
-  // If there are no items, do not render the carousel
   if (items.length === 0) {
     return null;
   }
 
-  return (
-    <div ref={wrapperRef}>
-      <Carousel items={items} componentOverrides={mergedOverrides} />
-    </div>
-  );
+  return <Carousel items={items} componentOverrides={mergedOverrides} />;
 }

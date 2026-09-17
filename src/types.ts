@@ -6,10 +6,11 @@ import {
 } from '@constructor-io/constructorio-ui-components';
 import {
   ConstructorClientOptions,
+  FilterExpression,
+  ItemData,
   Nullable,
 } from '@constructor-io/constructorio-client-javascript';
-import { Question } from './hooks/mocks/types';
-import MockConstructorIOClient from './hooks/mocks/MockConstructorIOClient';
+import type { CioClient } from './hooks/usePiaClient';
 
 export enum FeedbackType {
   UP = 'up',
@@ -17,7 +18,7 @@ export enum FeedbackType {
 }
 
 export interface PiaContextValue {
-  cioClient: Nullable<MockConstructorIOClient>;
+  cioClient: Nullable<CioClient>;
   cioClientOptions: CioClientOptions;
   setCioClientOptions: React.Dispatch<CioClientOptions>;
   itemId: string;
@@ -34,13 +35,21 @@ export interface CioPiaProviderProps {
   variationId?: string;
   /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000") */
   threadId?: string;
-  cioClient?: Nullable<MockConstructorIOClient>;
+  cioClient?: Nullable<CioClient>;
 }
 
 export type CioPiaMode = 'default' | 'conversation' | 'recommendations';
 export type CioPiaType = 'inline' | 'modal';
 
 export type DisclaimerPosition = 'top' | 'bottom';
+
+export type CioPiaTrackingConfigs = {
+  /**
+   * Fraction of the container (0–1) that must be visible before the
+   * `product_insights_agent.view` event fires. Defaults to `0.5`.
+   */
+  viewThreshold?: number;
+};
 
 export type CioPiaDisplayConfigs = {
   learnMoreUrl?: string;
@@ -69,12 +78,22 @@ export type CioPiaDisplayConfigs = {
 export type Translations = {
   'Any questions about this product?'?: string;
   'Ask anything'?: string;
+  /** Accessible name of the question field when its placeholder is blanked out. */
+  'Your question'?: string;
   Send?: string;
   'AI-generated answers aim to help, but they may occasionally miss details or be inaccurate. Double-check important information before purchasing.'?: string;
   'Is this answer useful?'?: string;
   'Learn More.'?: string;
   'Ask about this product'?: string;
   'Add to Cart'?: string;
+  'Unexpected error'?: string;
+  'thumbs up'?: string;
+  'thumbs down'?: string;
+  Close?: string;
+  Retry?: string;
+  'Conversation history'?: string;
+  'Loading answer'?: string;
+  'Answer ready'?: string;
   /** Recommendations pod title shown while a request is in flight. */
   'Adapting recommendations to your preference'?: string;
   /** Recommendations pod title shown when a request fails or comes back degraded. */
@@ -284,4 +303,50 @@ export interface CioPiaComponentOverrides extends ComponentOverrideProps<CioPiaR
   loading?: ComponentOverrideProps<LoadingRenderProps>;
 }
 
-export * from './hooks/mocks/types';
+// PIA API types
+export interface Question {
+  value: string;
+}
+
+export interface QuestionResponse {
+  questions: Array<Question>;
+}
+
+export interface SuggestedQuestionsParameters {
+  numResults?: number;
+  preFilterExpression?: FilterExpression;
+}
+
+export interface AnswerRequestParameters {
+  preFilterExpression?: FilterExpression;
+  guard?: boolean;
+  fmtOptions?: Record<string, any>;
+}
+
+export interface ApiItemVariation extends Record<string, any> {
+  value: string;
+  data?: ItemData;
+}
+
+export interface ApiItem extends Record<string, any> {
+  value: string;
+  matched_terms: Array<string>;
+  data: ItemData;
+  variations?: Array<ApiItemVariation> | null;
+  variations_map?: Record<string, any> | Array<Record<string, any>> | null;
+}
+
+export interface AnswerItemResults {
+  request?: Record<string, any>;
+  response: {
+    results: Array<ApiItem>;
+  };
+}
+
+export interface GetAnswerResultsResponse {
+  qna_result_id: string;
+  value: string;
+  item_results?: AnswerItemResults;
+  follow_up_questions?: Array<Question>;
+  thread_id?: string;
+}

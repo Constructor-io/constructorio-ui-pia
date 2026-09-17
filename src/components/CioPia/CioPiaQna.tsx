@@ -15,6 +15,7 @@ import { translate } from '../../utils/translate';
 import PiaInlineAnswer from '../PiaInlineAnswer/PiaInlineAnswer';
 import PiaModal from '../PiaConversation/PiaModal';
 import PiaConversation from '../PiaConversation/PiaConversation';
+import StatusRegion, { answerStatusMessage } from '../StatusRegion/StatusRegion';
 import type { CioPiaProps } from './types';
 
 /** The question-and-answer experience: `mode: 'default'`, `mode: 'conversation'`, and the modal. */
@@ -35,7 +36,9 @@ export default function CioPiaQna(props: CioPiaProps) {
     children,
     translations,
     suggestedQuestionsParameters,
+    answerParameters,
     parameters,
+    trackingConfigs,
   } = props;
   const {
     learnMoreUrl,
@@ -56,6 +59,7 @@ export default function CioPiaQna(props: CioPiaProps) {
     variationId,
     cioClient,
     suggestedQuestionsParameters,
+    answerParameters,
     parameters,
     formatImageUrl: formatters?.formatImageUrl,
   });
@@ -87,6 +91,7 @@ export default function CioPiaQna(props: CioPiaProps) {
   const { containerRef: viewportContainerRef } = useViewportTracking({
     tracking,
     questions: displayedQuestions,
+    viewThreshold: trackingConfigs?.viewThreshold,
   });
   const { containerRef: callbackContainerRef } = useViewportCallbacks({ callbacks, context });
 
@@ -99,10 +104,13 @@ export default function CioPiaQna(props: CioPiaProps) {
   );
 
   const qnaResultId = pia.answers.data?.qna_result_id;
-  // The text bars stand in for the answer alone, so they track the answer request only. The question
+  // The text bars and the "Loading answer" status track the answer request only. The question
   // row keeps the combined `isLoading`: the follow-up questions that refill it arrive with the
   // answer, so the row is waiting on either request.
   const isAnswerLoading = pia.answers.isLoading;
+
+  // Inline mode renders the answer outside any live region.
+  const answerStatus = answerStatusMessage(isAnswerLoading, !!currentAnswer, translations);
 
   const renderProps: CioPiaRenderProps = {
     items: currentItems,
@@ -118,6 +126,7 @@ export default function CioPiaQna(props: CioPiaProps) {
   const conversationHistoryProps = {
     conversationHistory,
     isLoading,
+    isAnswerLoading,
     error,
     currentItems,
     showFeedback,
@@ -174,7 +183,14 @@ export default function CioPiaQna(props: CioPiaProps) {
 
         {isAnswerLoading && <LoadingSkeleton componentOverride={componentOverrides?.loading} />}
 
-        {!isAnswerLoading && error && <ErrorBlock message={error?.message || 'Unexpected error'} />}
+        {/* `role='alert'` announces on insertion: remount when the rendered message changes. */}
+        {!isAnswerLoading && error && (
+          <ErrorBlock
+            key={error.message || translate('Unexpected error', translations)}
+            message={error.message}
+            translations={translations}
+          />
+        )}
 
         {!isAnswerLoading && !error && currentAnswer && (
           <PiaInlineAnswer
@@ -206,6 +222,7 @@ export default function CioPiaQna(props: CioPiaProps) {
           />
         )}
       </RenderPropsWrapper>
+      <StatusRegion message={answerStatus} data-testid='answer-status' />
     </div>
   );
 }

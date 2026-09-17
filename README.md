@@ -85,6 +85,7 @@ The component supports multiple display modes via the `displayConfigs` prop:
 | `variationId` | `string` | Optional variation ID |
 | `threadId` | `string` | Optional thread ID for conversation context (must be a valid UUID) |
 | `displayConfigs` | `object` | Display configuration options (see below) |
+| `trackingConfigs` | `object` | Tracking configuration options (see below) |
 | `callbacks` | `object` | Callback handlers for user interactions |
 | `translations` | `object` | UI string translations for internationalization |
 | `componentOverrides` | `object` | Custom component overrides |
@@ -98,6 +99,12 @@ The component supports multiple display modes via the `displayConfigs` prop:
 | `showFeedback` | `boolean` | `false` | Show feedback controls on answers |
 | `showPreviousItems` | `boolean` | `true` | Show product carousels from previous conversation entries |
 | `learnMoreUrl` | `string` | - | URL for the "Learn More" disclaimer link |
+
+**Tracking Configs:**
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `viewThreshold` | `number` | `0.5` | Fraction of the container (0–1) that must be visible before the `product_insights_agent.view` event fires. Lower it (e.g. `0.01`) to have the view event fire on minimal visibility. |
 
 **Callbacks:**
 
