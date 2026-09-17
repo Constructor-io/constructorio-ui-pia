@@ -6,10 +6,12 @@ import CioPiaRecs from '../../../src/components/CioPiaRecs/CioPiaRecs';
 import type { CioPiaProps } from '../../../src/components/CioPia/types';
 import { AgentRequestError } from '../../../src/errors';
 import {
+  RECS_DEFAULT_REFINEMENT_OPTIONS,
   RECS_FALLBACK_TITLE,
   RECS_INPUT_PLACEHOLDER,
   RECS_LOADING_TITLE,
   RECS_REFINEMENT_LABEL,
+  RECS_TITLE_COMPLEMENTARY,
   RECS_UNSUPPORTED_REQUEST,
 } from '../../../src/constants';
 import { Item, RecsResult } from '../../../src/types';
@@ -136,20 +138,39 @@ describe('CioPiaRecs Component', () => {
       );
     });
 
-    // No title means no node, not an empty one holding a line of blank space above the products.
-    it('renders no title at all when the response carries none', async () => {
+    // The row needs naming whether or not the response named it.
+    it('falls back to the pod title when the response carries none', async () => {
       mockClient.agent.getRecs.mockResolvedValue({ ...firstResult, title: '' });
 
       const { container } = await renderSettled();
 
-      expect(container.querySelector('.cio-pia-recs-pod__title')).not.toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: RECS_TITLE_COMPLEMENTARY })).toBeInTheDocument();
       expect(container.querySelector('[data-carousel]')).toBeInTheDocument();
+    });
+
+    it('prefers the caller defaultTitle over the built-in one', async () => {
+      mockClient.agent.getRecs.mockResolvedValue({ ...firstResult, title: '' });
+
+      await renderSettled({ recsPodParameters: { defaultTitle: 'Complete the look' } });
+
+      expect(screen.getByRole('heading', { name: 'Complete the look' })).toBeInTheDocument();
     });
 
     it('renders one option button per refinement option', async () => {
       await renderSettled();
 
       firstResult.refinement!.options.forEach((option) => {
+        expect(screen.getByRole('button', { name: option })).toBeInTheDocument();
+      });
+    });
+
+    // No response carries options of its own today, so these are the buttons the pod actually shows.
+    it('falls back to the built-in options when the response carries none', async () => {
+      mockClient.agent.getRecs.mockResolvedValue({ ...firstResult, refinement: undefined });
+
+      await renderSettled();
+
+      RECS_DEFAULT_REFINEMENT_OPTIONS.forEach((option) => {
         expect(screen.getByRole('button', { name: option })).toBeInTheDocument();
       });
     });
@@ -384,10 +405,10 @@ describe('CioPiaRecs Component', () => {
     });
 
     it('forwards the strategy and result count to the request', async () => {
-      await renderSettled({ recsPodParameters: { strategy: 'bestsellers', numResults: 6 } });
+      await renderSettled({ recsPodParameters: { strategy: 'alternative_items', numResults: 6 } });
 
       expect(mockClient.agent.getRecs).toHaveBeenCalledWith(
-        expect.objectContaining({ strategy: 'bestsellers', numResults: 6 }),
+        expect.objectContaining({ strategy: 'alternative_items', numResults: 6 }),
       );
     });
 

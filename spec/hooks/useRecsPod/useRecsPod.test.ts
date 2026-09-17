@@ -2,8 +2,11 @@ import { renderHook, act } from '@testing-library/react';
 import useRecsPod from '../../../src/hooks/useRecsPod';
 import { AgentRequestError } from '../../../src/errors';
 import {
+  RECS_DEFAULT_REFINEMENT_OPTIONS,
   RECS_FALLBACK_TITLE,
   RECS_LOADING_TITLE,
+  RECS_TITLE_ALTERNATIVE,
+  RECS_TITLE_COMPLEMENTARY,
   RECS_UNSUPPORTED_REQUEST,
 } from '../../../src/constants';
 import { RecsResult } from '../../../src/types';
@@ -53,7 +56,9 @@ describe('Testing Hook: useRecsPod', () => {
     expect(result.current.isLoading).toBe(true);
     expect(result.current.title).toBe(RECS_LOADING_TITLE);
     expect(result.current.items).toBeNull();
-    expect(result.current.refinement).toBeNull();
+    // The configured options stand in until a response brings its own, so the pod has something to
+    // offer from the first paint rather than growing a row of buttons once the request settles.
+    expect(result.current.refinement).toEqual({ options: RECS_DEFAULT_REFINEMENT_OPTIONS });
     expect(result.current.error).toBeNull();
     expect(result.current.inputError).toBeNull();
   });
@@ -100,7 +105,7 @@ describe('Testing Hook: useRecsPod', () => {
         variationId: 'test-variation-id',
         threadId: 'test-thread-id',
         cioClient: mockClient,
-        parameters: { strategy: 'bestsellers', numResults: 6 },
+        parameters: { strategy: 'alternative_items', numResults: 6 },
       }),
     );
 
@@ -110,7 +115,7 @@ describe('Testing Hook: useRecsPod', () => {
       expect.objectContaining({
         variationId: 'test-variation-id',
         threadId: 'test-thread-id',
-        strategy: 'bestsellers',
+        strategy: 'alternative_items',
         numResults: 6,
       }),
     );
@@ -474,6 +479,103 @@ describe('Testing Hook: useRecsPod', () => {
       expect(result.current.title).toBe(RECS_FALLBACK_TITLE);
       expect(result.current.items).toEqual(firstResult.items);
       expect(result.current.error).toBeNull();
+    });
+  });
+
+  // Every response from the endpoint backing the pod today carries neither, so this is what ships.
+  describe('a response carrying no title or options', () => {
+    const bareResult: RecsResult = { ...testRecsPodResult, title: '', refinement: null };
+
+    it('shows the built-in title', async () => {
+      mockClient.agent.getRecs.mockResolvedValueOnce(bareResult);
+
+      const { result } = renderHook(() =>
+        useRecsPod({ itemId: testItemId, cioClient: mockClient }),
+      );
+
+      await settle();
+
+      expect(result.current.title).toBe(RECS_TITLE_COMPLEMENTARY);
+      expect(result.current.items).toEqual(bareResult.items);
+    });
+
+    // The built-in title names what the products are, so it belongs to the strategy that asked.
+    it('shows the built-in title for the strategy that asked', async () => {
+      mockClient.agent.getRecs.mockResolvedValueOnce(bareResult);
+
+      const { result } = renderHook(() =>
+        useRecsPod({
+          itemId: testItemId,
+          cioClient: mockClient,
+          parameters: { strategy: 'alternative_items' },
+        }),
+      );
+
+      await settle();
+
+      expect(result.current.title).toBe(RECS_TITLE_ALTERNATIVE);
+    });
+
+    it('prefers defaultTitle over the built-in one for the strategy', async () => {
+      mockClient.agent.getRecs.mockResolvedValueOnce(bareResult);
+
+      const { result } = renderHook(() =>
+        useRecsPod({
+          itemId: testItemId,
+          cioClient: mockClient,
+          parameters: { strategy: 'alternative_items', defaultTitle: 'Other options' },
+        }),
+      );
+
+      await settle();
+
+      expect(result.current.title).toBe('Other options');
+    });
+
+    it('translates the built-in title', async () => {
+      mockClient.agent.getRecs.mockResolvedValueOnce(bareResult);
+
+      const { result } = renderHook(() =>
+        useRecsPod({
+          itemId: testItemId,
+          cioClient: mockClient,
+          translations: { [RECS_TITLE_COMPLEMENTARY]: 'Goes well with' },
+        }),
+      );
+
+      await settle();
+
+      expect(result.current.title).toBe('Goes well with');
+    });
+
+    it('offers the built-in options', async () => {
+      mockClient.agent.getRecs.mockResolvedValueOnce(bareResult);
+
+      const { result } = renderHook(() =>
+        useRecsPod({ itemId: testItemId, cioClient: mockClient }),
+      );
+
+      await settle();
+
+      expect(result.current.refinement).toEqual({ options: RECS_DEFAULT_REFINEMENT_OPTIONS });
+    });
+
+    // Once the endpoint sends a real title and real options, they have to take over untouched.
+    it('still prefers a title and options the response does carry', async () => {
+      mockClient.agent.getRecs.mockResolvedValueOnce(firstResult);
+
+      const { result } = renderHook(() =>
+        useRecsPod({
+          itemId: testItemId,
+          cioClient: mockClient,
+          parameters: { defaultTitle: 'Complete the look' },
+        }),
+      );
+
+      await settle();
+
+      expect(result.current.title).toBe(firstResult.title);
+      expect(result.current.refinement).toEqual(firstResult.refinement);
     });
   });
 

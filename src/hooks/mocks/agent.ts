@@ -13,6 +13,8 @@ import {
 } from './types';
 import { GetRecsProps, RecsResult } from '../../types';
 import { AgentRequestError } from '../../errors';
+import { adaptAnswerToRecsResult, buildRecsQuestion } from './recsFromItemQuestions';
+import { RECS_DEFAULT_STRATEGY } from '../../constants';
 
 // Create URL for PIA API
 function createAgentUrl({
@@ -158,19 +160,26 @@ class MockAgent {
   }
 
   /**
-   * Fetches one set of recommendations, in the shape the pod renders.
+   * Fetches one set of recommendations, in the shape the pod renders. Asks the Q&A endpoint phrased
+   * as a request for recommendations - see `recsFromItemQuestions.ts`. Interim backing:
+   * `/v1/agent_insights` with `mode: 'recommendations'` replaces the body of this method.
    *
-   * Recommendations are not available yet: there is no endpoint to ask, so nothing is requested and
-   * an empty result is returned. The pod renders nothing in that state, which leaves whatever the
-   * retailer already had in that slot showing through. Supply a `cioClient` with your own
-   * `agent.getRecs` to drive the pod from your own data in the meantime.
-   *
-   * `props` is still declared, because it is the contract a caller's own `getRecs` implements and
-   * `useRecsPod` passes it - there is simply nothing here to send it to yet.
+   * `threadId` is passed straight through, and refinement depends on it - the endpoint narrows the
+   * previous turn's products rather than searching the catalog again.
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getRecs(props: GetRecsProps): Promise<RecsResult> {
-    return { title: '', items: null, refinement: null, status: 'complete' };
+  async getRecs({
+    itemId,
+    variationId,
+    threadId,
+    strategy = RECS_DEFAULT_STRATEGY,
+    shopperInput,
+    formatImageUrl,
+  }: GetRecsProps): Promise<RecsResult> {
+    const question = buildRecsQuestion(strategy, shopperInput);
+
+    const response = await this.getAnswerResults({ itemId, variationId, threadId, question });
+
+    return adaptAnswerToRecsResult(response, formatImageUrl);
   }
 
   async getAnswerResultsStream({
