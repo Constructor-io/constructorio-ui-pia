@@ -218,6 +218,25 @@ npm run compile           # Generate lib folder for publishing to npm
 npm run build-storybook   # Generate Storybook static bundle for deploy with GitHub Pages
 ```
 
+### Dependency Security
+
+Runtime dependencies (`dependencies` and `peerDependencies`) are the only ones that
+reach a consumer's tree, so security fixes there must be released as a new version
+of this package.
+
+The `overrides` block pins build-time transitives (currently `uuid`,
+`browserslist`, `postcss-selector-parser`) to advisory-patched versions. Note that
+**npm ignores `overrides` from non-root packages** — these constrain this repo's
+tree only and offer consumers no protection. They are acceptable here because none
+of those packages reach consumer runtime; they arrive via Storybook, webpack and CSS
+tooling. If an advisory ever hits a package we actually ship, fix it in
+`dependencies`/`peerDependencies` and publish, rather than adding an override.
+
+Lock files under `test/react-compat/fixture` are gitignored and CI installs them
+with `npm install` rather than `npm ci`, so fixture transitives float between runs.
+A new advisory can therefore appear there without any commit; the versions pinned in
+that fixture's `package.json` are the only fixed points.
+
 ## Publishing New Versions
 
 Dispatch the [Publish](https://github.com/Constructor-io/constructorio-ui-pia/actions/workflows/publish.yml) workflow in GitHub Actions. You're required to provide two arguments:

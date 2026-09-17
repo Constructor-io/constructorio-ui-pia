@@ -1,13 +1,12 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { defineConfig } from 'vitest/config';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-export default defineConfig({
-  esbuild: {
-    jsx: 'automatic',
-  },
+// Plain object rather than vitest's defineConfig(): this file lives outside the
+// fixture, so 'vitest/config' does not resolve from here. defineConfig is only
+// an identity helper for editor types, so dropping it changes nothing at runtime.
+export default {
   server: {
     fs: {
       allow: [__dirname],
@@ -18,4 +17,4 @@ export default defineConfig({
     include: ['src/**/*.test.{ts,tsx}'],
     setupFiles: [path.resolve(__dirname, 'setup.ts')],
   },
-});
+};

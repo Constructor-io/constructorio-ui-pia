@@ -47,6 +47,7 @@
     "componentoverrides",
     "piacustomcarousel",
     "timespan",
-    "timespans"
+    "timespans",
+    "GHSA"
   ]
 }

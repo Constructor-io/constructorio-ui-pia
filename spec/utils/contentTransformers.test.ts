@@ -184,31 +184,45 @@ describe('renderMarkdown', () => {
       expect(result).not.toContain('<script>');
     });
 
-    it('sanitizes a subtree that a hook detaches during IN_PLACE sanitization', () => {
-      const wrapper = document.createElement('div');
-      wrapper.innerHTML = '<span>Keep</span><section><img src="x" onerror="alert(1)"></section>';
-      document.body.appendChild(wrapper);
+  });
+});
 
-      let detached: Element | undefined;
-      renderMarkdown('unused', {
-        sanitize: (purifier, _html, { config }) => {
-          purifier.addHook('uponSanitizeElement', (node) => {
-            if (node instanceof Element && node.nodeName === 'SECTION') {
-              detached = node;
-              node.remove();
-            }
-          });
-          purifier.sanitize(wrapper, { ...config, IN_PLACE: true });
-          return '';
-        },
-      });
+/**
+ * Regression test for GHSA "IN_PLACE hook removal leaves a detached subtree
+ * executable" (dompurify <= 3.4.12). A hook that detaches a node during
+ * IN_PLACE sanitization left that subtree unsanitized, so the caller held a
+ * live element still carrying event-handler attributes.
+ *
+ * Consumers reach this path through the `sanitize` option of `renderMarkdown`,
+ * which hands them a DOMPurify instance to call directly. The advisory is in
+ * `sanitize(node, { IN_PLACE: true })` itself, so this exercises that API
+ * rather than routing through `renderMarkdown`.
+ */
+describe('dompurify IN_PLACE detached-subtree sanitization', () => {
+  afterEach(() => {
+    DOMPurify.removeAllHooks();
+  });
 
-      expect(detached).toBeDefined();
-      expect(detached?.querySelector('img')?.getAttribute('onerror')).toBeNull();
-      expect(detached?.outerHTML).toBe('<section><img src="x"></section>');
-      expect(wrapper.outerHTML).toBe('<div><span>Keep</span></div>');
+  it('sanitizes a subtree that a hook detaches mid-sanitization', () => {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = '<span>Keep</span><section><img src="x" onerror="alert(1)"></section>';
 
-      wrapper.remove();
+    let detached: Element | undefined;
+    DOMPurify.addHook('uponSanitizeElement', (node) => {
+      if (node instanceof Element && node.nodeName === 'SECTION') {
+        detached = node;
+        node.remove();
+      }
     });
+
+    DOMPurify.sanitize(wrapper, { IN_PLACE: true });
+
+    // The detached subtree must be sanitized even though it left the tree.
+    expect(detached).toBeDefined();
+    expect(detached?.querySelector('img')?.getAttribute('onerror')).toBeNull();
+    expect(detached?.outerHTML).toBe('<section><img src="x"></section>');
+
+    // The retained content is untouched.
+    expect(wrapper.outerHTML).toBe('<div><span>Keep</span></div>');
   });
 });
