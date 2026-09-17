@@ -24,6 +24,8 @@ npm run compile
 npm pack --pack-destination .
 mv constructor-io-constructorio-ui-pia-*.tgz constructorio-ui-pia.tgz
 cd test/react-compat/fixture
+# Requires npm 11+. npm 10's arborist crashes resolving vitest 4.1.x peers with
+# "Cannot read properties of null (reading 'edgesOut')".
 npm install
 
 # React 18+ (modern)

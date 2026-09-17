@@ -224,13 +224,27 @@ Runtime dependencies (`dependencies` and `peerDependencies`) are the only ones t
 reach a consumer's tree, so security fixes there must be released as a new version
 of this package.
 
-The `overrides` block pins build-time transitives (currently `uuid`,
-`browserslist`, `postcss-selector-parser`) to advisory-patched versions. Note that
-**npm ignores `overrides` from non-root packages** — these constrain this repo's
-tree only and offer consumers no protection. They are acceptable here because none
-of those packages reach consumer runtime; they arrive via Storybook, webpack and CSS
-tooling. If an advisory ever hits a package we actually ship, fix it in
+The `overrides` block pins build-time transitives to advisory-patched versions.
+Note that **npm ignores `overrides` from non-root packages** — these constrain this
+repo's tree only and offer consumers no protection. They are acceptable here because
+none of those packages reach consumer runtime; they arrive via Storybook, webpack and
+CSS tooling. If an advisory ever hits a package we actually ship, fix it in
 `dependencies`/`peerDependencies` and publish, rather than adding an override.
+
+Each override and the advisory that motivated it, so a future maintainer can drop
+one once its requester depends on a patched version natively:
+
+| Override | Patched upstream in | Advisory |
+| --- | --- | --- |
+| `uuid@^11.1.1` | 11.1.1 | [GHSA-w5hq-g745-h8pq](https://github.com/advisories/GHSA-w5hq-g745-h8pq) — missing buffer bounds check in v3/v5/v6 |
+| `browserslist@^4.28.9` | 4.28.7 | [GHSA-c83g-rgw3-j3cx](https://github.com/advisories/GHSA-c83g-rgw3-j3cx) unbounded memory growth; [GHSA-73wf-gq98-2v4g](https://github.com/advisories/GHSA-73wf-gq98-2v4g) prototype write |
+| `postcss-selector-parser@^7.1.6` | 7.1.3 | [GHSA-w9m9-85wc-3x92](https://github.com/advisories/GHSA-w9m9-85wc-3x92) — DoS via uncontrolled AST recursion |
+
+To test whether one is still needed, drop it and run
+`npm install --package-lock-only && npm audit`. As of the last check all three
+already resolve to patched versions without the override (upstream requesters
+caught up), so they are belt-and-braces: they stop a future upstream downgrade
+from silently reintroducing the advisory.
 
 Lock files under `test/react-compat/fixture` are gitignored and CI installs them
 with `npm install` rather than `npm ci`, so fixture transitives float between runs.

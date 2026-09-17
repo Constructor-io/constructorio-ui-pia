@@ -55,10 +55,15 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          # The fixture pulls vite 7 via vitest, which needs
+          # The fixture pulls vite via vitest, which needs
           # node ^20.19.0 || >=22.12.0. Pinned to match volta in package.json.
           node-version: "22.18.x"
           cache: "npm"
+      - name: Upgrade npm
+        # Node 22.18 ships npm 10.9, whose arborist crashes with
+        # "Cannot read properties of null (reading 'edgesOut')" while resolving
+        # the fixture's vitest 4.1.x peer graph. Fixed in npm 11.
+        run: npm install -g npm@^11
       - name: Install library deps
         run: npm ci
       - name: Build library

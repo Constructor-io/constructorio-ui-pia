@@ -5,6 +5,7 @@
   "dictionaries": ["en_US", "html", "css"],
   "ignorePaths": ["lib", "docs"],
   "flagWords": [],
+  "ignoreRegExpList": ["GHSA-[0-9a-z-]+"],
   "words": [
     "constructorio",
     "cnstrc",
@@ -47,7 +48,6 @@
     "componentoverrides",
     "piacustomcarousel",
     "timespan",
-    "timespans",
-    "GHSA"
+    "timespans"
   ]
 }

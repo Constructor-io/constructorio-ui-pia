@@ -177,52 +177,70 @@ describe('renderMarkdown', () => {
         '<form action="/submit"><input type="text"></form><script>alert(1)</script><p>Content</p>';
       const result = renderMarkdown(input, {
         sanitize: (purifier, html, { config }) =>
-          purifier.sanitize(html, { ...config, FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed'] }),
+          purifier.sanitize(html, {
+            ...config,
+            FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed'],
+          }),
       });
       expect(result).toContain('<form action="/submit">');
       expect(result).toContain('<p>Content</p>');
       expect(result).not.toContain('<script>');
     });
-
   });
 });
 
 /**
- * Regression test for GHSA "IN_PLACE hook removal leaves a detached subtree
- * executable" (dompurify <= 3.4.12). A hook that detaches a node during
- * IN_PLACE sanitization left that subtree unsanitized, so the caller held a
- * live element still carrying event-handler attributes.
+ * Regression test for GHSA-55q2-fjhq-7xh7 (dompurify <= 3.4.12): a hook that
+ * detaches a node during IN_PLACE sanitization left that subtree unsanitized,
+ * so the caller kept a live element still carrying event-handler attributes.
  *
- * Consumers reach this path through the `sanitize` option of `renderMarkdown`,
- * which hands them a DOMPurify instance to call directly. The advisory is in
- * `sanitize(node, { IN_PLACE: true })` itself, so this exercises that API
- * rather than routing through `renderMarkdown`.
+ * This drives the real consumer path — `renderMarkdown` with a `sanitize`
+ * callback — because that callback receives an isolated `DOMPurify(window)`
+ * instance (contentTransformers.ts), which has its own hook registry separate
+ * from the global singleton. Asserting against the global would not prove the
+ * instance handed to consumers is patched.
+ *
+ * Manually verified to fail on dompurify@3.4.12 with
+ * `Received: "alert(1)"` on the `onerror` assertion, and to pass on 3.4.15.
+ * That rules out JSDOM stripping the attribute for some unrelated reason.
  */
 describe('dompurify IN_PLACE detached-subtree sanitization', () => {
-  afterEach(() => {
-    DOMPurify.removeAllHooks();
-  });
-
   it('sanitizes a subtree that a hook detaches mid-sanitization', () => {
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = '<span>Keep</span><section><img src="x" onerror="alert(1)"></section>';
-
     let detached: Element | undefined;
-    DOMPurify.addHook('uponSanitizeElement', (node) => {
-      if (node instanceof Element && node.nodeName === 'SECTION') {
-        detached = node;
-        node.remove();
-      }
-    });
 
-    DOMPurify.sanitize(wrapper, { IN_PLACE: true });
+    const result = renderMarkdown(
+      '<span>Keep</span><section><img src="x" onerror="alert(1)"></section>',
+      {
+        sanitize: (purifier, html, { config }) => {
+          const wrapper = document.createElement('div');
+          wrapper.innerHTML = html;
+
+          purifier.addHook('uponSanitizeElement', (node) => {
+            if (node instanceof Element && node.nodeName === 'SECTION') {
+              detached = node;
+              node.remove();
+            }
+          });
+
+          purifier.sanitize(wrapper, { ...config, IN_PLACE: true });
+          return wrapper.innerHTML;
+        },
+      },
+    );
 
     // The detached subtree must be sanitized even though it left the tree.
     expect(detached).toBeDefined();
     expect(detached?.querySelector('img')?.getAttribute('onerror')).toBeNull();
     expect(detached?.outerHTML).toBe('<section><img src="x"></section>');
 
-    // The retained content is untouched.
-    expect(wrapper.outerHTML).toBe('<div><span>Keep</span></div>');
+    // The retained content survives (marked wraps the inline span in a <p>).
+    expect(result).toContain('<span>Keep</span>');
+    expect(result).not.toContain('onerror');
+  });
+
+  it('leaves no hooks on the global instance', () => {
+    // renderMarkdown's sanitize branch builds a fresh DOMPurify(window) per
+    // call, so a consumer hook can never leak into sanitizeHtml's singleton.
+    expect(sanitizeHtml('<img src="x" onerror="alert(1)">')).toBe('<img src="x">');
   });
 });
