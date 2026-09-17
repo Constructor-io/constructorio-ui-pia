@@ -1,12 +1,12 @@
-import DOMPurify from 'dompurify';
+import DOMPurify, { type Config } from 'dompurify';
 import { marked } from 'marked';
 
-const purifyConfig: DOMPurify.Config = {
+const purifyConfig: Config = {
   FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed', 'form'],
 };
 
 export interface SanitizeOptions {
-  config: DOMPurify.Config;
+  config: Config;
 }
 
 /** Options for {@link renderMarkdown}. */
