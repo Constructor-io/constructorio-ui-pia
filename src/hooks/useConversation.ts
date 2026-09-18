@@ -60,6 +60,9 @@ export default function useConversation({
   const trackingRef = useRef(tracking);
   const lastQuestionRef = useRef<string>('');
   const lastSourceRef = useRef<QuestionSource>('user');
+  // Set once an answer owns the question row, so a later suggested-questions
+  // response cannot take it back.
+  const showsFollowUpsRef = useRef(false);
 
   useEffect(() => {
     callbacksRef.current = callbacks;
@@ -127,6 +130,7 @@ export default function useConversation({
     setDisplayedQuestions(suggestedQuestions.data);
     setConversationHistory([]);
     prevAnswerDataRef.current = null;
+    showsFollowUpsRef.current = false;
   }, [suggestedQuestions.data]);
 
   useEffect(() => {
@@ -134,14 +138,20 @@ export default function useConversation({
     setDisplayedQuestions([]);
     setConversationHistory([]);
     prevAnswerDataRef.current = null;
+    showsFollowUpsRef.current = false;
   }, [itemId]);
 
   useEffect(() => {
+    // The ref, not `answers.data`, which outlives the item it answered.
+    if (showsFollowUpsRef.current) return;
     setDisplayedQuestions(suggestedQuestions.data);
   }, [suggestedQuestions.data]);
 
   useEffect(() => {
-    if (answers.data?.follow_up_questions) setDisplayedQuestions(answers.data.follow_up_questions);
+    if (answers.data?.follow_up_questions) {
+      setDisplayedQuestions(answers.data.follow_up_questions);
+      showsFollowUpsRef.current = true;
+    }
     if (answers.data && lastQuestionRef.current && !hasTrackedCurrentAnswerRef.current) {
       hasTrackedCurrentAnswerRef.current = true;
       trackingRef.current?.trackAnswerView(lastQuestionRef.current, answers.data, answers.items);
