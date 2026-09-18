@@ -148,8 +148,10 @@ export default function useConversation({
   }, [suggestedQuestions.data]);
 
   useEffect(() => {
-    if (answers.data?.follow_up_questions) {
-      setDisplayedQuestions(answers.data.follow_up_questions);
+    if (answers.data) {
+      // An answer with no follow-ups empties the row: the pre-generated questions
+      // include the one just asked.
+      setDisplayedQuestions(answers.data.follow_up_questions ?? []);
       showsFollowUpsRef.current = true;
     }
     if (answers.data && lastQuestionRef.current && !hasTrackedCurrentAnswerRef.current) {
