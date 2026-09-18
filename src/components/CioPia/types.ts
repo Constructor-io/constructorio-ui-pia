@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import {
   IncludeComponentOverrides,
   IncludeRenderProps,
@@ -16,6 +17,40 @@ import {
   ProductCardDisplayProps,
 } from '../../types';
 import type { CioClient } from '../../hooks/usePiaClient';
+
+/**
+ * A single checkout entry point rendered inside the PIA `default` mode.
+ * The merchant owns the checkout flow itself (typically the `@constructor-io/constructorio-ui-checkout`
+ * `CheckoutFlowProvider`); PIA only surfaces the button(s) that start it.
+ */
+export interface CheckoutTrigger {
+  /** Stable identifier for the trigger — used as React key and forwarded to onTrigger. */
+  id: string;
+  /** Button label. Defaults to "Checkout". */
+  label?: string;
+  /** Disables the button. Ignored when `renderButton` is provided. */
+  disabled?: boolean;
+  /**
+   * Predicate deciding whether this trigger should render. Called with the same
+   * render-props snapshot the `children`/`componentOverrides.reactNode` render callback
+   * receives, so consumers can gate on conversation state (e.g. "at least one answer",
+   * "user asked ≥2 questions"). Defaults to always visible.
+   */
+  triggerWhen?: (state: CioPiaRenderProps) => boolean;
+  /** Custom button renderer. When provided, `label` / `disabled` are passed through but styling is your call. */
+  renderButton?: (props: {
+    onClick: () => void;
+    label: string;
+    disabled?: boolean;
+    id: string;
+  }) => ReactNode;
+  /**
+   * Fires when the button is clicked. The merchant wires this to their checkout entry
+   * (e.g. `flow.start()` from `useCheckoutFlow`). Receives the render-props snapshot so
+   * the handler can seed the checkout with the current answer/items/conversation.
+   */
+  onTrigger: (state: CioPiaRenderProps) => void;
+}
 
 export interface CioPiaProps
   extends
@@ -46,6 +81,11 @@ export interface CioPiaProps
   formatters?: Formatters;
   /** Props forwarded to the ProductCard rendered inside the carousel. */
   productCardProps?: ProductCardDisplayProps;
+  /**
+   * One or more checkout entry points to render inside the `default` mode. Ignored in
+   * `recommendations` and `conversation` modes and in the modal.
+   */
+  checkoutTriggers?: CheckoutTrigger[];
   /** UI string translations for internationalization. */
   translations?: Translations;
   /** Parameters for the suggested questions request. */

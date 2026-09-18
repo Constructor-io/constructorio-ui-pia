@@ -1,0 +1,154 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title='General/Checkout Integration' />
+
+# Checkout Integration
+
+`CioPia` can surface **checkout entry points** inside the `default` mode via the `checkoutTriggers` prop. PIA renders the button(s); you own the checkout flow itself — typically the [`@constructor-io/constructorio-ui-checkout`](https://github.com/Constructor-io/constructorio-ui-checkout) library's `CheckoutFlowProvider` mounted at your app root.
+
+> This separation is deliberate. PIA stays checkout-agnostic and pulls in no Stripe / checkout dependencies. You control which checkout library you use, how the flow renders (inline, modal, or routed), and where the Provider lives in your tree.
+
+## The `checkoutTriggers` prop
+
+`checkoutTriggers` is an array — one entry per button you want rendered. Multiple entries let you offer parallel checkout paths from the same PIA widget (e.g. **Buy 1** vs. **Buy 2, save 25%**).
+
+```ts
+type CheckoutTrigger = {
+  id: string;                                      // stable key + forwarded to onTrigger
+  label?: string;                                  // defaults to "Checkout"
+  disabled?: boolean;
+  triggerWhen?: (state: CioPiaRenderProps) => boolean;   // gate visibility on conversation state
+  renderButton?: (props: {                         // override the default button
+    onClick: () => void;
+    label: string;
+    disabled?: boolean;
+    id: string;
+  }) => ReactNode;
+  onTrigger: (state: CioPiaRenderProps) => void;   // fire your own checkout entry
+};
+```
+
+### Notes on scope
+
+- Rendered **only in `default` mode**. `recommendations` and `conversation` modes and the modal view ignore the prop.
+- `triggerWhen` receives the same render-props snapshot the `children` render callback receives. Use it to gate on things like "at least one answer shown" or "user asked ≥2 questions".
+- `onTrigger` is where you wire in your checkout library. PIA does not import or mount the checkout Provider itself.
+
+## Minimal example
+
+```tsx
+import { CioPia } from '@constructor-io/constructorio-ui-pia';
+import {
+  CheckoutFlowProvider,
+  useCheckoutFlow,
+  CheckoutStripeStep,
+  CheckoutFulfillmentStep,
+} from '@constructor-io/constructorio-ui-checkout';
+
+// 1. Mount the CheckoutFlowProvider once at your app root so any component can start it.
+export default function App() {
+  return (
+    <CheckoutFlowProvider
+      steps={[
+        { id: 'payment' },
+        { id: 'complete' },
+      ]}
+      onCreateSession={async ({ cart }) => {
+        const res = await fetch('/api/checkout-session', {
+          method: 'POST',
+          body: JSON.stringify({ items: cart }),
+          headers: { 'Content-Type': 'application/json' },
+        });
+        return res.json(); // { clientSecret, publishableKey }
+      }}>
+      <ProductPage />
+      <CheckoutModal />
+    </CheckoutFlowProvider>
+  );
+}
+
+// 2. Inside a component, useCheckoutFlow gives you the imperative handle.
+function ProductPage() {
+  const flow = useCheckoutFlow();
+
+  return (
+    <CioPia
+      apiKey="YOUR_API_KEY"
+      itemId="prod_123"
+      itemName="Wireless Headphones"
+      checkoutTriggers={[
+        {
+          id: 'buy-one',
+          label: 'Buy Now — $129',
+          onTrigger: () => {
+            flow.setCart([{ id: 'prod_123', quantity: 1, amount: 12900 }]);
+            flow.start();
+          },
+        },
+        {
+          id: 'bundle',
+          label: 'Buy 2, save 25%',
+          triggerWhen: (state) => state.conversationHistory.length >= 1,
+          onTrigger: () => {
+            flow.setCart([{ id: 'prod_123', quantity: 2, amount: 19350 }]);
+            flow.start();
+          },
+        },
+      ]}
+    />
+  );
+}
+
+// 3. Render the active checkout however you like — modal, inline, or a route.
+function CheckoutModal() {
+  const flow = useCheckoutFlow();
+  if (flow.state.status !== 'active') return null;
+  return (
+    <Modal onClose={flow.reset}>
+      <CheckoutStripeStep id="payment" />
+      <CheckoutFulfillmentStep id="complete" />
+    </Modal>
+  );
+}
+```
+
+## Overriding the button
+
+Pass `renderButton` to substitute your own component. `onClick`, `label`, `disabled`, and `id` are provided.
+
+```tsx
+checkoutTriggers={[
+  {
+    id: 'primary',
+    label: 'Add to bag & checkout',
+    renderButton: ({ onClick, label, disabled }) => (
+      <MyBrandedButton variant="primary" onClick={onClick} disabled={disabled}>
+        {label}
+      </MyBrandedButton>
+    ),
+    onTrigger: (state) => startCheckoutWith(state.items),
+  },
+]}
+```
+
+## Gating visibility
+
+`triggerWhen` runs on every render with the current PIA render-props. Return `false` to hide the button.
+
+```tsx
+// Only show once the user has asked at least two questions.
+triggerWhen: (state) => state.conversationHistory.length >= 2
+```
+
+```tsx
+// Hide until at least one answer has been shown.
+triggerWhen: (state) => !!state.currentAnswer
+```
+
+## Resetting checkout when the conversation resets
+
+PIA does not own the checkout flow, so it does not automatically reset it. If you want the checkout to close when the PIA conversation closes, hold a ref to your flow in the parent and call `flow.reset()` from your own close handler — the checkout library exposes `reset()` via `useCheckoutFlow()` and `CheckoutFlow.reset()`.
+
+## Full API reference
+
+For the full checkout library API — step configuration, `guard()`, `router` and `storage` adapters, `onEvent`, `authenticate`, persistence, `checkoutRegistry.resume()`, and more — see the [Constructor.io Checkout Library storybook](https://github.com/Constructor-io/constructorio-ui-checkout).

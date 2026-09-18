@@ -16,6 +16,7 @@ import PiaInlineAnswer from '../PiaInlineAnswer/PiaInlineAnswer';
 import PiaModal from '../PiaConversation/PiaModal';
 import PiaConversation from '../PiaConversation/PiaConversation';
 import StatusRegion, { answerStatusMessage } from '../StatusRegion/StatusRegion';
+import CheckoutTriggerBar from './CheckoutTriggerBar';
 import type { CioPiaProps } from './types';
 
 /** The question-and-answer experience: `mode: 'default'`, `mode: 'conversation'`, and the modal. */
@@ -39,6 +40,7 @@ export default function CioPiaQna(props: CioPiaProps) {
     answerParameters,
     parameters,
     trackingConfigs,
+    checkoutTriggers,
   } = props;
   const {
     learnMoreUrl,
@@ -219,6 +221,14 @@ export default function CioPiaQna(props: CioPiaProps) {
             questions={displayedQuestions}
             onQuestionClick={handleQuestionClick}
             componentOverride={componentOverrides?.suggestedQuestions}
+          />
+        )}
+
+        {checkoutTriggers && checkoutTriggers.length > 0 && (
+          <CheckoutTriggerBar
+            triggers={checkoutTriggers}
+            state={renderProps}
+            translations={translations}
           />
         )}
       </RenderPropsWrapper>
