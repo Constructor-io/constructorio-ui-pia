@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Question, SuggestedQuestionsParameters } from '../types';
 import type { CioClient } from './usePiaClient';
 
@@ -29,13 +29,23 @@ export default function useSuggestedQuestions({
   const [error, setError] = useState<Error | null>(null);
   const serializedParameters = useMemo(() => JSON.stringify(parameters), [parameters]);
 
+  // The client is how the question is asked, not part of the question: a host that
+  // rebuilds it on render must not make the widget ask the same thing again.
+  const cioClientRef = useRef(cioClient);
+  useEffect(() => {
+    cioClientRef.current = cioClient;
+  }, [cioClient]);
+  // A client arriving where there was none is the one client change worth a fetch.
+  const hasClient = !!cioClient;
+
   const fetchResult = useCallback(() => {
-    if (!cioClient) return;
+    const client = cioClientRef.current;
+    if (!client) return;
 
     setIsLoading(true);
     setError(null);
 
-    cioClient.agent.pia
+    client.agent.pia
       .getSuggestedQuestions(itemId, {
         threadId,
         variationId,
@@ -53,7 +63,7 @@ export default function useSuggestedQuestions({
       });
     // parameters is serialized via serializedParameters to prevent refetch on identity changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cioClient, itemId, variationId, threadId, serializedParameters]);
+  }, [hasClient, itemId, variationId, threadId, serializedParameters]);
 
   useEffect(() => {
     fetchResult();
