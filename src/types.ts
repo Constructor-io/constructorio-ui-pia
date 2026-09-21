@@ -59,12 +59,15 @@ export type CioPiaAbTest = {
    *
    * Ignored when you supply your own `cioClient`: set `testCells` on that client instead, as a
    * `ConstructorIOClient` constructor option.
+   *
+   * Empty, non-string, or whitespace-only values are silently dropped, so a cell sourced from
+   * something like `window.cnstrc.testCell` that resolves to `undefined` will simply not be sent.
    */
   testCells?: Record<string, string>;
   /**
    * Mark this shopper as the A/B control group. Renders an invisible, tracking-only placeholder
    * instead of the widget, so both arms of the test record a view event. Takes precedence over
-   * `displayConfigs.mode`.
+   * `displayConfigs.mode`. The placeholder renders neither `children` nor `componentOverrides`.
    *
    * @default false
    */

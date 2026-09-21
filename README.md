@@ -98,8 +98,22 @@ Attach test cells to PIA tracking events, and track the control group without sh
 />
 ```
 
-Mount `CioPia` on every PDP and switch `isControl` per shopper; both arms are then measured the
-same way with no placeholder markup of your own.
+Mount `CioPia` on every PDP and switch `isControl` per shopper — no placeholder markup of your own
+is required.
+
+The control view event means the shopper scrolled to the position on the page where PIA would
+have rendered — that is all it means. It is **not** measured the same way as the test arm's view
+event: `useViewportTracking` applies the same `viewThreshold` to whichever element is mounted, but
+the control placeholder is a fixed 1x1 box while the widget is a full, often much taller
+component. The control event fires as soon as the top of that 1x1 box crosses the threshold, while
+the test event needs roughly half the widget's height in view. Expect control view counts and
+dwell times to systematically outpace the test arm's for this reason — they are not directly
+comparable, and this library does not attempt to correct for it.
+
+If you previously worked around the lack of this feature by hand-adding an empty placeholder
+element with a `data-cnstrc-pia` attribute or the `cio-pia-container` class for the Constructor
+beacon to detect, remove that element before adopting `isControl` — keeping both will fire two
+view events for the same control shopper.
 
 If you supply your own `cioClient`, set `testCells` on that client instead — `abTest.testCells` is
 ignored so the library never mutates a client it does not own.

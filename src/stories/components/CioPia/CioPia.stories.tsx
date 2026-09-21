@@ -31,7 +31,7 @@ const meta = {
       description: [
         'Display configuration options:',
         '',
-        '`mode: "default" | "conversation"` — Display mode. Defaults to `"default"`.',
+        '`mode: "default" | "conversation" | "recommendations"` — Display mode. Defaults to `"default"`.',
         '',
         '`type: "inline" | "modal"` — Component type. Defaults to `"inline"`.',
         '',
