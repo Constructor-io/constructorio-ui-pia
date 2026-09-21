@@ -1293,5 +1293,20 @@ describe('CioPia Component', () => {
 
       expect(queryByTestId('cio-pia-control-placeholder')).not.toBeInTheDocument();
     });
+
+    it('forwards test cells to useCioPia for the test arm', () => {
+      render(
+        <CioPia
+          apiKey='test-api-key'
+          itemId='test-item-id'
+          itemName='Test Item'
+          abTest={{ testCells: { constructorio: 'variant_a' } }}
+        />,
+      );
+
+      expect(useCioPia).toHaveBeenCalledWith(
+        expect.objectContaining({ testCells: { constructorio: 'variant_a' } }),
+      );
+    });
   });
 });
