@@ -70,4 +70,55 @@ describe('Testing Hook: usePiaClient', () => {
 
     expect(result.current.threadId).toBe('provided-thread-id');
   });
+
+  it('forwards test cells to the client it builds', () => {
+    const { result } = renderHook(() =>
+      usePiaClient({
+        apiKey: testApiKey,
+        testCells: { constructorio: 'variant_a', pdp_layout: 'control' },
+      }),
+    );
+
+    expect(result.current.cioClient.options.testCells).toEqual({
+      constructorio: 'variant_a',
+      pdp_layout: 'control',
+    });
+  });
+
+  it('keeps the same client when test cells are rebuilt with equal contents', () => {
+    const { result, rerender } = renderHook((props) => usePiaClient(props), {
+      initialProps: { apiKey: testApiKey, testCells: { constructorio: 'variant_a' } },
+    });
+    const first = result.current.cioClient;
+
+    rerender({ apiKey: testApiKey, testCells: { constructorio: 'variant_a' } });
+
+    expect(result.current.cioClient).toBe(first);
+  });
+
+  it('builds a new client when a test cell value actually changes', () => {
+    const { result, rerender } = renderHook((props) => usePiaClient(props), {
+      initialProps: { apiKey: testApiKey, testCells: { constructorio: 'variant_a' } },
+    });
+    const first = result.current.cioClient;
+
+    rerender({ apiKey: testApiKey, testCells: { constructorio: 'variant_b' } });
+
+    expect(result.current.cioClient).not.toBe(first);
+    expect(result.current.cioClient.options.testCells).toEqual({ constructorio: 'variant_b' });
+  });
+
+  it('leaves a caller-supplied client untouched rather than restyling its test cells', () => {
+    const provided = createMockCioClient();
+
+    const { result } = renderHook(() =>
+      usePiaClient({
+        apiKey: testApiKey,
+        cioClient: provided,
+        testCells: { constructorio: 'variant_a' },
+      }),
+    );
+
+    expect(result.current.cioClient).toBe(provided);
+  });
 });
