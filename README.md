@@ -76,6 +76,34 @@ The component supports multiple display modes via the `displayConfigs` prop:
 />
 ```
 
+#### A/B Testing
+
+Attach test cells to PIA tracking events, and track the control group without showing the widget:
+
+```jsx
+// Test arm: the widget renders, events carry ef-constructorio=variant_a
+<CioPia
+  apiKey="key_XXXXXXXX"
+  itemId={itemId}
+  itemName={itemName}
+  abTest={{ testCells: { constructorio: 'variant_a', pdp_layout: 'wide' } }}
+/>
+
+// Control arm: nothing visible renders, but the view event still fires with the control cell
+<CioPia
+  apiKey="key_XXXXXXXX"
+  itemId={itemId}
+  itemName={itemName}
+  abTest={{ testCells: { constructorio: 'control' }, isControl: true }}
+/>
+```
+
+Mount `CioPia` on every PDP and switch `isControl` per shopper; both arms are then measured the
+same way with no placeholder markup of your own.
+
+If you supply your own `cioClient`, set `testCells` on that client instead — `abTest.testCells` is
+ignored so the library never mutates a client it does not own.
+
 #### Configuration Options
 
 | Prop | Type | Description |
@@ -89,12 +117,13 @@ The component supports multiple display modes via the `displayConfigs` prop:
 | `callbacks` | `object` | Callback handlers for user interactions |
 | `translations` | `object` | UI string translations for internationalization |
 | `componentOverrides` | `object` | Custom component overrides |
+| `abTest` | `object` | A/B test configuration — test cells for tracking, and a control-group placeholder (see below) |
 
 **Display Configs:**
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `mode` | `'default' \| 'conversation'` | `'default'` | Display mode |
+| `mode` | `'default' \| 'conversation' \| 'recommendations'` | `'default'` | Display mode |
 | `type` | `'inline' \| 'modal'` | `'inline'` | Component type |
 | `showFeedback` | `boolean` | `false` | Show feedback controls on answers |
 | `showPreviousItems` | `boolean` | `true` | Show product carousels from previous conversation entries |
@@ -105,6 +134,13 @@ The component supports multiple display modes via the `displayConfigs` prop:
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `viewThreshold` | `number` | `0.5` | Fraction of the container (0–1) that must be visible before the `product_insights_agent.view` event fires. Lower it (e.g. `0.01`) to have the view event fire on minimal visibility. |
+
+**AB Test:**
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `testCells` | `Record<string, string>` | - | `{ [testName]: cellName }`, each sent as an `ef-<testName>` tracking parameter. Ignored when you supply your own `cioClient`. |
+| `isControl` | `boolean` | `false` | Renders an invisible, tracking-only placeholder instead of the widget, so the control arm still records a view event. Takes precedence over `displayConfigs.mode`. |
 
 **Callbacks:**
 

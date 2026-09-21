@@ -123,6 +123,16 @@ const meta = {
       ].join('\n'),
       table: { type: { summary: 'SuggestedQuestionsParameters' } },
     },
+    abTest: {
+      description: [
+        'A/B test configuration.',
+        '',
+        '`testCells?: Record<string, string>` — `{ [testName]: cellName }`, each sent as an `ef-<testName>` tracking parameter. Ignored when you supply your own `cioClient`.',
+        '',
+        '`isControl?: boolean` — renders an invisible, tracking-only placeholder instead of the widget, so the control arm still records a view event. Takes precedence over `displayConfigs.mode`.',
+      ].join('\n'),
+      table: { type: { summary: 'CioPiaAbTest' } },
+    },
   },
 } satisfies Meta<typeof CioPia>;
 
@@ -178,6 +188,18 @@ export const WithCustomCurrencyConversation: Story = {
     },
     displayConfigs: {
       mode: 'conversation',
+    },
+  },
+};
+
+export const ControlGroup: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: DEMO_ITEM_ID,
+    itemName: DEMO_ITEM_NAME,
+    abTest: {
+      testCells: { constructorio: 'control', pdp_layout: 'variant_a' },
+      isControl: true,
     },
   },
 };

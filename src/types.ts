@@ -57,7 +57,8 @@ export type CioPiaAbTest = {
    * sent as an `ef-<testName>` parameter. Source them however you like, for example
    * `{ constructorio: window.cnstrc.testCell }`.
    *
-   * Ignored when you supply your own `cioClient`: set `testCells` on that client instead.
+   * Ignored when you supply your own `cioClient`: set `testCells` on that client instead, as a
+   * `ConstructorIOClient` constructor option.
    */
   testCells?: Record<string, string>;
   /**
