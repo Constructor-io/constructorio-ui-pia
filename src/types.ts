@@ -51,6 +51,25 @@ export type CioPiaTrackingConfigs = {
   viewThreshold?: number;
 };
 
+export type CioPiaAbTest = {
+  /**
+   * Test cells to attach to PIA tracking events, as `{ [testName]: cellName }`. Each entry is
+   * sent as an `ef-<testName>` parameter. Source them however you like, for example
+   * `{ constructorio: window.cnstrc.testCell }`.
+   *
+   * Ignored when you supply your own `cioClient`: set `testCells` on that client instead.
+   */
+  testCells?: Record<string, string>;
+  /**
+   * Mark this shopper as the A/B control group. Renders an invisible, tracking-only placeholder
+   * instead of the widget, so both arms of the test record a view event. Takes precedence over
+   * `displayConfigs.mode`.
+   *
+   * @default false
+   */
+  isControl?: boolean;
+};
+
 export type CioPiaDisplayConfigs = {
   learnMoreUrl?: string;
   showFeedback?: boolean;
