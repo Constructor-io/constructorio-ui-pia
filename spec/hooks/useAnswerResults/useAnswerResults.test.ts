@@ -150,6 +150,36 @@ describe('Testing Hook: useAnswerResults', () => {
     expect(result.current.data).toEqual(mockResponse);
   });
 
+  it('keeps getAnswer stable and current when only identities change', async () => {
+    const { result, rerender } = renderHook((props) => useAnswerResults(props), {
+      initialProps: { ...testProps, parameters: { guard: true } },
+    });
+
+    const firstGetAnswer = result.current.getAnswer;
+
+    // A host that rebuilds the client and the parameters object on every render
+    // describes the same request: getAnswer must not change identity.
+    const rebuiltClient = createMockCioClient();
+    rebuiltClient.agent.pia.getAnswerResults.mockResolvedValue(mockResponse);
+    rerender({ ...testProps, cioClient: rebuiltClient, parameters: { guard: true } });
+
+    expect(result.current.getAnswer).toBe(firstGetAnswer);
+
+    // ...and the callback still reaches the latest client, not the one it closed over.
+    act(() => {
+      result.current.getAnswer(testQuestion);
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(rebuiltClient.agent.pia.getAnswerResults).toHaveBeenCalledTimes(1);
+    expect(mockClient.agent.pia.getAnswerResults).not.toHaveBeenCalled();
+  });
+
   it('updates dependency when itemId changes', async () => {
     const { result, rerender } = renderHook((props) => useAnswerResults(props), {
       initialProps: testProps,
