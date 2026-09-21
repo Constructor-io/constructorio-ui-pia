@@ -96,15 +96,14 @@ export default function useRecsPod({
     formatImageUrlRef.current = formatImageUrl;
   }, [formatImageUrl]);
 
-  // Same reasoning for the client: it is how the request is sent, not part of what is being
-  // asked for, and a host that rebuilds it on render must not restart the pod's request.
+  // A host that rebuilds the client on render must not restart the request.
   const cioClientRef = useRef(cioClient);
 
   useEffect(() => {
     cioClientRef.current = cioClient;
   }, [cioClient]);
 
-  // A client arriving where there was none is the one client change worth a fetch.
+  // A client arriving where there was none still warrants a fetch.
   const hasClient = !!cioClient;
 
   const strategy = parameters?.strategy || DEFAULT_STRATEGY;
@@ -179,9 +178,7 @@ export default function useRecsPod({
           setIsLoading(false);
         });
     },
-    // Every dependency is a primitive. `formatImageUrl` and the client are read through refs
-    // instead, so a caller writing either inline cannot restart the request on every render.
-    // `hasClient` is a trigger rather than a value the body reads, hence the disable.
+    // Every dependency is a primitive; `formatImageUrl` and the client are read through refs.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [hasClient, itemId, variationId, threadId, strategy, numResults],
   );

@@ -157,15 +157,12 @@ describe('Testing Hook: useAnswerResults', () => {
 
     const firstGetAnswer = result.current.getAnswer;
 
-    // A host that rebuilds the client and the parameters object on every render
-    // describes the same request: getAnswer must not change identity.
     const rebuiltClient = createMockCioClient();
     rebuiltClient.agent.pia.getAnswerResults.mockResolvedValue(mockResponse);
     rerender({ ...testProps, cioClient: rebuiltClient, parameters: { guard: true } });
 
     expect(result.current.getAnswer).toBe(firstGetAnswer);
 
-    // ...and the callback still reaches the latest client, not the one it closed over.
     act(() => {
       result.current.getAnswer(testQuestion);
     });

@@ -40,9 +40,7 @@ export default function useAnswerResults({
     [answerResults, formatImageUrl],
   );
 
-  // The client is how the question is asked, not part of the question: a host that
-  // rebuilds it on render must not change the identity of getAnswer, which callers
-  // are free to put in an effect's dependencies. Read at call time, never stale.
+  // A host that rebuilds the client on render must not change getAnswer's identity.
   const cioClientRef = useRef(cioClient);
   useEffect(() => {
     cioClientRef.current = cioClient;
@@ -71,8 +69,6 @@ export default function useAnswerResults({
           setIsLoading(false);
         });
     },
-    // parameters is serialized via serializedParameters to keep getAnswer stable across
-    // identity-only changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [itemId, variationId, threadId, serializedParameters],
   );

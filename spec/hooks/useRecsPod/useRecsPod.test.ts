@@ -238,7 +238,6 @@ describe('Testing Hook: useRecsPod', () => {
 
     expect(mockClient.agent.getRecs).toHaveBeenCalledTimes(1);
 
-    // A new client object describing the same pod: nothing is asked again.
     const rebuiltClient = createMockCioClient();
     rebuiltClient.agent.getRecs.mockResolvedValue(firstResult);
     rerender({ itemId: testItemId, cioClient: rebuiltClient });
