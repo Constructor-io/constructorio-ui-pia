@@ -90,5 +90,6 @@ describe('Testing Component: CioPiaControl', () => {
 
     expect(mockClient.agent.pia.getSuggestedQuestions).not.toHaveBeenCalled();
     expect(mockClient.agent.pia.getAnswerResults).not.toHaveBeenCalled();
+    expect(mockClient.agent.getRecs).not.toHaveBeenCalled();
   });
 });
