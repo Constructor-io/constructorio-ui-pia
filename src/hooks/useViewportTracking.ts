@@ -9,6 +9,11 @@ export interface UseViewportTrackingProps {
   tracking: UseTrackingReturn;
   questions: Question[];
   viewThreshold?: number;
+  /**
+   * Whether an empty `questions` array means "not loaded yet". False for a control-group
+   * placeholder, where no questions are ever fetched and the view must still be recorded.
+   */
+  awaitQuestions?: boolean;
 }
 
 export interface UseViewportTrackingReturn {
@@ -19,6 +24,7 @@ export default function useViewportTracking({
   tracking,
   questions,
   viewThreshold = DEFAULT_VIEW_THRESHOLD,
+  awaitQuestions = true,
 }: UseViewportTrackingProps): UseViewportTrackingReturn {
   const nodeRef = useRef<HTMLDivElement | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -27,11 +33,16 @@ export default function useViewportTracking({
   const entryTimeRef = useRef<string | null>(null);
   const questionsRef = useRef<Question[]>(questions);
   const trackingRef = useRef(tracking);
+  const awaitQuestionsRef = useRef(awaitQuestions);
+
+  useEffect(() => {
+    awaitQuestionsRef.current = awaitQuestions;
+  }, [awaitQuestions]);
 
   useEffect(() => {
     const questionsJustArrived = questionsRef.current.length === 0 && questions.length > 0;
     questionsRef.current = questions;
-    if (questionsJustArrived && entryTimeRef.current) {
+    if (awaitQuestionsRef.current && questionsJustArrived && entryTimeRef.current) {
       trackingRef.current.trackView(questions);
     }
   }, [questions]);
@@ -49,7 +60,8 @@ export default function useViewportTracking({
       });
       entryTimeRef.current = null;
     }
-    if (timespansRef.current.length > 0 && questionsRef.current.length > 0) {
+    const hasPayload = !awaitQuestionsRef.current || questionsRef.current.length > 0;
+    if (timespansRef.current.length > 0 && hasPayload) {
       trackingRef.current.trackViews(questionsRef.current, [...timespansRef.current]);
       timespansRef.current = [];
     }
@@ -61,7 +73,7 @@ export default function useViewportTracking({
         ([entry]) => {
           if (entry.isIntersecting) {
             entryTimeRef.current = new Date().toISOString();
-            if (questionsRef.current.length > 0) {
+            if (!awaitQuestionsRef.current || questionsRef.current.length > 0) {
               trackingRef.current.trackView(questionsRef.current);
             }
           } else if (entryTimeRef.current) {

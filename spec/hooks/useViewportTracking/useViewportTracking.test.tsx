@@ -12,8 +12,18 @@ describe('Testing Hook: useViewportTracking', () => {
   let mockTracking: ReturnType<typeof createMockTracking>;
   const testQuestions = [{ value: 'Question 1' }, { value: 'Question 2' }];
 
-  function TestComponent({ tracking, questions, viewThreshold }: UseViewportTrackingProps) {
-    const { containerRef } = useViewportTracking({ tracking, questions, viewThreshold });
+  function TestComponent({
+    tracking,
+    questions,
+    viewThreshold,
+    awaitQuestions,
+  }: UseViewportTrackingProps) {
+    const { containerRef } = useViewportTracking({
+      tracking,
+      questions,
+      viewThreshold,
+      awaitQuestions,
+    });
     return <div ref={containerRef} data-testid='viewport-target' />;
   }
 
@@ -369,6 +379,47 @@ describe('Testing Hook: useViewportTracking', () => {
       // Second entry with updated questions
       simulateEntry(true);
       expect(mockTracking.trackView).toHaveBeenCalledWith(updatedQuestions);
+    });
+  });
+
+  describe('awaitQuestions: false', () => {
+    it('fires the view event on intersection even with no questions', () => {
+      render(<TestComponent tracking={mockTracking} questions={[]} awaitQuestions={false} />);
+
+      simulateEntry(true);
+
+      expect(mockTracking.trackView).toHaveBeenCalledTimes(1);
+      expect(mockTracking.trackView).toHaveBeenCalledWith([]);
+    });
+
+    it('still reports leaving the viewport', () => {
+      render(<TestComponent tracking={mockTracking} questions={[]} awaitQuestions={false} />);
+
+      simulateEntry(true);
+      simulateEntry(false);
+
+      expect(mockTracking.trackOutOfView).toHaveBeenCalledTimes(1);
+    });
+
+    it('flushes timespans with an empty questions array', () => {
+      const { unmount } = render(
+        <TestComponent tracking={mockTracking} questions={[]} awaitQuestions={false} />,
+      );
+
+      simulateEntry(true);
+      unmount();
+
+      expect(mockTracking.trackViews).toHaveBeenCalledWith([], expect.any(Array));
+    });
+  });
+
+  describe('awaitQuestions default', () => {
+    it('does not fire the view event for an empty questions array', () => {
+      render(<TestComponent tracking={mockTracking} questions={[]} />);
+
+      simulateEntry(true);
+
+      expect(mockTracking.trackView).not.toHaveBeenCalled();
     });
   });
 });
