@@ -210,8 +210,8 @@ export default function CioPiaQna(props: CioPiaProps) {
           />
         )}
 
-        {/* The row is occupied either way, so it never collapses and shifts the layout. An error
-            replaces it, since there are no questions left to offer. */}
+        {/* The skeleton holds the row while loading so it does not shift the layout. An
+            error empties it, as does an answer that came back with no follow-ups. */}
         {isLoading && <SuggestedQuestionsSkeleton />}
 
         {!isLoading && !error && (

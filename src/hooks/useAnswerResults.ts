@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Nullable } from '@constructor-io/constructorio-client-javascript';
 import { AnswerRequestParameters, Formatters, Item, GetAnswerResultsResponse } from '../types';
 import { extractAndTransformItems } from '../utils/transformers';
@@ -33,20 +33,29 @@ export default function useAnswerResults({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
+  const serializedParameters = useMemo(() => JSON.stringify(parameters), [parameters]);
+
   const items = useMemo(
     () => extractAndTransformItems(answerResults, formatImageUrl),
     [answerResults, formatImageUrl],
   );
 
+  // A host that rebuilds the client on render must not change getAnswer's identity.
+  const cioClientRef = useRef(cioClient);
+  useEffect(() => {
+    cioClientRef.current = cioClient;
+  }, [cioClient]);
+
   const fetchResult = useCallback(
     (question: string) => {
-      if (!cioClient) return;
+      const client = cioClientRef.current;
+      if (!client) return;
 
       setIsLoading(true);
       setError(null);
       setAnswerResults(null);
 
-      cioClient.agent.pia
+      client.agent.pia
         .getAnswerResults(itemId, question, { threadId, variationId, ...parameters })
         .then((response) => {
           setAnswerResults(response as GetAnswerResultsResponse);
@@ -60,7 +69,8 @@ export default function useAnswerResults({
           setIsLoading(false);
         });
     },
-    [cioClient, itemId, variationId, threadId, parameters],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [itemId, variationId, threadId, serializedParameters],
   );
 
   return {
