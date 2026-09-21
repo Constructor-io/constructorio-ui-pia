@@ -227,6 +227,68 @@ describe('Testing Hook: useRecsPod', () => {
     expect(mockClient.agent.getRecs).toHaveBeenCalledTimes(1);
   });
 
+  it('does not refetch when the client is rebuilt on every render', async () => {
+    mockClient.agent.getRecs.mockResolvedValue(firstResult);
+
+    const { rerender } = renderHook((props) => useRecsPod(props), {
+      initialProps: { itemId: testItemId, cioClient: mockClient },
+    });
+
+    await settle();
+
+    expect(mockClient.agent.getRecs).toHaveBeenCalledTimes(1);
+
+    // A new client object describing the same pod: nothing is asked again.
+    const rebuiltClient = createMockCioClient();
+    rebuiltClient.agent.getRecs.mockResolvedValue(firstResult);
+    rerender({ itemId: testItemId, cioClient: rebuiltClient });
+
+    await settle();
+
+    expect(rebuiltClient.agent.getRecs).not.toHaveBeenCalled();
+    expect(mockClient.agent.getRecs).toHaveBeenCalledTimes(1);
+  });
+
+  it('fetches once a client arrives where there was none', async () => {
+    mockClient.agent.getRecs.mockResolvedValue(firstResult);
+
+    const { result, rerender } = renderHook((props) => useRecsPod(props), {
+      initialProps: { itemId: testItemId, cioClient: undefined as never },
+    });
+
+    await settle();
+
+    expect(mockClient.agent.getRecs).not.toHaveBeenCalled();
+
+    rerender({ itemId: testItemId, cioClient: mockClient as never });
+
+    await settle();
+
+    expect(mockClient.agent.getRecs).toHaveBeenCalledTimes(1);
+    expect(result.current.items).toEqual(firstResult.items);
+  });
+
+  it('uses the latest client once something does change the request', async () => {
+    mockClient.agent.getRecs.mockResolvedValue(firstResult);
+    const laterClient = createMockCioClient();
+    laterClient.agent.getRecs.mockResolvedValue(secondResult);
+
+    const { rerender } = renderHook((props) => useRecsPod(props), {
+      initialProps: { itemId: testItemId, cioClient: mockClient },
+    });
+
+    await settle();
+
+    rerender({ itemId: newTestItemId, cioClient: laterClient });
+
+    await settle();
+
+    expect(laterClient.agent.getRecs).toHaveBeenCalledTimes(1);
+    expect(laterClient.agent.getRecs).toHaveBeenCalledWith(
+      expect.objectContaining({ itemId: newTestItemId }),
+    );
+  });
+
   describe('refining', () => {
     it('switches to the loading title but holds the products while the refinement is in flight', async () => {
       const pending = deferred<RecsResult>();
