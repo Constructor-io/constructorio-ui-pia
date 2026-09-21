@@ -150,6 +150,33 @@ describe('Testing Hook: useAnswerResults', () => {
     expect(result.current.data).toEqual(mockResponse);
   });
 
+  it('keeps getAnswer stable and current when only identities change', async () => {
+    const { result, rerender } = renderHook((props) => useAnswerResults(props), {
+      initialProps: { ...testProps, parameters: { guard: true } },
+    });
+
+    const firstGetAnswer = result.current.getAnswer;
+
+    const rebuiltClient = createMockCioClient();
+    rebuiltClient.agent.pia.getAnswerResults.mockResolvedValue(mockResponse);
+    rerender({ ...testProps, cioClient: rebuiltClient, parameters: { guard: true } });
+
+    expect(result.current.getAnswer).toBe(firstGetAnswer);
+
+    act(() => {
+      result.current.getAnswer(testQuestion);
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(rebuiltClient.agent.pia.getAnswerResults).toHaveBeenCalledTimes(1);
+    expect(mockClient.agent.pia.getAnswerResults).not.toHaveBeenCalled();
+  });
+
   it('updates dependency when itemId changes', async () => {
     const { result, rerender } = renderHook((props) => useAnswerResults(props), {
       initialProps: testProps,

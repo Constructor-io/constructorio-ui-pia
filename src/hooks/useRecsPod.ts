@@ -96,6 +96,16 @@ export default function useRecsPod({
     formatImageUrlRef.current = formatImageUrl;
   }, [formatImageUrl]);
 
+  // A host that rebuilds the client on render must not restart the request.
+  const cioClientRef = useRef(cioClient);
+
+  useEffect(() => {
+    cioClientRef.current = cioClient;
+  }, [cioClient]);
+
+  // A client arriving where there was none still warrants a fetch.
+  const hasClient = !!cioClient;
+
   const strategy = parameters?.strategy || DEFAULT_STRATEGY;
   const { numResults, defaultTitle } = parameters || {};
 
@@ -103,12 +113,13 @@ export default function useRecsPod({
     (shopperInput?: string, source?: RefinementSource) => {
       // TODO: once getRecs is added to the JS client SDK, replace this guard+cast
       // with a direct call: cioClient.agent.getRecs({...})
-      const getRecs = (cioClient?.agent as any)?.getRecs as
+      const client = cioClientRef.current;
+      const getRecs = (client?.agent as any)?.getRecs as
         | ((props: GetRecsProps) => Promise<RecsResult>)
         | undefined;
 
-      if (!cioClient || !getRecs) {
-        if (cioClient && !getRecs) {
+      if (!client || !getRecs) {
+        if (client && !getRecs) {
           console.info('[CioPia] getRecs is not available on the client SDK yet.');
         }
         setIsLoading(false);
@@ -124,7 +135,7 @@ export default function useRecsPod({
       setHasUnsupportedInput(false);
 
       getRecs
-        .call(cioClient.agent, {
+        .call(client.agent, {
           itemId,
           variationId,
           threadId,
@@ -167,9 +178,9 @@ export default function useRecsPod({
           setIsLoading(false);
         });
     },
-    // Every dependency is a primitive. `formatImageUrl` is read through a ref instead, so a
-    // caller writing it inline cannot restart the request on every render.
-    [cioClient, itemId, variationId, threadId, strategy, numResults],
+    // Every dependency is a primitive; `formatImageUrl` and the client are read through refs.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [hasClient, itemId, variationId, threadId, strategy, numResults],
   );
 
   useEffect(() => {

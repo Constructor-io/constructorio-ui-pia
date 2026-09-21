@@ -219,6 +219,43 @@ describe('Testing Hook: useConversation', () => {
     expect(result.current.displayedQuestions).toEqual(followUpQuestions);
   });
 
+  it('clears the question row when an answer carries no follow-up questions', () => {
+    // The pre-generated questions include the one just asked, so they cannot stand in.
+    const pia = createMockPia({
+      suggestedQuestions: { data: testQuestions },
+      answers: { data: { value: mockAnswerValue } },
+    });
+
+    const { result } = renderHook(() =>
+      useConversation({ pia, itemId: 'test-item', isConversation: false, tracking: mockTracking }),
+    );
+
+    expect(result.current.displayedQuestions).toEqual([]);
+  });
+
+  it('keeps follow-up questions when the suggested questions request resolves again', () => {
+    // Same questions, new array identity - they must not replace the follow-ups.
+    let pia = createMockPia({
+      suggestedQuestions: { data: testQuestions },
+      answers: {
+        data: { value: mockAnswerValue, follow_up_questions: followUpQuestions },
+      },
+    });
+
+    const { result, rerender } = renderHook((props) => useConversation(props), {
+      initialProps: { pia, itemId: 'test-item', isConversation: false },
+    });
+
+    expect(result.current.displayedQuestions).toEqual(followUpQuestions);
+
+    // Same answer object: only the suggested questions resolved again.
+    pia = { ...pia, suggestedQuestions: { ...pia.suggestedQuestions, data: [...testQuestions] } };
+
+    rerender({ pia, itemId: 'test-item', isConversation: false });
+
+    expect(result.current.displayedQuestions).toEqual(followUpQuestions);
+  });
+
   it('derives currentAnswer from answers.data.value', () => {
     const pia = createMockPia({
       answers: { data: { value: mockAnswerValue } },

@@ -178,6 +178,86 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     );
   });
 
+  it('does not refetch when only the client identity changes', async () => {
+    mockClient.agent.pia.getSuggestedQuestions.mockResolvedValue({ questions: testQuestions });
+
+    const { rerender } = renderHook((props) => useSuggestedQuestions(props), {
+      initialProps: { itemId: testItemId, cioClient: mockClient },
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledTimes(1);
+
+    // A new client object describing the same request: nothing is asked again.
+    const rebuiltClient = createMockCioClient();
+    rerender({ itemId: testItemId, cioClient: rebuiltClient });
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(rebuiltClient.agent.pia.getSuggestedQuestions).not.toHaveBeenCalled();
+    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledTimes(1);
+  });
+
+  it('fetches once a client arrives where there was none', async () => {
+    mockClient.agent.pia.getSuggestedQuestions.mockResolvedValue({ questions: testQuestions });
+
+    const { result, rerender } = renderHook((props) => useSuggestedQuestions(props), {
+      initialProps: { itemId: testItemId, cioClient: undefined },
+    });
+
+    expect(mockClient.agent.pia.getSuggestedQuestions).not.toHaveBeenCalled();
+
+    rerender({ itemId: testItemId, cioClient: mockClient });
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledTimes(1);
+    expect(result.current.data).toEqual(testQuestions);
+  });
+
+  it('uses the latest client once something does change the request', async () => {
+    mockClient.agent.pia.getSuggestedQuestions.mockResolvedValue({ questions: testQuestions });
+    const laterClient = createMockCioClient();
+    laterClient.agent.pia.getSuggestedQuestions.mockResolvedValue({ questions: newTestQuestions });
+
+    const { result, rerender } = renderHook((props) => useSuggestedQuestions(props), {
+      initialProps: { itemId: testItemId, cioClient: mockClient },
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    rerender({ itemId: newTestItemId, cioClient: laterClient });
+
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(laterClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(newTestItemId, {
+      threadId: undefined,
+      variationId: undefined,
+    });
+    expect(result.current.data).toEqual(newTestQuestions);
+  });
+
   it('passes threadId and variationId to getSuggestedQuestions', async () => {
     mockClient.agent.pia.getSuggestedQuestions.mockResolvedValueOnce({
       questions: testQuestions,
