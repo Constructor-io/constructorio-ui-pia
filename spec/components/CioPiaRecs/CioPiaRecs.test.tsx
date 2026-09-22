@@ -406,7 +406,7 @@ describe('CioPiaRecs Component', () => {
 
   describe('A/B test cells', () => {
     it('forwards test cells to usePiaClient for the test arm', async () => {
-      await renderSettled({ abTest: { testCells: { constructorio: 'variant_a' } } });
+      await renderSettled({ abTest: { testCells: { constructorio: 'variant_a' }, isControl: false } });
 
       expect(mockUsePiaClient).toHaveBeenCalledWith(
         expect.objectContaining({ testCells: { constructorio: 'variant_a' } }),

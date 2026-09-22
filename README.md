@@ -86,7 +86,7 @@ Attach test cells to PIA tracking events, and track the control group without sh
   apiKey="key_XXXXXXXX"
   itemId={itemId}
   itemName={itemName}
-  abTest={{ testCells: { constructorio: 'variant_a', your_other_test: 'variant_b' } }}
+  abTest={{ testCells: { constructorio: 'variant_a', your_other_test: 'variant_b' }, isControl: false }}
 />
 
 // Control arm: nothing visible renders, but the view event still fires with the control cell
@@ -120,8 +120,12 @@ element with a `data-cnstrc-pia` attribute or the `cio-pia-container` class for 
 beacon to detect, remove that element before adopting `isControl` — keeping both will fire two
 view events for the same control shopper.
 
-If you supply your own `cioClient`, set `testCells` on that client instead — `abTest.testCells` is
-ignored so the library never mutates a client it does not own.
+If you supply your own `cioClient`, `abTest.testCells` is applied to it only when that client has
+no test cells of its own — anything you set there wins and is left untouched. Because test cells
+are a user-level setting, they ride on every event that client sends, not only PIA's.
+
+`isControl` is required. Stating the arm per shopper is the one thing only you can know, and
+omitting it would quietly put everyone in the test arm with no control group to compare against.
 
 #### Configuration Options
 

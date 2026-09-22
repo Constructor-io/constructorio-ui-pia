@@ -1300,7 +1300,7 @@ describe('CioPia Component', () => {
           apiKey='test-api-key'
           itemId='test-item-id'
           itemName='Test Item'
-          abTest={{ testCells: { constructorio: 'variant_a' } }}
+          abTest={{ testCells: { constructorio: 'variant_a' }, isControl: false }}
         />,
       );
 

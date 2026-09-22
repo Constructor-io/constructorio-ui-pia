@@ -62,8 +62,9 @@ export type CioPiaAbTest = {
    * sent as an `ef-<testName>` parameter. Source them however you like, for example
    * `{ constructorio: window.cnstrc.testCell }`.
    *
-   * Ignored when you supply your own `cioClient`: set `testCells` on that client instead, as a
-   * `ConstructorIOClient` constructor option.
+   * If you supply your own `cioClient`, these are applied to it only when it has no test cells
+   * of its own — cells you already set there win and are left untouched. Test cells are a
+   * user-level setting, so they ride on every event that client sends, not only PIA's.
    *
    * Empty, non-string, or whitespace-only values are silently dropped, so a cell sourced from
    * something like `window.cnstrc.testCell` that resolves to `undefined` will simply not be sent.
@@ -76,9 +77,10 @@ export type CioPiaAbTest = {
    * and does not fire the `onView` / `onOutOfView` callbacks — the control arm reports through
    * Constructor's own view event only.
    *
-   * @default false
+   * Required: stating the arm per shopper is the one thing only you can know, and leaving it
+   * out would silently put every shopper in the test arm with no control group at all.
    */
-  isControl?: boolean;
+  isControl: boolean;
 };
 
 export type CioPiaDisplayConfigs = {

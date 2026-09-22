@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ConstructorIOClient from '@constructor-io/constructorio-client-javascript';
 import version from '../version';
 
@@ -38,6 +38,27 @@ export default function usePiaClient({
     // testCells is compared by serializedTestCells so an inline object does not rebuild the client
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiKey, providedClient, serializedTestCells]);
+
+  // A caller's client owns its own options: fill in test cells only where it has none.
+  useEffect(() => {
+    if (!providedClient || !testCells || Object.keys(testCells).length === 0) return;
+
+    const client = providedClient as unknown as {
+      options?: { testCells?: Record<string, string> };
+      setClientOptions?: (options: { testCells: Record<string, string> }) => void;
+    };
+    const existing = client.options?.testCells;
+
+    if (existing && Object.keys(existing).length > 0) {
+      console.warn(
+        '[CioPia] cioClient already has testCells, so abTest.testCells was not applied. Set them in one place.',
+      );
+      return;
+    }
+
+    client.setClientOptions?.({ testCells });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [providedClient, serializedTestCells]);
 
   return { cioClient: client, threadId };
 }

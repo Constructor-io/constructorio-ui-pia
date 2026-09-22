@@ -8,6 +8,8 @@ export type MockPia = {
 export type TestMockClient = {
   agent: { pia: MockPia; getRecs: jest.Mock };
   tracker: Record<string, jest.Mock>;
+  options: { testCells?: Record<string, string> };
+  setClientOptions: jest.Mock;
 };
 
 export function createMockCioClient(): TestMockClient {
@@ -19,6 +21,8 @@ export function createMockCioClient(): TestMockClient {
       },
       getRecs: jest.fn().mockResolvedValue({ title: '', items: null, refinement: null }),
     },
+    options: {},
+    setClientOptions: jest.fn(),
     tracker: {
       trackProductInsightsAgentViews: jest.fn(),
       trackProductInsightsAgentView: jest.fn(),
