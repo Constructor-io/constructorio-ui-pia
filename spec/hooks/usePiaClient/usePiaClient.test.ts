@@ -138,6 +138,57 @@ describe('Testing Hook: usePiaClient', () => {
     });
   });
 
+  it('stays quiet when the cells on the client are the ones it put there', () => {
+    const provided = createMockCioClient();
+    provided.setClientOptions.mockImplementation(({ testCells }) => {
+      provided.options.testCells = testCells;
+    });
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const props = {
+      apiKey: testApiKey,
+      cioClient: provided,
+      testCells: { constructorio: 'variant_a' },
+    };
+
+    // Two mounts against one long-lived client, as a host navigating between PDPs would do.
+    renderHook(() => usePiaClient(props)).unmount();
+    renderHook(() => usePiaClient(props));
+
+    expect(provided.setClientOptions).toHaveBeenCalledTimes(1);
+    expect(warn).not.toHaveBeenCalled();
+
+    warn.mockRestore();
+  });
+
+  it('updates cells it applied itself when they change', () => {
+    const provided = createMockCioClient();
+    provided.setClientOptions.mockImplementation(({ testCells }) => {
+      provided.options.testCells = testCells;
+    });
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const { rerender } = renderHook((props) => usePiaClient(props), {
+      initialProps: {
+        apiKey: testApiKey,
+        cioClient: provided,
+        testCells: { constructorio: 'variant_a' },
+      },
+    });
+
+    rerender({
+      apiKey: testApiKey,
+      cioClient: provided,
+      testCells: { constructorio: 'variant_b' },
+    });
+
+    expect(provided.setClientOptions).toHaveBeenLastCalledWith({
+      testCells: { constructorio: 'variant_b' },
+    });
+    expect(warn).not.toHaveBeenCalled();
+
+    warn.mockRestore();
+  });
+
   it('does not overwrite test cells the caller already set on their own client', () => {
     const provided = createMockCioClient();
     provided.options.testCells = { constructorio: 'their_own_cell' };
