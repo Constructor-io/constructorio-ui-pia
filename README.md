@@ -157,7 +157,7 @@ omitting it would quietly put everyone in the test arm with no control group to 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `testCells` | `Record<string, string>` | - | `{ [testName]: cellName }`, each sent as an `ef-<testName>` tracking parameter. Ignored when you supply your own `cioClient`. |
-| `isControl` | `boolean` | `false` | Renders an invisible, tracking-only placeholder instead of the widget, so the control arm still records a view event. Takes precedence over `displayConfigs.mode`. |
+| `isControl` | `boolean` | required | Renders an invisible, tracking-only placeholder instead of the widget, so the control arm still records a view event. Takes precedence over `displayConfigs.mode`. |
 
 **Callbacks:**
 

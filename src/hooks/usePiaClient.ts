@@ -46,6 +46,7 @@ export default function usePiaClient({
     console.warn(
       '[CioPia] abTest.testCells is ignored when you supply your own cioClient. Set testCells on that client instead.',
     );
+    // serializedTestCells stands in for testCells here too
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [providedClient, serializedTestCells]);
 
