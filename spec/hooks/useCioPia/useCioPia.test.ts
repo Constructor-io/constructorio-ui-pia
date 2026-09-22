@@ -31,7 +31,9 @@ describe('Testing Hook: useCioPia', () => {
       );
 
       await act(async () => {
-        await new Promise((resolve) => { setTimeout(resolve, 0); });
+        await new Promise((resolve) => {
+          setTimeout(resolve, 0);
+        });
       });
 
       expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(
@@ -57,7 +59,9 @@ describe('Testing Hook: useCioPia', () => {
       });
 
       await act(async () => {
-        await new Promise((resolve) => { setTimeout(resolve, 0); });
+        await new Promise((resolve) => {
+          setTimeout(resolve, 0);
+        });
       });
 
       expect(mockClient.agent.pia.getAnswerResults).toHaveBeenCalledWith(
@@ -82,7 +86,9 @@ describe('Testing Hook: useCioPia', () => {
       );
 
       await act(async () => {
-        await new Promise((resolve) => { setTimeout(resolve, 0); });
+        await new Promise((resolve) => {
+          setTimeout(resolve, 0);
+        });
       });
 
       expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(
@@ -104,7 +110,9 @@ describe('Testing Hook: useCioPia', () => {
       );
 
       await act(async () => {
-        await new Promise((resolve) => { setTimeout(resolve, 0); });
+        await new Promise((resolve) => {
+          setTimeout(resolve, 0);
+        });
       });
 
       const callArgs = mockClient.agent.pia.getSuggestedQuestions.mock.calls[0][1];
@@ -122,7 +130,9 @@ describe('Testing Hook: useCioPia', () => {
       );
 
       await act(async () => {
-        await new Promise((resolve) => { setTimeout(resolve, 0); });
+        await new Promise((resolve) => {
+          setTimeout(resolve, 0);
+        });
       });
 
       expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(

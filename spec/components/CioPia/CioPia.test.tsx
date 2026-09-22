@@ -574,10 +574,14 @@ describe('CioPia Component', () => {
           componentOverrides={{
             carousel: {
               item: {
-                reactNode: ({ item, onProductClick }: { item?: Item; onProductClick?: (item: Item) => void }) => (
-                  <div
-                    data-testid='custom-item'
-                    onClick={() => item && onProductClick?.(item)}>
+                reactNode: ({
+                  item,
+                  onProductClick,
+                }: {
+                  item?: Item;
+                  onProductClick?: (item: Item) => void;
+                }) => (
+                  <div data-testid='custom-item' onClick={() => item && onProductClick?.(item)}>
                     Custom: {item?.name}
                   </div>
                 ),
@@ -1253,10 +1257,7 @@ describe('CioPia Component', () => {
       const onTrigger = jest.fn();
 
       const { getByTestId } = render(
-        <CioPia
-          {...mockProps}
-          checkoutTriggers={[{ id: 'primary', onTrigger }]}
-        />,
+        <CioPia {...mockProps} checkoutTriggers={[{ id: 'primary', onTrigger }]} />,
       );
 
       const button = getByTestId('cio-pia-checkout-trigger-primary');
@@ -1273,9 +1274,7 @@ describe('CioPia Component', () => {
       const { queryByTestId } = render(
         <CioPia
           {...mockProps}
-          checkoutTriggers={[
-            { id: 'primary', triggerWhen: () => false, onTrigger: jest.fn() },
-          ]}
+          checkoutTriggers={[{ id: 'primary', triggerWhen: () => false, onTrigger: jest.fn() }]}
         />,
       );
 
@@ -1316,10 +1315,7 @@ describe('CioPia Component', () => {
       const onTrigger = jest.fn();
 
       const { getByTestId } = render(
-        <CioPia
-          {...mockProps}
-          checkoutTriggers={[{ id: 'primary', disabled: true, onTrigger }]}
-        />,
+        <CioPia {...mockProps} checkoutTriggers={[{ id: 'primary', disabled: true, onTrigger }]} />,
       );
 
       const button = getByTestId('cio-pia-checkout-trigger-primary');

@@ -14,17 +14,18 @@ import { Meta } from '@storybook/blocks';
 
 ```ts
 type CheckoutTrigger = {
-  id: string;                                      // stable key + forwarded to onTrigger
-  label?: string;                                  // defaults to "Checkout"
+  id: string; // stable key + forwarded to onTrigger
+  label?: string; // defaults to "Checkout"
   disabled?: boolean;
-  triggerWhen?: (state: CioPiaRenderProps) => boolean;   // gate visibility on conversation state
-  renderButton?: (props: {                         // override the default button
+  triggerWhen?: (state: CioPiaRenderProps) => boolean; // gate visibility on conversation state
+  renderButton?: (props: {
+    // override the default button
     onClick: () => void;
     label: string;
     disabled?: boolean;
     id: string;
   }) => ReactNode;
-  onTrigger: (state: CioPiaRenderProps) => void;   // fire your own checkout entry
+  onTrigger: (state: CioPiaRenderProps) => void; // fire your own checkout entry
 };
 ```
 
@@ -49,10 +50,7 @@ import {
 export default function App() {
   return (
     <CheckoutFlowProvider
-      steps={[
-        { id: 'payment' },
-        { id: 'complete' },
-      ]}
+      steps={[{ id: 'payment' }, { id: 'complete' }]}
       onCreateSession={async ({ cart }) => {
         const res = await fetch('/api/checkout-session', {
           method: 'POST',
@@ -73,9 +71,9 @@ function ProductPage() {
 
   return (
     <CioPia
-      apiKey="YOUR_API_KEY"
-      itemId="prod_123"
-      itemName="Wireless Headphones"
+      apiKey='YOUR_API_KEY'
+      itemId='prod_123'
+      itemName='Wireless Headphones'
       checkoutTriggers={[
         {
           id: 'buy-one',
@@ -105,8 +103,8 @@ function CheckoutModal() {
   if (flow.state.status !== 'active') return null;
   return (
     <Modal onClose={flow.reset}>
-      <CheckoutStripeStep id="payment" />
-      <CheckoutFulfillmentStep id="complete" />
+      <CheckoutStripeStep id='payment' />
+      <CheckoutFulfillmentStep id='complete' />
     </Modal>
   );
 }
@@ -137,12 +135,12 @@ checkoutTriggers={[
 
 ```tsx
 // Only show once the user has asked at least two questions.
-triggerWhen: (state) => state.conversationHistory.length >= 2
+triggerWhen: (state) => state.conversationHistory.length >= 2;
 ```
 
 ```tsx
 // Hide until at least one answer has been shown.
-triggerWhen: (state) => !!state.currentAnswer
+triggerWhen: (state) => !!state.currentAnswer;
 ```
 
 ## Resetting checkout when the conversation resets

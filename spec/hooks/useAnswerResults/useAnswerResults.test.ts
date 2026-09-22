@@ -269,7 +269,12 @@ describe('Testing Hook: useAnswerResults', () => {
     expect(mockClient.agent.pia.getAnswerResults).toHaveBeenCalledWith(
       testProps.itemId,
       testQuestion,
-      { threadId: undefined, variationId: undefined, preFilterExpression: { brand: 'Nike' }, guard: true },
+      {
+        threadId: undefined,
+        variationId: undefined,
+        preFilterExpression: { brand: 'Nike' },
+        guard: true,
+      },
     );
   });
 
@@ -290,9 +295,7 @@ describe('Testing Hook: useAnswerResults', () => {
       url.replace(/^https:\/\/[^/]+/, 'https://cdn.example.com'),
     );
 
-    const { result } = renderHook(() =>
-      useAnswerResults({ ...testProps, formatImageUrl }),
-    );
+    const { result } = renderHook(() => useAnswerResults({ ...testProps, formatImageUrl }));
 
     act(() => {
       result.current.getAnswer(testQuestion);

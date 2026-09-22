@@ -7,8 +7,7 @@ jest.mock('@constructor-io/constructorio-ui-components', () => ({
   Carousel: ({ items, componentOverrides }) => (
     <div data-testid='mock-carousel' data-overrides={JSON.stringify(componentOverrides)}>
       {items.map((item) => {
-        const Description =
-          componentOverrides?.item?.productCard?.content?.description?.reactNode;
+        const Description = componentOverrides?.item?.productCard?.content?.description?.reactNode;
         const Price = componentOverrides?.item?.productCard?.content?.price?.reactNode;
         return (
           <div key={item.id} data-testid={`carousel-item-${item.id}`}>
@@ -112,9 +111,7 @@ describe('PiaCustomCarousel', () => {
     });
 
     it('renders price with custom currency symbol', () => {
-      const { getByTestId } = render(
-        <PiaCustomCarousel items={mockItems} priceCurrency='€' />,
-      );
+      const { getByTestId } = render(<PiaCustomCarousel items={mockItems} priceCurrency='€' />);
       const item1 = getByTestId('carousel-item-1');
       const priceSection = item1.querySelector('.cio-product-card-price-section');
       expect(priceSection).toBeInTheDocument();
@@ -123,9 +120,7 @@ describe('PiaCustomCarousel', () => {
     });
 
     it('renders sale price with strikethrough when salePrice exists', () => {
-      const { getByTestId } = render(
-        <PiaCustomCarousel items={mockItems} priceCurrency='£' />,
-      );
+      const { getByTestId } = render(<PiaCustomCarousel items={mockItems} priceCurrency='£' />);
       const item2 = getByTestId('carousel-item-2');
       const priceSection = item2.querySelector('.cio-product-card-price-section');
       expect(priceSection).toBeInTheDocument();
@@ -136,13 +131,9 @@ describe('PiaCustomCarousel', () => {
     });
 
     it('does not render price section when product has no price', () => {
-      const { getByTestId } = render(
-        <PiaCustomCarousel items={mockItems} priceCurrency='€' />,
-      );
+      const { getByTestId } = render(<PiaCustomCarousel items={mockItems} priceCurrency='€' />);
       const item3 = getByTestId('carousel-item-3');
-      expect(
-        item3.querySelector('.cio-product-card-price-section'),
-      ).not.toBeInTheDocument();
+      expect(item3.querySelector('.cio-product-card-price-section')).not.toBeInTheDocument();
     });
 
     it('preserves user-provided price override over priceCurrency', () => {
@@ -166,9 +157,7 @@ describe('PiaCustomCarousel', () => {
 
       const item1 = getByTestId('carousel-item-1');
       expect(item1.querySelector('[data-testid="custom-price"]')).toHaveTextContent('29.99');
-      expect(
-        item1.querySelector('.cio-product-card-price-section'),
-      ).not.toBeInTheDocument();
+      expect(item1.querySelector('.cio-product-card-price-section')).not.toBeInTheDocument();
     });
   });
 

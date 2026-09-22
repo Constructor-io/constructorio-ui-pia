@@ -33,9 +33,7 @@ describe('CheckoutTriggerBar', () => {
   });
 
   it('uses the trigger label when provided instead of the default "Checkout"', () => {
-    const triggers: CheckoutTrigger[] = [
-      { id: 'primary', label: 'Buy Now', onTrigger: jest.fn() },
-    ];
+    const triggers: CheckoutTrigger[] = [{ id: 'primary', label: 'Buy Now', onTrigger: jest.fn() }];
 
     const { getByTestId } = render(<CheckoutTriggerBar triggers={triggers} state={mockState} />);
 
@@ -49,9 +47,9 @@ describe('CheckoutTriggerBar', () => {
       <CheckoutTriggerBar
         triggers={triggers}
         state={mockState}
-        translations={{ Checkout: 'Pagar' } as Parameters<
-          typeof CheckoutTriggerBar
-        >[0]['translations']}
+        translations={
+          { Checkout: 'Pagar' } as Parameters<typeof CheckoutTriggerBar>[0]['translations']
+        }
       />,
     );
 
@@ -63,9 +61,7 @@ describe('CheckoutTriggerBar', () => {
     const triggerWhen = jest.fn().mockReturnValue(false);
     const triggers: CheckoutTrigger[] = [{ id: 'primary', triggerWhen, onTrigger }];
 
-    const { queryByTestId } = render(
-      <CheckoutTriggerBar triggers={triggers} state={mockState} />,
-    );
+    const { queryByTestId } = render(<CheckoutTriggerBar triggers={triggers} state={mockState} />);
 
     expect(triggerWhen).toHaveBeenCalledWith(mockState);
     expect(queryByTestId('cio-pia-checkout-triggers')).not.toBeInTheDocument();
@@ -114,9 +110,7 @@ describe('CheckoutTriggerBar', () => {
         {label}
       </button>
     ));
-    const triggers: CheckoutTrigger[] = [
-      { id: 'primary', label: 'Go', renderButton, onTrigger },
-    ];
+    const triggers: CheckoutTrigger[] = [{ id: 'primary', label: 'Go', renderButton, onTrigger }];
 
     const { getByTestId, queryByTestId } = render(
       <CheckoutTriggerBar triggers={triggers} state={mockState} />,
