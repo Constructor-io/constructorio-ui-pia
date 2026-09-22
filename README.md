@@ -106,14 +106,8 @@ names, not values Constructor defines. Each entry is sent as its own `ef-<testNa
 a shopper in several concurrent tests carries every cell. Empty or non-string values are dropped,
 so a cell read from a global that resolves to `undefined` is simply not sent.
 
-The control view event means the shopper scrolled to the position on the page where PIA would
-have rendered — that is all it means. It is **not** measured the same way as the test arm's view
-event: `useViewportTracking` applies the same `viewThreshold` to whichever element is mounted, but
-the control placeholder is a fixed 1x1 box while the widget is a full, often much taller
-component. The control event fires as soon as the top of that 1x1 box crosses the threshold, while
-the test event needs roughly half the widget's height in view. Expect control view counts and
-dwell times to systematically outpace the test arm's for this reason — they are not directly
-comparable, and this library does not attempt to correct for it.
+Both arms fire the same `product_insights_agent.view` event through the same viewport tracking,
+so the control group is measured the same way as the test group.
 
 If you previously worked around the lack of this feature by hand-adding an empty placeholder
 element with a `data-cnstrc-pia` attribute or the `cio-pia-container` class for the Constructor
