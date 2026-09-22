@@ -1246,4 +1246,113 @@ describe('CioPia Component', () => {
       expect(getAddToCartButtons(container)[0]).toHaveTextContent('Add to bag');
     });
   });
+
+  describe('checkoutTriggers', () => {
+    it('renders the bar in default (inline) mode and calls onTrigger with the render-props snapshot', () => {
+      mockUseCioPiaWithAnswerData();
+      const onTrigger = jest.fn();
+
+      const { getByTestId } = render(
+        <CioPia
+          {...mockProps}
+          checkoutTriggers={[{ id: 'primary', onTrigger }]}
+        />,
+      );
+
+      const button = getByTestId('cio-pia-checkout-trigger-primary');
+      expect(button).toHaveTextContent('Checkout');
+
+      fireEvent.click(button);
+      expect(onTrigger).toHaveBeenCalledTimes(1);
+      const state = onTrigger.mock.calls[0][0];
+      expect(state.currentAnswer).toBe(mockAnswerData.value);
+      expect(typeof state.handleSubmitQuestion).toBe('function');
+    });
+
+    it('hides a trigger when triggerWhen returns false', () => {
+      const { queryByTestId } = render(
+        <CioPia
+          {...mockProps}
+          checkoutTriggers={[
+            { id: 'primary', triggerWhen: () => false, onTrigger: jest.fn() },
+          ]}
+        />,
+      );
+
+      expect(queryByTestId('cio-pia-checkout-triggers')).not.toBeInTheDocument();
+      expect(queryByTestId('cio-pia-checkout-trigger-primary')).not.toBeInTheDocument();
+    });
+
+    it('uses renderButton when provided', () => {
+      const onTrigger = jest.fn();
+
+      const { getByTestId, queryByTestId } = render(
+        <CioPia
+          {...mockProps}
+          checkoutTriggers={[
+            {
+              id: 'primary',
+              label: 'Go',
+              onTrigger,
+              renderButton: ({ onClick, label, id }) => (
+                <button type='button' data-testid={`custom-${id}`} onClick={onClick}>
+                  {label}
+                </button>
+              ),
+            },
+          ]}
+        />,
+      );
+
+      expect(queryByTestId('cio-pia-checkout-trigger-primary')).not.toBeInTheDocument();
+      const custom = getByTestId('custom-primary');
+      expect(custom).toHaveTextContent('Go');
+
+      fireEvent.click(custom);
+      expect(onTrigger).toHaveBeenCalledTimes(1);
+    });
+
+    it('disables the default button when disabled is true', () => {
+      const onTrigger = jest.fn();
+
+      const { getByTestId } = render(
+        <CioPia
+          {...mockProps}
+          checkoutTriggers={[{ id: 'primary', disabled: true, onTrigger }]}
+        />,
+      );
+
+      const button = getByTestId('cio-pia-checkout-trigger-primary');
+      expect(button).toBeDisabled();
+
+      fireEvent.click(button);
+      expect(onTrigger).not.toHaveBeenCalled();
+    });
+
+    it('does not render the bar in conversation mode (prop is silently ignored)', () => {
+      const { queryByTestId } = render(
+        <CioPia
+          {...mockProps}
+          displayConfigs={{ mode: 'conversation' }}
+          checkoutTriggers={[{ id: 'primary', onTrigger: jest.fn() }]}
+        />,
+      );
+
+      expect(queryByTestId('cio-pia-checkout-triggers')).not.toBeInTheDocument();
+      expect(queryByTestId('cio-pia-checkout-trigger-primary')).not.toBeInTheDocument();
+    });
+
+    it('does not render the bar in modal mode (prop is silently ignored)', () => {
+      const { queryByTestId } = render(
+        <CioPia
+          {...mockProps}
+          displayConfigs={{ type: 'modal' }}
+          checkoutTriggers={[{ id: 'primary', onTrigger: jest.fn() }]}
+        />,
+      );
+
+      expect(queryByTestId('cio-pia-checkout-triggers')).not.toBeInTheDocument();
+      expect(queryByTestId('cio-pia-checkout-trigger-primary')).not.toBeInTheDocument();
+    });
+  });
 });
