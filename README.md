@@ -120,9 +120,9 @@ element with a `data-cnstrc-pia` attribute or the `cio-pia-container` class for 
 beacon to detect, remove that element before adopting `isControl` — keeping both will fire two
 view events for the same control shopper.
 
-If you supply your own `cioClient`, `abTest.testCells` is applied to it only when that client has
-no test cells of its own — anything you set there wins and is left untouched. Because test cells
-are a user-level setting, they ride on every event that client sends, not only PIA's.
+If you supply your own `cioClient`, that client owns its own options: set `testCells` there
+instead, as a `ConstructorIOClient` constructor option. `abTest.testCells` is ignored in that
+case, and passing both logs a warning rather than dropping the value silently.
 
 `isControl` is required. Stating the arm per shopper is the one thing only you can know, and
 omitting it would quietly put everyone in the test arm with no control group to compare against.

@@ -122,76 +122,8 @@ describe('Testing Hook: usePiaClient', () => {
     expect(result.current.cioClient).toBe(provided);
   });
 
-  it('fills a caller-supplied client that has no test cells of its own', () => {
+  it('warns rather than silently dropping test cells passed alongside a client', () => {
     const provided = createMockCioClient();
-
-    renderHook(() =>
-      usePiaClient({
-        apiKey: testApiKey,
-        cioClient: provided,
-        testCells: { constructorio: 'variant_a' },
-      }),
-    );
-
-    expect(provided.setClientOptions).toHaveBeenCalledWith({
-      testCells: { constructorio: 'variant_a' },
-    });
-  });
-
-  it('stays quiet when the cells on the client are the ones it put there', () => {
-    const provided = createMockCioClient();
-    provided.setClientOptions.mockImplementation(({ testCells }) => {
-      provided.options.testCells = testCells;
-    });
-    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    const props = {
-      apiKey: testApiKey,
-      cioClient: provided,
-      testCells: { constructorio: 'variant_a' },
-    };
-
-    // Two mounts against one long-lived client, as a host navigating between PDPs would do.
-    renderHook(() => usePiaClient(props)).unmount();
-    renderHook(() => usePiaClient(props));
-
-    expect(provided.setClientOptions).toHaveBeenCalledTimes(1);
-    expect(warn).not.toHaveBeenCalled();
-
-    warn.mockRestore();
-  });
-
-  it('updates cells it applied itself when they change', () => {
-    const provided = createMockCioClient();
-    provided.setClientOptions.mockImplementation(({ testCells }) => {
-      provided.options.testCells = testCells;
-    });
-    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-    const { rerender } = renderHook((props) => usePiaClient(props), {
-      initialProps: {
-        apiKey: testApiKey,
-        cioClient: provided,
-        testCells: { constructorio: 'variant_a' },
-      },
-    });
-
-    rerender({
-      apiKey: testApiKey,
-      cioClient: provided,
-      testCells: { constructorio: 'variant_b' },
-    });
-
-    expect(provided.setClientOptions).toHaveBeenLastCalledWith({
-      testCells: { constructorio: 'variant_b' },
-    });
-    expect(warn).not.toHaveBeenCalled();
-
-    warn.mockRestore();
-  });
-
-  it('does not overwrite test cells the caller already set on their own client', () => {
-    const provided = createMockCioClient();
-    provided.options.testCells = { constructorio: 'their_own_cell' };
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
     renderHook(() =>
@@ -202,8 +134,18 @@ describe('Testing Hook: usePiaClient', () => {
       }),
     );
 
-    expect(provided.setClientOptions).not.toHaveBeenCalled();
-    expect(warn).toHaveBeenCalled();
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('abTest.testCells is ignored'));
+
+    warn.mockRestore();
+  });
+
+  it('says nothing when a caller supplies a client and no test cells', () => {
+    const provided = createMockCioClient();
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    renderHook(() => usePiaClient({ apiKey: testApiKey, cioClient: provided }));
+
+    expect(warn).not.toHaveBeenCalled();
 
     warn.mockRestore();
   });

@@ -62,9 +62,9 @@ export type CioPiaAbTest = {
    * sent as an `ef-<testName>` parameter. Source them however you like, for example
    * `{ constructorio: window.cnstrc.testCell }`.
    *
-   * If you supply your own `cioClient`, these are applied to it only when it has no test cells
-   * of its own — cells you already set there win and are left untouched. Test cells are a
-   * user-level setting, so they ride on every event that client sends, not only PIA's.
+   * Ignored when you supply your own `cioClient`: that client owns its own options, so set
+   * `testCells` there instead, as a `ConstructorIOClient` constructor option. Passing both
+   * logs a warning.
    *
    * Empty, non-string, or whitespace-only values are silently dropped, so a cell sourced from
    * something like `window.cnstrc.testCell` that resolves to `undefined` will simply not be sent.

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ConstructorIOClient from '@constructor-io/constructorio-client-javascript';
 import version from '../version';
 
@@ -39,37 +39,13 @@ export default function usePiaClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiKey, providedClient, serializedTestCells]);
 
-  const appliedRef = useRef<{ client: unknown; cells: string } | null>(null);
-
-  // A caller's client owns its own options: fill in test cells only where it has none.
+  // A caller's client owns its own options, so say so rather than dropping these silently.
   useEffect(() => {
     if (!providedClient || !testCells || Object.keys(testCells).length === 0) return;
 
-    const client = providedClient as unknown as {
-      options?: { testCells?: Record<string, string> };
-      setClientOptions?: (options: { testCells: Record<string, string> }) => void;
-    };
-
-    // The client keeps only non-empty strings, so compare against what it would keep.
-    const ours = Object.fromEntries(
-      Object.entries(testCells).filter(
-        ([, value]) => typeof value === 'string' && value.trim() !== '',
-      ),
+    console.warn(
+      '[CioPia] abTest.testCells is ignored when you supply your own cioClient. Set testCells on that client instead.',
     );
-    const existing = client.options?.testCells;
-
-    if (JSON.stringify(existing ?? {}) === JSON.stringify(ours)) return;
-
-    const isOurs = appliedRef.current?.client === providedClient;
-    if (existing && Object.keys(existing).length > 0 && !isOurs) {
-      console.warn(
-        '[CioPia] cioClient already has testCells, so abTest.testCells was not applied. Set them in one place.',
-      );
-      return;
-    }
-
-    client.setClientOptions?.({ testCells });
-    appliedRef.current = { client: providedClient, cells: serializedTestCells };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [providedClient, serializedTestCells]);
 

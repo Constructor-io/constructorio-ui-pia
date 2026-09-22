@@ -127,7 +127,7 @@ const meta = {
       description: [
         'A/B test configuration.',
         '',
-        '`testCells?: Record<string, string>` — `{ [testName]: cellName }`, each sent as an `ef-<testName>` tracking parameter. With your own `cioClient`, applied only when that client has no cells of its own.',
+        '`testCells?: Record<string, string>` — `{ [testName]: cellName }`, each sent as an `ef-<testName>` tracking parameter. Ignored when you supply your own `cioClient`, which owns its own options; passing both warns.',
         '',
         '`isControl: boolean` (required) — renders an invisible, tracking-only placeholder instead of the widget, so the control arm still records a view event. Takes precedence over `displayConfigs.mode`.',
       ].join('\n'),
