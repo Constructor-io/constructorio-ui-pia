@@ -43,12 +43,6 @@ export default function CioPiaControl(props: CioPiaProps) {
       ref={containerRef}
       className='cio-pia-control-placeholder'
       data-testid='cio-pia-control-placeholder'
-      // Inline, because the stylesheet is optional and a consumer's own rules must not be able
-      // to make this visible to a shopper who is supposed to see nothing. Padding/border/margin
-      // are zeroed and overflow hidden so a global `div` rule can't add a visible artifact here
-      // that the test arm's widget never has. Deliberately not display:none/visibility:hidden —
-      // either would stop the IntersectionObserver from ever firing and silently drop the view
-      // event this component exists to send.
       style={{ width: 1, height: 1, padding: 0, border: 0, margin: 0, overflow: 'hidden' }}
       aria-hidden='true'
     />
