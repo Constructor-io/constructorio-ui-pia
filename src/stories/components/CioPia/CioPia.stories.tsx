@@ -198,7 +198,7 @@ export const ControlGroup: Story = {
     itemId: DEMO_ITEM_ID,
     itemName: DEMO_ITEM_NAME,
     abTest: {
-      testCells: { constructorio: 'control', pdp_layout: 'variant_a' },
+      testCells: { constructorio: 'control', your_other_test: 'variant_b' },
       isControl: true,
     },
   },

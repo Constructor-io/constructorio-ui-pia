@@ -86,7 +86,7 @@ Attach test cells to PIA tracking events, and track the control group without sh
   apiKey="key_XXXXXXXX"
   itemId={itemId}
   itemName={itemName}
-  abTest={{ testCells: { constructorio: 'variant_a', pdp_layout: 'wide' } }}
+  abTest={{ testCells: { constructorio: 'variant_a', your_other_test: 'variant_b' } }}
 />
 
 // Control arm: nothing visible renders, but the view event still fires with the control cell
@@ -100,6 +100,11 @@ Attach test cells to PIA tracking events, and track the control group without sh
 
 Mount `CioPia` on every PDP and switch `isControl` per shopper — no placeholder markup of your own
 is required.
+
+`testCells` is `{ [testName]: cellName }`, and both halves are yours: the keys are your own test
+names, not values Constructor defines. Each entry is sent as its own `ef-<testName>` parameter, so
+a shopper in several concurrent tests carries every cell. Empty or non-string values are dropped,
+so a cell read from a global that resolves to `undefined` is simply not sent.
 
 The control view event means the shopper scrolled to the position on the page where PIA would
 have rendered — that is all it means. It is **not** measured the same way as the test arm's view

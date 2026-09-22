@@ -75,13 +75,13 @@ describe('Testing Hook: usePiaClient', () => {
     const { result } = renderHook(() =>
       usePiaClient({
         apiKey: testApiKey,
-        testCells: { constructorio: 'variant_a', pdp_layout: 'control' },
+        testCells: { constructorio: 'variant_a', your_other_test: 'control' },
       }),
     );
 
     expect(result.current.cioClient.options.testCells).toEqual({
       constructorio: 'variant_a',
-      pdp_layout: 'control',
+      your_other_test: 'control',
     });
   });
 

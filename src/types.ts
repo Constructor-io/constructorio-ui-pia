@@ -72,7 +72,9 @@ export type CioPiaAbTest = {
   /**
    * Mark this shopper as the A/B control group. Renders an invisible, tracking-only placeholder
    * instead of the widget, so both arms of the test record a view event. Takes precedence over
-   * `displayConfigs.mode`. The placeholder renders neither `children` nor `componentOverrides`.
+   * `displayConfigs.mode`. The placeholder renders neither `children` nor `componentOverrides`,
+   * and does not fire the `onView` / `onOutOfView` callbacks — the control arm reports through
+   * Constructor's own view event only.
    *
    * @default false
    */
