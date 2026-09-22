@@ -109,11 +109,6 @@ so a cell read from a global that resolves to `undefined` is simply not sent.
 Both arms fire the same `product_insights_agent.view` event through the same viewport tracking,
 so the control group is measured the same way as the test group.
 
-If you previously worked around the lack of this feature by hand-adding an empty placeholder
-element with a `data-cnstrc-pia` attribute or the `cio-pia-container` class for the Constructor
-beacon to detect, remove that element before adopting `isControl` — keeping both will fire two
-view events for the same control shopper.
-
 If you supply your own `cioClient`, that client owns its own options: set `testCells` there
 instead, as a `ConstructorIOClient` constructor option. `abTest.testCells` is ignored in that
 case, and passing both logs a warning rather than dropping the value silently.
