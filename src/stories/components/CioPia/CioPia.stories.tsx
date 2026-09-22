@@ -203,3 +203,33 @@ export const ControlGroup: Story = {
     },
   },
 };
+
+// Storybook has no `window.cnstrc`, so this resolves to the test arm and renders the widget.
+const testCell = (window as unknown as { cnstrc?: { testCell?: string } }).cnstrc?.testCell;
+
+export const AbTestFromWindowTestCell: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: DEMO_ITEM_ID,
+    itemName: DEMO_ITEM_NAME,
+    abTest: {
+      testCells: { constructorio: testCell ?? '' },
+      isControl: testCell === 'control',
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `<CioPia
+  apiKey="key_XXXXXXXX"
+  itemId={itemId}
+  itemName={itemName}
+  abTest={{
+    testCells: { constructorio: window.cnstrc.testCell },
+    isControl: window.cnstrc.testCell === 'control',
+  }}
+/>`,
+      },
+    },
+  },
+};
