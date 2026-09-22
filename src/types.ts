@@ -38,6 +38,11 @@ export interface CioPiaProviderProps {
   cioClient?: Nullable<CioClient>;
 }
 
+/**
+ * Display mode. `'recommendations'` is accepted but **not yet available**: the
+ * recommendations endpoint is absent from the client SDK, so that mode renders
+ * nothing. Use `'default'` or `'conversation'`.
+ */
 export type CioPiaMode = 'default' | 'conversation' | 'recommendations';
 export type CioPiaType = 'inline' | 'modal';
 

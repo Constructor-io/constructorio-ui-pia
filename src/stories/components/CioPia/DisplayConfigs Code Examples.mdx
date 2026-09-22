@@ -17,7 +17,8 @@ The `displayConfigs` prop allows you to control the presentation and behavior of
   // URL for a "Learn More" link in the disclaimer
   learnMoreUrl?: string;
 
-  // Controls Q&A behavior: 'default' (single Q&A) or 'conversation' (multi-turn chat)
+  // Controls Q&A behavior: 'default' (single Q&A) or 'conversation' (multi-turn chat).
+  // 'recommendations' is accepted by the type but not yet available - it renders nothing.
   mode?: 'default' | 'conversation' | 'recommendations';
 
   // Controls presentation: 'inline' (embedded) or 'modal' (dialog overlay)

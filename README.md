@@ -137,7 +137,7 @@ ignored so the library never mutates a client it does not own.
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `mode` | `'default' \| 'conversation' \| 'recommendations'` | `'default'` | Display mode |
+| `mode` | `'default' \| 'conversation' \| 'recommendations'` | `'default'` | Display mode. `'recommendations'` is accepted by the type but not yet available — it renders nothing. |
 | `type` | `'inline' \| 'modal'` | `'inline'` | Component type |
 | `showFeedback` | `boolean` | `false` | Show feedback controls on answers |
 | `showPreviousItems` | `boolean` | `true` | Show product carousels from previous conversation entries |
