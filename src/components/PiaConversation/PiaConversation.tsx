@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import Input from '../Input/Input';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import SuggestedQuestionsSkeleton from '../SuggestedQuestionsContainer/SuggestedQuestionsSkeleton';
@@ -17,6 +17,7 @@ export interface PiaConversationProps extends ConversationHistoryProps {
   onResultClick?: (item: Item, position: number, question: string, qnaResultId?: string) => void;
   qnaResultId?: string;
   onInputFocus?: () => void;
+  checkoutElement?: ReactNode;
 }
 
 export default function PiaConversation({
@@ -40,6 +41,7 @@ export default function PiaConversation({
   qnaResultId,
   onInputFocus,
   priceCurrency,
+  checkoutElement,
 }: PiaConversationProps) {
   const hasHistory = conversationHistory.length > 0;
 
@@ -71,6 +73,8 @@ export default function PiaConversation({
         qnaResultId={qnaResultId}
         priceCurrency={priceCurrency}
       />
+
+      {checkoutElement && <div className='cio-pia-conversation-checkout'>{checkoutElement}</div>}
 
       <div className='cio-pia-conversation-footer'>
         {isLoading && !error && <SuggestedQuestionsSkeleton />}

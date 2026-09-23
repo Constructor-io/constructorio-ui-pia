@@ -127,11 +127,21 @@ export default function CioPiaQna(props: CioPiaProps) {
     conversationHistory,
   };
 
+  const checkoutElement =
+    checkoutTriggers && checkoutTriggers.length > 0 ? (
+      <CheckoutTriggerBar
+        triggers={checkoutTriggers}
+        state={renderProps}
+        translations={translations}
+      />
+    ) : null;
+
   const conversationHistoryProps = {
     conversationHistory,
     isLoading,
     isAnswerLoading,
     error,
+    checkoutElement,
     currentItems,
     showFeedback,
     showPreviousItems,
@@ -226,13 +236,7 @@ export default function CioPiaQna(props: CioPiaProps) {
           />
         )}
 
-        {checkoutTriggers && checkoutTriggers.length > 0 && (
-          <CheckoutTriggerBar
-            triggers={checkoutTriggers}
-            state={renderProps}
-            translations={translations}
-          />
-        )}
+        {checkoutElement}
       </RenderPropsWrapper>
       <StatusRegion message={answerStatus} data-testid='answer-status' />
     </div>

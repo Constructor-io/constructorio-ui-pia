@@ -1329,21 +1329,53 @@ describe('CioPia Component', () => {
       expect(onTrigger).not.toHaveBeenCalled();
     });
 
-    it('does not render the bar in conversation mode (prop is silently ignored)', () => {
-      const { queryByTestId } = render(
+    it('renders the bar in conversation mode', () => {
+      mockUseCioPiaWithAnswerData();
+      const onTrigger = jest.fn();
+
+      const { getByTestId } = render(
         <CioPia
           {...mockProps}
           displayConfigs={{ mode: 'conversation' }}
-          checkoutTriggers={[{ id: 'primary', onTrigger: jest.fn() }]}
+          checkoutTriggers={[{ id: 'primary', onTrigger }]}
         />,
       );
 
-      expect(queryByTestId('cio-pia-checkout-triggers')).not.toBeInTheDocument();
-      expect(queryByTestId('cio-pia-checkout-trigger-primary')).not.toBeInTheDocument();
+      fireEvent.click(getByTestId('cio-pia-checkout-trigger-primary'));
+      expect(onTrigger).toHaveBeenCalledTimes(1);
+      expect(Array.isArray(onTrigger.mock.calls[0][0].conversationHistory)).toBe(true);
     });
 
-    it('does not render the bar in modal mode (prop is silently ignored)', () => {
-      const { queryByTestId } = render(
+    it('lets a conversationHistory predicate gate a trigger in conversation mode', () => {
+      mockUseCioPiaWithAnswerData();
+
+      const { queryByTestId, getByRole, getByTestId } = render(
+        <CioPia
+          {...mockProps}
+          displayConfigs={{ mode: 'conversation' }}
+          checkoutTriggers={[
+            {
+              id: 'primary',
+              triggerWhen: (state) => state.conversationHistory.length >= 1,
+              onTrigger: jest.fn(),
+            },
+          ]}
+        />,
+      );
+
+      expect(queryByTestId('cio-pia-checkout-trigger-primary')).not.toBeInTheDocument();
+
+      const input = getByRole('textbox');
+      fireEvent.change(input, { target: { value: 'What size is this?' } });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+      expect(getByTestId('cio-pia-checkout-trigger-primary')).toBeInTheDocument();
+    });
+
+    it('renders the bar in modal mode', () => {
+      mockUseCioPiaWithAnswerData();
+
+      const { getByTestId } = render(
         <CioPia
           {...mockProps}
           displayConfigs={{ type: 'modal' }}
@@ -1351,8 +1383,7 @@ describe('CioPia Component', () => {
         />,
       );
 
-      expect(queryByTestId('cio-pia-checkout-triggers')).not.toBeInTheDocument();
-      expect(queryByTestId('cio-pia-checkout-trigger-primary')).not.toBeInTheDocument();
+      expect(getByTestId('cio-pia-checkout-trigger-primary')).toBeInTheDocument();
     });
   });
 

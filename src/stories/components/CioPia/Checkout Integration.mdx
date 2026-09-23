@@ -8,7 +8,7 @@ import { Meta, Markdown } from '@storybook/blocks';
 
 Pass `checkoutTriggers` to render checkout buttons inside the PIA widget, so a shopper can buy straight from the answer.
 
-Triggers render in `default` mode only — `recommendations`, `conversation` and the modal ignore the prop for now.
+Triggers render in `default` and `conversation` modes and in the modal, below the answer. `recommendations` mode ignores the prop.
 
 The PIA UI Library renders the buttons and nothing else. You decide how the flow renders (inline, modal, or routed) and where its provider sits in your tree.
 
@@ -122,8 +122,12 @@ type CheckoutTrigger = {
 </Markdown>
 
 ```tsx
-// Hide until an answer has been shown.
+// Hide until an answer has been shown — works in every mode.
 triggerWhen: (state) => !!state.currentAnswer;
+
+// Conversation mode and the modal also fill conversationHistory, so you can
+// gate on depth there. It stays empty in default mode.
+triggerWhen: (state) => state.conversationHistory.length >= 2;
 
 // Use your own button.
 renderButton: ({ onClick, label, disabled }) => (

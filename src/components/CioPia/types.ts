@@ -34,11 +34,11 @@ export interface CheckoutTrigger {
   /**
    * Predicate deciding whether this trigger should render. Called with the same
    * render-props snapshot the `children`/`componentOverrides.reactNode` render callback
-   * receives, so consumers can gate on answer state (e.g. "at least one answer shown").
-   * Defaults to always visible.
+   * receives, so consumers can gate on conversation state (e.g. "at least one answer
+   * shown", "at least two turns"). Defaults to always visible.
    *
-   * `state.conversationHistory` is only populated in `conversation` mode, which does not
-   * render triggers, so it is always empty here. Gate on `currentAnswer` instead.
+   * `state.conversationHistory` is only filled in `conversation` mode and the modal; in
+   * `default` mode it stays empty, so gate on `currentAnswer` there.
    */
   triggerWhen?: (state: CioPiaRenderProps) => boolean;
   /** Custom button renderer. When provided, `label` / `disabled` are passed through but styling is your call. */
@@ -88,8 +88,8 @@ export interface CioPiaProps
   /** Props forwarded to the ProductCard rendered inside the carousel. */
   productCardProps?: ProductCardDisplayProps;
   /**
-   * One or more checkout entry points to render inside the `default` mode. Ignored in
-   * `recommendations` and `conversation` modes and in the modal.
+   * One or more checkout entry points. Rendered in `default` and `conversation` modes and
+   * in the modal, after the answer; ignored in `recommendations` mode.
    */
   checkoutTriggers?: CheckoutTrigger[];
   /** UI string translations for internationalization. */
