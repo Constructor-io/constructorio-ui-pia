@@ -30,7 +30,7 @@ const preview: Preview = {
       storySort: {
         order: [
           'General',
-          ['Introduction', 'Integration Guide', ['PIA Component', 'Checkout', 'AB Testing Docs', 'Examples']],
+          ['Introduction', 'Integration Guide', ['PIA Docs', 'Checkout Docs', 'AB Testing Docs', 'Examples']],
           'Components',
           'Hooks',
         ]

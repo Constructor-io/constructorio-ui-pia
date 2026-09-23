@@ -2,7 +2,7 @@ import { Meta, Markdown } from '@storybook/blocks';
 
 <Meta title='General/Integration Guide/AB Testing Docs' />
 
-# A/B Testing
+# AB Testing Docs
 
 This page covers running an A/B test on PIA: attaching test cells to the events the widget
 sends, and tracking the shoppers who do not see the widget at all.
@@ -30,7 +30,7 @@ export default function ProductPage({ itemId, itemName }) {
 
   return (
     <CioPia
-      apiKey="YOUR_API_KEY"
+      apiKey='YOUR_API_KEY'
       itemId={itemId}
       itemName={itemName}
       abTest={{
@@ -48,7 +48,7 @@ markup of your own to maintain.
 ### What each arm does
 
 <Markdown>
-{`
+  {`
 | | test arm (\`isControl: false\`) | control arm (\`isControl: true\`) |
 |---|---|---|
 | renders | the widget | an invisible 1x1 placeholder |
@@ -56,7 +56,6 @@ markup of your own to maintain.
 | events | the usual PIA events, carrying your cells | a view event, carrying your cells |
 `}
 </Markdown>
-
 
 ## `abTest`
 
@@ -68,7 +67,7 @@ Constructor's docs have the page set `window.cnstrc.testCell` to a bare cell nam
 test name of its own — so label it with yours, as above. Some integrations expose a
 `window.cnstrc.testCells` map instead, which you can pass straight through.
 
-`testCells` is a `{ [testName]: cellName }` map.  Each entry is sent as its own `ef-<testName>`
+`testCells` is a `{ [testName]: cellName }` map. Each entry is sent as its own `ef-<testName>`
 parameter, so a shopper in several concurrent tests carries every cell:
 
 ```jsx
