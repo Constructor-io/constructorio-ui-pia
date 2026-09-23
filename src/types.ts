@@ -38,6 +38,11 @@ export interface CioPiaProviderProps {
   cioClient?: Nullable<CioClient>;
 }
 
+/**
+ * Display mode. `'recommendations'` is accepted but **not yet available**: the
+ * recommendations endpoint is absent from the client SDK, so that mode renders
+ * nothing. Use `'default'` or `'conversation'`.
+ */
 export type CioPiaMode = 'default' | 'conversation' | 'recommendations';
 export type CioPiaType = 'inline' | 'modal';
 
@@ -49,6 +54,35 @@ export type CioPiaTrackingConfigs = {
    * `product_insights_agent.view` event fires. Defaults to `0.5`.
    */
   viewThreshold?: number;
+};
+
+export type CioPiaAbTest = {
+  /**
+   * Test cells to attach to PIA tracking events, as `{ [testName]: cellName }`. Each entry is
+   * sent as an `ef-<testName>` parameter. Source them however you like — Constructor's docs have
+   * the page set `window.cnstrc.testCell` to a bare cell name, so label it with your test name:
+   * `{ constructorio: window.cnstrc.testCell }`. Some integrations expose a `window.cnstrc.testCells`
+   * map instead, which you can pass straight through.
+   *
+   * Ignored when you supply your own `cioClient`: that client owns its own options, so set
+   * `testCells` there instead, as a `ConstructorIOClient` constructor option. Passing both
+   * logs a warning.
+   *
+   * Empty, non-string, or whitespace-only values are silently dropped, so a cell sourced from
+   * a global that resolves to `undefined` will simply not be sent.
+   */
+  testCells?: Record<string, string>;
+  /**
+   * Mark this shopper as the A/B control group. Renders an invisible, tracking-only placeholder
+   * instead of the widget, so both arms of the test record a view event. Takes precedence over
+   * `displayConfigs.mode`. The placeholder renders neither `children` nor `componentOverrides`,
+   * and does not fire the `onView` / `onOutOfView` callbacks — the control arm reports through
+   * Constructor's own view event only.
+   *
+   * Required: stating the arm per shopper is the one thing only you can know, and leaving it
+   * out would silently put every shopper in the test arm with no control group at all.
+   */
+  isControl: boolean;
 };
 
 export type CioPiaDisplayConfigs = {

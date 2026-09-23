@@ -20,6 +20,7 @@ import type { CioPiaProps } from '../CioPia/types';
  * that supplied its own root — `children` or `componentOverrides.reactNode` — still gets it in that
  * state, with `error` available, and decides what belongs there.
  */
+// eslint-disable-next-line complexity
 export default function CioPiaRecs(props: CioPiaProps) {
   const {
     apiKey,
@@ -34,6 +35,7 @@ export default function CioPiaRecs(props: CioPiaProps) {
     children,
     translations,
     recsPodParameters,
+    abTest,
   } = props;
   const { priceCurrency } = productCardProps || {};
   const { showInput = true, numResults } = recsPodParameters || {};
@@ -48,6 +50,7 @@ export default function CioPiaRecs(props: CioPiaProps) {
     apiKey,
     threadId,
     cioClient,
+    testCells: abTest?.testCells,
   });
 
   const { title, items, refinement, isLoading, error, inputError, lastShopperInput, refine } =

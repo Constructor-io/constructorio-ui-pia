@@ -69,6 +69,8 @@ export interface UseCioPiaProps {
   parameters?: Record<string, string | number | boolean>;
   /** Define outside the component or wrap with useCallback to avoid unnecessary re-renders. */
   formatImageUrl?: Formatters['formatImageUrl'];
+  /** Test cells to attach to tracking events. Ignored when `cioClient` is supplied. */
+  testCells?: Record<string, string>;
 }
 
 export interface UseCioPiaReturn {
@@ -89,12 +91,14 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     answerParameters,
     parameters,
     formatImageUrl,
+    testCells,
   } = props;
 
   const { cioClient: client, threadId } = usePiaClient({
     apiKey,
     threadId: providedThreadId,
     cioClient: providedClient,
+    testCells,
   });
 
   const mappedDeprecated = mapDeprecatedParameters(parameters);

@@ -1,14 +1,17 @@
 import { renderHook, act } from '@testing-library/react';
 import useCioPia from '../../../src/hooks/useCioPia';
+import usePiaClient from '../../../src/hooks/usePiaClient';
 import { createMockCioClient } from '../../helpers/mockCioClient';
 
 jest.mock('../../../src/hooks/usePiaClient', () => ({
   __esModule: true,
-  default: ({ cioClient, threadId }: any) => ({
+  default: jest.fn(({ cioClient, threadId }: any) => ({
     cioClient,
     threadId: threadId || 'generated-thread-id',
-  }),
+  })),
 }));
+
+const mockUsePiaClient = usePiaClient as jest.MockedFunction<typeof usePiaClient>;
 
 describe('Testing Hook: useCioPia', () => {
   const mockClient = createMockCioClient();
@@ -143,5 +146,20 @@ describe('Testing Hook: useCioPia', () => {
       expect(callArgs.numResults).toBeUndefined();
       expect(callArgs.preFilterExpression).toBeUndefined();
     });
+  });
+
+  it('forwards test cells to the client layer', () => {
+    renderHook(() =>
+      useCioPia({
+        apiKey: 'test-key',
+        itemId: 'item-1',
+        cioClient: mockClient as any,
+        testCells: { constructorio: 'variant_a' },
+      }),
+    );
+
+    expect(mockUsePiaClient).toHaveBeenCalledWith(
+      expect.objectContaining({ testCells: { constructorio: 'variant_a' } }),
+    );
   });
 });

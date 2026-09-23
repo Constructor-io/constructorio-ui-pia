@@ -31,7 +31,7 @@ const meta = {
       description: [
         'Display configuration options:',
         '',
-        '`mode: "default" | "conversation"` — Display mode. Defaults to `"default"`.',
+        '`mode: "default" | "conversation" | "recommendations"` — Display mode. Defaults to `"default"`. `"recommendations"` is accepted by the type but not yet available: it renders nothing.',
         '',
         '`type: "inline" | "modal"` — Component type. Defaults to `"inline"`.',
         '',
@@ -122,6 +122,16 @@ const meta = {
         '`numResults?: number` — Number of suggested questions to fetch.',
       ].join('\n'),
       table: { type: { summary: 'SuggestedQuestionsParameters' } },
+    },
+    abTest: {
+      description: [
+        'A/B test configuration.',
+        '',
+        '`testCells?: Record<string, string>` — `{ [testName]: cellName }`, each sent as an `ef-<testName>` tracking parameter. Ignored when you supply your own `cioClient`, which owns its own options; passing both warns.',
+        '',
+        '`isControl: boolean` (required) — renders an invisible, tracking-only placeholder instead of the widget, so the control arm still records a view event. Takes precedence over `displayConfigs.mode`.',
+      ].join('\n'),
+      table: { type: { summary: 'CioPiaAbTest' } },
     },
   },
 } satisfies Meta<typeof CioPia>;
