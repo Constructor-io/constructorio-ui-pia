@@ -4,39 +4,9 @@ import { Meta } from '@storybook/blocks';
 
 # Checkout Integration
 
-`CioPia` can surface **checkout entry points** inside the `default` mode via the `checkoutTriggers` prop. PIA renders the button(s); you own the checkout flow itself — typically the [`@constructor-io/constructorio-ui-checkout`](https://github.com/Constructor-io/constructorio-ui-checkout) library's `CheckoutFlowProvider` mounted at your app root.
+Pass `checkoutTriggers` to render checkout buttons inside the PIA widget. PIA renders the buttons; your checkout library owns the flow.
 
-> This separation is deliberate. PIA stays checkout-agnostic and pulls in no Stripe / checkout dependencies. You control which checkout library you use, how the flow renders (inline, modal, or routed), and where the Provider lives in your tree.
-
-## The `checkoutTriggers` prop
-
-`checkoutTriggers` is an array — one entry per button you want rendered. Multiple entries let you offer parallel checkout paths from the same PIA widget (e.g. **Buy 1** vs. **Buy 2, save 25%**).
-
-```ts
-type CheckoutTrigger = {
-  id: string; // stable key + forwarded to onTrigger
-  label?: string; // defaults to "Checkout"
-  disabled?: boolean;
-  triggerWhen?: (state: CioPiaRenderProps) => boolean; // gate visibility on conversation state
-  renderButton?: (props: {
-    // override the default button
-    onClick: () => void;
-    label: string;
-    disabled?: boolean;
-    id: string;
-  }) => ReactNode;
-  onTrigger: (state: CioPiaRenderProps) => void; // fire your own checkout entry
-};
-```
-
-### Notes on scope
-
-- Rendered **only in `default` mode**. `recommendations` and `conversation` modes and the modal view ignore the prop.
-- `triggerWhen` receives the same render-props snapshot the `children` render callback receives. Use it to gate on answer state, e.g. "at least one answer shown".
-- `state.conversationHistory` is only populated in `conversation` mode, which does not render triggers, so it is always empty in a `triggerWhen` predicate. Gating on engagement depth needs conversation-mode support and is not available yet.
-- `onTrigger` is where you wire in your checkout library. PIA does not import or mount the checkout Provider itself.
-
-## Minimal example
+## Setup
 
 ```tsx
 import { CioPia } from '@constructor-io/constructorio-ui-pia';
@@ -47,7 +17,7 @@ import {
   CheckoutFulfillmentStep,
 } from '@constructor-io/constructorio-ui-checkout';
 
-// 1. Mount the CheckoutFlowProvider once at your app root so any component can start it.
+// 1. Mount the provider once at your app root.
 export default function App() {
   return (
     <CheckoutFlowProvider
@@ -66,7 +36,7 @@ export default function App() {
   );
 }
 
-// 2. Inside a component, useCheckoutFlow gives you the imperative handle.
+// 2. Start the flow from a trigger.
 function ProductPage() {
   const flow = useCheckoutFlow();
 
@@ -84,21 +54,12 @@ function ProductPage() {
             flow.start();
           },
         },
-        {
-          id: 'bundle',
-          label: 'Buy 2, save 25%',
-          triggerWhen: (state) => !!state.currentAnswer,
-          onTrigger: () => {
-            flow.setCart([{ id: 'prod_123', quantity: 2, amount: 19350 }]);
-            flow.start();
-          },
-        },
       ]}
     />
   );
 }
 
-// 3. Render the active checkout however you like — modal, inline, or a route.
+// 3. Render the active checkout — modal, inline, or a route.
 function CheckoutModal() {
   const flow = useCheckoutFlow();
   if (flow.state.status !== 'active') return null;
@@ -111,38 +72,41 @@ function CheckoutModal() {
 }
 ```
 
-## Overriding the button
+## Trigger options
 
-Pass `renderButton` to substitute your own component. `onClick`, `label`, `disabled`, and `id` are provided.
-
-```tsx
-checkoutTriggers={[
-  {
-    id: 'primary',
-    label: 'Add to bag & checkout',
-    renderButton: ({ onClick, label, disabled }) => (
-      <MyBrandedButton variant="primary" onClick={onClick} disabled={disabled}>
-        {label}
-      </MyBrandedButton>
-    ),
-    onTrigger: (state) => startCheckoutWith(state.items),
-  },
-]}
+```ts
+type CheckoutTrigger = {
+  id: string; // stable key, forwarded to renderButton
+  label?: string; // defaults to "Checkout"
+  disabled?: boolean;
+  triggerWhen?: (state: CioPiaRenderProps) => boolean; // hide until true
+  renderButton?: (props: {
+    onClick: () => void;
+    label: string;
+    disabled?: boolean;
+    id: string;
+  }) => ReactNode;
+  onTrigger: (state: CioPiaRenderProps) => void;
+};
 ```
 
-## Gating visibility
+Add more entries for parallel paths (Buy 1 / Buy 2). Two things to know:
 
-`triggerWhen` runs on every render with the current PIA render-props. Return `false` to hide the button.
+- Triggers render in `default` mode only — `recommendations`, `conversation` and the modal ignore the prop.
+- Gate on `state.currentAnswer`. `state.conversationHistory` is always empty here, so predicates using it never fire.
 
 ```tsx
-// Hide until at least one answer has been shown.
+// Hide until an answer has been shown.
 triggerWhen: (state) => !!state.currentAnswer;
+
+// Use your own button.
+renderButton: ({ onClick, label, disabled }) => (
+  <MyButton onClick={onClick} disabled={disabled}>
+    {label}
+  </MyButton>
+);
 ```
 
-## Resetting checkout when the conversation resets
+PIA does not reset your checkout flow — call `flow.reset()` from your own close handler.
 
-PIA does not own the checkout flow, so it does not automatically reset it. If you want the checkout to close when the PIA conversation closes, hold a ref to your flow in the parent and call `flow.reset()` from your own close handler — the checkout library exposes `reset()` via `useCheckoutFlow()` and `CheckoutFlow.reset()`.
-
-## Full API reference
-
-For the full checkout library API — step configuration, `guard()`, `router` and `storage` adapters, `onEvent`, `authenticate`, persistence, `checkoutRegistry.resume()`, and more — see the [Constructor.io Checkout Library storybook](https://github.com/Constructor-io/constructorio-ui-checkout).
+For the full checkout API, see the [Constructor.io Checkout Library](https://github.com/Constructor-io/constructorio-ui-checkout).
