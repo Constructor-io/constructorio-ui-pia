@@ -200,8 +200,7 @@ export const AbTestControlGroup: Story = {
 };
 
 // Storybook has no `window.cnstrc`, so this resolves to the test arm and renders the widget.
-const testCell = (window as unknown as { cnstrc?: { testCells?: Record<string, string> } }).cnstrc
-  ?.testCells?.constructorio;
+const testCell = (window as unknown as { cnstrc?: { testCell?: string } }).cnstrc?.testCell;
 
 export const AbTestFromWindowTestCell: Story = {
   args: {
@@ -221,8 +220,8 @@ export const AbTestFromWindowTestCell: Story = {
   itemId={itemId}
   itemName={itemName}
   abTest={{
-    testCells: { constructorio: window.cnstrc.testCells.constructorio },
-    isControl: window.cnstrc.testCells.constructorio === 'control',
+    testCells: { constructorio: window.cnstrc.testCell },
+    isControl: window.cnstrc.testCell === 'control',
   }}
 />`,
       },

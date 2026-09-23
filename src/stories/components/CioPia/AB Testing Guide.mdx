@@ -26,7 +26,7 @@ happens:
 import { CioPia } from '@constructor-io/constructorio-ui-pia';
 
 export default function ProductPage({ itemId, itemName }) {
-  const cell = window.cnstrc?.testCells?.constructorio;
+  const cell = window.cnstrc?.testCell;
 
   return (
     <CioPia
@@ -63,6 +63,10 @@ markup of your own to maintain.
 The prop takes two fields.
 
 ### `testCells`
+
+Constructor's docs have the page set `window.cnstrc.testCell` to a bare cell name, which carries no
+test name of its own — so label it with yours, as above. Some integrations expose a
+`window.cnstrc.testCells` map instead, which you can pass straight through.
 
 `testCells` is a `{ [testName]: cellName }` map.  Each entry is sent as its own `ef-<testName>`
 parameter, so a shopper in several concurrent tests carries every cell:
