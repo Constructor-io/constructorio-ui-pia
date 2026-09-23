@@ -32,6 +32,8 @@ export default function usePiaClient({
     return new ConstructorIOClient({
       apiKey,
       sendTrackingEvents: true,
+      // testCells, userId and segments fall back to their window.cnstrc globals when not passed.
+      useWindowParameters: true,
       version: `cio-ui-pia-${version}`,
       ...(testCells && { testCells }),
     });

@@ -62,6 +62,8 @@ export type CioPiaAbTest = {
    * sent as an `ef-<testName>` parameter. Source them however you like, for example
    * `{ constructorio: window.cnstrc.testCell }`.
    *
+   * When omitted, falls back to `window.cnstrc.testCells`, as do `userId` and `segments`.
+   *
    * Ignored when you supply your own `cioClient`: that client owns its own options, so set
    * `testCells` there instead, as a `ConstructorIOClient` constructor option. Passing both
    * logs a warning.
