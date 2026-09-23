@@ -1,0 +1,117 @@
+import { Meta, Markdown } from '@storybook/blocks';
+
+<Meta title='General/Integration Guide/AB Testing Docs' />
+
+# A/B Testing
+
+This page covers running an A/B test on PIA: attaching test cells to the events the widget
+sends, and tracking the shoppers who do not see the widget at all.
+
+## What you need before starting
+
+Your own A/B system decides which cell each shopper is in. The library does not assign cells,
+read them from the page, or persist them — you resolve the cell and pass it in.
+
+You need two things per shopper:
+
+1. **The cell they are in**, so their events can be attributed to it.
+2. **Whether that cell is the control group**, so the widget knows whether to render.
+
+## Setting it up
+
+Mount `<CioPia>` on every PDP for every shopper, in both arms, and let `abTest` decide what
+happens:
+
+```jsx
+import { CioPia } from '@constructor-io/constructorio-ui-pia';
+
+export default function ProductPage({ itemId, itemName }) {
+  const cell = window.cnstrc?.testCells?.constructorio;
+
+  return (
+    <CioPia
+      apiKey="YOUR_API_KEY"
+      itemId={itemId}
+      itemName={itemName}
+      abTest={{
+        testCells: { constructorio: cell },
+        isControl: cell === 'control',
+      }}
+    />
+  );
+}
+```
+
+That is the whole integration. There is no separate control-group snippet and no placeholder
+markup of your own to maintain.
+
+### What each arm does
+
+<Markdown>
+{`
+| | test arm (\`isControl: false\`) | control arm (\`isControl: true\`) |
+|---|---|---|
+| renders | the widget | an invisible 1x1 placeholder |
+| requests | asks the API for questions and answers | **none at all** |
+| events | the usual PIA events, carrying your cells | a view event, carrying your cells |
+`}
+</Markdown>
+
+
+## `testCells`
+
+`testCells` is a `{ [testName]: cellName }` map, and both halves are yours — the keys are your own
+test names, not values Constructor defines. Each entry is sent as its own `ef-<testName>`
+parameter, so a shopper in several concurrent tests carries every cell:
+
+```jsx
+abTest={{
+  testCells: { constructorio: 'variant_a', checkout_flow: 'b' },
+  isControl: false,
+}}
+```
+
+Empty and non-string values are dropped, so a cell read from a global that resolves to
+`undefined` is simply not sent — the event still goes out, just without that `ef-` parameter.
+
+### `isControl` is required
+
+Which arm a shopper is in is the one thing only you can know. If it were optional and you forgot
+it, every shopper would land in the test arm, the control group would silently not exist, and the
+test would produce nothing to compare — with no error anywhere. So the type requires it. Pass
+`isControl: false` explicitly for a test-arm shopper.
+
+## If you supply your own `cioClient`
+
+A client you construct owns its own options, so set the cells there and the library will leave
+them alone:
+
+```jsx
+const cioClient = new ConstructorIOClient({
+  apiKey: 'YOUR_API_KEY',
+  sendTrackingEvents: true,
+  testCells: { constructorio: cell },
+});
+
+<CioPia cioClient={cioClient} abTest={{ isControl: cell === 'control' }} … />
+```
+
+`abTest.testCells` is ignored in this case and logs a warning, so the value is never dropped
+without telling you. `isControl` still works exactly as above — the control placeholder reports
+through your client, carrying the cells you set on it.
+
+## Checking that it works
+
+Open the network tab on a PDP and filter on `cnstrc`. On a shopper in the test arm you should see
+`product_insights_agent_view` go out with an `ef-<testName>=<cellName>` query parameter for each
+cell you passed. On a control shopper you should see the same event with the same parameters, and
+no request for questions or answers.
+
+Two things that commonly look like bugs and are not:
+
+- **No event on a cold page load.** The Constructor client holds tracking events until the shopper
+  does something — a scroll, a mouse move, a key press. Until then nothing is sent. Interact with
+  the page, then reload, and the events appear.
+- **No `ef-` parameters on `/v1/item_questions`.** Test cells ride on tracking events, not on the
+  data requests the widget makes to fetch questions and answers. Look at the
+  `product_insights_agent_*` requests.
