@@ -58,10 +58,13 @@ markup of your own to maintain.
 </Markdown>
 
 
-## `testCells`
+## `abTest`
 
-`testCells` is a `{ [testName]: cellName }` map, and both halves are yours — the keys are your own
-test names, not values Constructor defines. Each entry is sent as its own `ef-<testName>`
+The prop takes two fields.
+
+### `testCells`
+
+`testCells` is a `{ [testName]: cellName }` map.  Each entry is sent as its own `ef-<testName>`
 parameter, so a shopper in several concurrent tests carries every cell:
 
 ```jsx
@@ -71,15 +74,11 @@ abTest={{
 }}
 ```
 
-Empty and non-string values are dropped, so a cell read from a global that resolves to
-`undefined` is simply not sent — the event still goes out, just without that `ef-` parameter.
+### `isControl`
 
-### `isControl` is required
-
-Which arm a shopper is in is the one thing only you can know. If it were optional and you forgot
-it, every shopper would land in the test arm, the control group would silently not exist, and the
-test would produce nothing to compare — with no error anywhere. So the type requires it. Pass
-`isControl: false` explicitly for a test-arm shopper.
+Required, and pass `isControl: false` explicitly for a test-arm shopper — if it were optional and
+you left it out, every shopper would land in the test arm and the control group would silently not
+exist.
 
 ## If you supply your own `cioClient`
 
@@ -106,12 +105,3 @@ Open the network tab on a PDP and filter on `cnstrc`. On a shopper in the test a
 `product_insights_agent_view` go out with an `ef-<testName>=<cellName>` query parameter for each
 cell you passed. On a control shopper you should see the same event with the same parameters, and
 no request for questions or answers.
-
-Two things that commonly look like bugs and are not:
-
-- **No event on a cold page load.** The Constructor client holds tracking events until the shopper
-  does something — a scroll, a mouse move, a key press. Until then nothing is sent. Interact with
-  the page, then reload, and the events appear.
-- **No `ef-` parameters on `/v1/item_questions`.** Test cells ride on tracking events, not on the
-  data requests the widget makes to fetch questions and answers. Look at the
-  `product_insights_agent_*` requests.
