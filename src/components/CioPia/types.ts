@@ -33,8 +33,11 @@ export interface CheckoutTrigger {
   /**
    * Predicate deciding whether this trigger should render. Called with the same
    * render-props snapshot the `children`/`componentOverrides.reactNode` render callback
-   * receives, so consumers can gate on conversation state (e.g. "at least one answer",
-   * "user asked ≥2 questions"). Defaults to always visible.
+   * receives, so consumers can gate on answer state (e.g. "at least one answer shown").
+   * Defaults to always visible.
+   *
+   * `state.conversationHistory` is only populated in `conversation` mode, which does not
+   * render triggers, so it is always empty here. Gate on `currentAnswer` instead.
    */
   triggerWhen?: (state: CioPiaRenderProps) => boolean;
   /** Custom button renderer. When provided, `label` / `disabled` are passed through but styling is your call. */

@@ -32,7 +32,8 @@ type CheckoutTrigger = {
 ### Notes on scope
 
 - Rendered **only in `default` mode**. `recommendations` and `conversation` modes and the modal view ignore the prop.
-- `triggerWhen` receives the same render-props snapshot the `children` render callback receives. Use it to gate on things like "at least one answer shown" or "user asked ≥2 questions".
+- `triggerWhen` receives the same render-props snapshot the `children` render callback receives. Use it to gate on answer state, e.g. "at least one answer shown".
+- `state.conversationHistory` is only populated in `conversation` mode, which does not render triggers, so it is always empty in a `triggerWhen` predicate. Gating on engagement depth needs conversation-mode support and is not available yet.
 - `onTrigger` is where you wire in your checkout library. PIA does not import or mount the checkout Provider itself.
 
 ## Minimal example
@@ -86,7 +87,7 @@ function ProductPage() {
         {
           id: 'bundle',
           label: 'Buy 2, save 25%',
-          triggerWhen: (state) => state.conversationHistory.length >= 1,
+          triggerWhen: (state) => !!state.currentAnswer,
           onTrigger: () => {
             flow.setCart([{ id: 'prod_123', quantity: 2, amount: 19350 }]);
             flow.start();
@@ -132,11 +133,6 @@ checkoutTriggers={[
 ## Gating visibility
 
 `triggerWhen` runs on every render with the current PIA render-props. Return `false` to hide the button.
-
-```tsx
-// Only show once the user has asked at least two questions.
-triggerWhen: (state) => state.conversationHistory.length >= 2;
-```
 
 ```tsx
 // Hide until at least one answer has been shown.
