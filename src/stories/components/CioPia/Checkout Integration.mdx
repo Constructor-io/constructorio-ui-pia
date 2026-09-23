@@ -1,10 +1,26 @@
-import { Meta } from '@storybook/blocks';
+import { Meta, Markdown } from '@storybook/blocks';
 
 <Meta title='General/Integration Guide/Checkout' />
 
 # Checkout Integration
 
-Pass `checkoutTriggers` to render checkout buttons inside the PIA widget. PIA renders the buttons; your checkout library owns the flow.
+## Overview
+
+Pass `checkoutTriggers` to render checkout buttons inside the PIA widget, so a shopper can buy straight from the answer.
+
+Triggers render in `default` mode only — `recommendations`, `conversation` and the modal ignore the prop for now.
+
+The PIA UI Library renders the buttons and nothing else. You decide how the flow renders (inline, modal, or routed) and where its provider sits in your tree.
+
+## Pre-requisites
+
+You don't have to, but we recommend using our checkout library: [`@constructor-io/constructorio-ui-checkout`](https://github.com/Constructor-io/constructorio-ui-checkout)
+
+The example below uses it.
+
+```bash
+npm install @constructor-io/constructorio-ui-checkout
+```
 
 ## Setup
 
@@ -72,14 +88,16 @@ function CheckoutModal() {
 }
 ```
 
-## Trigger options
+## `CheckoutTrigger` Prop
+
+One entry per button. Add more for parallel paths (Buy 1 / Buy 2, save 25%).
 
 ```ts
 type CheckoutTrigger = {
-  id: string; // stable key, forwarded to renderButton
-  label?: string; // defaults to "Checkout"
+  id: string;
+  label?: string;
   disabled?: boolean;
-  triggerWhen?: (state: CioPiaRenderProps) => boolean; // hide until true
+  triggerWhen?: (state: CioPiaRenderProps) => boolean;
   renderButton?: (props: {
     onClick: () => void;
     label: string;
@@ -90,10 +108,18 @@ type CheckoutTrigger = {
 };
 ```
 
-Add more entries for parallel paths (Buy 1 / Buy 2). Two things to know:
-
-- Triggers render in `default` mode only — `recommendations`, `conversation` and the modal ignore the prop.
-- Gate on `state.currentAnswer`. `state.conversationHistory` is always empty here, so predicates using it never fire.
+<Markdown>
+  {`
+| Prop | Required | Description |
+|------|----------|-------------|
+| \`id\` | yes | Stable identifier. Used as the React key and passed to \`renderButton\` |
+| \`onTrigger\` | yes | Fires on click with the current render-props snapshot — seed the cart and start your flow here |
+| \`label\` | no | Button text. Defaults to the translated \`"Checkout"\` |
+| \`disabled\` | no | Disables the button, and is passed through to \`renderButton\` |
+| \`triggerWhen\` | no | Re-evaluated every render; return \`false\` to hide the button. Defaults to always visible |
+| \`renderButton\` | no | Replaces the default button. Receives \`{ onClick, label, disabled, id }\`; styling becomes yours |
+`}
+</Markdown>
 
 ```tsx
 // Hide until an answer has been shown.

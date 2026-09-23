@@ -24,11 +24,11 @@ import type { CioClient } from '../../hooks/usePiaClient';
  * `CheckoutFlowProvider`); PIA only surfaces the button(s) that start it.
  */
 export interface CheckoutTrigger {
-  /** Stable identifier for the trigger — used as React key and forwarded to onTrigger. */
+  /** Stable identifier for the trigger — used as React key and forwarded to `renderButton`. */
   id: string;
   /** Button label. Defaults to "Checkout". */
   label?: string;
-  /** Disables the button. Ignored when `renderButton` is provided. */
+  /** Disables the button. Forwarded to `renderButton`, which is responsible for applying it. */
   disabled?: boolean;
   /**
    * Predicate deciding whether this trigger should render. Called with the same
