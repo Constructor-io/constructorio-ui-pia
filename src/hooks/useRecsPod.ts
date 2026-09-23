@@ -115,7 +115,8 @@ export default function useRecsPod({
       // with a direct call: cioClient.agent.getRecs({...})
       const client = cioClientRef.current;
       const getRecs = (client?.agent as any)?.getRecs as
-        ((props: GetRecsProps) => Promise<RecsResult>) | undefined;
+        | ((props: GetRecsProps) => Promise<RecsResult>)
+        | undefined;
 
       if (!client || !getRecs) {
         if (client && !getRecs) {
