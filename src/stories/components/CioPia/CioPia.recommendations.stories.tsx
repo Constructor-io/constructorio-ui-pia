@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import CioPia from '../../../components/CioPia/CioPia';
-import { DEMO_API_KEY, DEMO_ITEM_ID } from '../../../constants';
+import { DEMO_API_KEY, DEMO_ITEM_ID, DEMO_ITEM_NAME } from '../../../constants';
 import { prependCdnBase } from '../../utils';
 
 const meta = {
@@ -180,6 +180,49 @@ const formatImageUrl = (url) =>
     onProductCardClick: (item) => {
       analytics.track('Product Clicked', { id: item.id });
     },
+  }}
+/>`,
+      },
+    },
+  },
+};
+
+export const AbTestControlGroup: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: DEMO_ITEM_ID,
+    itemName: DEMO_ITEM_NAME,
+    abTest: {
+      testCells: { constructorio: 'control', your_other_test: 'variant_b' },
+      isControl: true,
+    },
+  },
+};
+
+// Storybook has no `window.cnstrc`, so this resolves to the test arm and renders the widget.
+const testCell = (window as unknown as { cnstrc?: { testCells?: Record<string, string> } }).cnstrc
+  ?.testCells?.constructorio;
+
+export const AbTestFromWindowTestCell: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: DEMO_ITEM_ID,
+    itemName: DEMO_ITEM_NAME,
+    abTest: {
+      testCells: { constructorio: testCell ?? '' },
+      isControl: testCell === 'control',
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `<CioPia
+  apiKey="key_XXXXXXXX"
+  itemId={itemId}
+  itemName={itemName}
+  abTest={{
+    testCells: { constructorio: window.cnstrc.testCells.constructorio },
+    isControl: window.cnstrc.testCells.constructorio === 'control',
   }}
 />`,
       },
