@@ -124,6 +124,7 @@ omitting it would quietly put everyone in the test arm with no control group to 
 | `itemId` | `string` | The product item ID (required) |
 | `variationId` | `string` | Optional variation ID |
 | `threadId` | `string` | Optional thread ID for conversation context (must be a valid UUID) |
+| `initialConversationHistory` | `ConversationEntry[]` | Entries to show before the first question, read once on mount. Conversation and modal modes only (see [Restoring a conversation](#restoring-a-conversation)) |
 | `displayConfigs` | `object` | Display configuration options (see below) |
 | `trackingConfigs` | `object` | Tracking configuration options (see below) |
 | `callbacks` | `object` | Callback handlers for user interactions |
@@ -162,6 +163,34 @@ omitting it would quietly put everyone in the test arm with no control group to 
 | `onProductCardClick` | `(item: Item) => void` | Called when a product card in the carousel is clicked |
 | `onAddToCart` | `(item: Item, event: React.MouseEvent) => void` | Called when the "Add to Cart" button on a product card is clicked. Passing this callback is what renders the button; without it no cart control is shown |
 | `onFeedback` | `(type: 'up' \| 'down') => void` | Called when the user submits positive or negative feedback on an answer |
+
+#### Restoring a conversation
+
+In conversation mode, `onAnswer` receives the whole history after every answer. Store it per product along with the thread ID, then pass both back to pick the conversation up where it left off:
+
+```jsx
+const saved = load(itemId);
+
+<CioPia
+  key={itemId}
+  apiKey='YOUR_API_KEY'
+  itemId={itemId}
+  threadId={saved?.threadId}
+  initialConversationHistory={saved?.history}
+  displayConfigs={{ mode: 'conversation' }}
+  callbacks={{
+    onAnswer: (history, context) =>
+      save(context.itemId, { threadId: context.threadId, history }),
+  }}
+/>
+```
+
+- The history is read once, on mount. Changing `itemId` clears it, so store it per product and remount with `key={itemId}` to load the next product's conversation.
+- Pass the `threadId` the entries came from. The agent keeps the thread's context server-side, so history shown under a different thread is a transcript the agent does not remember.
+- In `type: 'modal'` the entries appear in the dialog, which opens when the shopper asks their next question. Closing the modal clears them, as it does a live conversation.
+- The suggested questions row shows the product's suggested questions, not the follow-ups from the last restored answer.
+- Entry `id`s must be unique numbers. New entries are numbered after the highest one.
+- It is ignored in `mode: 'default'`, which shows only the latest answer, in `mode: 'recommendations'`, and for the A/B control group (`abTest.isControl`).
 
 ### Using the JavaScript Bundle
 

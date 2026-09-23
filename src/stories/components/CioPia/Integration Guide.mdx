@@ -113,6 +113,29 @@ export default function ProductPage({ itemId }) {
 
 See [PiaConversation](?path=/docs/components-piaconversation--docs) for a live example and [Display Configs](?path=/docs/components-ciopia-displayconfigs--docs) for all available display options.
 
+### 6. Restore a conversation (optional)
+
+In conversation mode, `onAnswer` receives the whole history after every answer. Save it per product along with the thread ID, then pass both back to pick the conversation up where it left off:
+
+```jsx
+const saved = load(itemId);
+
+<CioPia
+  key={itemId}
+  apiKey="YOUR_API_KEY"
+  itemId={itemId}
+  threadId={saved?.threadId}
+  initialConversationHistory={saved?.history}
+  displayConfigs={{ mode: 'conversation' }}
+  callbacks={{
+    onAnswer: (history, context) =>
+      save(context.itemId, { threadId: context.threadId, history }),
+  }}
+/>
+```
+
+The history is read once, on mount, and changing `itemId` clears it. Remount with `key={itemId}` so each product loads its own saved conversation.
+
 ---
 
 ## Try It: Product Results

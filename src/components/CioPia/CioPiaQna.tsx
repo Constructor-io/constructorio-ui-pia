@@ -40,6 +40,7 @@ export default function CioPiaQna(props: CioPiaProps) {
     parameters,
     trackingConfigs,
     abTest,
+    initialConversationHistory,
   } = props;
   const {
     learnMoreUrl,
@@ -88,7 +89,14 @@ export default function CioPiaQna(props: CioPiaProps) {
     handleInputFocus,
     handleFeedback,
     resetState,
-  } = useConversation({ pia, itemId, isConversation, callbacks, tracking });
+  } = useConversation({
+    pia,
+    itemId,
+    isConversation,
+    callbacks,
+    tracking,
+    initialConversationHistory,
+  });
 
   const { containerRef: viewportContainerRef } = useViewportTracking({
     tracking,
@@ -130,7 +138,8 @@ export default function CioPiaQna(props: CioPiaProps) {
     isLoading,
     isAnswerLoading,
     error,
-    currentItems,
+    // Until a live answer arrives, a seeded last entry shows its own items. `null` would hide them.
+    currentItems: pia.answers.data ? currentItems : undefined,
     showFeedback,
     showPreviousItems,
     learnMoreUrl,

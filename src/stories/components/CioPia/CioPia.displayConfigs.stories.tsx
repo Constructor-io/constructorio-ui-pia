@@ -57,6 +57,32 @@ export const ConversationMode: Story = {
   },
 };
 
+export const RestoredConversation: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: DEMO_ITEM_ID,
+    itemName: DEMO_ITEM_NAME,
+    threadId: '550e8400-e29b-41d4-a716-446655440000',
+    initialConversationHistory: [
+      {
+        id: 1,
+        question: 'What is this product made of?',
+        answer: 'This example answer was restored from a saved conversation.',
+        source: 'suggestion',
+      },
+      {
+        id: 2,
+        question: 'Is it easy to clean?',
+        answer: 'So was this one. New questions appear below it.',
+        source: 'user',
+      },
+    ],
+    displayConfigs: {
+      mode: 'conversation',
+    },
+  },
+};
+
 export const DisclaimerPositionTop: Story = {
   args: {
     apiKey: DEMO_API_KEY,

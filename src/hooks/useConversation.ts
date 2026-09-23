@@ -17,6 +17,11 @@ export interface UseConversationProps {
   isConversation: boolean;
   callbacks?: Callbacks;
   tracking?: UseTrackingReturn;
+  /**
+   * Entries to show before the first question, read once on mount. Ignored outside
+   * conversation mode, which has no history to show them in.
+   */
+  initialConversationHistory?: ConversationEntry[];
 }
 
 export interface UseConversationReturn {
@@ -41,6 +46,7 @@ export default function useConversation({
   isConversation,
   callbacks,
   tracking,
+  initialConversationHistory,
 }: UseConversationProps): UseConversationReturn {
   const { suggestedQuestions, answers, threadId } = pia;
   const { getAnswer } = answers;
@@ -49,9 +55,20 @@ export default function useConversation({
 
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
   const [displayedQuestions, setDisplayedQuestions] = useState<Question[]>([]);
-  const [conversationHistory, setConversationHistory] = useState<ConversationEntry[]>([]);
+  const [conversationHistory, setConversationHistory] = useState<ConversationEntry[]>(() =>
+    isConversation && initialConversationHistory ? [...initialConversationHistory] : [],
+  );
 
-  const entryIdRef = useRef(0);
+  // Continue numbering after the seeded entries: `id` is the React key.
+  const [lastSeededId] = useState(() =>
+    conversationHistory.reduce(
+      (max, entry) => (Number.isFinite(entry.id) ? Math.max(max, entry.id) : max),
+      0,
+    ),
+  );
+  const entryIdRef = useRef(lastSeededId);
+  const conversationHistoryRef = useRef(conversationHistory);
+  const prevItemIdRef = useRef(itemId);
   const prevAnswerDataRef = useRef(answers.data);
   const hasTrackedCurrentAnswerRef = useRef(false);
   const answersRef = useRef(answers);
@@ -79,6 +96,10 @@ export default function useConversation({
   useEffect(() => {
     answersRef.current = answers;
   }, [answers]);
+
+  useEffect(() => {
+    conversationHistoryRef.current = conversationHistory;
+  }, [conversationHistory]);
 
   const submitQuestion = useCallback(
     (question: string, source: QuestionSource) => {
@@ -121,7 +142,11 @@ export default function useConversation({
   }, []);
 
   const handleFeedback = useCallback((type: FeedbackType) => {
-    trackingRef.current?.trackAnswerFeedback(type, answersRef.current.data?.qna_result_id);
+    // A seeded last entry has no live response behind it; its own id is the answer rated.
+    const history = conversationHistoryRef.current;
+    const qnaResultId =
+      answersRef.current.data?.qna_result_id ?? history[history.length - 1]?.qnaResultId;
+    trackingRef.current?.trackAnswerFeedback(type, qnaResultId);
     callbacksRef.current?.onFeedback?.(type);
   }, []);
 
@@ -134,6 +159,9 @@ export default function useConversation({
   }, [suggestedQuestions.data]);
 
   useEffect(() => {
+    // Skip the mount run: it would wipe the seeded history.
+    if (prevItemIdRef.current === itemId) return;
+    prevItemIdRef.current = itemId;
     setCurrentQuestion('');
     setDisplayedQuestions([]);
     setConversationHistory([]);

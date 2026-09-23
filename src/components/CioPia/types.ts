@@ -14,6 +14,7 @@ import {
   AnswerRequestParameters,
   RecsPodParameters,
   Formatters,
+  ConversationEntry,
   ProductCardDisplayProps,
 } from '../../types';
 import type { CioClient } from '../../hooks/usePiaClient';
@@ -30,6 +31,13 @@ export interface CioPiaProps
   itemName: string;
   /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000"). */
   threadId?: string;
+  /**
+   * Entries to show before the first question, such as a conversation saved from `onAnswer`.
+   * Read once on mount, and cleared when `itemId` changes. Pass the `threadId` the entries
+   * came from, or the agent will not remember them. Used by `mode: 'conversation'` and
+   * `type: 'modal'` only; the modal shows them once it opens.
+   */
+  initialConversationHistory?: ConversationEntry[];
   /** Optional variation ID for the product. */
   variationId?: string;
   /** Optional Constructor.io client instance. If not provided, one will be created internally. */
