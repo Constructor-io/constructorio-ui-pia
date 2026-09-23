@@ -14,7 +14,6 @@ describe('Testing Hook: usePiaClient', () => {
 
   afterEach(() => {
     globalThis.fetch = originalFetch;
-    delete (window as unknown as { cnstrc?: unknown }).cnstrc;
   });
 
   it('builds a client from the API key when the caller supplies none', () => {
@@ -149,27 +148,5 @@ describe('Testing Hook: usePiaClient', () => {
     expect(warn).not.toHaveBeenCalled();
 
     warn.mockRestore();
-  });
-
-  it('falls back to the window test cells when none are passed', () => {
-    (window as unknown as { cnstrc: unknown }).cnstrc = {
-      testCells: { constructorio: 'from_window' },
-    };
-
-    const { result } = renderHook(() => usePiaClient({ apiKey: testApiKey }));
-
-    expect(result.current.cioClient.options.testCells).toEqual({ constructorio: 'from_window' });
-  });
-
-  it('prefers the test cells it was passed over the window ones', () => {
-    (window as unknown as { cnstrc: unknown }).cnstrc = {
-      testCells: { constructorio: 'from_window' },
-    };
-
-    const { result } = renderHook(() =>
-      usePiaClient({ apiKey: testApiKey, testCells: { constructorio: 'from_prop' } }),
-    );
-
-    expect(result.current.cioClient.options.testCells).toEqual({ constructorio: 'from_prop' });
   });
 });

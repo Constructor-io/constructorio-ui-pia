@@ -60,16 +60,14 @@ export type CioPiaAbTest = {
   /**
    * Test cells to attach to PIA tracking events, as `{ [testName]: cellName }`. Each entry is
    * sent as an `ef-<testName>` parameter. Source them however you like, for example
-   * `{ constructorio: window.cnstrc.testCell }`.
-   *
-   * When omitted, falls back to `window.cnstrc.testCells`, as do `userId` and `segments`.
+   * `{ constructorio: window.cnstrc.testCells.constructorio }`.
    *
    * Ignored when you supply your own `cioClient`: that client owns its own options, so set
    * `testCells` there instead, as a `ConstructorIOClient` constructor option. Passing both
    * logs a warning.
    *
    * Empty, non-string, or whitespace-only values are silently dropped, so a cell sourced from
-   * something like `window.cnstrc.testCell` that resolves to `undefined` will simply not be sent.
+   * a global that resolves to `undefined` will simply not be sent.
    */
   testCells?: Record<string, string>;
   /**
