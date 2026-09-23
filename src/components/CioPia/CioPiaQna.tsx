@@ -39,6 +39,7 @@ export default function CioPiaQna(props: CioPiaProps) {
     answerParameters,
     parameters,
     trackingConfigs,
+    abTest,
   } = props;
   const {
     learnMoreUrl,
@@ -62,6 +63,7 @@ export default function CioPiaQna(props: CioPiaProps) {
     answerParameters,
     parameters,
     formatImageUrl: formatters?.formatImageUrl,
+    testCells: abTest?.testCells,
   });
 
   const tracking = useTracking({

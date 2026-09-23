@@ -11,6 +11,10 @@ import { GetAnswerResultsResponse } from '../../../src/types';
 import { Item } from '../../../src/types';
 
 jest.mock('../../../src/hooks/useCioPia', () => jest.fn());
+jest.mock('../../../src/components/CioPiaControl/CioPiaControl', () => ({
+  __esModule: true,
+  default: () => <div data-testid='cio-pia-control-placeholder' />,
+}));
 
 const mockUseCioPiaHook = useCioPia as jest.MockedFunction<typeof useCioPia>;
 
@@ -1244,6 +1248,65 @@ describe('CioPia Component', () => {
       );
 
       expect(getAddToCartButtons(container)[0]).toHaveTextContent('Add to bag');
+    });
+  });
+
+  describe('A/B control group', () => {
+    it('renders the placeholder instead of the widget', () => {
+      const { getByTestId, queryByTestId } = render(
+        <CioPia
+          apiKey='test-api-key'
+          itemId='test-item-id'
+          itemName='Test Item'
+          abTest={{ isControl: true }}
+        />,
+      );
+
+      expect(getByTestId('cio-pia-control-placeholder')).toBeInTheDocument();
+      expect(queryByTestId('cio-pia-container')).not.toBeInTheDocument();
+    });
+
+    it('wins over an explicitly requested mode', () => {
+      const { getByTestId, queryByTestId } = render(
+        <CioPia
+          apiKey='test-api-key'
+          itemId='test-item-id'
+          itemName='Test Item'
+          displayConfigs={{ mode: 'recommendations' }}
+          abTest={{ isControl: true }}
+        />,
+      );
+
+      expect(getByTestId('cio-pia-control-placeholder')).toBeInTheDocument();
+      expect(queryByTestId('cio-pia-container')).not.toBeInTheDocument();
+    });
+
+    it('renders the widget as usual for the test arm', () => {
+      const { queryByTestId } = render(
+        <CioPia
+          apiKey='test-api-key'
+          itemId='test-item-id'
+          itemName='Test Item'
+          abTest={{ testCells: { constructorio: 'variant_a' }, isControl: false }}
+        />,
+      );
+
+      expect(queryByTestId('cio-pia-control-placeholder')).not.toBeInTheDocument();
+    });
+
+    it('forwards test cells to useCioPia for the test arm', () => {
+      render(
+        <CioPia
+          apiKey='test-api-key'
+          itemId='test-item-id'
+          itemName='Test Item'
+          abTest={{ testCells: { constructorio: 'variant_a' }, isControl: false }}
+        />,
+      );
+
+      expect(useCioPia).toHaveBeenCalledWith(
+        expect.objectContaining({ testCells: { constructorio: 'variant_a' } }),
+      );
     });
   });
 });

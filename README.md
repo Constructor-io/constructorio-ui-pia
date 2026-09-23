@@ -76,6 +76,46 @@ The component supports multiple display modes via the `displayConfigs` prop:
 />
 ```
 
+#### A/B Testing
+
+Attach test cells to PIA tracking events, and track the control group without showing the widget:
+
+```jsx
+// Test arm: the widget renders, events carry ef-constructorio=variant_a
+<CioPia
+  apiKey="key_XXXXXXXX"
+  itemId={itemId}
+  itemName={itemName}
+  abTest={{ testCells: { constructorio: 'variant_a', your_other_test: 'variant_b' }, isControl: false }}
+/>
+
+// Control arm: nothing visible renders, but the view event still fires with the control cell
+<CioPia
+  apiKey="key_XXXXXXXX"
+  itemId={itemId}
+  itemName={itemName}
+  abTest={{ testCells: { constructorio: 'control' }, isControl: true }}
+/>
+```
+
+Mount `CioPia` on every PDP and switch `isControl` per shopper — no placeholder markup of your own
+is required.
+
+`testCells` is `{ [testName]: cellName }`, and both halves are yours: the keys are your own test
+names, not values Constructor defines. Each entry is sent as its own `ef-<testName>` parameter, so
+a shopper in several concurrent tests carries every cell. Empty or non-string values are dropped,
+so a cell read from a global that resolves to `undefined` is simply not sent.
+
+Both arms fire the same `product_insights_agent.view` event through the same viewport tracking,
+so the control group is measured the same way as the test group.
+
+If you supply your own `cioClient`, that client owns its own options: set `testCells` there
+instead, as a `ConstructorIOClient` constructor option. `abTest.testCells` is ignored in that
+case, and passing both logs a warning rather than dropping the value silently.
+
+`isControl` is required. Stating the arm per shopper is the one thing only you can know, and
+omitting it would quietly put everyone in the test arm with no control group to compare against.
+
 #### Configuration Options
 
 | Prop | Type | Description |
@@ -89,12 +129,13 @@ The component supports multiple display modes via the `displayConfigs` prop:
 | `callbacks` | `object` | Callback handlers for user interactions |
 | `translations` | `object` | UI string translations for internationalization |
 | `componentOverrides` | `object` | Custom component overrides |
+| `abTest` | `object` | A/B test configuration — test cells for tracking, and a control-group placeholder (see below) |
 
 **Display Configs:**
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `mode` | `'default' \| 'conversation'` | `'default'` | Display mode |
+| `mode` | `'default' \| 'conversation' \| 'recommendations'` | `'default'` | Display mode. `'recommendations'` is accepted by the type but not yet available — it renders nothing. |
 | `type` | `'inline' \| 'modal'` | `'inline'` | Component type |
 | `showFeedback` | `boolean` | `false` | Show feedback controls on answers |
 | `showPreviousItems` | `boolean` | `true` | Show product carousels from previous conversation entries |
@@ -105,6 +146,13 @@ The component supports multiple display modes via the `displayConfigs` prop:
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `viewThreshold` | `number` | `0.5` | Fraction of the container (0–1) that must be visible before the `product_insights_agent.view` event fires. Lower it (e.g. `0.01`) to have the view event fire on minimal visibility. |
+
+**AB Test:**
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `testCells` | `Record<string, string>` | - | `{ [testName]: cellName }`, each sent as an `ef-<testName>` tracking parameter. Ignored when you supply your own `cioClient`. |
+| `isControl` | `boolean` | required | Renders an invisible, tracking-only placeholder instead of the widget, so the control arm still records a view event. Takes precedence over `displayConfigs.mode`. |
 
 **Callbacks:**
 

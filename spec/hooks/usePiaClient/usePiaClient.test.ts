@@ -70,4 +70,83 @@ describe('Testing Hook: usePiaClient', () => {
 
     expect(result.current.threadId).toBe('provided-thread-id');
   });
+
+  it('forwards test cells to the client it builds', () => {
+    const { result } = renderHook(() =>
+      usePiaClient({
+        apiKey: testApiKey,
+        testCells: { constructorio: 'variant_a', your_other_test: 'control' },
+      }),
+    );
+
+    expect(result.current.cioClient.options.testCells).toEqual({
+      constructorio: 'variant_a',
+      your_other_test: 'control',
+    });
+  });
+
+  it('keeps the same client when test cells are rebuilt with equal contents', () => {
+    const { result, rerender } = renderHook((props) => usePiaClient(props), {
+      initialProps: { apiKey: testApiKey, testCells: { constructorio: 'variant_a' } },
+    });
+    const first = result.current.cioClient;
+
+    rerender({ apiKey: testApiKey, testCells: { constructorio: 'variant_a' } });
+
+    expect(result.current.cioClient).toBe(first);
+  });
+
+  it('builds a new client when a test cell value actually changes', () => {
+    const { result, rerender } = renderHook((props) => usePiaClient(props), {
+      initialProps: { apiKey: testApiKey, testCells: { constructorio: 'variant_a' } },
+    });
+    const first = result.current.cioClient;
+
+    rerender({ apiKey: testApiKey, testCells: { constructorio: 'variant_b' } });
+
+    expect(result.current.cioClient).not.toBe(first);
+    expect(result.current.cioClient.options.testCells).toEqual({ constructorio: 'variant_b' });
+  });
+
+  it('returns a caller-supplied client as-is rather than replacing it', () => {
+    const provided = createMockCioClient();
+
+    const { result } = renderHook(() =>
+      usePiaClient({
+        apiKey: testApiKey,
+        cioClient: provided,
+        testCells: { constructorio: 'variant_a' },
+      }),
+    );
+
+    expect(result.current.cioClient).toBe(provided);
+  });
+
+  it('warns rather than silently dropping test cells passed alongside a client', () => {
+    const provided = createMockCioClient();
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    renderHook(() =>
+      usePiaClient({
+        apiKey: testApiKey,
+        cioClient: provided,
+        testCells: { constructorio: 'variant_a' },
+      }),
+    );
+
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('abTest.testCells is ignored'));
+
+    warn.mockRestore();
+  });
+
+  it('says nothing when a caller supplies a client and no test cells', () => {
+    const provided = createMockCioClient();
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    renderHook(() => usePiaClient({ apiKey: testApiKey, cioClient: provided }));
+
+    expect(warn).not.toHaveBeenCalled();
+
+    warn.mockRestore();
+  });
 });

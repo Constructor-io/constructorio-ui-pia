@@ -6,6 +6,7 @@ import {
   CioPiaRenderProps,
   CioPiaComponentOverrides,
   Callbacks,
+  CioPiaAbTest,
   CioPiaDisplayConfigs,
   CioPiaTrackingConfigs,
   Translations,
@@ -37,6 +38,8 @@ export interface CioPiaProps
   displayConfigs?: CioPiaDisplayConfigs;
   /** Tracking configuration options (viewThreshold, etc.). */
   trackingConfigs?: CioPiaTrackingConfigs;
+  /** A/B test configuration: test cells to attach to events, and the control-group flag. */
+  abTest?: CioPiaAbTest;
   /** Callback handlers for user interactions (onQuestionSubmit, onProductCardClick, onFeedback). */
   callbacks?: Callbacks;
   // Redeclared from IncludeComponentOverrides for Storybook autodocs.

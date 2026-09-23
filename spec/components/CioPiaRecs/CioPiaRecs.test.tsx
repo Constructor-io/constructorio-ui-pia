@@ -4,6 +4,7 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 import CioPiaRecs from '../../../src/components/CioPiaRecs/CioPiaRecs';
 import type { CioPiaProps } from '../../../src/components/CioPia/types';
 import { AgentRequestError } from '../../../src/errors';
+import usePiaClient from '../../../src/hooks/usePiaClient';
 import {
   RECS_FALLBACK_TITLE,
   RECS_INPUT_PLACEHOLDER,
@@ -14,6 +15,14 @@ import {
 import { Item, RecsResult } from '../../../src/types';
 import { createMockCioClient, TestMockClient } from '../../helpers/mockCioClient';
 import { testRecsPodNoHistory, testRecsPodResult } from '../../localExamples';
+
+// Spied, not replaced: every test below still runs the real hook.
+jest.mock('../../../src/hooks/usePiaClient', () => {
+  const actual = jest.requireActual('../../../src/hooks/usePiaClient');
+  return { __esModule: true, ...actual, default: jest.fn(actual.default) };
+});
+
+const mockUsePiaClient = usePiaClient as jest.MockedFunction<typeof usePiaClient>;
 
 const firstResult: RecsResult = testRecsPodResult;
 const secondResult: RecsResult = testRecsPodNoHistory;
@@ -392,6 +401,16 @@ describe('CioPiaRecs Component', () => {
       render(<CioPiaRecs {...getProps({ recsPodParameters: { numResults: 3 } })} />);
 
       expect(screen.getAllByTestId('cio-pia-recs-skeleton-card')).toHaveLength(3);
+    });
+  });
+
+  describe('A/B test cells', () => {
+    it('forwards test cells to usePiaClient for the test arm', async () => {
+      await renderSettled({ abTest: { testCells: { constructorio: 'variant_a' }, isControl: false } });
+
+      expect(mockUsePiaClient).toHaveBeenCalledWith(
+        expect.objectContaining({ testCells: { constructorio: 'variant_a' } }),
+      );
     });
   });
 
