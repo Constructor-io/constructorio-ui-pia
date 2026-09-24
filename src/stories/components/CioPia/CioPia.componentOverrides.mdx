@@ -15,7 +15,7 @@ Every override receives the same props as the default component, so you have ful
 The full list of overridable components:
 
 <Markdown>
-{`
+  {`
 | Path                              | Props Type                        | Description              |
 |-----------------------------------|-----------------------------------|--------------------------|
 | \`reactNode\`                       | \`CioPiaRenderProps\`               | Entire PIA component     |
@@ -45,19 +45,19 @@ By default, the answer component renders `text` using `renderMarkdown`, which pa
 import { renderMarkdown } from '@constructor-io/constructorio-ui-pia';
 
 <CioPia
-  apiKey="YOUR_API_KEY"
-  itemId="YOUR_ITEM_ID"
+  apiKey='YOUR_API_KEY'
+  itemId='YOUR_ITEM_ID'
   componentOverrides={{
     answer: {
       reactNode: ({ text }) => (
         <div
-          className="cio-pia-answer"
+          className='cio-pia-answer'
           dangerouslySetInnerHTML={{ __html: renderMarkdown(text) }}
         />
       ),
     },
   }}
-/>
+/>;
 ```
 
 ## Custom Suggested Questions
@@ -68,12 +68,12 @@ Replace the suggested questions list. Receives `{ questions, onQuestionClick }`.
 
 ```jsx
 <CioPia
-  apiKey="YOUR_API_KEY"
-  itemId="YOUR_ITEM_ID"
+  apiKey='YOUR_API_KEY'
+  itemId='YOUR_ITEM_ID'
   componentOverrides={{
     suggestedQuestions: {
       reactNode: ({ questions, onQuestionClick }) => (
-        <div className="my-questions">
+        <div className='my-questions'>
           {questions.map((q) => (
             <button key={q.value} onClick={() => onQuestionClick(q.value)}>
               {q.value}
@@ -94,13 +94,13 @@ Replace the disclaimer text. Receives `{ learnMoreUrl?, translations? }`.
 
 ```jsx
 <CioPia
-  apiKey="YOUR_API_KEY"
-  itemId="YOUR_ITEM_ID"
+  apiKey='YOUR_API_KEY'
+  itemId='YOUR_ITEM_ID'
   displayConfigs={{ learnMoreUrl: 'https://example.com' }}
   componentOverrides={{
     disclaimer: {
       reactNode: ({ learnMoreUrl }) => (
-        <p className="my-disclaimer">
+        <p className='my-disclaimer'>
           Powered by AI. <a href={learnMoreUrl}>Learn more</a>
         </p>
       ),
@@ -117,8 +117,8 @@ Replace the feedback controls. Receives `{ translations?, onFeedback? }`. Requir
 
 ```jsx
 <CioPia
-  apiKey="YOUR_API_KEY"
-  itemId="YOUR_ITEM_ID"
+  apiKey='YOUR_API_KEY'
+  itemId='YOUR_ITEM_ID'
   displayConfigs={{ showFeedback: true }}
   componentOverrides={{
     feedback: {
@@ -143,8 +143,8 @@ By default the component renders the shimmer skeleton. Provide `reactNode` to sh
 
 ```jsx
 <CioPia
-  apiKey="YOUR_API_KEY"
-  itemId="YOUR_ITEM_ID"
+  apiKey='YOUR_API_KEY'
+  itemId='YOUR_ITEM_ID'
   componentOverrides={{
     loading: {
       reactNode: () => <p>Cooking up an answer…</p>,
@@ -159,8 +159,8 @@ To keep the default shimmer alongside your custom content, render the `skeleton`
 
 ```jsx
 <CioPia
-  apiKey="YOUR_API_KEY"
-  itemId="YOUR_ITEM_ID"
+  apiKey='YOUR_API_KEY'
+  itemId='YOUR_ITEM_ID'
   componentOverrides={{
     loading: {
       reactNode: ({ skeleton }) => (
@@ -182,7 +182,7 @@ When an answer references products, the library renders a built-in carousel of d
 
 ```jsx
 // No componentOverrides needed — the default carousel renders automatically
-<CioPia apiKey="YOUR_API_KEY" itemId="YOUR_ITEM_ID" />
+<CioPia apiKey='YOUR_API_KEY' itemId='YOUR_ITEM_ID' />
 ```
 
 ## Custom Carousel Item
@@ -193,13 +193,13 @@ Replace individual product cards in the carousel. Receives `{ item, index, ...ca
 
 ```jsx
 <CioPia
-  apiKey="YOUR_API_KEY"
-  itemId="YOUR_ITEM_ID"
+  apiKey='YOUR_API_KEY'
+  itemId='YOUR_ITEM_ID'
   componentOverrides={{
     carousel: {
       item: {
         reactNode: ({ item }) => (
-          <div className="my-product-card">
+          <div className='my-product-card'>
             <img src={item?.imageUrl} alt={item?.name} />
             <p>{item?.name}</p>
             <p>${item?.price}</p>
@@ -219,18 +219,18 @@ Instead of replacing the whole card, override individual parts of the default pr
 
 ```jsx
 <CioPia
-  apiKey="YOUR_API_KEY"
-  itemId="YOUR_ITEM_ID"
+  apiKey='YOUR_API_KEY'
+  itemId='YOUR_ITEM_ID'
   componentOverrides={{
     carousel: {
       item: {
         productCard: {
           content: {
             title: {
-              reactNode: ({ product }) => <p className="my-title">{product?.name}</p>,
+              reactNode: ({ product }) => <p className='my-title'>{product?.name}</p>,
             },
             price: {
-              reactNode: ({ product }) => <span className="my-price">${product?.price}</span>,
+              reactNode: ({ product }) => <span className='my-price'>${product?.price}</span>,
             },
           },
           footer: {
@@ -255,15 +255,15 @@ Replace the previous/next navigation buttons.
 
 ```jsx
 <CioPia
-  apiKey="YOUR_API_KEY"
-  itemId="YOUR_ITEM_ID"
+  apiKey='YOUR_API_KEY'
+  itemId='YOUR_ITEM_ID'
   componentOverrides={{
     carousel: {
       previous: {
-        reactNode: () => <button className="my-prev">&#8592;</button>,
+        reactNode: () => <button className='my-prev'>&#8592;</button>,
       },
       next: {
-        reactNode: () => <button className="my-next">&#8594;</button>,
+        reactNode: () => <button className='my-next'>&#8594;</button>,
       },
     },
   }}
@@ -278,11 +278,11 @@ Override the entire component using the top-level `reactNode`. Receives all rend
 
 ```jsx
 <CioPia
-  apiKey="YOUR_API_KEY"
-  itemId="YOUR_ITEM_ID"
+  apiKey='YOUR_API_KEY'
+  itemId='YOUR_ITEM_ID'
   componentOverrides={{
     reactNode: ({ currentAnswer, displayedQuestions, handleSubmitQuestion, isLoading, items }) => (
-      <div className="my-pia">
+      <div className='my-pia'>
         <h3>Ask about this product</h3>
         {displayedQuestions.map((q) => (
           <button key={q.value} onClick={() => handleSubmitQuestion(q.value)}>
@@ -306,7 +306,7 @@ When a request fails, the `error` render prop holds an `AgentRequestError`. It e
 everything you already do with an error still works, and it adds one field:
 
 <Markdown>
-{`
+  {`
 | Field     | Type     | Meaning                                    |
 |-----------|----------|--------------------------------------------|
 | \`status\`  | \`number\` | The HTTP status code of the failed request |
@@ -321,8 +321,8 @@ everything you already do with an error still works, and it adds one field:
 import { AgentRequestError } from '@constructor-io/constructorio-ui-pia';
 
 <CioPia
-  apiKey="YOUR_API_KEY"
-  itemId="YOUR_ITEM_ID"
+  apiKey='YOUR_API_KEY'
+  itemId='YOUR_ITEM_ID'
   componentOverrides={{
     reactNode: ({ error, items }) => {
       if (error instanceof AgentRequestError) {

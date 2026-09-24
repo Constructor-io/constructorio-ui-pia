@@ -14,8 +14,6 @@ Yes. The library sets `sendTrackingEvents: true` internally (see [`useCioClient.
 
 The `callbacks` prop (`onQuestionSubmit`, `onProductCardClick`, `onFeedback`) is for **your own** analytics (GA4, Segment, etc.) — it does not affect Constructor's internal tracking.
 
-
-
 ## What happens when the API request fails?
 
 The library renders an [`ErrorBlock`](?path=/docs/components-errorblock--docs) component with the error message and a retry button. The user can click retry to re-submit the last question.

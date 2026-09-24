@@ -25,8 +25,8 @@ div.link-list {
   }
 }
 
-@media all and (-ms-high-contrast:none) {
-div.link-list {
+@media all and (-ms-high-contrast: none) {
+  div.link-list {
     display: -ms-grid;
     -ms-grid-columns: 1fr 1fr;
     -ms-grid-rows: 1fr 1fr;
@@ -38,20 +38,23 @@ a.link-item {
   padding: 20px;
   border: 1px solid #00000010;
   border-radius: 5px;
-  transition: background 150ms ease-out, border 150ms ease-out, transform 150ms ease-out;
+  transition:
+    background 150ms ease-out,
+    border 150ms ease-out,
+    transform 150ms ease-out;
   color: #333333;
   display: flex;
   align-items: flex-start;
 }
 
 a.link-item:hover {
-  border-color: #1EA7FD50;
+  border-color: #1ea7fd50;
   transform: translate3d(0, -3px, 0);
   box-shadow: rgba(0, 0, 0, 0.08) 0 3px 10px 0;
 }
 
 a.link-item:active {
-  border-color: #1EA7FD;
+  border-color: #1ea7fd;
   transform: translate3d(0, 0, 0);
 }
 
@@ -81,8 +84,8 @@ span.badge {
   font-size: 11px;
   line-height: 12px;
   font-weight: 700;
-  background: #E7FDD8;
-  color: #66BF3C;
+  background: #e7fdd8;
+  color: #66bf3c;
   padding: 4px 12px;
   margin-right: 10px;
   vertical-align: top;
@@ -100,10 +103,9 @@ div.badge-wrapper code {
   display: inline-block;
 }
 
-
 .badge.tip {
-  background: #E7FDD8;
-  color: #66BF3C;
+  background: #e7fdd8;
+  color: #66bf3c;
 }
 
 .badge.note {

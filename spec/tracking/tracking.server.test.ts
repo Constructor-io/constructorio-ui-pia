@@ -22,9 +22,7 @@ describe('Testing PIA Tracking', () => {
       const result = client.tracker.trackProductInsightsAgentViews({
         ...baseParams,
         questions: [{ question: 'What is this product?' }],
-        viewTimespans: [
-          { start: '2025-01-01T00:00:00.000Z', end: '2025-01-01T00:01:00.000Z' },
-        ],
+        viewTimespans: [{ start: '2025-01-01T00:00:00.000Z', end: '2025-01-01T00:01:00.000Z' }],
       });
 
       expect(result).toBe(true);

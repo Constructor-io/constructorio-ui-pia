@@ -75,9 +75,7 @@ describe('Testing Hook: useViewportTracking', () => {
   });
 
   it('disconnects observer on unmount', () => {
-    const { unmount } = render(
-      <TestComponent tracking={mockTracking} questions={testQuestions} />,
-    );
+    const { unmount } = render(<TestComponent tracking={mockTracking} questions={testQuestions} />);
 
     unmount();
     expect(observerInstance.disconnect).toHaveBeenCalled();
@@ -160,10 +158,9 @@ describe('Testing Hook: useViewportTracking', () => {
 
       unmount();
 
-      expect(mockTracking.trackViews).toHaveBeenCalledWith(
-        testQuestions,
-        [expect.objectContaining({ start: expect.any(String), end: expect.any(String) })],
-      );
+      expect(mockTracking.trackViews).toHaveBeenCalledWith(testQuestions, [
+        expect.objectContaining({ start: expect.any(String), end: expect.any(String) }),
+      ]);
     });
 
     it('flushes timespans on 5-minute interval', () => {
@@ -176,10 +173,9 @@ describe('Testing Hook: useViewportTracking', () => {
         jest.advanceTimersByTime(5 * 60 * 1000);
       });
 
-      expect(mockTracking.trackViews).toHaveBeenCalledWith(
-        testQuestions,
-        [expect.objectContaining({ start: expect.any(String), end: expect.any(String) })],
-      );
+      expect(mockTracking.trackViews).toHaveBeenCalledWith(testQuestions, [
+        expect.objectContaining({ start: expect.any(String), end: expect.any(String) }),
+      ]);
     });
 
     it('flushes in-progress timespan on interval when currently in viewport', () => {
@@ -191,10 +187,9 @@ describe('Testing Hook: useViewportTracking', () => {
         jest.advanceTimersByTime(5 * 60 * 1000);
       });
 
-      expect(mockTracking.trackViews).toHaveBeenCalledWith(
-        testQuestions,
-        [expect.objectContaining({ start: expect.any(String), end: expect.any(String) })],
-      );
+      expect(mockTracking.trackViews).toHaveBeenCalledWith(testQuestions, [
+        expect.objectContaining({ start: expect.any(String), end: expect.any(String) }),
+      ]);
     });
 
     it('flushes on visibilitychange to hidden', () => {
@@ -213,10 +208,9 @@ describe('Testing Hook: useViewportTracking', () => {
         document.dispatchEvent(new Event('visibilitychange'));
       });
 
-      expect(mockTracking.trackViews).toHaveBeenCalledWith(
-        testQuestions,
-        [expect.objectContaining({ start: expect.any(String), end: expect.any(String) })],
-      );
+      expect(mockTracking.trackViews).toHaveBeenCalledWith(testQuestions, [
+        expect.objectContaining({ start: expect.any(String), end: expect.any(String) }),
+      ]);
 
       Object.defineProperty(document, 'visibilityState', {
         value: 'visible',
@@ -311,16 +305,11 @@ describe('Testing Hook: useViewportTracking', () => {
         jest.advanceTimersByTime(5 * 60 * 1000);
       });
 
-      expect(mockTracking.trackViews).toHaveBeenCalledWith(
-        updatedQuestions,
-        expect.any(Array),
-      );
+      expect(mockTracking.trackViews).toHaveBeenCalledWith(updatedQuestions, expect.any(Array));
     });
 
     it('fires trackView when questions arrive while already in viewport', () => {
-      const { rerender } = render(
-        <TestComponent tracking={mockTracking} questions={[]} />,
-      );
+      const { rerender } = render(<TestComponent tracking={mockTracking} questions={[]} />);
 
       // Enter viewport with no questions — trackView should not fire
       simulateEntry(true);
@@ -350,9 +339,7 @@ describe('Testing Hook: useViewportTracking', () => {
     });
 
     it('does not fire trackView when questions arrive but not in viewport', () => {
-      const { rerender } = render(
-        <TestComponent tracking={mockTracking} questions={[]} />,
-      );
+      const { rerender } = render(<TestComponent tracking={mockTracking} questions={[]} />);
 
       // Never entered viewport — questions arrive
       rerender(<TestComponent tracking={mockTracking} questions={testQuestions} />);

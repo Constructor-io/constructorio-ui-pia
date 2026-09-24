@@ -16,7 +16,7 @@ Two automated layers are the merge gate, and both already run in CI:
 - `npm run test-storybook:ci` — `axe-core` in real Chromium against every story
 
 Colour is out of scope: `color-contrast` is disabled in the axe run because the
-palette is the consumer's to restyle. State conveyed *only* by colour still needs
+palette is the consumer's to restyle. State conveyed _only_ by colour still needs
 a non-visual equivalent.
 
 They cover accessible names, ARIA validity and target size. They cannot
@@ -25,7 +25,7 @@ name is any good. That judgement is what `.claude/a11y.md` describes.
 
 Verifying a live region by hand: paste a `MutationObserver` over
 `[aria-live], [role=status], [role=alert], [role=log]` in the browser console and
-confirm the region was in the DOM *before* its content changed - a region created
+confirm the region was in the DOM _before_ its content changed - a region created
 together with its text is announced inconsistently.
 
 ## Constraints that shape the code

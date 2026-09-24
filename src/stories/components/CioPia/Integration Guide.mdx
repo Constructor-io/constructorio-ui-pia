@@ -1,9 +1,9 @@
 import { Meta, Canvas, Markdown } from '@storybook/blocks';
 import * as RecommendationsStories from './CioPia.recommendations.stories';
 
-<Meta title='General/Integration Guide/Integration Docs' />
+<Meta title='General/Integration Guide/PIA Guide' />
 
-# Integration Guide
+# PIA Guide
 
 This page covers how to integrate the PIA library, how product results work, what data it exposes, and how to wire up analytics tracking.
 
@@ -39,10 +39,7 @@ export default function ProductPage({ itemId }) {
     <div>
       {/* ...product info, images, price, etc. */}
 
-      <CioPia
-        apiKey="YOUR_API_KEY"
-        itemId={itemId}
-      />
+      <CioPia apiKey='YOUR_API_KEY' itemId={itemId} />
     </div>
   );
 }
@@ -88,7 +85,7 @@ const piaCallbacks = {
 export default function ProductPage({ itemId }) {
   return (
     <CioPia
-      apiKey="YOUR_API_KEY"
+      apiKey='YOUR_API_KEY'
       itemId={itemId}
       displayConfigs={{ showFeedback: true }}
       callbacks={piaCallbacks}
@@ -101,7 +98,7 @@ export default function ProductPage({ itemId }) {
 
 ```jsx
 <CioPia
-  apiKey="YOUR_API_KEY"
+  apiKey='YOUR_API_KEY'
   itemId={itemId}
   displayConfigs={{
     mode: 'conversation',
@@ -131,78 +128,98 @@ The library handles the entire data pipeline — from loading suggested question
 2. The user either clicks a suggested question or types their own, then submits.
 3. The library sends the question to the PIA API and streams back the AI answer along with any product recommendations.
 
-<div className="cio-flow-diagram">
-  <div className="flow-step">
-    <div className="flow-box flow-box--internal">
-      <strong>Fetch suggested questions</strong><br /><span className="flow-box-subtitle">GET suggested questions for itemId</span>
+<div className='cio-flow-diagram'>
+  <div className='flow-step'>
+    <div className='flow-box flow-box--internal'>
+      <strong>Fetch suggested questions</strong>
+      <br />
+      <span className='flow-box-subtitle'>GET suggested questions for itemId</span>
     </div>
-    <span className="flow-label">automatic on mount</span>
+    <span className='flow-label'>automatic on mount</span>
   </div>
-  <div className="flow-arrow">↓</div>
-  <div className="flow-step">
-    <div className="flow-box flow-box--output">
-      <strong>Display suggested questions</strong><br /><span className="flow-box-subtitle">Clickable chips shown to user</span>
+  <div className='flow-arrow'>↓</div>
+  <div className='flow-step'>
+    <div className='flow-box flow-box--output'>
+      <strong>Display suggested questions</strong>
+      <br />
+      <span className='flow-box-subtitle'>Clickable chips shown to user</span>
     </div>
-    <span className="flow-label">UI output</span>
+    <span className='flow-label'>UI output</span>
   </div>
-  <div className="flow-arrow">↓</div>
-  <div className="flow-step">
-    <div className="flow-box flow-box--consumer">
+  <div className='flow-arrow'>↓</div>
+  <div className='flow-step'>
+    <div className='flow-box flow-box--consumer'>
       <strong>User submits a question</strong>
     </div>
     <span style={{ color: '#6b7280' }}>→</span>
-    <code className="flow-callback">callbacks.onQuestionSubmit(question)</code>
+    <code className='flow-callback'>callbacks.onQuestionSubmit(question)</code>
   </div>
-  <div className="flow-arrow">↓</div>
-  <div className="flow-step">
-    <div className="flow-box flow-box--internal">
-      <strong>Library calls PIA API</strong><br /><span className="flow-box-subtitle">Sends question to Constructor PIA API</span>
+  <div className='flow-arrow'>↓</div>
+  <div className='flow-step'>
+    <div className='flow-box flow-box--internal'>
+      <strong>Library calls PIA API</strong>
+      <br />
+      <span className='flow-box-subtitle'>Sends question to Constructor PIA API</span>
     </div>
-    <span className="flow-label">internal</span>
+    <span className='flow-label'>internal</span>
   </div>
-  <div className="flow-arrow">↓</div>
-  <div className="flow-step">
-    <div className="flow-box flow-box--internal">
-      <strong>API returns results</strong><br /><span className="flow-box-subtitle">item_results.response.results[]</span>
+  <div className='flow-arrow'>↓</div>
+  <div className='flow-step'>
+    <div className='flow-box flow-box--internal'>
+      <strong>API returns results</strong>
+      <br />
+      <span className='flow-box-subtitle'>item_results.response.results[]</span>
     </div>
-    <span className="flow-label">internal</span>
+    <span className='flow-label'>internal</span>
   </div>
-  <div className="flow-arrow">↓</div>
-  <div className="flow-step">
-    <div className="flow-box flow-box--internal">
-      <strong>Transform to Item[]</strong><br /><span className="flow-box-subtitle">snake_case → camelCase</span>
+  <div className='flow-arrow'>↓</div>
+  <div className='flow-step'>
+    <div className='flow-box flow-box--internal'>
+      <strong>Transform to Item[]</strong>
+      <br />
+      <span className='flow-box-subtitle'>snake_case → camelCase</span>
     </div>
-    <span className="flow-label">internal</span>
+    <span className='flow-label'>internal</span>
   </div>
-  <div className="flow-arrow">↓</div>
-  <div className="flow-step">
-    <div className="flow-box flow-box--output">
-      <strong>Render Carousel</strong><br /><span className="flow-box-subtitle">Product cards displayed</span>
+  <div className='flow-arrow'>↓</div>
+  <div className='flow-step'>
+    <div className='flow-box flow-box--output'>
+      <strong>Render Carousel</strong>
+      <br />
+      <span className='flow-box-subtitle'>Product cards displayed</span>
     </div>
-    <span className="flow-label">automatic</span>
+    <span className='flow-label'>automatic</span>
   </div>
-  <div className="flow-arrow">↓</div>
-  <div className="flow-step">
-    <div className="flow-box flow-box--consumer">
+  <div className='flow-arrow'>↓</div>
+  <div className='flow-step'>
+    <div className='flow-box flow-box--consumer'>
       <strong>User clicks a product card</strong>
     </div>
     <span style={{ color: '#6b7280' }}>→</span>
-    <code className="flow-callback">callbacks.onProductCardClick(item)</code>
+    <code className='flow-callback'>callbacks.onProductCardClick(item)</code>
   </div>
-  <div className="flow-arrow">↓</div>
-  <div className="flow-step">
-    <div className="flow-box flow-box--consumer">
-      <strong>User clicks "Add to Cart"</strong><br /><span className="flow-box-subtitle">button shown only when the callback is provided</span>
+  <div className='flow-arrow'>↓</div>
+  <div className='flow-step'>
+    <div className='flow-box flow-box--consumer'>
+      <strong>User clicks "Add to Cart"</strong>
+      <br />
+      <span className='flow-box-subtitle'>button shown only when the callback is provided</span>
     </div>
     <span style={{ color: '#6b7280' }}>→</span>
-    <code className="flow-callback">callbacks.onAddToCart(item, event)</code>
+    <code className='flow-callback'>callbacks.onAddToCart(item, event)</code>
   </div>
 </div>
 
-<div className="cio-flow-legend" style={{ marginTop: '32px' }}>
-  <span><span className="legend-swatch legend-swatch--consumer"></span> Consumer callback</span>
-  <span><span className="legend-swatch legend-swatch--internal"></span> Internal (library handles)</span>
-  <span><span className="legend-swatch legend-swatch--output"></span> UI output</span>
+<div className='cio-flow-legend' style={{ marginTop: '32px' }}>
+  <span>
+    <span className='legend-swatch legend-swatch--consumer'></span> Consumer callback
+  </span>
+  <span>
+    <span className='legend-swatch legend-swatch--internal'></span> Internal (library handles)
+  </span>
+  <span>
+    <span className='legend-swatch legend-swatch--output'></span> UI output
+  </span>
 </div>
 
 ---
@@ -243,7 +260,7 @@ The library automatically sends usage events to the Constructor.io analytics bac
 For your own analytics needs, the library exposes a number of callbacks via the `callbacks` prop. You can find more on the [CioPia API reference](?path=/docs/components-ciopia--docs). Use these to integrate with any third-party analytics provider (Google Analytics, Segment, Amplitude, etc.):
 
 <Markdown>
-{`
+  {`
 | Callback | Signature | When it fires |
 |----------|-----------|---------------|
 | \`onQuestionSubmit\` | \`(question: string) => void\` | User submits a question (Enter key, Send button, or suggested question click) |
@@ -261,8 +278,8 @@ To verify callbacks are working, open your browser's DevTools console. Here is a
 
 ```jsx
 <CioPia
-  apiKey="YOUR_API_KEY"
-  itemId="YOUR_ITEM_ID"
+  apiKey='YOUR_API_KEY'
+  itemId='YOUR_ITEM_ID'
   displayConfigs={{ showFeedback: true }}
   callbacks={{
     onQuestionSubmit: (question) => {
@@ -293,8 +310,8 @@ For a live example, see [PiaCustomCarousel → WithAddToCart](?path=/story/compo
 
 ```jsx
 <CioPia
-  apiKey="YOUR_API_KEY"
-  itemId="YOUR_ITEM_ID"
+  apiKey='YOUR_API_KEY'
+  itemId='YOUR_ITEM_ID'
   callbacks={{
     onAddToCart: (item, event) => {
       addItemToCart({ id: item.id, variationId: item.variationId, quantity: 1 });
@@ -313,7 +330,7 @@ The `callbacks` prop accepts any function, so you can plug in your own analytics
 
 ```jsx
 <CioPia
-  apiKey="YOUR_API_KEY"
+  apiKey='YOUR_API_KEY'
   itemId={itemId}
   displayConfigs={{ showFeedback: true }}
   callbacks={{
@@ -351,11 +368,7 @@ The PIA `product_insights_agent.view` event fires when the container becomes vis
 This is useful when PIA sits in a taller placement where 50% visibility would rarely be reached, or when you want the view event to fire on the smallest hint of visibility (for example, in A/B tests where impression parity across variants matters).
 
 ```jsx
-<CioPia
-  apiKey="YOUR_API_KEY"
-  itemId={itemId}
-  trackingConfigs={{ viewThreshold: 0.01 }}
-/>
+<CioPia apiKey='YOUR_API_KEY' itemId={itemId} trackingConfigs={{ viewThreshold: 0.01 }} />
 ```
 
 Omit the prop (or the whole `trackingConfigs` object) to keep the default of `0.5`.
@@ -374,7 +387,7 @@ const piaCallbacks = {
 };
 
 export default function ProductPage({ itemId }) {
-  return <CioPia apiKey="YOUR_API_KEY" itemId={itemId} callbacks={piaCallbacks} />;
+  return <CioPia apiKey='YOUR_API_KEY' itemId={itemId} callbacks={piaCallbacks} />;
 }
 ```
 
@@ -390,8 +403,8 @@ Submit **"What alternative products are available for this item?"** to see the c
 
 ```jsx
 <CioPia
-  apiKey="YOUR_API_KEY"
-  itemId="YOUR_ITEM_ID"
+  apiKey='YOUR_API_KEY'
+  itemId='YOUR_ITEM_ID'
   callbacks={{
     onProductCardClick: (item) => {
       analytics.track('Product Clicked', { id: item.id, name: item.name });
@@ -402,7 +415,7 @@ Submit **"What alternative products are available for this item?"** to see the c
     carousel: {
       item: {
         reactNode: ({ item }) => (
-          <div className="my-product-card">
+          <div className='my-product-card'>
             {item?.imageUrl && <img src={item.imageUrl} alt={item?.name} />}
             <p>{item?.name}</p>
             {item?.price && <span>${item.price}</span>}
@@ -420,19 +433,18 @@ Use `formatters.formatImageUrl` to transform image URLs before rendering (e.g., 
 
 ```jsx
 // Define outside the component to avoid unnecessary re-renders
-const formatImageUrl = (url) =>
-  url.startsWith('/') ? `https://cdn.example.com${url}` : url;
+const formatImageUrl = (url) => (url.startsWith('/') ? `https://cdn.example.com${url}` : url);
 
 <CioPia
-  apiKey="YOUR_API_KEY"
-  itemId="YOUR_ITEM_ID"
+  apiKey='YOUR_API_KEY'
+  itemId='YOUR_ITEM_ID'
   formatters={{ formatImageUrl }}
   callbacks={{
     onProductCardClick: (item) => {
       analytics.track('Product Clicked', { id: item.id });
     },
   }}
-/>
+/>;
 ```
 
 ### Requesting Resized Images
@@ -466,4 +478,3 @@ previous example) — `new URL()` needs an absolute URL to parse.
 ---
 
 For more details on error handling, styling, and other topics see the [FAQ](?path=/docs/general-faq--docs).
-

@@ -47,9 +47,7 @@ import CioPia from '@constructor-io/constructorio-ui-pia';
 import '@constructor-io/constructorio-ui-pia/styles.css';
 
 function YourComponent() {
-  return (
-    <CioPia apiKey='YOUR_API_KEY' itemId='PRODUCT_ITEM_ID' />
-  );
+  return <CioPia apiKey='YOUR_API_KEY' itemId='PRODUCT_ITEM_ID' />;
 }
 ```
 
@@ -118,50 +116,50 @@ omitting it would quietly put everyone in the test arm with no control group to 
 
 #### Configuration Options
 
-| Prop | Type | Description |
-|------|------|-------------|
-| `apiKey` | `string` | Your Constructor.io API key (required) |
-| `itemId` | `string` | The product item ID (required) |
-| `variationId` | `string` | Optional variation ID |
-| `threadId` | `string` | Optional thread ID for conversation context (must be a valid UUID) |
-| `displayConfigs` | `object` | Display configuration options (see below) |
-| `trackingConfigs` | `object` | Tracking configuration options (see below) |
-| `callbacks` | `object` | Callback handlers for user interactions |
-| `translations` | `object` | UI string translations for internationalization |
-| `componentOverrides` | `object` | Custom component overrides |
-| `abTest` | `object` | A/B test configuration — test cells for tracking, and a control-group placeholder (see below) |
+| Prop                 | Type     | Description                                                                                   |
+| -------------------- | -------- | --------------------------------------------------------------------------------------------- |
+| `apiKey`             | `string` | Your Constructor.io API key (required)                                                        |
+| `itemId`             | `string` | The product item ID (required)                                                                |
+| `variationId`        | `string` | Optional variation ID                                                                         |
+| `threadId`           | `string` | Optional thread ID for conversation context (must be a valid UUID)                            |
+| `displayConfigs`     | `object` | Display configuration options (see below)                                                     |
+| `trackingConfigs`    | `object` | Tracking configuration options (see below)                                                    |
+| `callbacks`          | `object` | Callback handlers for user interactions                                                       |
+| `translations`       | `object` | UI string translations for internationalization                                               |
+| `componentOverrides` | `object` | Custom component overrides                                                                    |
+| `abTest`             | `object` | A/B test configuration — test cells for tracking, and a control-group placeholder (see below) |
 
 **Display Configs:**
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `mode` | `'default' \| 'conversation' \| 'recommendations'` | `'default'` | Display mode. `'recommendations'` is accepted by the type but not yet available — it renders nothing. |
-| `type` | `'inline' \| 'modal'` | `'inline'` | Component type |
-| `showFeedback` | `boolean` | `false` | Show feedback controls on answers |
-| `showPreviousItems` | `boolean` | `true` | Show product carousels from previous conversation entries |
-| `learnMoreUrl` | `string` | - | URL for the "Learn More" disclaimer link |
+| Option              | Type                                               | Default     | Description                                                                                           |
+| ------------------- | -------------------------------------------------- | ----------- | ----------------------------------------------------------------------------------------------------- |
+| `mode`              | `'default' \| 'conversation' \| 'recommendations'` | `'default'` | Display mode. `'recommendations'` is accepted by the type but not yet available — it renders nothing. |
+| `type`              | `'inline' \| 'modal'`                              | `'inline'`  | Component type                                                                                        |
+| `showFeedback`      | `boolean`                                          | `false`     | Show feedback controls on answers                                                                     |
+| `showPreviousItems` | `boolean`                                          | `true`      | Show product carousels from previous conversation entries                                             |
+| `learnMoreUrl`      | `string`                                           | -           | URL for the "Learn More" disclaimer link                                                              |
 
 **Tracking Configs:**
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `viewThreshold` | `number` | `0.5` | Fraction of the container (0–1) that must be visible before the `product_insights_agent.view` event fires. Lower it (e.g. `0.01`) to have the view event fire on minimal visibility. |
+| Option          | Type     | Default | Description                                                                                                                                                                          |
+| --------------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `viewThreshold` | `number` | `0.5`   | Fraction of the container (0–1) that must be visible before the `product_insights_agent.view` event fires. Lower it (e.g. `0.01`) to have the view event fire on minimal visibility. |
 
 **AB Test:**
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `testCells` | `Record<string, string>` | - | `{ [testName]: cellName }`, each sent as an `ef-<testName>` tracking parameter. Ignored when you supply your own `cioClient`. |
-| `isControl` | `boolean` | required | Renders an invisible, tracking-only placeholder instead of the widget, so the control arm still records a view event. Takes precedence over `displayConfigs.mode`. |
+| Option      | Type                     | Default  | Description                                                                                                                                                        |
+| ----------- | ------------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `testCells` | `Record<string, string>` | -        | `{ [testName]: cellName }`, each sent as an `ef-<testName>` tracking parameter. Ignored when you supply your own `cioClient`.                                      |
+| `isControl` | `boolean`                | required | Renders an invisible, tracking-only placeholder instead of the widget, so the control arm still records a view event. Takes precedence over `displayConfigs.mode`. |
 
 **Callbacks:**
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `onQuestionSubmit` | `(question: string) => void` | Called when a question is submitted (via Enter key, Send button, or suggested question click) |
-| `onProductCardClick` | `(item: Item) => void` | Called when a product card in the carousel is clicked |
-| `onAddToCart` | `(item: Item, event: React.MouseEvent) => void` | Called when the "Add to Cart" button on a product card is clicked. Passing this callback is what renders the button; without it no cart control is shown |
-| `onFeedback` | `(type: 'up' \| 'down') => void` | Called when the user submits positive or negative feedback on an answer |
+| Option               | Type                                            | Description                                                                                                                                              |
+| -------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `onQuestionSubmit`   | `(question: string) => void`                    | Called when a question is submitted (via Enter key, Send button, or suggested question click)                                                            |
+| `onProductCardClick` | `(item: Item) => void`                          | Called when a product card in the carousel is clicked                                                                                                    |
+| `onAddToCart`        | `(item: Item, event: React.MouseEvent) => void` | Called when the "Add to Cart" button on a product card is clicked. Passing this callback is what renders the button; without it no cart control is shown |
+| `onFeedback`         | `(type: 'up' \| 'down') => void`                | Called when the user submits positive or negative feedback on an answer                                                                                  |
 
 ### Using the JavaScript Bundle
 

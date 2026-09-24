@@ -48,10 +48,10 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     expect(result.current.data).toEqual(testQuestions);
     expect(result.current.data.length).toBe(testQuestions.length);
     expect(result.current.error).toBeNull();
-    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(
-      testItemId,
-      { threadId: undefined, variationId: undefined },
-    );
+    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(testItemId, {
+      threadId: undefined,
+      variationId: undefined,
+    });
   });
 
   it('handles errors when fetching questions fails', async () => {
@@ -75,10 +75,10 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     expect(result.current.data).toEqual([]);
     expect(result.current.error).toBeInstanceOf(Error);
     expect(result.current.error!.message).toBe('Mock error');
-    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(
-      testItemId,
-      { threadId: undefined, variationId: undefined },
-    );
+    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(testItemId, {
+      threadId: undefined,
+      variationId: undefined,
+    });
   });
 
   it('refetch questions when getSuggestedQuestions function is called', async () => {
@@ -168,14 +168,14 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     });
 
     expect(result.current.data).toEqual(newTestQuestions);
-    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(
-      testItemId,
-      { threadId: undefined, variationId: undefined },
-    );
-    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(
-      newTestItemId,
-      { threadId: undefined, variationId: undefined },
-    );
+    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(testItemId, {
+      threadId: undefined,
+      variationId: undefined,
+    });
+    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(newTestItemId, {
+      threadId: undefined,
+      variationId: undefined,
+    });
   });
 
   it('does not refetch when only the client identity changes', async () => {
@@ -278,10 +278,10 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       });
     });
 
-    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(
-      testItemId,
-      { threadId: 'test-thread-id', variationId: 'test-variation-id' },
-    );
+    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(testItemId, {
+      threadId: 'test-thread-id',
+      variationId: 'test-variation-id',
+    });
     expect(result.current.data).toEqual(testQuestions);
   });
 
@@ -305,10 +305,11 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       });
     });
 
-    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(
-      testItemId,
-      { threadId: undefined, variationId: undefined, numResults: 2 },
-    );
+    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledWith(testItemId, {
+      threadId: undefined,
+      variationId: undefined,
+      numResults: 2,
+    });
   });
 
   it('fetches again when parameters change', async () => {
@@ -350,10 +351,11 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toEqual(newTestQuestions);
     expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledTimes(2);
-    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenLastCalledWith(
-      testItemId,
-      { threadId: undefined, variationId: undefined, numResults: 1 },
-    );
+    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenLastCalledWith(testItemId, {
+      threadId: undefined,
+      variationId: undefined,
+      numResults: 1,
+    });
   });
 
   it('fetches again when parameters are removed', async () => {
@@ -397,9 +399,9 @@ describe('Testing Hook: useSuggestedQuestions', () => {
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toEqual(newTestQuestions);
     expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenCalledTimes(2);
-    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenLastCalledWith(
-      testItemId,
-      { threadId: undefined, variationId: undefined },
-    );
+    expect(mockClient.agent.pia.getSuggestedQuestions).toHaveBeenLastCalledWith(testItemId, {
+      threadId: undefined,
+      variationId: undefined,
+    });
   });
 });

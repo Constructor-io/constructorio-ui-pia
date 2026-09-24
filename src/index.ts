@@ -4,7 +4,7 @@ import CioPia from './components/CioPia';
 export { default as CioPia } from './components/CioPia';
 
 // Types
-export type { CioPiaProps } from './components/CioPia';
+export type { CioPiaProps, CheckoutTrigger } from './components/CioPia';
 
 // Utilities
 export { sanitizeHtml, renderMarkdown } from './utils/contentTransformers';

@@ -14,16 +14,19 @@ describe('Testing Recs Utils: resolveRefinementQuestion', () => {
   });
 
   it('translates the built-in label', () => {
-    expect(
-      resolveRefinementQuestion(null, { [RECS_REFINEMENT_LABEL]: 'Try one of these:' }),
-    ).toBe('Try one of these:');
+    expect(resolveRefinementQuestion(null, { [RECS_REFINEMENT_LABEL]: 'Try one of these:' })).toBe(
+      'Try one of these:',
+    );
   });
 
   it('does not translate the prompt the API sent, because it is already localized', () => {
     expect(
-      resolveRefinementQuestion({ question: 'Refine by:', options: [] }, {
-        [RECS_REFINEMENT_LABEL]: 'Try one of these:',
-      }),
+      resolveRefinementQuestion(
+        { question: 'Refine by:', options: [] },
+        {
+          [RECS_REFINEMENT_LABEL]: 'Try one of these:',
+        },
+      ),
     ).toBe('Refine by:');
   });
 });
