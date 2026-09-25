@@ -1140,7 +1140,6 @@ describe('CioPia Component', () => {
         />,
       );
 
-      // Only the last entry keeps its carousel, as in a live conversation.
       const entries = container.querySelectorAll('.cio-pia-conversation-entry');
       expect(entries[0].querySelector(CAROUSEL_SELECTOR)).toBeNull();
       expect(entries[1].querySelector(CAROUSEL_SELECTOR)).not.toBeNull();

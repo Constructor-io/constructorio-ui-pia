@@ -1413,7 +1413,6 @@ describe('Testing Hook: useConversation', () => {
           initialConversationHistory: [
             { ...seededHistory[0], id: 7 },
             { ...seededHistory[1], id: 7 },
-            // Stored as JSON by a host, then parsed without validation.
             { ...seededHistory[0], id: 'nine' as unknown as number },
           ],
         }),
@@ -1444,7 +1443,6 @@ describe('Testing Hook: useConversation', () => {
             pia,
             itemId: 'test-item',
             isConversation: true,
-            // Parsed from a host's storage without validation.
             initialConversationHistory: { entries: seededHistory } as unknown as ConversationEntry[],
           }),
         );

@@ -17,10 +17,6 @@ export interface UseConversationProps {
   isConversation: boolean;
   callbacks?: Callbacks;
   tracking?: UseTrackingReturn;
-  /**
-   * Entries to show before the first question, read once on mount. Ignored outside
-   * conversation mode, which has no history to show them in.
-   */
   initialConversationHistory?: ConversationEntry[];
 }
 
