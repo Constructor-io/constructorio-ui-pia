@@ -54,3 +54,36 @@
   outline: 2px solid #0f1324;
   outline-offset: 2px;
 }
+
+.cio-pia-checkout-triggers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.cio-pia-checkout-trigger {
+  background: #0f1324;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.cio-pia-checkout-trigger:hover {
+  opacity: 0.9;
+}
+
+.cio-pia-checkout-trigger:focus-visible {
+  outline: 2px solid #0f1324;
+  outline-offset: 2px;
+}
+
+.cio-pia-checkout-trigger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

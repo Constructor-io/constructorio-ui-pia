@@ -42,9 +42,7 @@ describe('Testing Hook: useTracking', () => {
     });
 
     it('includes variationId when provided', () => {
-      const { result } = renderHook(() =>
-        useTracking({ ...baseProps, variationId: 'var-1' }),
-      );
+      const { result } = renderHook(() => useTracking({ ...baseProps, variationId: 'var-1' }));
 
       result.current.trackFocus();
 
@@ -56,9 +54,7 @@ describe('Testing Hook: useTracking', () => {
     });
 
     it('omits variationId when undefined', () => {
-      const { result } = renderHook(() =>
-        useTracking({ ...baseProps, variationId: undefined }),
-      );
+      const { result } = renderHook(() => useTracking({ ...baseProps, variationId: undefined }));
 
       result.current.trackOutOfView();
 
@@ -67,9 +63,7 @@ describe('Testing Hook: useTracking', () => {
     });
 
     it('includes threadId when provided', () => {
-      const { result } = renderHook(() =>
-        useTracking({ ...baseProps, threadId: 'thread-abc' }),
-      );
+      const { result } = renderHook(() => useTracking({ ...baseProps, threadId: 'thread-abc' }));
 
       result.current.trackFocus();
 
@@ -81,9 +75,7 @@ describe('Testing Hook: useTracking', () => {
     });
 
     it('omits threadId when undefined', () => {
-      const { result } = renderHook(() =>
-        useTracking({ ...baseProps, threadId: undefined }),
-      );
+      const { result } = renderHook(() => useTracking({ ...baseProps, threadId: undefined }));
 
       result.current.trackOutOfView();
 
@@ -372,9 +364,7 @@ describe('Testing Hook: useTracking', () => {
     });
 
     it('includes threadId when provided', () => {
-      const { result } = renderHook(() =>
-        useTracking({ ...baseProps, threadId: 'thread-xyz' }),
-      );
+      const { result } = renderHook(() => useTracking({ ...baseProps, threadId: 'thread-xyz' }));
       const clickedItem = { id: 'rec-1', name: 'Product' };
 
       result.current.trackResultClick(clickedItem, 1, 'Is it good?');
@@ -408,9 +398,7 @@ describe('Testing Hook: useTracking', () => {
     });
 
     it('includes seedVariationId when variationId prop is provided', () => {
-      const { result } = renderHook(() =>
-        useTracking({ ...baseProps, variationId: 'seed-var-1' }),
-      );
+      const { result } = renderHook(() => useTracking({ ...baseProps, variationId: 'seed-var-1' }));
       const clickedItem = { id: 'rec-1', name: 'Product' };
 
       result.current.trackResultClick(clickedItem, 0, 'Question?');
@@ -439,7 +427,9 @@ describe('Testing Hook: useTracking', () => {
       expect(() => result.current.trackFocus()).not.toThrow();
       expect(() => result.current.trackQuestionClick('q')).not.toThrow();
       expect(() => result.current.trackQuestionSubmit('q')).not.toThrow();
-      expect(() => result.current.trackAnswerView('q', { value: 'a', qna_result_id: 'r' })).not.toThrow();
+      expect(() =>
+        result.current.trackAnswerView('q', { value: 'a', qna_result_id: 'r' }),
+      ).not.toThrow();
       expect(() => result.current.trackAnswerFeedback(FeedbackType.UP)).not.toThrow();
       expect(() => result.current.trackResultClick({ id: 'x', name: 'y' }, 0, 'q')).not.toThrow();
     });

@@ -131,8 +131,12 @@ describe('PiaInlineAnswer Component', () => {
 
       const answerContainer = container.querySelector('.cio-pia-answer-container')!;
       const children = [...answerContainer.children];
-      const answerIndex = children.findIndex((el) => el.getAttribute('data-testid') === 'answer-text');
-      const disclaimerIndex = children.findIndex((el) => el.classList.contains('cio-pia-disclaimer'));
+      const answerIndex = children.findIndex(
+        (el) => el.getAttribute('data-testid') === 'answer-text',
+      );
+      const disclaimerIndex = children.findIndex((el) =>
+        el.classList.contains('cio-pia-disclaimer'),
+      );
 
       expect(disclaimerIndex).toBeGreaterThan(answerIndex);
     });
@@ -142,14 +146,20 @@ describe('PiaInlineAnswer Component', () => {
 
       const answerContainer = container.querySelector('.cio-pia-answer-container')!;
       const children = [...answerContainer.children];
-      const answerIndex = children.findIndex((el) => el.getAttribute('data-testid') === 'answer-text');
-      const disclaimerIndex = children.findIndex((el) => el.classList.contains('cio-pia-disclaimer'));
+      const answerIndex = children.findIndex(
+        (el) => el.getAttribute('data-testid') === 'answer-text',
+      );
+      const disclaimerIndex = children.findIndex((el) =>
+        el.classList.contains('cio-pia-disclaimer'),
+      );
 
       expect(disclaimerIndex).toBeLessThan(answerIndex);
     });
 
     it('does not render disclaimer at top when position is bottom', () => {
-      const { container } = render(<PiaInlineAnswer {...defaultProps} disclaimerPosition='bottom' />);
+      const { container } = render(
+        <PiaInlineAnswer {...defaultProps} disclaimerPosition='bottom' />,
+      );
 
       const answerContainer = container.querySelector('.cio-pia-answer-container')!;
       const firstChild = answerContainer.children[0];

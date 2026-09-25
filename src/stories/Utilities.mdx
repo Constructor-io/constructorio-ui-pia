@@ -29,7 +29,7 @@ const clean = sanitizeHtml('<b>Safe</b><script>alert("xss")</script>');
             description: {
               reactNode: ({ product }) => (
                 <p
-                  className="cio-product-card-description"
+                  className='cio-product-card-description'
                   dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.description || '') }}
                 />
               ),
@@ -61,7 +61,7 @@ const html = renderMarkdown('**Bold** and [a link](https://example.com)');
     answer: {
       reactNode: ({ text }) => (
         <div
-          className="cio-pia-answer"
+          className='cio-pia-answer'
           dangerouslySetInnerHTML={{ __html: renderMarkdown(text) }}
         />
       ),
@@ -81,7 +81,10 @@ const html = renderMarkdown(text, {
   sanitize: (purifier, html, { config }) => {
     purifier.addHook('uponSanitizeAttribute', (node, event) => {
       if (node.tagName === 'A' && event.attrName === 'href') {
-        if (/^javascript:window\.openChat\(\)$/.test(event.attrValue) || /^sms:/.test(event.attrValue)) {
+        if (
+          /^javascript:window\.openChat\(\)$/.test(event.attrValue) ||
+          /^sms:/.test(event.attrValue)
+        ) {
           event.forceKeepAttr = true;
         }
       }
@@ -111,13 +114,16 @@ Full example with an answer override:
     answer: {
       reactNode: ({ text }) => (
         <div
-          className="cio-pia-answer"
+          className='cio-pia-answer'
           dangerouslySetInnerHTML={{
             __html: renderMarkdown(text, {
               sanitize: (purifier, html, { config }) => {
                 purifier.addHook('uponSanitizeAttribute', (node, event) => {
                   if (node.tagName === 'A' && event.attrName === 'href') {
-                    if (/^javascript:window\.openChat\(\)$/.test(event.attrValue) || /^sms:/.test(event.attrValue)) {
+                    if (
+                      /^javascript:window\.openChat\(\)$/.test(event.attrValue) ||
+                      /^sms:/.test(event.attrValue)
+                    ) {
                       event.forceKeepAttr = true;
                     }
                   }
@@ -145,11 +151,15 @@ Full example with an answer override:
   <tbody>
     <tr>
       <td>Answers</td>
-      <td><code>renderMarkdown</code> (Markdown + HTML support, sanitized)</td>
+      <td>
+        <code>renderMarkdown</code> (Markdown + HTML support, sanitized)
+      </td>
     </tr>
     <tr>
       <td>Product descriptions</td>
-      <td><code>sanitizeHtml</code> (HTML only, no Markdown parsing)</td>
+      <td>
+        <code>sanitizeHtml</code> (HTML only, no Markdown parsing)
+      </td>
     </tr>
   </tbody>
 </table>

@@ -2,6 +2,11 @@
   max-height: var(--cio-pia-conversation-max-height);
 }
 
+.cio-pia-conversation-checkout {
+  flex-shrink: 0;
+  margin-bottom: 8px;
+}
+
 .cio-pia-conversation-footer {
   display: flex;
   flex-direction: column;

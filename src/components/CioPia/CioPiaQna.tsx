@@ -16,6 +16,7 @@ import PiaInlineAnswer from '../PiaInlineAnswer/PiaInlineAnswer';
 import PiaModal from '../PiaConversation/PiaModal';
 import PiaConversation from '../PiaConversation/PiaConversation';
 import StatusRegion, { answerStatusMessage } from '../StatusRegion/StatusRegion';
+import CheckoutTriggerBar from './CheckoutTriggerBar';
 import type { CioPiaProps } from './types';
 
 /** The question-and-answer experience: `mode: 'default'`, `mode: 'conversation'`, and the modal. */
@@ -39,6 +40,7 @@ export default function CioPiaQna(props: CioPiaProps) {
     answerParameters,
     parameters,
     trackingConfigs,
+    checkoutTriggers,
     abTest,
     initialConversationHistory,
   } = props;
@@ -133,11 +135,21 @@ export default function CioPiaQna(props: CioPiaProps) {
     conversationHistory,
   };
 
+  const checkoutElement =
+    checkoutTriggers && checkoutTriggers.length > 0 ? (
+      <CheckoutTriggerBar
+        triggers={checkoutTriggers}
+        state={renderProps}
+        translations={translations}
+      />
+    ) : null;
+
   const conversationHistoryProps = {
     conversationHistory,
     isLoading,
     isAnswerLoading,
     error,
+    checkoutElement,
     // Until a live answer arrives, a seeded last entry shows its own items. `null` would hide them.
     currentItems: pia.answers.data ? currentItems : undefined,
     showFeedback,
@@ -232,6 +244,8 @@ export default function CioPiaQna(props: CioPiaProps) {
             componentOverride={componentOverrides?.suggestedQuestions}
           />
         )}
+
+        {checkoutElement}
       </RenderPropsWrapper>
       <StatusRegion message={answerStatus} data-testid='answer-status' />
     </div>
