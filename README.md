@@ -124,7 +124,7 @@ omitting it would quietly put everyone in the test arm with no control group to 
 | `itemId` | `string` | The product item ID (required) |
 | `variationId` | `string` | Optional variation ID |
 | `threadId` | `string` | Optional thread ID for conversation context (must be a valid UUID) |
-| `initialConversationHistory` | `ConversationEntry[]` | Entries to show before the first question, read once on mount. Conversation and modal modes only (see [Restoring a conversation](#restoring-a-conversation)) |
+| `initialConversationHistory` | `ConversationEntry[]` | A conversation you manage, shown before the first question and read once on mount. Conversation and modal modes only (see [Restoring a conversation](#restoring-a-conversation)) |
 | `displayConfigs` | `object` | Display configuration options (see below) |
 | `trackingConfigs` | `object` | Tracking configuration options (see below) |
 | `callbacks` | `object` | Callback handlers for user interactions |
@@ -166,29 +166,39 @@ omitting it would quietly put everyone in the test arm with no control group to 
 
 #### Restoring a conversation
 
-In conversation mode, `onAnswer` receives the whole history after every answer. Store it per product along with the thread ID, then pass both back to pick the conversation up where it left off:
+`initialConversationHistory` hands the conversation's history to you. Keep it wherever suits you, in the browser or on your own server. In conversation mode `onAnswer` receives the whole history after every answer, so save it per product along with the thread ID and pass both back to pick the conversation up where it left off:
 
 ```jsx
-const saved = load(itemId);
+function ProductQuestions({ itemId }) {
+  // Your own loader: from browser storage, your server, or anywhere else.
+  const { isLoading, saved } = useSavedConversation(itemId);
 
-<CioPia
-  key={itemId}
-  apiKey='YOUR_API_KEY'
-  itemId={itemId}
-  threadId={saved?.threadId}
-  initialConversationHistory={saved?.history}
-  displayConfigs={{ mode: 'conversation' }}
-  callbacks={{
-    onAnswer: (history, context) =>
-      save(context.itemId, { threadId: context.threadId, history }),
-  }}
-/>
+  // The history is read once, on mount, so wait for it.
+  if (isLoading) return null;
+
+  return (
+    <CioPia
+      key={itemId}
+      apiKey='YOUR_API_KEY'
+      itemId={itemId}
+      threadId={saved?.threadId}
+      initialConversationHistory={saved?.history ?? []}
+      displayConfigs={{ mode: 'conversation' }}
+      callbacks={{
+        onAnswer: (history, context) =>
+          saveConversation(context.itemId, { threadId: context.threadId, history }),
+      }}
+    />
+  );
+}
 ```
 
-- The history is read once, on mount. Changing `itemId` clears it, so store it per product and remount with `key={itemId}` to load the next product's conversation.
+- Passing the prop, even as `[]`, means you manage the history. Pass `[]` when nothing is saved rather than leaving it out.
+- The history is read once, on mount: render `CioPia` after your history has loaded, because a value that arrives later is ignored. Changing `itemId` clears it, so store it per product and remount with `key={itemId}` to load the next product's conversation.
 - Pass the `threadId` the entries came from. The agent keeps the thread's context server-side, so history shown under a different thread is a transcript the agent does not remember.
 - In `type: 'modal'` the entries appear in the dialog, which opens when the shopper asks their next question. Closing the modal clears them, as it does a live conversation.
 - The suggested questions row shows the product's suggested questions, not the follow-ups from the last restored answer.
+- Entries without a string `question` and `answer` are skipped with a console warning, and each entry's `id` is replaced with the widget's own numbering.
 - It is ignored in `mode: 'default'`, which shows only the latest answer, in `mode: 'recommendations'`, and for the A/B control group (`abTest.isControl`).
 
 ### Using the JavaScript Bundle

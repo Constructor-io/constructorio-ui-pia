@@ -54,7 +54,7 @@ and follow-up questions appear after each response.
 ## Restored Conversation
 
 Pass `initialConversationHistory` to show earlier turns before the shopper's first question, for example after a page reload.
-The entries are the same `ConversationEntry[]` that `callbacks.onAnswer` receives, and they are read once, on mount.
+The entries are the same `ConversationEntry[]` that `callbacks.onAnswer` receives, kept wherever you choose, and they are read once, on mount.
 Pass the `threadId` they came from so the agent remembers them too.
 
 <Canvas of={DisplayConfigsStories.RestoredConversation} />

@@ -71,7 +71,8 @@ const meta = {
     },
     initialConversationHistory: {
       description: [
-        'Entries to show before the first question, such as a conversation saved from `onAnswer`. Read once on mount, and cleared when `itemId` changes.',
+        'A conversation you manage, such as one saved from `onAnswer` in the browser or on your own server, shown before the first question.',
+        'When provided, including as `[]`, it is the conversation shown on mount: pass `[]` rather than omitting it when nothing is saved. Read once on mount, so render after it has loaded, and cleared when `itemId` changes.',
         'Used by `mode: "conversation"` and `type: "modal"` only; the modal shows them once it opens.',
         '',
         'Pass the `threadId` the entries came from: the agent keeps the thread context server-side and will not remember entries from another thread.',

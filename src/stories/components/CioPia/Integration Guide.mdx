@@ -115,26 +115,34 @@ See [PiaConversation](?path=/docs/components-piaconversation--docs) for a live e
 
 ### 6. Restore a conversation (optional)
 
-In conversation mode, `onAnswer` receives the whole history after every answer. Save it per product along with the thread ID, then pass both back to pick the conversation up where it left off:
+`initialConversationHistory` hands the conversation's history to you, kept in the browser or on your own server. In conversation mode, `onAnswer` receives the whole history after every answer. Save it per product along with the thread ID, then pass both back to pick the conversation up where it left off:
 
 ```jsx
-const saved = load(itemId);
+function ProductQuestions({ itemId }) {
+  // Your own loader: from browser storage, your server, or anywhere else.
+  const { isLoading, saved } = useSavedConversation(itemId);
 
-<CioPia
-  key={itemId}
-  apiKey="YOUR_API_KEY"
-  itemId={itemId}
-  threadId={saved?.threadId}
-  initialConversationHistory={saved?.history}
-  displayConfigs={{ mode: 'conversation' }}
-  callbacks={{
-    onAnswer: (history, context) =>
-      save(context.itemId, { threadId: context.threadId, history }),
-  }}
-/>
+  // The history is read once, on mount, so wait for it.
+  if (isLoading) return null;
+
+  return (
+    <CioPia
+      key={itemId}
+      apiKey="YOUR_API_KEY"
+      itemId={itemId}
+      threadId={saved?.threadId}
+      initialConversationHistory={saved?.history ?? []}
+      displayConfigs={{ mode: 'conversation' }}
+      callbacks={{
+        onAnswer: (history, context) =>
+          saveConversation(context.itemId, { threadId: context.threadId, history }),
+      }}
+    />
+  );
+}
 ```
 
-The history is read once, on mount, and changing `itemId` clears it. Remount with `key={itemId}` so each product loads its own saved conversation.
+Passing the prop, even as `[]`, means you manage the history, so pass `[]` when nothing is saved rather than leaving it out. The history is read once, on mount, and changing `itemId` clears it. Remount with `key={itemId}` so each product loads its own saved conversation.
 
 ---
 

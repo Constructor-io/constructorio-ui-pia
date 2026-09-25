@@ -32,10 +32,12 @@ export interface CioPiaProps
   /** Thread ID for conversation context. Must be a valid UUID (e.g., "550e8400-e29b-41d4-a716-446655440000"). */
   threadId?: string;
   /**
-   * Entries to show before the first question, such as a conversation saved from `onAnswer`.
-   * Read once on mount, and cleared when `itemId` changes. Pass the `threadId` the entries
-   * came from, or the agent will not remember them. Used by `mode: 'conversation'` and
-   * `type: 'modal'` only; the modal shows them once it opens.
+   * A conversation you manage, such as one saved from `onAnswer` in the browser or on your own
+   * server. When provided, including as `[]`, these entries are the conversation shown before the
+   * first question; pass `[]` rather than omitting it when nothing is saved.
+   * Read once on mount, so render after it has loaded, and cleared when `itemId` changes. Pass the
+   * `threadId` the entries came from, or the agent will not remember them. Used by
+   * `mode: 'conversation'` and `type: 'modal'` only; the modal shows them once it opens.
    */
   initialConversationHistory?: ConversationEntry[];
   /** Optional variation ID for the product. */
