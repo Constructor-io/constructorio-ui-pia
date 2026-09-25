@@ -55,18 +55,14 @@ export default function useConversation({
 
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
   const [displayedQuestions, setDisplayedQuestions] = useState<Question[]>([]);
+  // Seeded ids are replaced: `id` is the React key, so a caller's values cannot be trusted to be unique.
   const [conversationHistory, setConversationHistory] = useState<ConversationEntry[]>(() =>
-    isConversation && initialConversationHistory ? [...initialConversationHistory] : [],
+    isConversation && initialConversationHistory
+      ? initialConversationHistory.map((entry, index) => ({ ...entry, id: index + 1 }))
+      : [],
   );
 
-  // Continue numbering after the seeded entries: `id` is the React key.
-  const [lastSeededId] = useState(() =>
-    conversationHistory.reduce(
-      (max, entry) => (Number.isFinite(entry.id) ? Math.max(max, entry.id) : max),
-      0,
-    ),
-  );
-  const entryIdRef = useRef(lastSeededId);
+  const entryIdRef = useRef(conversationHistory.length);
   const conversationHistoryRef = useRef(conversationHistory);
   const prevItemIdRef = useRef(itemId);
   const prevAnswerDataRef = useRef(answers.data);

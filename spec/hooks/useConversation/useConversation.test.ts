@@ -1067,6 +1067,10 @@ describe('Testing Hook: useConversation', () => {
         qnaResultId: 'qna-seed-2',
       },
     ];
+    const restoredHistory: ConversationEntry[] = [
+      { ...seededHistory[0], id: 1 },
+      { ...seededHistory[1], id: 2 },
+    ];
 
     it('seeds the history in conversation mode', () => {
       const pia = createMockPia();
@@ -1079,7 +1083,7 @@ describe('Testing Hook: useConversation', () => {
         }),
       );
 
-      expect(result.current.conversationHistory).toEqual(seededHistory);
+      expect(result.current.conversationHistory).toEqual(restoredHistory);
     });
 
     it('keeps the seeded history through a StrictMode double mount', () => {
@@ -1095,7 +1099,7 @@ describe('Testing Hook: useConversation', () => {
         { wrapper: React.StrictMode },
       );
 
-      expect(result.current.conversationHistory).toEqual(seededHistory);
+      expect(result.current.conversationHistory).toEqual(restoredHistory);
     });
 
     it('ignores the seed outside conversation mode', () => {
@@ -1131,7 +1135,7 @@ describe('Testing Hook: useConversation', () => {
       expect(seed).toHaveLength(2);
     });
 
-    it('numbers a new question after the highest seeded id', () => {
+    it('numbers a new question after the seeded entries', () => {
       const pia = createMockPia();
       const { result } = renderHook(() =>
         useConversation({
@@ -1148,7 +1152,7 @@ describe('Testing Hook: useConversation', () => {
 
       expect(result.current.conversationHistory).toHaveLength(3);
       expect(result.current.conversationHistory[2]).toMatchObject({
-        id: 8,
+        id: 3,
         question: 'How long is the warranty?',
         answer: '',
       });
@@ -1172,7 +1176,7 @@ describe('Testing Hook: useConversation', () => {
         initialConversationHistory: [seededHistory[0]],
       });
 
-      expect(result.current.conversationHistory).toEqual(seededHistory);
+      expect(result.current.conversationHistory).toEqual(restoredHistory);
     });
 
     it('clears the seeded history when itemId changes', () => {
@@ -1250,9 +1254,9 @@ describe('Testing Hook: useConversation', () => {
       expect(onAnswer).toHaveBeenCalledTimes(1);
       expect(onAnswer).toHaveBeenCalledWith(
         [
-          ...seededHistory,
+          ...restoredHistory,
           expect.objectContaining({
-            id: 8,
+            id: 3,
             question: 'How long is the warranty?',
             answer: 'Two years.',
             qnaResultId: 'qna-new',
@@ -1338,16 +1342,16 @@ describe('Testing Hook: useConversation', () => {
       expect(result.current.conversationHistory[0].id).toBe(1);
     });
 
-    it('skips a seeded id that is not a number when numbering new questions', () => {
+    it('replaces seeded ids with its own', () => {
       const pia = createMockPia();
       const { result } = renderHook(() =>
         useConversation({
           pia,
           itemId: 'test-item',
           isConversation: true,
-          tracking: mockTracking,
           initialConversationHistory: [
-            ...seededHistory,
+            { ...seededHistory[0], id: 7 },
+            { ...seededHistory[1], id: 7 },
             // Stored as JSON by a host, then parsed without validation.
             { ...seededHistory[0], id: 'nine' as unknown as number },
           ],
@@ -1358,8 +1362,7 @@ describe('Testing Hook: useConversation', () => {
         result.current.handleSubmitQuestion('A new question');
       });
 
-      const history = result.current.conversationHistory;
-      expect(history[history.length - 1].id).toBe(8);
+      expect(result.current.conversationHistory.map((entry) => entry.id)).toEqual([1, 2, 3, 4]);
     });
   });
 });

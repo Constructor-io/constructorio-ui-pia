@@ -189,7 +189,6 @@ const saved = load(itemId);
 - Pass the `threadId` the entries came from. The agent keeps the thread's context server-side, so history shown under a different thread is a transcript the agent does not remember.
 - In `type: 'modal'` the entries appear in the dialog, which opens when the shopper asks their next question. Closing the modal clears them, as it does a live conversation.
 - The suggested questions row shows the product's suggested questions, not the follow-ups from the last restored answer.
-- Entry `id`s must be unique numbers. New entries are numbered after the highest one.
 - It is ignored in `mode: 'default'`, which shows only the latest answer, in `mode: 'recommendations'`, and for the A/B control group (`abTest.isControl`).
 
 ### Using the JavaScript Bundle

@@ -197,7 +197,7 @@ export interface Item extends Product, Record<string, any> {
 
 /** One question and its answer, as passed to `onAnswer` and accepted by `initialConversationHistory`. */
 export interface ConversationEntry {
-  /** Unique within the conversation. Used as the React key. */
+  /** Unique within the conversation. Assigned by the widget: ids in `initialConversationHistory` are replaced. */
   id: number;
   question: string;
   answer: string;

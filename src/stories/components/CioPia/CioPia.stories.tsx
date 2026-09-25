@@ -76,7 +76,7 @@ const meta = {
         '',
         'Pass the `threadId` the entries came from: the agent keeps the thread context server-side and will not remember entries from another thread.',
         '',
-        'Each entry is `{ id: number, question: string, answer: string, source: "user" | "suggestion", items?: Item[] | null, threadId?: string, qnaResultId?: string }`, the same shape `onAnswer` passes. `id` must be unique: it is the React key.',
+        'Each entry is `{ id: number, question: string, answer: string, source: "user" | "suggestion", items?: Item[] | null, threadId?: string, qnaResultId?: string }`, the same shape `onAnswer` passes. The widget replaces each `id` with its own numbering.',
       ].join('\n'),
       table: { type: { summary: 'ConversationEntry[]' } },
     },
