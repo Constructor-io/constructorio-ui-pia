@@ -1,6 +1,6 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import ConversationHistory from '../../../src/components/ConversationHistory/ConversationHistory';
 import { DISCLAIMER_TEXT } from '../../../src/constants';
 
@@ -67,7 +67,11 @@ describe('ConversationHistory Component', () => {
     });
 
     it('stays silent while only the follow-up questions are loading', () => {
-      render(
+      const { rerender } = render(
+        <ConversationHistory {...baseProps} conversationHistory={[entry]} isLoading />,
+      );
+
+      rerender(
         <ConversationHistory
           {...baseProps}
           conversationHistory={[{ ...entry, answer: 'It is a rug.' }]}
@@ -78,6 +82,29 @@ describe('ConversationHistory Component', () => {
 
       expect(screen.getByTestId('answer-status')).toHaveTextContent('Answer ready');
       expect(screen.getByTestId('answer-status')).not.toHaveTextContent('Loading answer');
+    });
+
+    it('does not announce an answer that was already there on mount', () => {
+      const restored = { ...entry, answer: 'It is a rug.' };
+      const { rerender } = render(
+        <ConversationHistory {...baseProps} conversationHistory={[restored]} />,
+      );
+
+      expect(screen.getByTestId('answer-status')).toBeEmptyDOMElement();
+
+      const next = { id: 2, question: 'Is it washable?', answer: '' };
+      rerender(
+        <ConversationHistory {...baseProps} conversationHistory={[restored, next]} isLoading />,
+      );
+      expect(screen.getByTestId('answer-status')).toHaveTextContent('Loading answer');
+
+      rerender(
+        <ConversationHistory
+          {...baseProps}
+          conversationHistory={[restored, { ...next, answer: 'Yes, cold wash.' }]}
+        />,
+      );
+      expect(screen.getByTestId('answer-status')).toHaveTextContent('Answer ready');
     });
 
     it('keeps the status region outside the conversation log', () => {
@@ -539,5 +566,91 @@ describe('ConversationHistory Component', () => {
 
     const feedbackElements = document.querySelectorAll('.cio-pia-feedback-container');
     expect(feedbackElements).toHaveLength(0);
+  });
+
+  describe('carousel click qnaResultId', () => {
+    const makeItem = (id: string) => ({
+      id,
+      name: `Product ${id}`,
+      url: `https://example.com/${id}`,
+      imageUrl: `https://example.com/${id}.jpg`,
+      price: 10,
+    });
+
+    const renderAndClickFirstCard = (
+      conversationHistory: React.ComponentProps<typeof ConversationHistory>['conversationHistory'],
+    ) => {
+      const onResultClick = jest.fn();
+      const { container } = render(
+        <ConversationHistory
+          {...baseProps}
+          conversationHistory={conversationHistory}
+          onResultClick={onResultClick}
+          callbacks={{ onProductCardClick: jest.fn() }}
+          qnaResultId='qna-live'
+        />,
+      );
+      fireEvent.click(container.querySelectorAll<HTMLElement>('.cio-product-card')[0]);
+      return onResultClick;
+    };
+
+    it("reports each carousel click against its own entry's qnaResultId", () => {
+      const onResultClick = renderAndClickFirstCard([
+        {
+          id: 1,
+          question: 'First question',
+          answer: 'First answer',
+          items: [makeItem('a')],
+          qnaResultId: 'qna-first',
+        },
+        {
+          id: 2,
+          question: 'Last question',
+          answer: 'Last answer',
+          items: [makeItem('b')],
+          qnaResultId: 'qna-last',
+        },
+      ]);
+
+      expect(onResultClick).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'a' }),
+        0,
+        'First question',
+        'qna-first',
+      );
+    });
+
+    it('falls back to the live qnaResultId for the last entry without its own', () => {
+      const onResultClick = renderAndClickFirstCard([
+        { id: 1, question: 'Only question', answer: 'Only answer', items: [makeItem('a')] },
+      ]);
+
+      expect(onResultClick).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'a' }),
+        0,
+        'Only question',
+        'qna-live',
+      );
+    });
+
+    it('does not credit an earlier entry without its own qnaResultId to the live answer', () => {
+      const onResultClick = renderAndClickFirstCard([
+        { id: 1, question: 'First question', answer: 'First answer', items: [makeItem('a')] },
+        {
+          id: 2,
+          question: 'Last question',
+          answer: 'Last answer',
+          items: [makeItem('b')],
+          qnaResultId: 'qna-last',
+        },
+      ]);
+
+      expect(onResultClick).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'a' }),
+        0,
+        'First question',
+        undefined,
+      );
+    });
   });
 });

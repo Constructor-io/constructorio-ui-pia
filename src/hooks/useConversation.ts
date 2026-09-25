@@ -17,6 +17,7 @@ export interface UseConversationProps {
   isConversation: boolean;
   callbacks?: Callbacks;
   tracking?: UseTrackingReturn;
+  initialConversationHistory?: ConversationEntry[];
 }
 
 export interface UseConversationReturn {
@@ -35,12 +36,41 @@ export interface UseConversationReturn {
   resetState: () => void;
 }
 
+function isRestorableEntry(entry: unknown): entry is ConversationEntry {
+  if (typeof entry !== 'object' || entry === null) return false;
+  const { question, answer, items } = entry as Partial<ConversationEntry>;
+  return (
+    typeof question === 'string' &&
+    typeof answer === 'string' &&
+    (items === undefined || items === null || Array.isArray(items))
+  );
+}
+
+// The seed comes from the host's own storage, typed or not: a malformed one must not take the widget down.
+function restoreHistory(seed: unknown): ConversationEntry[] {
+  if (!Array.isArray(seed)) {
+    console.warn('[CioPia] initialConversationHistory must be an array. It was ignored.');
+    return [];
+  }
+
+  const entries = seed.filter(isRestorableEntry);
+  if (entries.length < seed.length) {
+    console.warn(
+      `[CioPia] ${seed.length - entries.length} initialConversationHistory entries were ignored. Each needs a string question and answer, and items must be an array.`,
+    );
+  }
+
+  // Seeded ids are replaced: `id` is the React key, so a caller's values cannot be trusted to be unique.
+  return entries.map((entry, index) => ({ ...entry, id: index + 1 }));
+}
+
 export default function useConversation({
   pia,
   itemId,
   isConversation,
   callbacks,
   tracking,
+  initialConversationHistory,
 }: UseConversationProps): UseConversationReturn {
   const { suggestedQuestions, answers, threadId } = pia;
   const { getAnswer } = answers;
@@ -49,9 +79,15 @@ export default function useConversation({
 
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
   const [displayedQuestions, setDisplayedQuestions] = useState<Question[]>([]);
-  const [conversationHistory, setConversationHistory] = useState<ConversationEntry[]>([]);
+  const [conversationHistory, setConversationHistory] = useState<ConversationEntry[]>(() =>
+    isConversation && initialConversationHistory !== undefined
+      ? restoreHistory(initialConversationHistory)
+      : [],
+  );
 
-  const entryIdRef = useRef(0);
+  const entryIdRef = useRef(conversationHistory.length);
+  const conversationHistoryRef = useRef(conversationHistory);
+  const prevItemIdRef = useRef(itemId);
   const prevAnswerDataRef = useRef(answers.data);
   const hasTrackedCurrentAnswerRef = useRef(false);
   const answersRef = useRef(answers);
@@ -79,6 +115,10 @@ export default function useConversation({
   useEffect(() => {
     answersRef.current = answers;
   }, [answers]);
+
+  useEffect(() => {
+    conversationHistoryRef.current = conversationHistory;
+  }, [conversationHistory]);
 
   const submitQuestion = useCallback(
     (question: string, source: QuestionSource) => {
@@ -121,7 +161,11 @@ export default function useConversation({
   }, []);
 
   const handleFeedback = useCallback((type: FeedbackType) => {
-    trackingRef.current?.trackAnswerFeedback(type, answersRef.current.data?.qna_result_id);
+    // A seeded last entry has no live response behind it; its own id is the answer rated.
+    const history = conversationHistoryRef.current;
+    const qnaResultId =
+      answersRef.current.data?.qna_result_id ?? history[history.length - 1]?.qnaResultId;
+    trackingRef.current?.trackAnswerFeedback(type, qnaResultId);
     callbacksRef.current?.onFeedback?.(type);
   }, []);
 
@@ -134,6 +178,9 @@ export default function useConversation({
   }, [suggestedQuestions.data]);
 
   useEffect(() => {
+    // Skip the mount run: it would wipe the seeded history.
+    if (prevItemIdRef.current === itemId) return;
+    prevItemIdRef.current = itemId;
     setCurrentQuestion('');
     setDisplayedQuestions([]);
     setConversationHistory([]);
