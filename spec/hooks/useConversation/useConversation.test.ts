@@ -1364,5 +1364,69 @@ describe('Testing Hook: useConversation', () => {
 
       expect(result.current.conversationHistory.map((entry) => entry.id)).toEqual([1, 2, 3, 4]);
     });
+
+    describe('a malformed seed', () => {
+      let warnSpy: jest.SpyInstance;
+
+      beforeEach(() => {
+        warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      });
+
+      afterEach(() => {
+        warnSpy.mockRestore();
+      });
+
+      it('ignores a seed that is not an array, and warns', () => {
+        const pia = createMockPia();
+        const { result } = renderHook(() =>
+          useConversation({
+            pia,
+            itemId: 'test-item',
+            isConversation: true,
+            // Parsed from a host's storage without validation.
+            initialConversationHistory: { entries: seededHistory } as unknown as ConversationEntry[],
+          }),
+        );
+
+        expect(result.current.conversationHistory).toEqual([]);
+        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('must be an array'));
+      });
+
+      it('drops entries it cannot render, keeps the rest, and warns', () => {
+        const pia = createMockPia();
+        const { result } = renderHook(() =>
+          useConversation({
+            pia,
+            itemId: 'test-item',
+            isConversation: true,
+            initialConversationHistory: [
+              seededHistory[0],
+              null,
+              { ...seededHistory[0], answer: 42 },
+              { ...seededHistory[0], question: undefined },
+              { ...seededHistory[1], items: 'p1' },
+              seededHistory[1],
+            ] as unknown as ConversationEntry[],
+          }),
+        );
+
+        expect(result.current.conversationHistory).toEqual(restoredHistory);
+        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('4 initialConversationHistory entries were ignored'));
+      });
+
+      it('does not warn for a valid seed', () => {
+        const pia = createMockPia();
+        renderHook(() =>
+          useConversation({
+            pia,
+            itemId: 'test-item',
+            isConversation: true,
+            initialConversationHistory: seededHistory,
+          }),
+        );
+
+        expect(warnSpy).not.toHaveBeenCalled();
+      });
+    });
   });
 });

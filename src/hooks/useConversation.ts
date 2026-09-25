@@ -40,6 +40,34 @@ export interface UseConversationReturn {
   resetState: () => void;
 }
 
+function isRestorableEntry(entry: unknown): entry is ConversationEntry {
+  if (typeof entry !== 'object' || entry === null) return false;
+  const { question, answer, items } = entry as Partial<ConversationEntry>;
+  return (
+    typeof question === 'string' &&
+    typeof answer === 'string' &&
+    (items === undefined || items === null || Array.isArray(items))
+  );
+}
+
+// The seed comes from the host's own storage, typed or not: a malformed one must not take the widget down.
+function restoreHistory(seed: unknown): ConversationEntry[] {
+  if (!Array.isArray(seed)) {
+    console.warn('[CioPia] initialConversationHistory must be an array. It was ignored.');
+    return [];
+  }
+
+  const entries = seed.filter(isRestorableEntry);
+  if (entries.length < seed.length) {
+    console.warn(
+      `[CioPia] ${seed.length - entries.length} initialConversationHistory entries were ignored. Each needs a string question and answer, and items must be an array.`,
+    );
+  }
+
+  // Seeded ids are replaced: `id` is the React key, so a caller's values cannot be trusted to be unique.
+  return entries.map((entry, index) => ({ ...entry, id: index + 1 }));
+}
+
 export default function useConversation({
   pia,
   itemId,
@@ -55,10 +83,9 @@ export default function useConversation({
 
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
   const [displayedQuestions, setDisplayedQuestions] = useState<Question[]>([]);
-  // Seeded ids are replaced: `id` is the React key, so a caller's values cannot be trusted to be unique.
   const [conversationHistory, setConversationHistory] = useState<ConversationEntry[]>(() =>
-    isConversation && initialConversationHistory
-      ? initialConversationHistory.map((entry, index) => ({ ...entry, id: index + 1 }))
+    isConversation && initialConversationHistory !== undefined
+      ? restoreHistory(initialConversationHistory)
       : [],
   );
 
