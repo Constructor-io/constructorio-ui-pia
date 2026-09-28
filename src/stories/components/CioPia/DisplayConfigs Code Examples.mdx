@@ -51,6 +51,14 @@ and follow-up questions appear after each response.
 
 <Canvas of={DisplayConfigsStories.ConversationMode} />
 
+## Restored Conversation
+
+Pass `initialConversationHistory` to show earlier turns before the shopper's first question, for example after a page reload.
+The entries are the same `ConversationEntry[]` that `callbacks.onAnswer` receives, kept wherever you choose, and they are read once, on mount.
+Pass the `threadId` they came from so the agent remembers them too.
+
+<Canvas of={DisplayConfigsStories.RestoredConversation} />
+
 ## Modal Type
 
 The modal type (`type: 'modal'`) renders the component with an inline preview that expands into a full dialog overlay when a question is asked.

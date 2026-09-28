@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Answer from '../Answer/Answer';
 import Feedback from '../Feedback/Feedback';
 import Disclaimer from '../CioPia/Disclaimer';
@@ -83,7 +83,11 @@ export default function ConversationHistory({
   }, [conversationHistory, isLoading]);
 
   const lastEntry = conversationHistory[conversationHistory.length - 1];
-  const answerStatus = answerStatusMessage(isAnswerLoading, !!lastEntry?.answer, translations);
+  // An entry answered before mount (a restored conversation) was not just answered: announcing
+  // "Answer ready" on page load would tell the shopper something happened when nothing did.
+  const [answeredOnMountId] = useState(() => (lastEntry?.answer ? lastEntry.id : undefined));
+  const hasNewAnswer = !!lastEntry?.answer && lastEntry.id !== answeredOnMountId;
+  const answerStatus = answerStatusMessage(isAnswerLoading, hasNewAnswer, translations);
 
   const disclaimer = (
     <Disclaimer
@@ -140,7 +144,7 @@ export default function ConversationHistory({
                       callbacks={callbacks}
                       onResultClick={onResultClick}
                       question={entry.question}
-                      qnaResultId={qnaResultId}
+                      qnaResultId={entry.qnaResultId ?? (isLast ? qnaResultId : undefined)}
                       translations={translations}
                       priceCurrency={priceCurrency}
                     />

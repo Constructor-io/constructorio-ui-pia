@@ -1,7 +1,8 @@
+import React from 'react';
 import { renderHook, act } from '@testing-library/react';
 import useConversation from '../../../src/hooks/useConversation';
 import { UseCioPiaReturn } from '../../../src/hooks/useCioPia';
-import { GetAnswerResultsResponse } from '../../../src/types';
+import { ConversationEntry, GetAnswerResultsResponse } from '../../../src/types';
 import { FeedbackType } from '../../../src/types';
 import createMockTracking from '../../__mocks__/createMockTracking';
 
@@ -1104,6 +1105,387 @@ describe('Testing Hook: useConversation', () => {
       });
 
       expect(onFeedback).toHaveBeenCalledWith(FeedbackType.UP);
+    });
+  });
+
+  describe('initialConversationHistory', () => {
+    const seededHistory: ConversationEntry[] = [
+      {
+        id: 3,
+        question: 'Is it waterproof?',
+        answer: 'Yes, up to 50 metres.',
+        source: 'user',
+        threadId: mockThreadId,
+        qnaResultId: 'qna-seed-1',
+      },
+      {
+        id: 7,
+        question: 'Does it come in blue?',
+        answer: 'It comes in navy.',
+        source: 'suggestion',
+        items: [{ id: 'p1', name: 'Product 1' }],
+        threadId: mockThreadId,
+        qnaResultId: 'qna-seed-2',
+      },
+    ];
+    const restoredHistory: ConversationEntry[] = [
+      { ...seededHistory[0], id: 1 },
+      { ...seededHistory[1], id: 2 },
+    ];
+
+    it('seeds the history in conversation mode', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({
+          pia,
+          itemId: 'test-item',
+          isConversation: true,
+          initialConversationHistory: seededHistory,
+        }),
+      );
+
+      expect(result.current.conversationHistory).toEqual(restoredHistory);
+    });
+
+    it('keeps the seeded history through a StrictMode double mount', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(
+        () =>
+          useConversation({
+            pia,
+            itemId: 'test-item',
+            isConversation: true,
+            initialConversationHistory: seededHistory,
+          }),
+        { wrapper: React.StrictMode },
+      );
+
+      expect(result.current.conversationHistory).toEqual(restoredHistory);
+    });
+
+    it('ignores the seed outside conversation mode', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({
+          pia,
+          itemId: 'test-item',
+          isConversation: false,
+          initialConversationHistory: seededHistory,
+        }),
+      );
+
+      expect(result.current.conversationHistory).toEqual([]);
+    });
+
+    it('does not mutate the array it was given', () => {
+      const seed = [...seededHistory];
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({
+          pia,
+          itemId: 'test-item',
+          isConversation: true,
+          initialConversationHistory: seed,
+        }),
+      );
+
+      act(() => {
+        result.current.handleSubmitQuestion('How long is the warranty?');
+      });
+
+      expect(seed).toHaveLength(2);
+    });
+
+    it('numbers a new question after the seeded entries', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({
+          pia,
+          itemId: 'test-item',
+          isConversation: true,
+          initialConversationHistory: seededHistory,
+        }),
+      );
+
+      act(() => {
+        result.current.handleSubmitQuestion('How long is the warranty?');
+      });
+
+      expect(result.current.conversationHistory).toHaveLength(3);
+      expect(result.current.conversationHistory[2]).toMatchObject({
+        id: 3,
+        question: 'How long is the warranty?',
+        answer: '',
+      });
+    });
+
+    it('reads the seed once, on mount', () => {
+      const pia = createMockPia();
+      const { result, rerender } = renderHook((props) => useConversation(props), {
+        initialProps: {
+          pia,
+          itemId: 'test-item',
+          isConversation: true,
+          initialConversationHistory: seededHistory,
+        },
+      });
+
+      rerender({
+        pia,
+        itemId: 'test-item',
+        isConversation: true,
+        initialConversationHistory: [seededHistory[0]],
+      });
+
+      expect(result.current.conversationHistory).toEqual(restoredHistory);
+    });
+
+    it('clears the seeded history when itemId changes', () => {
+      const pia = createMockPia();
+      const { result, rerender } = renderHook((props) => useConversation(props), {
+        initialProps: {
+          pia,
+          itemId: 'item-1',
+          isConversation: true,
+          initialConversationHistory: seededHistory,
+        },
+      });
+
+      rerender({
+        pia,
+        itemId: 'item-2',
+        isConversation: true,
+        initialConversationHistory: seededHistory,
+      });
+
+      expect(result.current.conversationHistory).toEqual([]);
+    });
+
+    it('clears the seeded history on resetState', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({
+          pia,
+          itemId: 'test-item',
+          isConversation: true,
+          initialConversationHistory: seededHistory,
+        }),
+      );
+
+      act(() => {
+        result.current.resetState();
+      });
+
+      expect(result.current.conversationHistory).toEqual([]);
+    });
+
+    it('passes the seeded entries to onAnswer along with the new one', () => {
+      const getAnswer = jest.fn();
+      const onAnswer = jest.fn();
+      let pia = createMockPia({ answers: { getAnswer } });
+
+      const { result, rerender } = renderHook((props) => useConversation(props), {
+        initialProps: {
+          pia,
+          itemId: 'test-item',
+          isConversation: true,
+          callbacks: { onAnswer },
+          initialConversationHistory: seededHistory,
+        },
+      });
+
+      act(() => {
+        result.current.handleSubmitQuestion('How long is the warranty?');
+      });
+
+      pia = createMockPia({
+        answers: {
+          getAnswer,
+          data: { value: 'Two years.', thread_id: mockThreadId, qna_result_id: 'qna-new' },
+        },
+      });
+      rerender({
+        pia,
+        itemId: 'test-item',
+        isConversation: true,
+        callbacks: { onAnswer },
+        initialConversationHistory: seededHistory,
+      });
+
+      expect(onAnswer).toHaveBeenCalledTimes(1);
+      expect(onAnswer).toHaveBeenCalledWith(
+        [
+          ...restoredHistory,
+          expect.objectContaining({
+            id: 3,
+            question: 'How long is the warranty?',
+            answer: 'Two years.',
+            qnaResultId: 'qna-new',
+          }),
+        ],
+        { itemId: 'test-item', threadId: mockThreadId },
+      );
+    });
+
+    it('does not track an answer view for seeded entries', () => {
+      const pia = createMockPia();
+      renderHook(() =>
+        useConversation({
+          pia,
+          itemId: 'test-item',
+          isConversation: true,
+          tracking: mockTracking,
+          initialConversationHistory: seededHistory,
+        }),
+      );
+
+      expect(mockTracking.trackAnswerView).not.toHaveBeenCalled();
+    });
+
+    it('rates the last seeded answer when there is no live answer', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({
+          pia,
+          itemId: 'test-item',
+          isConversation: true,
+          tracking: mockTracking,
+          initialConversationHistory: seededHistory,
+        }),
+      );
+
+      act(() => {
+        result.current.handleFeedback(FeedbackType.UP);
+      });
+
+      expect(mockTracking.trackAnswerFeedback).toHaveBeenCalledWith(FeedbackType.UP, 'qna-seed-2');
+    });
+
+    it('rates the live answer once one arrives after the seed', () => {
+      const pia = createMockPia({
+        answers: { data: { qna_result_id: 'qna-live', value: mockAnswerValue } },
+      });
+      const { result } = renderHook(() =>
+        useConversation({
+          pia,
+          itemId: 'test-item',
+          isConversation: true,
+          tracking: mockTracking,
+          initialConversationHistory: seededHistory,
+        }),
+      );
+
+      act(() => {
+        result.current.handleFeedback(FeedbackType.UP);
+      });
+
+      expect(mockTracking.trackAnswerFeedback).toHaveBeenCalledWith(FeedbackType.UP, 'qna-live');
+    });
+
+    it('starts empty when the seed is an empty array', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({
+          pia,
+          itemId: 'test-item',
+          isConversation: true,
+          tracking: mockTracking,
+          initialConversationHistory: [],
+        }),
+      );
+
+      expect(result.current.conversationHistory).toEqual([]);
+
+      act(() => {
+        result.current.handleSubmitQuestion('A new question');
+      });
+
+      expect(result.current.conversationHistory[0].id).toBe(1);
+    });
+
+    it('replaces seeded ids with its own', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({
+          pia,
+          itemId: 'test-item',
+          isConversation: true,
+          initialConversationHistory: [
+            { ...seededHistory[0], id: 7 },
+            { ...seededHistory[1], id: 7 },
+            { ...seededHistory[0], id: 'nine' as unknown as number },
+          ],
+        }),
+      );
+
+      act(() => {
+        result.current.handleSubmitQuestion('A new question');
+      });
+
+      expect(result.current.conversationHistory.map((entry) => entry.id)).toEqual([1, 2, 3, 4]);
+    });
+
+    describe('a malformed seed', () => {
+      let warnSpy: jest.SpyInstance;
+
+      beforeEach(() => {
+        warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      });
+
+      afterEach(() => {
+        warnSpy.mockRestore();
+      });
+
+      it('ignores a seed that is not an array, and warns', () => {
+        const pia = createMockPia();
+        const { result } = renderHook(() =>
+          useConversation({
+            pia,
+            itemId: 'test-item',
+            isConversation: true,
+            initialConversationHistory: { entries: seededHistory } as unknown as ConversationEntry[],
+          }),
+        );
+
+        expect(result.current.conversationHistory).toEqual([]);
+        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('must be an array'));
+      });
+
+      it('drops entries it cannot render, keeps the rest, and warns', () => {
+        const pia = createMockPia();
+        const { result } = renderHook(() =>
+          useConversation({
+            pia,
+            itemId: 'test-item',
+            isConversation: true,
+            initialConversationHistory: [
+              seededHistory[0],
+              null,
+              { ...seededHistory[0], answer: 42 },
+              { ...seededHistory[0], question: undefined },
+              { ...seededHistory[1], items: 'p1' },
+              seededHistory[1],
+            ] as unknown as ConversationEntry[],
+          }),
+        );
+
+        expect(result.current.conversationHistory).toEqual(restoredHistory);
+        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('4 initialConversationHistory entries were ignored'));
+      });
+
+      it('does not warn for a valid seed', () => {
+        const pia = createMockPia();
+        renderHook(() =>
+          useConversation({
+            pia,
+            itemId: 'test-item',
+            isConversation: true,
+            initialConversationHistory: seededHistory,
+          }),
+        );
+
+        expect(warnSpy).not.toHaveBeenCalled();
+      });
     });
   });
 });

@@ -195,13 +195,18 @@ export interface Item extends Product, Record<string, any> {
   matchedTerms?: string[];
 }
 
+/** One question and its answer, as passed to `onAnswer` and accepted by `initialConversationHistory`. */
 export interface ConversationEntry {
+  /** Unique within the conversation. Assigned by the widget: ids in `initialConversationHistory` are replaced. */
   id: number;
   question: string;
   answer: string;
+  /** Whether the shopper typed the question or clicked a suggested one. */
   source: QuestionSource;
+  /** Products shown with the answer. */
   items?: Item[] | null;
   threadId?: string;
+  /** Identifies the answer for feedback and product click tracking. */
   qnaResultId?: string;
 }
 

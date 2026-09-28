@@ -1058,6 +1058,138 @@ describe('CioPia Component', () => {
     });
   });
 
+  describe('initialConversationHistory', () => {
+    const seededHistory = [
+      {
+        id: 1,
+        question: 'Is it waterproof?',
+        answer: 'Yes, up to 50 metres.',
+        source: 'user' as const,
+        qnaResultId: 'qna-seed-1',
+      },
+      {
+        id: 2,
+        question: 'Does it come in blue?',
+        answer: 'It comes in navy.',
+        source: 'suggestion' as const,
+        items: mockItems,
+        qnaResultId: 'qna-seed-2',
+      },
+    ];
+
+    it('renders the seeded entries and hides the title', () => {
+      render(
+        <CioPia
+          {...mockProps}
+          initialConversationHistory={seededHistory}
+          displayConfigs={{ mode: 'conversation' }}
+        />,
+      );
+
+      expect(screen.getByText('Is it waterproof?')).toBeInTheDocument();
+      expect(screen.getByText('It comes in navy.')).toBeInTheDocument();
+      expect(screen.queryByTestId('cio-pia-title')).not.toBeInTheDocument();
+    });
+
+    it("shows the last seeded entry's carousel before a live answer arrives", () => {
+      const { container } = render(
+        <CioPia
+          {...mockProps}
+          initialConversationHistory={seededHistory}
+          displayConfigs={{ mode: 'conversation' }}
+        />,
+      );
+
+      expect(container.querySelectorAll(CAROUSEL_SELECTOR)).toHaveLength(1);
+      expect(getProductCards(container)).toHaveLength(mockItems.length);
+    });
+
+    it('appends a new question below the seeded entries', () => {
+      const { container } = render(
+        <CioPia
+          {...mockProps}
+          initialConversationHistory={seededHistory}
+          displayConfigs={{ mode: 'conversation' }}
+        />,
+      );
+
+      const input = screen.getByRole('textbox');
+      fireEvent.change(input, { target: { value: 'How long is the warranty?' } });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+      const questions = Array.from(container.querySelectorAll('.cio-pia-chat-question')).map(
+        (node) => node.textContent,
+      );
+      expect(questions).toEqual([
+        'Is it waterproof?',
+        'Does it come in blue?',
+        'How long is the warranty?',
+      ]);
+      expect(mockGetAnswer).toHaveBeenCalledWith('How long is the warranty?');
+    });
+
+    it('hides seeded carousels on earlier entries when showPreviousItems is false', () => {
+      const { container } = render(
+        <CioPia
+          {...mockProps}
+          initialConversationHistory={[
+            { ...seededHistory[0], items: mockItems },
+            seededHistory[1],
+          ]}
+          displayConfigs={{ mode: 'conversation', showPreviousItems: false }}
+        />,
+      );
+
+      const entries = container.querySelectorAll('.cio-pia-conversation-entry');
+      expect(entries[0].querySelector(CAROUSEL_SELECTOR)).toBeNull();
+      expect(entries[1].querySelector(CAROUSEL_SELECTOR)).not.toBeNull();
+
+      const input = screen.getByRole('textbox');
+      fireEvent.change(input, { target: { value: 'How long is the warranty?' } });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+      // Once a new question is asked, the last seeded entry is an earlier entry too.
+      expect(container.querySelectorAll(CAROUSEL_SELECTOR)).toHaveLength(0);
+    });
+
+    it('shows the seeded entries in the modal once it opens, and clears them on close', () => {
+      const { container } = render(
+        <CioPia
+          {...mockProps}
+          initialConversationHistory={seededHistory}
+          displayConfigs={{ type: 'modal' }}
+        />,
+      );
+      const dialog = container.querySelector('dialog') as HTMLDialogElement;
+      expect(dialog.open).toBe(false);
+
+      const input = within(container.querySelector('.cio-pia-conversation-footer') as HTMLElement)
+        .getAllByRole('textbox')[0];
+      fireEvent.change(input, { target: { value: 'How long is the warranty?' } });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+      expect(dialog.open).toBe(true);
+      const questions = Array.from(dialog.querySelectorAll('.cio-pia-chat-question')).map(
+        (node) => node.textContent,
+      );
+      expect(questions).toEqual([
+        'Is it waterproof?',
+        'Does it come in blue?',
+        'How long is the warranty?',
+      ]);
+
+      fireEvent.click(within(dialog).getByRole('button', { name: 'Close' }));
+      expect(dialog.querySelectorAll('.cio-pia-chat-question')).toHaveLength(0);
+    });
+
+    it('is ignored in default mode', () => {
+      render(<CioPia {...mockProps} initialConversationHistory={seededHistory} />);
+
+      expect(screen.queryByText('Is it waterproof?')).not.toBeInTheDocument();
+      expect(screen.getByTestId('cio-pia-title')).toBeInTheDocument();
+    });
+  });
+
   describe('Sub-component Overrides', () => {
     it('renders custom SuggestedQuestionsContainer via componentOverrides.suggestedQuestions', () => {
       render(

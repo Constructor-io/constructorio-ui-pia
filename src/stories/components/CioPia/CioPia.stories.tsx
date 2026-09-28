@@ -69,6 +69,18 @@ const meta = {
       ].join('\n'),
       table: { type: { summary: 'Callbacks' } },
     },
+    initialConversationHistory: {
+      description: [
+        'A conversation you manage, such as one saved from `onAnswer` in the browser or on your own server, shown before the first question.',
+        'When provided, including as `[]`, it is the conversation shown on mount: pass `[]` rather than omitting it when nothing is saved. Read once on mount, so render after it has loaded, and cleared when `itemId` changes.',
+        'Used by `mode: "conversation"` and `type: "modal"` only; the modal shows them once it opens.',
+        '',
+        'Pass the `threadId` the entries came from: the agent keeps the thread context server-side and will not remember entries from another thread.',
+        '',
+        'Each entry is `{ id: number, question: string, answer: string, source: "user" | "suggestion", items?: Item[] | null, threadId?: string, qnaResultId?: string }`, the same shape `onAnswer` passes. The widget replaces each `id` with its own numbering.',
+      ].join('\n'),
+      table: { type: { summary: 'ConversationEntry[]' } },
+    },
     componentOverrides: {
       description: [
         'Custom component overrides via reactNode or render props functions.',
