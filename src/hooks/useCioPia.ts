@@ -71,6 +71,8 @@ export interface UseCioPiaProps {
   formatImageUrl?: Formatters['formatImageUrl'];
   /** Test cells to attach to tracking events. Ignored when `cioClient` is supplied. */
   testCells?: Record<string, string>;
+  /** The shopper's id, set on the client the hook creates. `null` for a guest. */
+  userId?: string | null;
 }
 
 export interface UseCioPiaReturn {
@@ -92,6 +94,7 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     parameters,
     formatImageUrl,
     testCells,
+    userId,
   } = props;
 
   const { cioClient: client, threadId } = usePiaClient({
@@ -99,6 +102,7 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     threadId: providedThreadId,
     cioClient: providedClient,
     testCells,
+    userId,
   });
 
   const mappedDeprecated = mapDeprecatedParameters(parameters);
