@@ -10,6 +10,9 @@ export type { CioPiaProps, CheckoutTrigger } from './components/CioPia';
 export { sanitizeHtml, renderMarkdown } from './utils/contentTransformers';
 export type { RenderMarkdownOptions, SanitizeOptions } from './utils/contentTransformers';
 
+// Persistence
+export { clearPersistedConversations } from './utils/conversationStorage';
+
 // Errors
 export { AgentRequestError } from './errors';
 

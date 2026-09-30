@@ -210,6 +210,13 @@ export interface ConversationEntry {
   qnaResultId?: string;
 }
 
+/** Whose stored conversations `clearPersistedConversations` deletes; mirror what the widget was given. */
+export interface ClearPersistedConversationsOptions {
+  apiKey: string;
+  /** The shopper whose history to delete. Omit or pass `null` for the current tab's guest history. */
+  userId?: string | null;
+}
+
 /** Which kind of recommendations to fetch. */
 export type RecsStrategy =
   | 'complementary_items'

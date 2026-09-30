@@ -10,6 +10,7 @@ import {
 } from '../types';
 import { UseCioPiaReturn } from './useCioPia';
 import { UseTrackingReturn } from './useTracking';
+import { isRestorableEntry } from '../utils/conversationStorage';
 
 export interface UseConversationProps {
   pia: UseCioPiaReturn;
@@ -34,16 +35,6 @@ export interface UseConversationReturn {
   handleInputFocus: () => void;
   handleFeedback: (type: FeedbackType) => void;
   resetState: () => void;
-}
-
-function isRestorableEntry(entry: unknown): entry is ConversationEntry {
-  if (typeof entry !== 'object' || entry === null) return false;
-  const { question, answer, items } = entry as Partial<ConversationEntry>;
-  return (
-    typeof question === 'string' &&
-    typeof answer === 'string' &&
-    (items === undefined || items === null || Array.isArray(items))
-  );
 }
 
 // The seed comes from the host's own storage, typed or not: a malformed one must not take the widget down.
