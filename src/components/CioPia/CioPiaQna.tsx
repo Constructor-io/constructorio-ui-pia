@@ -5,6 +5,7 @@ import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/Suggeste
 import SuggestedQuestionsSkeleton from '../SuggestedQuestionsContainer/SuggestedQuestionsSkeleton';
 import useCioPia from '../../hooks/useCioPia';
 import useConversation from '../../hooks/useConversation';
+import usePersistedConversation from '../../hooks/usePersistedConversation';
 import useTracking from '../../hooks/useTracking';
 import useViewportTracking from '../../hooks/useViewportTracking';
 import useViewportCallbacks from '../../hooks/useViewportCallbacks';
@@ -43,6 +44,8 @@ export default function CioPiaQna(props: CioPiaProps) {
     checkoutTriggers,
     abTest,
     initialConversationHistory,
+    persistConversation,
+    userId,
   } = props;
   const {
     learnMoreUrl,
@@ -56,10 +59,18 @@ export default function CioPiaQna(props: CioPiaProps) {
 
   const { priceCurrency } = productCardProps || {};
 
+  const persisted = usePersistedConversation({
+    enabled: Boolean(persistConversation?.enabled) && isConversation,
+    apiKey,
+    userId,
+    itemId,
+    threadId,
+  });
+
   const pia = useCioPia({
     apiKey,
     itemId,
-    threadId,
+    threadId: persisted?.threadId ?? threadId,
     variationId,
     cioClient,
     suggestedQuestionsParameters,
@@ -67,6 +78,7 @@ export default function CioPiaQna(props: CioPiaProps) {
     parameters,
     formatImageUrl: formatters?.formatImageUrl,
     testCells: abTest?.testCells,
+    userId,
   });
 
   const tracking = useTracking({
@@ -98,6 +110,7 @@ export default function CioPiaQna(props: CioPiaProps) {
     callbacks,
     tracking,
     initialConversationHistory,
+    persisted,
   });
 
   const { containerRef: viewportContainerRef } = useViewportTracking({
