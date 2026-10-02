@@ -129,6 +129,20 @@ describe('persistConversation', () => {
     expect(stored(window.localStorage, SHOPPER_KEY)['item-a'].entries).toHaveLength(1);
   });
 
+  it("restores the shopper's own conversation on a login with nothing to carry over", async () => {
+    const { container, rerender } = render(<CioPia {...props({ userId: 'shopper-1' })} />);
+    await ask('Is it waterproof?', 'Yes.');
+    const threadId = lastThreadId();
+
+    rerender(<CioPia {...props({ userId: null })} />);
+    rerender(<CioPia {...props({ userId: 'shopper-1' })} />);
+    expect(questions(container)).toEqual(['Is it waterproof?']);
+
+    await ask('Does it float?', 'It does.');
+    expect(lastThreadId()).toBe(threadId);
+    expect(stored(window.localStorage, SHOPPER_KEY)['item-a'].entries).toHaveLength(2);
+  });
+
   it('prefers an explicit initialConversationHistory over the stored one', async () => {
     const { unmount } = render(<CioPia {...props()} />);
     await ask('Stored question', 'Stored answer');

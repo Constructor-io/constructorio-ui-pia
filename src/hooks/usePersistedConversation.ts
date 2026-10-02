@@ -92,9 +92,13 @@ export default function usePersistedConversation({
       shown.apiKey === apiKey &&
       shown.userId === undefined &&
       userId !== undefined;
-    // A login continues the conversation on screen as the shopper's own.
+    // A login continues the guest's conversation as the shopper's own. With none to carry over,
+    // the shopper's own stored conversation is shown, rather than replaced by an empty one.
     const keepsConversation =
-      loggedIn && shown.itemId === itemId && shown.threadIdProp === threadIdProp;
+      loggedIn &&
+      shown.itemId === itemId &&
+      shown.threadIdProp === threadIdProp &&
+      loadConversation({ apiKey }, itemId) !== undefined;
     const conversation = keepsConversation
       ? { key: shown.key, threadId: shown.threadId, history: shown.history }
       : { key: shown.key + 1, ...loadIfEnabled(target) };
