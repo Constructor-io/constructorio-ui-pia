@@ -75,6 +75,8 @@ export default function usePersistedConversation({
     ...loadIfEnabled(target),
   }));
 
+  // Adjusted during render, not in an effect: React re-renders before committing, so the first
+  // request after a switch of product or shopper already goes out on the new thread.
   let current = shown;
   if (
     shown.enabled !== enabled ||
