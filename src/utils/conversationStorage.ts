@@ -107,9 +107,7 @@ function writeFitting(storage: Storage, key: string, items: StoredItems, itemId:
   );
   if (fitsTrimmed) return;
 
-  const withoutSaved = readItems(storage, key);
-  delete withoutSaved[itemId];
-  tryWrite(storage, key, withoutSaved);
+  tryWrite(storage, key, others);
 }
 
 export function loadConversation(
