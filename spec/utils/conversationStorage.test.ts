@@ -118,6 +118,15 @@ describe('conversationStorage', () => {
     });
   });
 
+  it('encodes the api key and user id, so a separator inside one cannot collide with another', () => {
+    const owner = { apiKey: 'key:a', userId: 'u:1' };
+    saveConversation(owner, 'item', 't1', [turn('q')]);
+
+    expect(window.localStorage.getItem('cio-pia:chat:v1:key%3Aa:u%3A1')).not.toBeNull();
+    expect(loadConversation({ apiKey: 'key', userId: 'a:u:1' }, 'item')).toBeUndefined();
+    expect(loadConversation(owner, 'item')?.threadId).toBe('t1');
+  });
+
   it("moves every guest conversation into the shopper's store on login", () => {
     saveConversation(guest, 'a', 't1', [turn('guest a')]);
     saveConversation(shopper, 'b', 't2', [turn('shopper b')]);
