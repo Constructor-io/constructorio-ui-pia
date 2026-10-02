@@ -206,7 +206,7 @@ export default function useConversation({
     if (!persisted || prevPersistedKeyRef.current === persisted.key) return;
     prevPersistedKeyRef.current = persisted.key;
     const restored = renumber(persisted.history);
-    entryIdRef.current = Math.max(entryIdRef.current, restored.length);
+    entryIdRef.current = restored.length;
     setConversationHistory(restored);
     setCurrentQuestion('');
   }, [persisted]);
