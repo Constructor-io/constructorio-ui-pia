@@ -76,7 +76,8 @@ export default function usePersistedConversation({
   }));
 
   // Adjusted during render, not in an effect: React re-renders before committing, so the first
-  // request after a switch of product or shopper already goes out on the new thread.
+  // request after a switch of product or shopper already goes out on the new thread. See
+  // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
   let current = shown;
   if (
     shown.enabled !== enabled ||
