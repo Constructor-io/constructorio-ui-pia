@@ -210,6 +210,22 @@ export interface ConversationEntry {
   qnaResultId?: string;
 }
 
+/** How conversations are kept in the browser. */
+export interface PersistConversationOptions {
+  /**
+   * Keep each product's conversation across page loads: a signed-in shopper's in `localStorage`
+   * for 7 days, keyed by api key and user id; a guest's in `sessionStorage`, ending with the tab.
+   */
+  enabled: boolean;
+}
+
+/** Whose stored conversations `clearPersistedConversations` deletes; mirror what the widget was given. */
+export interface ClearPersistedConversationsOptions {
+  apiKey: string;
+  /** The shopper whose history to delete. Omit or pass `null` for the current tab's guest history. */
+  userId?: string | null;
+}
+
 /** Which kind of recommendations to fetch. */
 export type RecsStrategy =
   | 'complementary_items'

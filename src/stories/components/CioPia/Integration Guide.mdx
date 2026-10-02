@@ -141,6 +141,22 @@ function ProductQuestions({ itemId }) {
 
 Passing the prop, even as `[]`, means you manage the history, so pass `[]` when nothing is saved rather than leaving it out. The history is read once, on mount, and changing `itemId` clears it. Remount with `key={itemId}` so each product loads its own saved conversation.
 
+### 7. Persist conversations in the browser (optional)
+
+Instead of managing the history yourself, pass `persistConversation` and let the widget keep each product's conversation in the browser:
+
+```jsx
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId={itemId}
+  displayConfigs={{ mode: 'conversation' }}
+  persistConversation={{ enabled: true }}
+  userId={user?.id ?? null}
+/>
+```
+
+A guest's conversations live in `sessionStorage` and end with the tab. A signed-in shopper's live in `localStorage` for 7 days. Pass the shopper's stable, non-personal id as `userId`, and `null` for a guest. On login the guest's conversations move to the shopper and the one on screen continues. On logout the widget switches to the guest's history and starts a new thread. To delete a shopper's history on logout, call `clearPersistedConversations({ apiKey, userId })`. See the [README](https://github.com/Constructor-io/constructorio-ui-pia#persistent-conversations) for the full behaviour.
+
 ---
 
 ## Try It: Product Results

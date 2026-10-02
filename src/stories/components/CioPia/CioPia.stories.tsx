@@ -81,6 +81,18 @@ const meta = {
       ].join('\n'),
       table: { type: { summary: 'ConversationEntry[]' } },
     },
+    persistConversation: {
+      description: [
+        "Off by default. `{ enabled: true }` keeps each product's conversation in the browser: `sessionStorage` for a guest, `localStorage` for 7 days for a signed-in shopper. Pass `userId` with it.",
+        'An explicit `initialConversationHistory` wins over the stored conversation. Used by `mode: "conversation"` and `type: "modal"` only.',
+      ].join('\n'),
+      table: { type: { summary: '{ enabled: boolean }' } },
+    },
+    userId: {
+      description:
+        "Whose persisted conversations these are: the signed-in shopper's stable, non-personal id, or `null` for a guest. A login carries the guest's conversations over; a logout switches to the guest's history.",
+      table: { type: { summary: 'string | null' } },
+    },
     componentOverrides: {
       description: [
         'Custom component overrides via reactNode or render props functions.',

@@ -16,6 +16,7 @@ import {
   RecsPodParameters,
   Formatters,
   ConversationEntry,
+  PersistConversationOptions,
   ProductCardDisplayProps,
 } from '../../types';
 import type { CioClient } from '../../hooks/usePiaClient';
@@ -78,6 +79,21 @@ export interface CioPiaProps
    * `mode: 'conversation'` and `type: 'modal'` only; the modal shows them once it opens.
    */
   initialConversationHistory?: ConversationEntry[];
+  /**
+   * Off by default. `{ enabled: true }` keeps each product's conversation in the browser, so it is
+   * still there after a reload or on returning to the product. Pass `userId` with it. An explicit
+   * `initialConversationHistory` is shown instead of the stored one, and with an explicit
+   * `threadId` only a conversation stored on that thread is restored. Used by
+   * `mode: 'conversation'` and `type: 'modal'` only.
+   */
+  persistConversation?: PersistConversationOptions;
+  /**
+   * Whose conversations these are: the signed-in shopper's stable, non-personal id, or `null` for a
+   * guest. Change it on login and logout. A login carries the guest's conversations over to the
+   * shopper; a logout or another id switches to that history. Without your own `cioClient`, it is
+   * also set on the client the widget creates.
+   */
+  userId?: string | null;
   /** Optional variation ID for the product. */
   variationId?: string;
   /** Optional Constructor.io client instance. If not provided, one will be created internally. */
