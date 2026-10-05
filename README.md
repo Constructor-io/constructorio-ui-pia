@@ -116,21 +116,21 @@ omitting it would quietly put everyone in the test arm with no control group to 
 
 #### Configuration Options
 
-| Prop                         | Type                   | Description                                                                                                                                                                       |
-| ---------------------------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `apiKey`                     | `string`               | Your Constructor.io API key (required)                                                                                                                                            |
-| `itemId`                     | `string`               | The product item ID (required)                                                                                                                                                    |
-| `variationId`                | `string`               | Optional variation ID                                                                                                                                                             |
-| `threadId`                   | `string`               | Optional thread ID for conversation context (must be a valid UUID)                                                                                                                |
-| `initialConversationHistory` | `ConversationEntry[]`  | A conversation you manage, shown before the first question and read once on mount. Conversation and modal modes only (see [Restoring a conversation](#restoring-a-conversation))  |
-| `persistConversation`        | `{ enabled: boolean }` | Off by default. Keeps each product's conversation in the browser across page loads. Conversation and modal modes only (see [Persistent conversations](#persistent-conversations)) |
-| `userId`                     | `string \| null`       | Whose persisted conversations these are: the signed-in shopper's id, or `null` for a guest. Change it on login and logout                                                         |
-| `displayConfigs`             | `object`               | Display configuration options (see below)                                                                                                                                         |
-| `trackingConfigs`            | `object`               | Tracking configuration options (see below)                                                                                                                                        |
-| `callbacks`                  | `object`               | Callback handlers for user interactions                                                                                                                                           |
-| `translations`               | `object`               | UI string translations for internationalization                                                                                                                                   |
-| `componentOverrides`         | `object`               | Custom component overrides                                                                                                                                                        |
-| `abTest`                     | `object`               | A/B test configuration — test cells for tracking, and a control-group placeholder (see below)                                                                                     |
+| Prop                         | Type                   | Description                                                                                                                                                                                                                                                                                        |
+| ---------------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apiKey`                     | `string`               | Your Constructor.io API key (required)                                                                                                                                                                                                                                                             |
+| `itemId`                     | `string`               | The product item ID (required)                                                                                                                                                                                                                                                                     |
+| `variationId`                | `string`               | Optional variation ID                                                                                                                                                                                                                                                                              |
+| `threadId`                   | `string`               | Optional thread ID for conversation context (must be a valid UUID)                                                                                                                                                                                                                                 |
+| `initialConversationHistory` | `ConversationEntry[]`  | A conversation you manage, shown before the first question and read once on mount. Conversation and modal modes only (see [Restoring a conversation](#restoring-a-conversation))                                                                                                                   |
+| `persistConversation`        | `{ enabled: boolean }` | Off by default. Keeps each product's conversation in the browser across page loads. Conversation and modal modes only (see the [Persistent Conversations Guide](https://constructor-io.github.io/constructorio-ui-pia/?path=/docs/general-integration-guide-persistent-conversations-guide--docs)) |
+| `userId`                     | `string \| null`       | Whose persisted conversations these are: the signed-in shopper's id, or `null` for a guest. Change it on login and logout                                                                                                                                                                          |
+| `displayConfigs`             | `object`               | Display configuration options (see below)                                                                                                                                                                                                                                                          |
+| `trackingConfigs`            | `object`               | Tracking configuration options (see below)                                                                                                                                                                                                                                                         |
+| `callbacks`                  | `object`               | Callback handlers for user interactions                                                                                                                                                                                                                                                            |
+| `translations`               | `object`               | UI string translations for internationalization                                                                                                                                                                                                                                                    |
+| `componentOverrides`         | `object`               | Custom component overrides                                                                                                                                                                                                                                                                         |
+| `abTest`                     | `object`               | A/B test configuration — test cells for tracking, and a control-group placeholder (see below)                                                                                                                                                                                                      |
 
 **Display Configs:**
 
@@ -200,37 +200,6 @@ function ProductQuestions({ itemId }) {
 - The suggested questions row shows the product's suggested questions, not the follow-ups from the last restored answer.
 - Entries without a string `question` and `answer` are skipped with a console warning, and each entry's `id` is replaced with the widget's own numbering.
 - It is ignored in `mode: 'default'`, which shows only the latest answer, in `mode: 'recommendations'`, and for the A/B control group (`abTest.isControl`).
-
-#### Persistent conversations
-
-Rather than store the history yourself, let the widget keep it in the browser:
-
-```jsx
-<CioPia
-  apiKey='YOUR_API_KEY'
-  itemId={itemId}
-  displayConfigs={{ mode: 'conversation' }}
-  persistConversation={{ enabled: true }}
-  userId={user?.id ?? null}
-/>
-```
-
-Each product keeps its own conversation and thread, so a shopper who reloads, or comes back to the product, finds it where they left it, and the agent still remembers it.
-
-|             | Guest (`userId` is `null`)      | Signed-in shopper                                        |
-| ----------- | ------------------------------- | -------------------------------------------------------- |
-| Where       | `sessionStorage`                | `localStorage`                                           |
-| Survives    | reloads and navigation in a tab | reloads, navigation, closing the browser, other tabs     |
-| Ends        | when the tab is closed          | 7 days after the product's conversation was last updated |
-| Storage key | `cio-pia:chat:v1:<apiKey>`      | `cio-pia:chat:v1:<apiKey>:<userId>`                      |
-
-- **`userId`** is whose history it is. Pass the same stable, non-personal id you give Constructor for personalization, never an email: it becomes part of a storage key any script on the page can read. Without your own `cioClient`, it is also set on the client the widget creates; with one, set it there too.
-- **On login** the guest's conversations move into the shopper's history, and the one on screen continues on the same thread. A login that reloads the page does not carry them over.
-- **On logout**, or a change to another id, the widget switches to that history and starts a new thread. Nothing is deleted: the old history stays on the device for 7 days. To delete it, call `clearPersistedConversations({ apiKey, userId })`, which clears the guest history of the current tab when called without `userId`. A widget already showing that conversation keeps it on screen until its `itemId` or `userId` changes.
-- Only answered turns are stored: a question whose answer had not arrived when the page was left is not restored. Closing the modal keeps the conversation, and it is there again when the modal reopens.
-- An explicit `initialConversationHistory` is shown instead of the stored conversation. With an explicit `threadId`, only a conversation stored on that thread is restored.
-- When storage is full, other products' conversations are dropped oldest first, then this one's oldest turns. When storage is blocked, the widget works as if persistence were off.
-- It is used by `mode: 'conversation'` and `type: 'modal'` only. Tabs do not sync live: another tab shows a signed-in shopper's latest turns when it next loads the product.
 
 ### Using the JavaScript Bundle
 

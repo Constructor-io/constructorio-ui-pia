@@ -155,7 +155,7 @@ Instead of managing the history yourself, pass `persistConversation` and let the
 />
 ```
 
-A guest's conversations live in `sessionStorage` and end with the tab. A signed-in shopper's live in `localStorage` for 7 days. Pass the shopper's stable, non-personal id as `userId`, and `null` for a guest. On login the guest's conversations move to the shopper and the one on screen continues. On logout the widget switches to the guest's history and starts a new thread. To delete a shopper's history on logout, call `clearPersistedConversations({ apiKey, userId })`. See the [README](https://github.com/Constructor-io/constructorio-ui-pia#persistent-conversations) for the full behaviour.
+Each product keeps its own conversation and thread. Pass the signed-in shopper's stable, non-personal id as `userId`, and `null` for a guest. See the [Persistent Conversations Guide](?path=/docs/general-integration-guide-persistent-conversations-guide--docs) for login and logout, what is stored, and how long it is kept.
 
 ---
 
