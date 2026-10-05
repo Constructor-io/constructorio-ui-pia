@@ -38,6 +38,40 @@ describe('Testing Hook: useAnswerResults', () => {
     expect(mockClient.agent.pia.getAnswerResults).not.toHaveBeenCalled();
   });
 
+  it('clear forgets the answer', async () => {
+    const { result } = renderHook(() => useAnswerResults(testProps));
+    await act(async () => {
+      result.current.getAnswer(testQuestion);
+    });
+    expect(result.current.data).not.toBeNull();
+
+    act(() => result.current.clear());
+
+    expect(result.current.data).toBeNull();
+    expect(result.current.items).toBeNull();
+  });
+
+  it('clear drops a response still in flight and stops loading', async () => {
+    let resolve: (value: unknown) => void = () => {};
+    mockClient.agent.pia.getAnswerResults.mockReturnValueOnce(
+      new Promise((r) => {
+        resolve = r;
+      }) as never,
+    );
+    const { result } = renderHook(() => useAnswerResults(testProps));
+    act(() => result.current.getAnswer(testQuestion));
+    expect(result.current.isLoading).toBe(true);
+
+    act(() => result.current.clear());
+    expect(result.current.isLoading).toBe(false);
+
+    await act(async () => {
+      resolve(mockResponseWithItemResults);
+    });
+    expect(result.current.data).toBeNull();
+    expect(result.current.isLoading).toBe(false);
+  });
+
   it('fetches and returns answer results when getAnswer is called', async () => {
     const { result } = renderHook(() => useAnswerResults(testProps));
 

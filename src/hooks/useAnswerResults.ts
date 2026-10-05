@@ -19,6 +19,8 @@ export interface UseAnswerResultsReturn {
   isLoading: boolean;
   error: Error | null;
   getAnswer: (question: string) => void;
+  /** Forgets the answer, and drops any response still in flight, when the conversation is replaced. */
+  clear: () => void;
 }
 
 export default function useAnswerResults({
@@ -46,10 +48,16 @@ export default function useAnswerResults({
     cioClientRef.current = cioClient;
   }, [cioClient]);
 
+  const requestIdRef = useRef(0);
+
   const fetchResult = useCallback(
     (question: string) => {
       const client = cioClientRef.current;
       if (!client) return;
+
+      requestIdRef.current += 1;
+      const requestId = requestIdRef.current;
+      const isCurrent = () => requestId === requestIdRef.current;
 
       setIsLoading(true);
       setError(null);
@@ -58,20 +66,29 @@ export default function useAnswerResults({
       client.agent.pia
         .getAnswerResults(itemId, question, { threadId, variationId, ...parameters })
         .then((response) => {
+          if (!isCurrent()) return;
           setAnswerResults(response as GetAnswerResultsResponse);
           setError(null);
         })
         .catch((err) => {
+          if (!isCurrent()) return;
           setError(err instanceof Error ? err : new Error('Error fetching answer'));
           setAnswerResults(null);
         })
         .finally(() => {
-          setIsLoading(false);
+          if (isCurrent()) setIsLoading(false);
         });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [itemId, variationId, threadId, serializedParameters],
   );
+
+  const clear = useCallback(() => {
+    requestIdRef.current += 1;
+    setAnswerResults(null);
+    setError(null);
+    setIsLoading(false);
+  }, []);
 
   return {
     data: answerResults,
@@ -79,5 +96,6 @@ export default function useAnswerResults({
     isLoading,
     error,
     getAnswer: fetchResult,
+    clear,
   };
 }

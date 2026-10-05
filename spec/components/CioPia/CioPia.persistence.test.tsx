@@ -1,9 +1,12 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within, act } from '@testing-library/react';
 import CioPia from '../../../src/components/CioPia/CioPia';
 import type { CioPiaProps } from '../../../src/components/CioPia/types';
-import { clearPersistedConversations } from '../../../src/utils/conversationStorage';
+import {
+  clearPersistedConversations,
+  saveConversation,
+} from '../../../src/utils/conversationStorage';
 import { createMockCioClient, TestMockClient } from '../../helpers/mockCioClient';
 
 jest.mock('../../../src/components/CioPiaControl/CioPiaControl', () => ({
@@ -85,6 +88,81 @@ describe('persistConversation', () => {
 
     expect(stored(window.localStorage, SHOPPER_KEY)['item-a'].entries).toHaveLength(1);
     expect(window.sessionStorage.length).toBe(0);
+  });
+
+  describe("after a restore, the previous product's answer", () => {
+    const answerWithProduct = (id: string, name: string) => ({
+      qna_result_id: `qna-${id}`,
+      value: `Answer about ${name}`,
+      item_results: {
+        response: {
+          results: [
+            { value: name, data: { id, url: `https://example.com/${id}`, image_url: 'x.jpg' } },
+          ],
+        },
+      },
+    });
+
+    const cardNames = (container: HTMLElement) =>
+      Array.from(container.querySelectorAll('.cio-product-card')).map((n) => n.textContent);
+
+    beforeEach(() => {
+      saveConversation({ apiKey: 'test-api-key' }, 'item-b', 'thread-b', [
+        {
+          id: 1,
+          question: 'Question about B',
+          answer: 'Answer about B',
+          source: 'user',
+          qnaResultId: 'qna-b',
+          items: [{ id: 'b1', name: 'B product', url: 'https://example.com/b1', imageUrl: 'x.jpg' }],
+        },
+      ]);
+    });
+
+    it("is not shown or credited on the restored conversation's last turn", async () => {
+      const showFeedback = { mode: 'conversation' as const, showFeedback: true };
+      const { container, rerender } = render(<CioPia {...props({ displayConfigs: showFeedback })} />);
+      client.agent.pia.getAnswerResults.mockResolvedValueOnce(
+        answerWithProduct('a1', 'A product') as never,
+      );
+      const input = screen.getByRole('textbox');
+      fireEvent.change(input, { target: { value: 'Question about A' } });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+      await screen.findByText('Answer about A product');
+
+      rerender(<CioPia {...props({ itemId: 'item-b', displayConfigs: showFeedback })} />);
+      expect(cardNames(container).join()).toContain('B product');
+      expect(cardNames(container).join()).not.toContain('A product');
+
+      fireEvent.click(screen.getByRole('button', { name: 'thumbs up' }));
+      expect(client.tracker.trackProductInsightsAgentAnswerFeedback).toHaveBeenCalledWith(
+        expect.objectContaining({ qnaResultId: 'qna-b' }),
+      );
+    });
+
+    it('is dropped when it lands after the switch', async () => {
+      let resolveA: (value: unknown) => void = () => {};
+      client.agent.pia.getAnswerResults.mockReturnValueOnce(
+        new Promise((resolve) => {
+          resolveA = resolve;
+        }) as never,
+      );
+      const { container, rerender } = render(<CioPia {...props()} />);
+      const input = screen.getByRole('textbox');
+      fireEvent.change(input, { target: { value: 'Question about A' } });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+      rerender(<CioPia {...props({ itemId: 'item-b' })} />);
+      // Disabled only while B's suggested questions load, not until A's answer lands.
+      await waitFor(() => expect(screen.getByRole('textbox')).toBeEnabled());
+
+      await act(async () => {
+        resolveA(answerWithProduct('a1', 'A product'));
+      });
+      expect(questions(container)).toEqual(['Question about B']);
+      expect(cardNames(container).join()).toContain('B product');
+      expect(cardNames(container).join()).not.toContain('A product');
+    });
   });
 
   it('shows each product its own conversation and thread', async () => {

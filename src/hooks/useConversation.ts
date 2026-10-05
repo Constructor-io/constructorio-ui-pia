@@ -205,6 +205,9 @@ export default function useConversation({
     // Runs after the itemId reset above, so another product's stored conversation replaces the empty one.
     if (!persisted || prevPersistedKeyRef.current === persisted.key) return;
     prevPersistedKeyRef.current = persisted.key;
+    // The live answer belongs to the conversation being replaced: left in place, the restored last
+    // turn would show its products and credit its feedback.
+    answersRef.current.clear();
     const restored = renumber(persisted.history);
     entryIdRef.current = restored.length;
     setConversationHistory(restored);
