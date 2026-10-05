@@ -5,12 +5,6 @@ const STORED_VERSION = 1;
 /** Matches how long the agent remembers a thread. */
 export const PERSISTENCE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
-/** Whose conversations a store holds: a signed-in shopper's, or the guest's when `userId` is empty. */
-export interface ConversationOwner {
-  apiKey: string;
-  userId?: string | null;
-}
-
 export interface PersistedConversation {
   threadId: string;
   entries: ConversationEntry[];
@@ -44,13 +38,13 @@ function isPersistedConversation(value: unknown): value is PersistedConversation
   );
 }
 
-function storageKeyFor({ apiKey, userId }: ConversationOwner): string {
+function storageKeyFor({ apiKey, userId }: ClearPersistedConversationsOptions): string {
   const parts = isGuest(userId) ? [apiKey] : [apiKey, String(userId)];
   return [KEY_PREFIX, ...parts.map(encodeURIComponent)].join(':');
 }
 
 // A guest's conversations end with the tab, so the next person at that browser never sees them.
-function storageFor({ userId }: ConversationOwner): Storage | null {
+function storageFor({ userId }: ClearPersistedConversationsOptions): Storage | null {
   try {
     if (typeof window === 'undefined') return null;
     return isGuest(userId) ? window.sessionStorage : window.localStorage;
@@ -100,18 +94,18 @@ function writeFitting(storage: Storage, key: string, items: StoredItems, itemId:
   });
   if (fitsAfterEviction) return;
 
-  const fitsTrimmed = saved.entries.some((_, index) =>
-    index === 0
-      ? false
-      : tryWrite(storage, key, { [itemId]: { ...saved, entries: saved.entries.slice(index) } }),
-  );
+  const fitsTrimmed = saved.entries
+    .slice(1)
+    .some((_, i) =>
+      tryWrite(storage, key, { [itemId]: { ...saved, entries: saved.entries.slice(i + 1) } }),
+    );
   if (fitsTrimmed) return;
 
   tryWrite(storage, key, others);
 }
 
 export function loadConversation(
-  owner: ConversationOwner,
+  owner: ClearPersistedConversationsOptions,
   itemId: string,
 ): PersistedConversation | undefined {
   const storage = storageFor(owner);
@@ -120,7 +114,7 @@ export function loadConversation(
 
 /** Stores the answered turns of one product's conversation. A turn still waiting on its answer is left out. */
 export function saveConversation(
-  owner: ConversationOwner,
+  owner: ClearPersistedConversationsOptions,
   itemId: string,
   threadId: string,
   history: ConversationEntry[],

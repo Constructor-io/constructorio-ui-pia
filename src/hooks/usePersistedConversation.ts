@@ -65,6 +65,15 @@ export default function usePersistedConversation({
   threadId: threadIdProp,
 }: UsePersistedConversationProps): PersistedConversationState | undefined {
   const userId = isGuest(userIdProp) ? undefined : String(userIdProp);
+  const userIdOmitted = userIdProp === undefined;
+
+  // An omitted id stores a signed-in shopper as a guest, so say so rather than fail silently.
+  useEffect(() => {
+    if (!enabled || !userIdOmitted) return;
+    console.warn(
+      '[CioPia] persistConversation is on but no userId was passed, so conversations are stored as a guest. Pass the signed-in shopper id, or null for a guest.',
+    );
+  }, [enabled, userIdOmitted]);
 
   const target: Target = { enabled, apiKey, userId, itemId, threadIdProp };
 

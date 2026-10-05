@@ -143,6 +143,18 @@ describe('persistConversation', () => {
     expect(stored(window.localStorage, SHOPPER_KEY)['item-a'].entries).toHaveLength(2);
   });
 
+  it('warns once when persistConversation is on but userId is omitted', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const { rerender } = render(<CioPia {...props({ userId: undefined })} />);
+    rerender(<CioPia {...props({ userId: undefined })} />);
+    expect(warn.mock.calls.filter(([m]) => String(m).includes('no userId was passed'))).toHaveLength(1);
+
+    warn.mockClear();
+    render(<CioPia {...props({ userId: null })} />);
+    expect(warn.mock.calls.filter(([m]) => String(m).includes('no userId was passed'))).toHaveLength(0);
+    warn.mockRestore();
+  });
+
   it('prefers an explicit initialConversationHistory over the stored one', async () => {
     const { unmount } = render(<CioPia {...props()} />);
     await ask('Stored question', 'Stored answer');
