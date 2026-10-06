@@ -1,8 +1,9 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useCallback } from 'react';
 import Input from '../Input/Input';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import SuggestedQuestionsSkeleton from '../SuggestedQuestionsContainer/SuggestedQuestionsSkeleton';
 import { translate } from '../../utils/translate';
+import useReturnFocusToInput from '../../hooks/useReturnFocusToInput';
 import { FeedbackType, Item, Question } from '../../types';
 import ConversationHistory, {
   ConversationHistoryProps,
@@ -44,6 +45,23 @@ export default function PiaConversation({
   checkoutElement,
 }: PiaConversationProps) {
   const hasHistory = conversationHistory.length > 0;
+  const { inputRef, returnFocusAfterLoading } = useReturnFocusToInput(isLoading);
+
+  const submitQuestion = useCallback(
+    (question: string) => {
+      handleSubmitQuestion(question);
+      returnFocusAfterLoading();
+    },
+    [handleSubmitQuestion, returnFocusAfterLoading],
+  );
+
+  const clickQuestion = useCallback(
+    (question: string) => {
+      handleQuestionClick(question);
+      returnFocusAfterLoading();
+    },
+    [handleQuestionClick, returnFocusAfterLoading],
+  );
 
   return (
     <div
@@ -81,13 +99,14 @@ export default function PiaConversation({
         {!isLoading && !error && (
           <SuggestedQuestionsContainer
             questions={displayedQuestions}
-            onQuestionClick={handleQuestionClick}
+            onQuestionClick={clickQuestion}
             componentOverride={componentOverrides?.suggestedQuestions}
           />
         )}
         <Input
-          onSubmit={handleSubmitQuestion}
+          onSubmit={submitQuestion}
           onFocus={onInputFocus}
+          inputRef={inputRef}
           disabled={isLoading}
           translations={translations}
           componentOverride={componentOverrides?.input}

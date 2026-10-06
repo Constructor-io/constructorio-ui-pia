@@ -141,4 +141,35 @@ describe('PiaConversation Component', () => {
       expect(mockHandleSubmitQuestion).toHaveBeenCalledWith('How do I clean this?');
     });
   });
+
+  describe('focus after a follow-up loads', () => {
+    const props = { ...baseProps, handleQuestionClick: jest.fn() };
+
+    it('returns focus to the input after a typed question', () => {
+      const { rerender } = render(<PiaConversation {...props} />);
+      const input = screen.getByRole('textbox');
+      input.focus();
+      fireEvent.change(input, { target: { value: 'Is it waterproof?' } });
+      fireEvent.keyDown(input, { key: 'Enter' });
+
+      // jsdom does not drop focus from a control when it becomes disabled the way browsers do.
+      input.blur();
+      rerender(<PiaConversation {...props} isLoading />);
+      rerender(<PiaConversation {...props} />);
+
+      expect(input).toHaveFocus();
+    });
+
+    it('returns focus to the input after a suggested question is clicked', () => {
+      const { rerender } = render(<PiaConversation {...props} />);
+      const question = screen.getByRole('button', { name: mockSuggestedQuestions[0].value });
+      question.focus();
+      fireEvent.click(question);
+
+      rerender(<PiaConversation {...props} isLoading />);
+      rerender(<PiaConversation {...props} />);
+
+      expect(screen.getByRole('textbox')).toHaveFocus();
+    });
+  });
 });
