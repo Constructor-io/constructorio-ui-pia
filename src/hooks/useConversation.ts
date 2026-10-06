@@ -10,6 +10,8 @@ import {
 } from '../types';
 import { UseCioPiaReturn } from './useCioPia';
 import { UseTrackingReturn } from './useTracking';
+import { PersistedConversationState } from './usePersistedConversation';
+import { isRestorableEntry } from '../utils/conversationStorage';
 
 export interface UseConversationProps {
   pia: UseCioPiaReturn;
@@ -18,6 +20,8 @@ export interface UseConversationProps {
   callbacks?: Callbacks;
   tracking?: UseTrackingReturn;
   initialConversationHistory?: ConversationEntry[];
+  /** The stored conversation to show and save to, when `persistConversation` is on. */
+  persisted?: PersistedConversationState;
 }
 
 export interface UseConversationReturn {
@@ -36,15 +40,9 @@ export interface UseConversationReturn {
   resetState: () => void;
 }
 
-function isRestorableEntry(entry: unknown): entry is ConversationEntry {
-  if (typeof entry !== 'object' || entry === null) return false;
-  const { question, answer, items } = entry as Partial<ConversationEntry>;
-  return (
-    typeof question === 'string' &&
-    typeof answer === 'string' &&
-    (items === undefined || items === null || Array.isArray(items))
-  );
-}
+// `id` is the React key, so ids from outside the widget cannot be trusted to be unique.
+const renumber = (entries: ConversationEntry[]): ConversationEntry[] =>
+  entries.map((entry, index) => ({ ...entry, id: index + 1 }));
 
 // The seed comes from the host's own storage, typed or not: a malformed one must not take the widget down.
 function restoreHistory(seed: unknown): ConversationEntry[] {
@@ -60,8 +58,17 @@ function restoreHistory(seed: unknown): ConversationEntry[] {
     );
   }
 
-  // Seeded ids are replaced: `id` is the React key, so a caller's values cannot be trusted to be unique.
-  return entries.map((entry, index) => ({ ...entry, id: index + 1 }));
+  return renumber(entries);
+}
+
+function initialHistory(
+  isConversation: boolean,
+  seed: ConversationEntry[] | undefined,
+  persisted: PersistedConversationState | undefined,
+): ConversationEntry[] {
+  if (!isConversation) return [];
+  if (seed !== undefined) return restoreHistory(seed);
+  return persisted ? renumber(persisted.history) : [];
 }
 
 export default function useConversation({
@@ -71,6 +78,7 @@ export default function useConversation({
   callbacks,
   tracking,
   initialConversationHistory,
+  persisted,
 }: UseConversationProps): UseConversationReturn {
   const { suggestedQuestions, answers, threadId } = pia;
   const { getAnswer } = answers;
@@ -80,14 +88,14 @@ export default function useConversation({
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
   const [displayedQuestions, setDisplayedQuestions] = useState<Question[]>([]);
   const [conversationHistory, setConversationHistory] = useState<ConversationEntry[]>(() =>
-    isConversation && initialConversationHistory !== undefined
-      ? restoreHistory(initialConversationHistory)
-      : [],
+    initialHistory(isConversation, initialConversationHistory, persisted),
   );
 
   const entryIdRef = useRef(conversationHistory.length);
   const conversationHistoryRef = useRef(conversationHistory);
   const prevItemIdRef = useRef(itemId);
+  const persistedRef = useRef(persisted);
+  const prevPersistedKeyRef = useRef(persisted?.key);
   const prevAnswerDataRef = useRef(answers.data);
   const hasTrackedCurrentAnswerRef = useRef(false);
   const answersRef = useRef(answers);
@@ -119,6 +127,10 @@ export default function useConversation({
   useEffect(() => {
     conversationHistoryRef.current = conversationHistory;
   }, [conversationHistory]);
+
+  useEffect(() => {
+    persistedRef.current = persisted;
+  }, [persisted]);
 
   const submitQuestion = useCallback(
     (question: string, source: QuestionSource) => {
@@ -172,7 +184,8 @@ export default function useConversation({
   const resetState = useCallback(() => {
     setCurrentQuestion('');
     setDisplayedQuestions(suggestedQuestions.data);
-    setConversationHistory([]);
+    // A stored conversation outlives the modal: it is there again when the modal reopens.
+    if (!persistedRef.current) setConversationHistory([]);
     prevAnswerDataRef.current = null;
     showsFollowUpsRef.current = false;
   }, [suggestedQuestions.data]);
@@ -187,6 +200,19 @@ export default function useConversation({
     prevAnswerDataRef.current = null;
     showsFollowUpsRef.current = false;
   }, [itemId]);
+
+  useEffect(() => {
+    // Runs after the itemId reset above, so another product's stored conversation replaces the empty one.
+    if (!persisted || prevPersistedKeyRef.current === persisted.key) return;
+    prevPersistedKeyRef.current = persisted.key;
+    // The live answer belongs to the conversation being replaced: left in place, the restored last
+    // turn would show its products and credit its feedback.
+    answersRef.current.clear();
+    const restored = renumber(persisted.history);
+    entryIdRef.current = restored.length;
+    setConversationHistory(restored);
+    setCurrentQuestion('');
+  }, [persisted]);
 
   useEffect(() => {
     // The ref, not `answers.data`, which outlives the item it answered.
@@ -220,7 +246,9 @@ export default function useConversation({
 
     if (isConversation) {
       setConversationHistory((prev) => {
-        if (prev.length === 0) return prev;
+        // Only a question still waiting is answered: after a switch of product or shopper, a late
+        // answer must not overwrite a settled turn of the conversation that replaced it.
+        if (prev.length === 0 || prev[prev.length - 1].answer !== '') return prev;
         const updated = [...prev];
         updated[updated.length - 1] = {
           ...updated[updated.length - 1],
@@ -230,6 +258,7 @@ export default function useConversation({
           qnaResultId,
         };
         callbacksRef.current?.onAnswer?.(updated, contextRef.current);
+        persistedRef.current?.save(updated);
         return updated;
       });
     } else {

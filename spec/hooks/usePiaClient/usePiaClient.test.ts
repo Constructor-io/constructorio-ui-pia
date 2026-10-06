@@ -30,6 +30,28 @@ describe('Testing Hook: usePiaClient', () => {
     expect(result.current.cioClient).toBe(provided);
   });
 
+  it('sets userId on the client it builds, and clears it for a guest', () => {
+    const { result, rerender } = renderHook(
+      ({ userId }: { userId: string | null }) => usePiaClient({ apiKey: testApiKey, userId }),
+      { initialProps: { userId: 'shopper-1' } as { userId: string | null } },
+    );
+    expect(result.current.cioClient.options.userId).toBe('shopper-1');
+
+    rerender({ userId: null });
+    expect(result.current.cioClient.options.userId).toBeUndefined();
+  });
+
+  it("leaves a caller's client alone", () => {
+    const provided = createMockCioClient() as unknown as { setClientOptions: jest.Mock };
+    provided.setClientOptions = jest.fn();
+
+    renderHook(() =>
+      usePiaClient({ apiKey: testApiKey, cioClient: provided as never, userId: 'shopper-1' }),
+    );
+
+    expect(provided.setClientOptions).not.toHaveBeenCalled();
+  });
+
   it('keeps the same client across renders', () => {
     const { result, rerender } = renderHook(() => usePiaClient({ apiKey: testApiKey }));
     const first = result.current.cioClient;

@@ -141,6 +141,22 @@ function ProductQuestions({ itemId }) {
 
 Passing the prop, even as `[]`, means you manage the history, so pass `[]` when nothing is saved rather than leaving it out. The history is read once, on mount, and changing `itemId` clears it. Remount with `key={itemId}` so each product loads its own saved conversation.
 
+### 7. Persist conversations in the browser (optional)
+
+Instead of managing the history yourself, pass `persistConversation` and let the widget keep each product's conversation in the browser:
+
+```jsx
+<CioPia
+  apiKey="YOUR_API_KEY"
+  itemId={itemId}
+  displayConfigs={{ mode: 'conversation' }}
+  persistConversation={{ enabled: true }}
+  userId={user?.id ?? null}
+/>
+```
+
+Each product keeps its own conversation and thread. Pass the signed-in shopper's stable, non-personal id as `userId`, and `null` for a guest. See the [Persistent Conversations Guide](?path=/docs/general-integration-guide-persistent-conversations-guide--docs) for login and logout, what is stored, and how long it is kept.
+
 ---
 
 ## Try It: Product Results

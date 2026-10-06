@@ -1,0 +1,141 @@
+import { Meta, Markdown } from '@storybook/blocks';
+
+<Meta title='General/Integration Guide/Persistent Conversations Guide' />
+
+# Persistent Conversations Guide
+
+By default a conversation lives in memory and is gone on the next page load. With
+`persistConversation` the widget keeps it in the browser: a shopper who reloads, or comes back to
+the product later, finds the conversation where they left it, and the agent continues the same
+thread, so it still remembers what was said.
+
+## Quick start
+
+```jsx
+import { CioPia } from '@constructor-io/constructorio-ui-pia';
+
+<CioPia
+  apiKey='YOUR_API_KEY'
+  itemId={itemId}
+  itemName={itemName}
+  displayConfigs={{ mode: 'conversation' }}
+  persistConversation={{ enabled: true }}
+  userId={user?.id ?? null}
+/>;
+```
+
+That is the whole integration. `enabled` can be a feature flag. Pass `userId` with it: the
+signed-in shopper's id, or `null` for a guest. Use the same stable, non-personal id you give
+Constructor for personalization, never an email, because it becomes part of a storage key any
+script on the page can read. An omitted `userId` is treated as a guest and logs a console warning;
+pass `null` explicitly for a guest.
+
+Without your own `cioClient`, `userId` is also set on the client the widget creates, so agent
+requests and stored conversations agree. With your own client, set the same `userId` on it too.
+
+Persistence is used by `mode: 'conversation'` and `type: 'modal'`. `mode: 'default'` shows only the
+latest answer and stores nothing.
+
+## One conversation per product
+
+Each `itemId` keeps its own conversation and its own agent thread. Moving to another product shows
+that product's stored conversation, or an empty one, and coming back resumes the first. A thread
+only ever hears about the product it belongs to.
+
+## Guests and signed-in shoppers
+
+<Markdown>
+  {`
+| | Guest (\`userId\` is \`null\`) | Signed-in shopper |
+|---|---|---|
+| Where | \`sessionStorage\` | \`localStorage\` |
+| Survives | reloads and navigation within the tab | reloads, navigation, closing the browser, other tabs of the site |
+| Ends | when the tab is closed | 7 days after the product's conversation was last updated |
+| Visible to | nobody else: each tab is its own guest | only the same \`userId\` on that browser |
+`}
+</Markdown>
+
+## Login and logout
+
+Change `userId` on login and logout; everything else follows from that.
+
+- **On login**, every guest conversation moves into the shopper's history, and the one on screen
+  continues on the same thread. If the guest had not asked anything about this product, the
+  shopper's own stored conversation for it is shown instead.
+- **A login that reloads the page** comes back already signed in. The guest's conversations then
+  stay in `sessionStorage` and are not carried over: carry-over happens when `userId` changes on a
+  mounted widget.
+- **On logout**, or a change to another id, the widget switches to that history and starts a new
+  thread. It never shows a conversation stored under another id.
+
+Nothing is deleted on logout. The shopper's history stays on the device for 7 days and comes back
+when they sign in again. It cannot be shown to anyone else through the widget, but it is plain data
+in `localStorage`. When that is not acceptable, delete it on logout:
+
+```js
+import { clearPersistedConversations } from '@constructor-io/constructorio-ui-pia';
+
+function onLogout(user) {
+  clearPersistedConversations({ apiKey: 'YOUR_API_KEY', userId: user.id });
+}
+```
+
+Called without `userId`, it deletes the guest history of the current tab. A widget already showing
+a deleted conversation keeps it on screen until its `itemId` or `userId` changes.
+
+## Working with `threadId` and `initialConversationHistory`
+
+- An explicit `initialConversationHistory` is shown instead of the stored conversation. New answers
+  are still stored.
+- With an explicit `threadId`, only a conversation stored on that thread is restored; otherwise the
+  widget starts on your thread with an empty conversation.
+
+## The modal
+
+Closing the modal keeps a stored conversation, and it is there again when the modal reopens.
+Without `persistConversation`, closing the modal still clears it.
+
+## What is stored, and for how long
+
+<Markdown>
+  {`
+| Aspect | Behaviour |
+|---|---|
+| Keys | \`cio-pia:chat:v1:<apiKey>\` in \`sessionStorage\` for a guest, \`cio-pia:chat:v1:<apiKey>:<userId>\` in \`localStorage\` for a shopper. One key holds every product's conversation for that shopper |
+| Content | Per product: the agent thread id, and each answered turn with its question, answer, products and \`qnaResultId\` |
+| When it saves | As each answer lands. A question whose answer had not arrived when the page was left is not restored |
+| Retention | A product's conversation expires 7 days after it was last updated, matching how long the agent remembers a thread |
+`}
+</Markdown>
+
+Storage stays on the device: another browser or device starts fresh.
+
+## When storage is full or unavailable
+
+Persistence never gets in the way of the conversation; only what comes back after a reload
+changes.
+
+- **Storage is full.** A save that does not fit drops other products' conversations, oldest first,
+  then the oldest turns of the one being saved. If not even one turn fits, that conversation is not
+  stored rather than stored half-written.
+- **Storage is blocked**, for example by a privacy setting. The widget works as if
+  `persistConversation` were off.
+- **Stored data is malformed.** It is ignored.
+
+## Several tabs
+
+Tabs do not sync live. A signed-in shopper's other tabs show the latest turns the next time they
+load that product. Each guest tab has its own `sessionStorage`, so guest tabs never share a
+conversation.
+
+## Reference
+
+<Markdown>
+  {`
+| Where | Name | What it does |
+|---|---|---|
+| \`CioPia\` prop | \`persistConversation\` | \`{ enabled: boolean }\`, off by default. Keeps each product's conversation in the browser |
+| \`CioPia\` prop | \`userId\` | Whose history this is: the signed-in shopper's id, or \`null\` for a guest |
+| function | \`clearPersistedConversations({ apiKey, userId })\` | Deletes every stored conversation of that shopper, or of the current tab's guest without \`userId\` |
+`}
+</Markdown>
