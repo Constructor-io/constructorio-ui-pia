@@ -229,6 +229,20 @@ describe('CioPia Component', () => {
       expect(mockGetAnswer).toHaveBeenCalledWith(mockSuggestedQuestions[0].value);
     });
 
+    it('returns focus to the input once a clicked suggested question is answered', () => {
+      const { rerender } = render(<CioPia {...mockProps} />);
+      const question = screen.getByRole('button', { name: mockSuggestedQuestions[0].value });
+      question.focus();
+      fireEvent.click(question);
+
+      mockUseCioPia({ answerIsLoading: true });
+      rerender(<CioPia {...mockProps} />);
+      mockUseCioPiaWithAnswerData();
+      rerender(<CioPia {...mockProps} />);
+
+      expect(screen.getByRole('textbox')).toHaveFocus();
+    });
+
     it('displays follow-up questions when available in answers data', () => {
       mockUseCioPiaWithAnswerData();
 
