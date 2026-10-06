@@ -95,7 +95,9 @@ export default function PiaModal({
     const active = document.activeElement;
     if (active !== placed && active !== document.body) return;
 
-    dialogRef.current?.querySelector<HTMLInputElement>('input:not(:disabled)')?.focus();
+    dialogRef.current
+      ?.querySelector<HTMLInputElement>('.cio-pia-conversation-footer input:not(:disabled)')
+      ?.focus();
   }, [isOpen, isLoading]);
 
   // Restore focus to the trigger. Re-runs on `isLoading`: the input trigger is

@@ -296,7 +296,10 @@ describe('PiaModal Component', () => {
           {...defaultProps}
           isLoading={isLoading}
           handleQuestionClick={() => setIsLoading(true)}>
-          <input aria-label='Follow-up' disabled={isLoading} />
+          <input aria-label='Quantity' />
+          <div className='cio-pia-conversation-footer'>
+            <input aria-label='Follow-up' disabled={isLoading} />
+          </div>
         </PiaModal>
       );
     }
