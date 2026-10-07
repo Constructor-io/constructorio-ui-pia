@@ -96,7 +96,9 @@ export default function PiaModal({
     if (active !== placed && active !== document.body) return;
 
     dialogRef.current
-      ?.querySelector<HTMLInputElement>('.cio-pia-conversation-footer input:not(:disabled)')
+      ?.querySelector<HTMLElement>(
+        '.cio-pia-conversation-footer input:not(:disabled), .cio-pia-conversation-footer textarea:not(:disabled)',
+      )
       ?.focus();
   }, [isOpen, isLoading]);
 

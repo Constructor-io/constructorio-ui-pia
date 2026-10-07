@@ -1,7 +1,7 @@
-import { RefObject, useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 export interface UseReturnFocusToInputReturn {
-  inputRef: RefObject<HTMLInputElement | null>;
+  inputRef: (node: HTMLElement | null) => void;
   returnFocusAfterLoading: () => void;
 }
 
@@ -10,7 +10,7 @@ export interface UseReturnFocusToInputReturn {
  * skeleton, and the browser drops focus to <body>.
  */
 export default function useReturnFocusToInput(isLoading: boolean): UseReturnFocusToInputReturn {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputNodeRef = useRef<HTMLElement | null>(null);
   const pendingRef = useRef(false);
 
   useEffect(() => {
@@ -19,8 +19,12 @@ export default function useReturnFocusToInput(isLoading: boolean): UseReturnFocu
 
     const active = document.activeElement;
     const focusWasDropped = !active || active === document.body;
-    if (inputRef.current && focusWasDropped) inputRef.current.focus();
+    if (inputNodeRef.current && focusWasDropped) inputNodeRef.current.focus();
   }, [isLoading]);
+
+  const inputRef = useCallback((node: HTMLElement | null) => {
+    inputNodeRef.current = node;
+  }, []);
 
   const returnFocusAfterLoading = useCallback(() => {
     pendingRef.current = true;

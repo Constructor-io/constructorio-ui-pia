@@ -275,6 +275,7 @@ function GrowingTextarea({
   disabled,
   onFocus,
   translations,
+  inputRef,
 }: InputRenderProps) {
   const [text, setText] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -298,7 +299,10 @@ function GrowingTextarea({
   return (
     <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end', width: '100%' }}>
       <textarea
-        ref={textareaRef}
+        ref={(node) => {
+          textareaRef.current = node;
+          inputRef?.(node);
+        }}
         value={text}
         onChange={(e) => {
           setText(e.target.value);

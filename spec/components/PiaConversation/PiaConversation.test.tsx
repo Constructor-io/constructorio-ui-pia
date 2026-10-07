@@ -2,6 +2,7 @@ import React from 'react';
 import '@testing-library/jest-dom';
 import { render, fireEvent, screen } from '@testing-library/react';
 import PiaConversation from '../../../src/components/PiaConversation/PiaConversation';
+import { InputRenderProps } from '../../../src/types';
 
 describe('PiaConversation Component', () => {
   const mockSuggestedQuestions = [
@@ -170,6 +171,23 @@ describe('PiaConversation Component', () => {
       rerender(<PiaConversation {...props} />);
 
       expect(screen.getByRole('textbox')).toHaveFocus();
+    });
+
+    it('returns focus to an input override that attaches inputRef', () => {
+      const overrides = {
+        input: {
+          reactNode: ({ inputRef, disabled }: InputRenderProps) => (
+            <textarea aria-label='Custom question' ref={inputRef} disabled={disabled} />
+          ),
+        },
+      };
+      const { rerender } = render(<PiaConversation {...props} componentOverrides={overrides} />);
+      fireEvent.click(screen.getByRole('button', { name: mockSuggestedQuestions[0].value }));
+
+      rerender(<PiaConversation {...props} componentOverrides={overrides} isLoading />);
+      rerender(<PiaConversation {...props} componentOverrides={overrides} />);
+
+      expect(screen.getByRole('textbox', { name: 'Custom question' })).toHaveFocus();
     });
   });
 });

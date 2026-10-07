@@ -287,7 +287,7 @@ describe('PiaModal Component', () => {
     let finishLoading: () => void;
 
     // Asking opens the dialog and starts loading in the same render, as `CioPiaQna` does.
-    function Harness() {
+    function Harness({ Field = 'input' }: { Field?: 'input' | 'textarea' }) {
       const [isLoading, setIsLoading] = React.useState(false);
       finishLoading = () => setIsLoading(false);
 
@@ -298,14 +298,14 @@ describe('PiaModal Component', () => {
           handleQuestionClick={() => setIsLoading(true)}>
           <input aria-label='Quantity' />
           <div className='cio-pia-conversation-footer'>
-            <input aria-label='Follow-up' disabled={isLoading} />
+            <Field aria-label='Follow-up' disabled={isLoading} />
           </div>
         </PiaModal>
       );
     }
 
-    function openWithQuestion() {
-      const view = render(<Harness />);
+    function openWithQuestion(Field?: 'input' | 'textarea') {
+      const view = render(<Harness Field={Field} />);
       fireEvent.click(
         within(view.container.querySelector(BASE_QUESTIONS)!).getAllByRole('button')[0],
       );
@@ -315,6 +315,14 @@ describe('PiaModal Component', () => {
     it('moves focus from where the dialog opened it to the input', () => {
       openWithQuestion();
       expect(screen.getByRole('button', { name: 'Close' })).toHaveFocus();
+
+      act(() => finishLoading());
+
+      expect(screen.getByRole('textbox', { name: 'Follow-up' })).toHaveFocus();
+    });
+
+    it('moves focus to a textarea rendered by an input override', () => {
+      openWithQuestion('textarea');
 
       act(() => finishLoading());
 

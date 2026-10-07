@@ -29,7 +29,7 @@ interface InputProps {
   translations?: Translations;
   componentOverride?: ComponentOverrideProps<InputRenderProps>;
   error?: string;
-  inputRef?: React.Ref<HTMLInputElement>;
+  inputRef?: (node: HTMLElement | null) => void;
   placeholderKey?: string;
   /**
    * Render the Send button after the field.
@@ -100,6 +100,7 @@ function Input({
         onFocus,
         translations,
         error,
+        inputRef,
       }}
       override={componentOverride?.reactNode}>
       <>
