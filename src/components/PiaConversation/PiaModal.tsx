@@ -1,10 +1,22 @@
-import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import Input from '../Input/Input';
 import { translate } from '../../utils/translate';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import { Translations, Question, CioPiaComponentOverrides } from '../../types';
 
 const OVERFLOW_HIDDEN_CLASS = 'cio-pia-modal-open';
+
+/** Lets the conversation rendered as the modal's children hand it the node of its input. */
+export const ModalInputRefContext = createContext<((node: HTMLElement | null) => void) | undefined>(
+  undefined,
+);
 
 function CloseIcon() {
   return (
@@ -52,6 +64,11 @@ export default function PiaModal({
   const dialogRef = useRef<HTMLDialogElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
   const initialFocusRef = useRef<Element | null>(null);
+  const inputNodeRef = useRef<HTMLElement | null>(null);
+
+  const setInputNode = useCallback((node: HTMLElement | null) => {
+    inputNodeRef.current = node;
+  }, []);
 
   const openModal = useCallback(() => {
     const active = document.activeElement as HTMLElement | null;
@@ -95,11 +112,7 @@ export default function PiaModal({
     const active = document.activeElement;
     if (active !== placed && active !== document.body) return;
 
-    dialogRef.current
-      ?.querySelector<HTMLElement>(
-        '.cio-pia-conversation-footer input:not(:disabled), .cio-pia-conversation-footer textarea:not(:disabled)',
-      )
-      ?.focus();
+    inputNodeRef.current?.focus();
   }, [isOpen, isLoading]);
 
   // Restore focus to the trigger. Re-runs on `isLoading`: the input trigger is
@@ -189,7 +202,11 @@ export default function PiaModal({
               <CloseIcon />
             </button>
           </div>
-          <div className='cio-pia-modal-body'>{children}</div>
+          <div className='cio-pia-modal-body'>
+            <ModalInputRefContext.Provider value={setInputNode}>
+              {children}
+            </ModalInputRefContext.Provider>
+          </div>
         </div>
       </dialog>
     </div>

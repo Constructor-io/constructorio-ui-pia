@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import '@testing-library/jest-dom';
 import { act, render, fireEvent, screen, within } from '@testing-library/react';
 import PiaModal from '../../../src/components/PiaConversation/PiaModal';
+import PiaConversation from '../../../src/components/PiaConversation/PiaConversation';
+import { InputRenderProps } from '../../../src/types';
 
 const BASE_INPUT = '.cio-pia-container .cio-pia-conversation-footer .cio-pia-input-container input';
 const BASE_QUESTIONS =
@@ -287,7 +289,11 @@ describe('PiaModal Component', () => {
     let finishLoading: () => void;
 
     // Asking opens the dialog and starts loading in the same render, as `CioPiaQna` does.
-    function Harness({ Field = 'input' }: { Field?: 'input' | 'textarea' }) {
+    function Harness({
+      inputOverride,
+    }: {
+      inputOverride?: (props: InputRenderProps) => ReactNode;
+    }) {
       const [isLoading, setIsLoading] = React.useState(false);
       finishLoading = () => setIsLoading(false);
 
@@ -296,21 +302,28 @@ describe('PiaModal Component', () => {
           {...defaultProps}
           isLoading={isLoading}
           handleQuestionClick={() => setIsLoading(true)}>
-          <input aria-label='Quantity' />
-          <div className='cio-pia-conversation-footer'>
-            <Field aria-label='Follow-up' disabled={isLoading} />
-          </div>
+          <PiaConversation
+            conversationHistory={[]}
+            isLoading={isLoading}
+            error={null}
+            displayedQuestions={[]}
+            handleSubmitQuestion={jest.fn()}
+            handleQuestionClick={jest.fn()}
+            componentOverrides={inputOverride && { input: { reactNode: inputOverride } }}
+          />
         </PiaModal>
       );
     }
 
-    function openWithQuestion(Field?: 'input' | 'textarea') {
-      const view = render(<Harness Field={Field} />);
+    function openWithQuestion(inputOverride?: (props: InputRenderProps) => ReactNode) {
+      const view = render(<Harness inputOverride={inputOverride} />);
       fireEvent.click(
         within(view.container.querySelector(BASE_QUESTIONS)!).getAllByRole('button')[0],
       );
       return view;
     }
+
+    const dialogInput = () => within(document.querySelector('dialog')!).getByRole('textbox');
 
     it('moves focus from where the dialog opened it to the input', () => {
       openWithQuestion();
@@ -318,15 +331,17 @@ describe('PiaModal Component', () => {
 
       act(() => finishLoading());
 
-      expect(screen.getByRole('textbox', { name: 'Follow-up' })).toHaveFocus();
+      expect(dialogInput()).toHaveFocus();
     });
 
-    it('moves focus to a textarea rendered by an input override', () => {
-      openWithQuestion('textarea');
+    it('moves focus to whatever element an input override attaches inputRef to', () => {
+      openWithQuestion(({ inputRef }) => (
+        <div role='textbox' aria-label='Custom question' contentEditable ref={inputRef} />
+      ));
 
       act(() => finishLoading());
 
-      expect(screen.getByRole('textbox', { name: 'Follow-up' })).toHaveFocus();
+      expect(screen.getByRole('textbox', { name: 'Custom question' })).toHaveFocus();
     });
 
     it('leaves focus alone if the shopper moved it while the answer loaded', () => {

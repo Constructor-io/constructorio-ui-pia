@@ -1,9 +1,10 @@
-import React, { ReactNode, useCallback } from 'react';
+import React, { ReactNode, useCallback, useContext } from 'react';
 import Input from '../Input/Input';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import SuggestedQuestionsSkeleton from '../SuggestedQuestionsContainer/SuggestedQuestionsSkeleton';
 import { translate } from '../../utils/translate';
 import useReturnFocusToInput from '../../hooks/useReturnFocusToInput';
+import { ModalInputRefContext } from './PiaModal';
 import { FeedbackType, Item, Question } from '../../types';
 import ConversationHistory, {
   ConversationHistoryProps,
@@ -46,6 +47,15 @@ export default function PiaConversation({
 }: PiaConversationProps) {
   const hasHistory = conversationHistory.length > 0;
   const { inputRef, returnFocusAfterLoading } = useReturnFocusToInput(isLoading);
+  const modalInputRef = useContext(ModalInputRefContext);
+
+  const attachInput = useCallback(
+    (node: HTMLElement | null) => {
+      inputRef(node);
+      modalInputRef?.(node);
+    },
+    [inputRef, modalInputRef],
+  );
 
   const submitQuestion = useCallback(
     (question: string) => {
@@ -106,7 +116,7 @@ export default function PiaConversation({
         <Input
           onSubmit={submitQuestion}
           onFocus={onInputFocus}
-          inputRef={inputRef}
+          inputRef={attachInput}
           disabled={isLoading}
           translations={translations}
           componentOverride={componentOverrides?.input}
