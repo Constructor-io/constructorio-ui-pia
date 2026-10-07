@@ -1,10 +1,22 @@
-import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import Input from '../Input/Input';
 import { translate } from '../../utils/translate';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import { Translations, Question, CioPiaComponentOverrides } from '../../types';
 
 const OVERFLOW_HIDDEN_CLASS = 'cio-pia-modal-open';
+
+/** Lets the conversation rendered as the modal's children hand it the node of its input. */
+export const ModalInputRefContext = createContext<((node: HTMLElement | null) => void) | undefined>(
+  undefined,
+);
 
 function CloseIcon() {
   return (
@@ -51,6 +63,12 @@ export default function PiaModal({
   const [isOpen, setIsOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
+  const initialFocusRef = useRef<Element | null>(null);
+  const inputNodeRef = useRef<HTMLElement | null>(null);
+
+  const setInputNode = useCallback((node: HTMLElement | null) => {
+    inputNodeRef.current = node;
+  }, []);
 
   const openModal = useCallback(() => {
     const active = document.activeElement as HTMLElement | null;
@@ -72,6 +90,7 @@ export default function PiaModal({
 
     if (isOpen) {
       dialog.showModal();
+      initialFocusRef.current = document.activeElement;
       document.body.classList.add(OVERFLOW_HIDDEN_CLASS);
     } else {
       if (dialog.open) dialog.close();
@@ -82,6 +101,19 @@ export default function PiaModal({
       document.body.classList.remove(OVERFLOW_HIDDEN_CLASS);
     };
   }, [isOpen]);
+
+  // The input is disabled when the dialog opens, so showModal() parks focus on the first enabled
+  // control. Hand it to the input once the answer has loaded, unless the shopper has moved it.
+  useEffect(() => {
+    if (!isOpen || isLoading || !initialFocusRef.current) return;
+
+    const placed = initialFocusRef.current;
+    initialFocusRef.current = null;
+    const active = document.activeElement;
+    if (active !== placed && active !== document.body) return;
+
+    inputNodeRef.current?.focus();
+  }, [isOpen, isLoading]);
 
   // Restore focus to the trigger. Re-runs on `isLoading`: the input trigger is
   // disabled while a request is in flight and `focus()` would no-op.
@@ -170,7 +202,11 @@ export default function PiaModal({
               <CloseIcon />
             </button>
           </div>
-          <div className='cio-pia-modal-body'>{children}</div>
+          <div className='cio-pia-modal-body'>
+            <ModalInputRefContext.Provider value={setInputNode}>
+              {children}
+            </ModalInputRefContext.Provider>
+          </div>
         </div>
       </dialog>
     </div>

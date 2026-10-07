@@ -239,6 +239,24 @@ describe('CioPiaRecs Component', () => {
       expect(screen.getByText(secondResult.title)).toBeInTheDocument();
     });
 
+    it('returns focus to the input once a clicked option has loaded', async () => {
+      await renderSettled();
+      const option = screen.getByRole('button', { name: 'Oxford' });
+      option.focus();
+
+      await act(async () => {
+        fireEvent.click(option);
+      });
+
+      expect(screen.getByRole('textbox')).toHaveFocus();
+    });
+
+    it('leaves focus alone after the first load', async () => {
+      await renderSettled();
+
+      expect(screen.getByRole('textbox')).not.toHaveFocus();
+    });
+
     it('draws as many option placeholders as the previous response had', async () => {
       mockClient.agent.getRecs
         .mockResolvedValueOnce(firstResult)

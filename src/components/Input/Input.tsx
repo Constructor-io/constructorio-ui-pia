@@ -29,6 +29,7 @@ interface InputProps {
   translations?: Translations;
   componentOverride?: ComponentOverrideProps<InputRenderProps>;
   error?: string;
+  inputRef?: (node: HTMLElement | null) => void;
   placeholderKey?: string;
   /**
    * Render the Send button after the field.
@@ -47,6 +48,7 @@ function Input({
   translations,
   componentOverride,
   error,
+  inputRef,
   placeholderKey = 'Ask anything',
   showSendButton = true,
 }: InputProps) {
@@ -98,11 +100,13 @@ function Input({
         onFocus,
         translations,
         error,
+        inputRef,
       }}
       override={componentOverride?.reactNode}>
       <>
         <div className='cio-pia-input-container'>
           <input
+            ref={inputRef}
             type='text'
             value={value}
             onChange={(e) => setValue(e.target.value)}

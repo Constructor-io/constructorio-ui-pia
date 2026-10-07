@@ -342,6 +342,11 @@ export interface InputRenderProps {
   translations?: Translations;
   /** Validation message for the value that was just submitted, when there is one. */
   error?: string;
+  /**
+   * Attach to your text field (`ref={inputRef}`) so focus returns to it after an answer loads.
+   * Without it, keyboard focus is lost while your field is disabled or a suggestion is replaced.
+   */
+  inputRef?: (node: HTMLElement | null) => void;
 }
 
 /**

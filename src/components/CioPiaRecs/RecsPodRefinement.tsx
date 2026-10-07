@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import Input from '../Input/Input';
 import SuggestedQuestion from '../SuggestedQuestion/SuggestedQuestion';
 import { SparklesIcon } from '../icons';
@@ -6,6 +6,7 @@ import RecsOptionsSkeleton from './RecsOptionsSkeleton';
 import { CioPiaComponentOverrides, RecsRefinement, Translations } from '../../types';
 import { resolveRefinementQuestion } from '../../utils/recs';
 import { RECS_INPUT_PLACEHOLDER } from '../../constants';
+import useReturnFocusToInput from '../../hooks/useReturnFocusToInput';
 
 interface RecsPodRefinementProps {
   refinement: RecsRefinement | null;
@@ -37,6 +38,23 @@ export default function RecsPodRefinement({
   onInputFocus,
 }: RecsPodRefinementProps) {
   const options = refinement?.options || [];
+  const { inputRef, returnFocusAfterLoading } = useReturnFocusToInput(isLoading);
+
+  const refine = useCallback(
+    (text: string) => {
+      onRefine(text);
+      returnFocusAfterLoading();
+    },
+    [onRefine, returnFocusAfterLoading],
+  );
+
+  const submit = useCallback(
+    (value: string) => {
+      onSubmit(value);
+      returnFocusAfterLoading();
+    },
+    [onSubmit, returnFocusAfterLoading],
+  );
 
   return (
     <div className='cio-pia-recs-pod__refinement'>
@@ -52,7 +70,7 @@ export default function RecsPodRefinement({
             key={option}
             question={option}
             icon={<SparklesIcon />}
-            onClick={() => onRefine(option)}
+            onClick={() => refine(option)}
           />
         ))
       )}
@@ -65,8 +83,9 @@ export default function RecsPodRefinement({
             along with it. Disabling it holds its place instead.
           */}
           <Input
-            onSubmit={onSubmit}
+            onSubmit={submit}
             onFocus={onInputFocus}
+            inputRef={inputRef}
             disabled={isLoading}
             error={inputError ?? undefined}
             placeholderKey={RECS_INPUT_PLACEHOLDER}

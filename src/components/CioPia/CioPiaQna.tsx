@@ -9,6 +9,7 @@ import usePersistedConversation from '../../hooks/usePersistedConversation';
 import useTracking from '../../hooks/useTracking';
 import useViewportTracking from '../../hooks/useViewportTracking';
 import useViewportCallbacks from '../../hooks/useViewportCallbacks';
+import useReturnFocusToInput from '../../hooks/useReturnFocusToInput';
 import ErrorBlock from '../Error/ErrorBlock';
 import LoadingSkeleton from '../LoadingSkeleton/LoadingSkeleton';
 import { CioPiaRenderProps } from '../../types';
@@ -113,6 +114,24 @@ export default function CioPiaQna(props: CioPiaProps) {
     persisted,
   });
 
+  const { inputRef, returnFocusAfterLoading } = useReturnFocusToInput(isLoading);
+
+  const handleInlineSubmit = useCallback(
+    (question: string) => {
+      handleSubmitQuestion(question);
+      returnFocusAfterLoading();
+    },
+    [handleSubmitQuestion, returnFocusAfterLoading],
+  );
+
+  const handleInlineQuestionClick = useCallback(
+    (question: string) => {
+      handleQuestionClick(question);
+      returnFocusAfterLoading();
+    },
+    [handleQuestionClick, returnFocusAfterLoading],
+  );
+
   const { containerRef: viewportContainerRef } = useViewportTracking({
     tracking,
     questions: displayedQuestions,
@@ -210,8 +229,10 @@ export default function CioPiaQna(props: CioPiaProps) {
           {translate('Any questions about this product?', translations)}
         </p>
         <Input
-          onSubmit={handleSubmitQuestion}
+          onSubmit={handleInlineSubmit}
           onFocus={handleInputFocus}
+          inputRef={inputRef}
+          disabled={isLoading}
           value={currentQuestion}
           translations={translations}
           componentOverride={componentOverrides?.input}
@@ -253,7 +274,7 @@ export default function CioPiaQna(props: CioPiaProps) {
         {!isLoading && !error && (
           <SuggestedQuestionsContainer
             questions={displayedQuestions}
-            onQuestionClick={handleQuestionClick}
+            onQuestionClick={handleInlineQuestionClick}
             componentOverride={componentOverrides?.suggestedQuestions}
           />
         )}

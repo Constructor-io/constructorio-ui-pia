@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import '@testing-library/jest-dom';
-import { render, fireEvent, screen, within } from '@testing-library/react';
+import { act, render, fireEvent, screen, within } from '@testing-library/react';
 import PiaModal from '../../../src/components/PiaConversation/PiaModal';
+import PiaConversation from '../../../src/components/PiaConversation/PiaConversation';
+import { InputRenderProps } from '../../../src/types';
 
 const BASE_INPUT = '.cio-pia-container .cio-pia-conversation-footer .cio-pia-input-container input';
 const BASE_QUESTIONS =
@@ -270,6 +272,87 @@ describe('PiaModal Component', () => {
 
       expect(baseInput.disabled).toBe(false);
       expect(document.activeElement).toBe(baseInput);
+    });
+  });
+
+  describe('Focus once the opening answer loads', () => {
+    // Like the browser, put focus on the first enabled control when the dialog opens.
+    beforeEach(() => {
+      (HTMLDialogElement.prototype.showModal as jest.Mock).mockImplementationOnce(function mock(
+        this: HTMLDialogElement,
+      ) {
+        this.setAttribute('open', '');
+        this.querySelector<HTMLElement>('button:not(:disabled)')?.focus();
+      });
+    });
+
+    let finishLoading: () => void;
+
+    // Asking opens the dialog and starts loading in the same render, as `CioPiaQna` does.
+    function Harness({
+      inputOverride,
+    }: {
+      inputOverride?: (props: InputRenderProps) => ReactNode;
+    }) {
+      const [isLoading, setIsLoading] = React.useState(false);
+      finishLoading = () => setIsLoading(false);
+
+      return (
+        <PiaModal
+          {...defaultProps}
+          isLoading={isLoading}
+          handleQuestionClick={() => setIsLoading(true)}>
+          <PiaConversation
+            conversationHistory={[]}
+            isLoading={isLoading}
+            error={null}
+            displayedQuestions={[]}
+            handleSubmitQuestion={jest.fn()}
+            handleQuestionClick={jest.fn()}
+            componentOverrides={inputOverride && { input: { reactNode: inputOverride } }}
+          />
+        </PiaModal>
+      );
+    }
+
+    function openWithQuestion(inputOverride?: (props: InputRenderProps) => ReactNode) {
+      const view = render(<Harness inputOverride={inputOverride} />);
+      fireEvent.click(
+        within(view.container.querySelector(BASE_QUESTIONS)!).getAllByRole('button')[0],
+      );
+      return view;
+    }
+
+    const dialogInput = () => within(document.querySelector('dialog')!).getByRole('textbox');
+
+    it('moves focus from where the dialog opened it to the input', () => {
+      openWithQuestion();
+      expect(screen.getByRole('button', { name: 'Close' })).toHaveFocus();
+
+      act(() => finishLoading());
+
+      expect(dialogInput()).toHaveFocus();
+    });
+
+    it('moves focus to whatever element an input override attaches inputRef to', () => {
+      openWithQuestion(({ inputRef }) => (
+        <div role='textbox' aria-label='Custom question' contentEditable ref={inputRef} />
+      ));
+
+      act(() => finishLoading());
+
+      expect(screen.getByRole('textbox', { name: 'Custom question' })).toHaveFocus();
+    });
+
+    it('leaves focus alone if the shopper moved it while the answer loaded', () => {
+      const { container } = openWithQuestion();
+      const title = container.querySelector<HTMLElement>('#cio-pia-modal-title')!;
+      title.tabIndex = -1;
+      title.focus();
+
+      act(() => finishLoading());
+
+      expect(title).toHaveFocus();
     });
   });
 
