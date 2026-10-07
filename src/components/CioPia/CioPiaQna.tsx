@@ -116,6 +116,14 @@ export default function CioPiaQna(props: CioPiaProps) {
 
   const { inputRef, returnFocusAfterLoading } = useReturnFocusToInput(isLoading);
 
+  const handleInlineSubmit = useCallback(
+    (question: string) => {
+      handleSubmitQuestion(question);
+      returnFocusAfterLoading();
+    },
+    [handleSubmitQuestion, returnFocusAfterLoading],
+  );
+
   const handleInlineQuestionClick = useCallback(
     (question: string) => {
       handleQuestionClick(question);
@@ -221,9 +229,10 @@ export default function CioPiaQna(props: CioPiaProps) {
           {translate('Any questions about this product?', translations)}
         </p>
         <Input
-          onSubmit={handleSubmitQuestion}
+          onSubmit={handleInlineSubmit}
           onFocus={handleInputFocus}
           inputRef={inputRef}
+          disabled={isLoading}
           value={currentQuestion}
           translations={translations}
           componentOverride={componentOverrides?.input}
