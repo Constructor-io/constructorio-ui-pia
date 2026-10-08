@@ -1,0 +1,19 @@
+import type { Meta, StoryObj } from '@storybook/react';
+import { fn } from '@storybook/test';
+import Feedback from '../../../components/Feedback/Feedback';
+
+const meta = {
+  title: 'Internal/Feedback',
+  component: Feedback,
+  parameters: {
+    a11y: { test: 'error' },
+    layout: 'centered',
+  },
+  args: { onClick: fn() },
+  tags: ['!dev'],
+} satisfies Meta<typeof Feedback>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {};

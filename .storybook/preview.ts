@@ -29,11 +29,22 @@ const preview: Preview = {
     options: {
       storySort: {
         order: [
-          'General',
-          ['Introduction', 'Integration Guide', ['PIA Guide', 'Checkout Guide', 'AB Testing Guide', 'Examples']],
-          'Components',
-          'Hooks',
-        ]
+          'Introduction',
+          'Guides',
+          [
+            'Integration Guide',
+            'Display Modes',
+            'Callbacks & Tracking',
+            'Product Results',
+            'Customization',
+            'Conversations',
+            'AB Testing',
+            'Checkout',
+            'FAQ',
+          ],
+          'Components & Utilities',
+          ['CioPia', 'Utilities'],
+        ],
       }
     },
   },

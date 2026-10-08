@@ -1,0 +1,74 @@
+import { Meta, Canvas } from '@storybook/blocks';
+import * as DisplayConfigsStories from '../examples/DisplayConfigs.stories';
+import * as CarouselStories from '../examples/Carousel.stories';
+
+<Meta title='Guides/Product Results' />
+
+# Product Results
+
+When an answer references products, a carousel of product cards renders under it. When there are none, nothing renders: no empty state.
+
+Ask **"What alternative products are available for this item?"**:
+
+<Canvas of={DisplayConfigsStories.Default} />
+
+## The `Item` shape
+
+Each card receives an `Item`: a `Product` from `@constructor-io/constructorio-ui-components`, plus any catalog metadata.
+
+```ts
+interface Item extends Product, Record<string, any> {
+  id: string;
+  name: string;
+  variationId?: string;
+  description?: string;
+  imageUrl?: string;
+  price?: string | number;
+  salePrice?: string | number;
+  rating?: string | number;
+  reviewsCount?: string | number;
+  tags?: string[];
+  url?: string;
+  matchedTerms?: string[];
+}
+```
+
+## Custom cards
+
+Replace or adjust cards with `componentOverrides.carousel`. See [Customization](?path=/docs/guides-customization--docs#carousel).
+
+<Canvas of={CarouselStories.CustomItem} />
+
+## Images
+
+`formatters.formatImageUrl` transforms each image URL before it renders. Define it outside the component.
+
+```jsx
+const formatImageUrl = (url) => (url.startsWith('/') ? `https://cdn.example.com${url}` : url);
+
+<CioPia formatters={{ formatImageUrl }} … />;
+```
+
+Catalog images are often full-resolution originals. If your CDN resizes by URL, request about twice the rendered card width:
+
+```js
+const formatImageUrl = (url) => {
+  try {
+    const resized = new URL(url);
+    resized.searchParams.set('wid', '400'); // Scene7
+    return resized.toString();
+  } catch {
+    return url;
+  }
+};
+```
+
+Other platforms: Shopify `?width=400`, Cloudinary `w_400,f_auto,q_auto`, imgix `?w=400&auto=format`. `new URL()` needs an absolute URL, so prepend your CDN base to relative paths first. If the formatter throws, the original URL is used.
+
+## Currency
+
+`productCardProps.priceCurrency` sets the symbol shown next to prices.
+
+```jsx
+<CioPia productCardProps={{ priceCurrency: '€' }} … />
+```

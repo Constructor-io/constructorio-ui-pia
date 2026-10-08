@@ -1,0 +1,265 @@
+import { Meta, Canvas, Markdown } from '@storybook/blocks';
+import * as OverridesStories from '../examples/ComponentOverrides.stories';
+import * as CarouselStories from '../examples/Carousel.stories';
+import * as TranslationsStories from '../examples/Translations.stories';
+
+<Meta title='Guides/Customization' />
+
+# Customization
+
+## Styling
+
+The starter stylesheet is optional. Import it, layer your own rules on top, or skip it and style from scratch.
+
+```js
+import '@constructor-io/constructorio-ui-pia/styles.css';
+```
+
+Styles are scoped to `.cio-pia`, and elements use `cio-`-prefixed BEM class names. The JavaScript bundle includes the stylesheet unless `includeCSS: false`.
+
+CSS custom properties on `.cio-pia-container`:
+
+```css
+.cio-pia-container {
+  --cio-pia-chat-question-bg: #f0f0f5;
+  --cio-pia-chat-answer-bg: #f8f8fa;
+  --cio-pia-conversation-max-height: 600px;
+  --cio-pia-modal-height: 80vh;
+  --cio-pia-modal-max-width: 640px;
+  --cio-pia-modal-min-width: 320px;
+}
+```
+
+## Translations
+
+Every UI string is a key in `translations`. Omitted keys fall back to English.
+
+Only the library's own strings are translated. Suggested questions, answers and catalog data come from the API and are localized there.
+
+An **empty string is used as-is**, which is how you hide a visible string. Do not blank the accessible-name keys (`Close`, `thumbs up`, `thumbs down`, `Your question`, `Conversation history`, `Loading answer`, `Answer ready`): they have no visible text, so the control would lose its name. Omit them instead.
+
+```ts
+{
+  'Any questions about this product?': '…', // title
+  'Ask anything': '…',                       // input placeholder
+  'Your question': '…',                      // input name when the placeholder is blanked
+  Send: '…',
+  'AI-generated answers aim to help, but they may occasionally miss details or be inaccurate. Double-check important information before purchasing.': '…',
+  'Learn More.': '…',
+  'Is this answer useful?': '…',
+  'thumbs up': '…',
+  'thumbs down': '…',
+  'Ask about this product': '…',             // modal title
+  Close: '…',                                // modal close button
+  'Add to Cart': '…',
+  'Unexpected error': '…',
+  Retry: '…',
+  'Conversation history': '…',
+  'Loading answer': '…',                     // announced while loading
+  'Answer ready': '…',                       // announced when the answer arrives
+}
+```
+
+<Canvas of={TranslationsStories.AllCustomText} />
+
+## Component overrides
+
+`componentOverrides` replaces any part with your own render function. Each override receives the props the default component would.
+
+<Markdown>
+  {`
+| Path | Receives | Replaces |
+|---|---|---|
+| \`reactNode\` | \`CioPiaRenderProps\` | Everything |
+| \`answer.reactNode\` | \`{ text }\` | Answer |
+| \`suggestedQuestions.reactNode\` | \`{ questions, onQuestionClick }\` | Suggested questions |
+| \`input.reactNode\` | \`InputRenderProps\` | Question input |
+| \`disclaimer.reactNode\` | \`{ learnMoreUrl, translations }\` | Disclaimer |
+| \`feedback.reactNode\` | \`{ translations, onFeedback }\` | Feedback |
+| \`loading.reactNode\` | \`{ skeleton }\` | Loading state |
+| \`carousel.reactNode\` | \`CarouselRenderProps\` | Carousel |
+| \`carousel.content.reactNode\` | \`CarouselRenderProps\` | Carousel content |
+| \`carousel.item.reactNode\` | \`{ item, index, … }\` | One card |
+| \`carousel.item.productCard\` | \`ProductCardOverrides\` | Parts of the default card |
+| \`carousel.previous.reactNode\` / \`next\` | \`CarouselRenderProps\` | Navigation buttons |
+`}
+</Markdown>
+
+### Answer
+
+The default renders `text` with [`renderMarkdown`](?path=/docs/components-utilities-utilities--docs). Use it too, so the answer stays sanitized.
+
+```jsx
+import { renderMarkdown } from '@constructor-io/constructorio-ui-pia';
+
+componentOverrides={{
+  answer: {
+    reactNode: ({ text }) => (
+      <div className='cio-pia-answer' dangerouslySetInnerHTML={{ __html: renderMarkdown(text) }} />
+    ),
+  },
+}}
+```
+
+<Canvas of={OverridesStories.CustomAnswer} />
+
+### Suggested questions
+
+```jsx
+componentOverrides={{
+  suggestedQuestions: {
+    reactNode: ({ questions, onQuestionClick }) =>
+      questions.map((q) => (
+        <button key={q.value} onClick={() => onQuestionClick(q.value)}>
+          {q.value}
+        </button>
+      )),
+  },
+}}
+```
+
+<Canvas of={OverridesStories.CustomSuggestedQuestions} />
+
+### Input
+
+<Canvas of={OverridesStories.CustomInput} />
+
+### Disclaimer
+
+```jsx
+componentOverrides={{
+  disclaimer: {
+    reactNode: ({ learnMoreUrl }) => (
+      <p>Powered by AI. <a href={learnMoreUrl}>Learn more</a></p>
+    ),
+  },
+}}
+```
+
+<Canvas of={OverridesStories.CustomDisclaimer} />
+
+### Feedback
+
+Needs `showFeedback: true`.
+
+```jsx
+componentOverrides={{
+  feedback: {
+    reactNode: ({ onFeedback }) => (
+      <>
+        <button onClick={() => onFeedback?.('up')}>Helpful</button>
+        <button onClick={() => onFeedback?.('down')}>Not helpful</button>
+      </>
+    ),
+  },
+}}
+```
+
+<Canvas of={OverridesStories.CustomFeedback} />
+
+### Loading
+
+`skeleton` is the default shimmer, if you want to keep it.
+
+```jsx
+componentOverrides={{
+  loading: {
+    reactNode: ({ skeleton }) => (
+      <div>
+        <p>Thinking…</p>
+        {skeleton}
+      </div>
+    ),
+  },
+}}
+```
+
+<Canvas of={OverridesStories.CustomLoading} />
+<Canvas of={OverridesStories.CustomLoadingWithSkeleton} />
+
+### Carousel
+
+These render the carousel directly with mock items, because the demo server returns no products.
+
+The default:
+
+<Canvas of={CarouselStories.Default} />
+
+A whole card. Keep `data-slot='carousel-item'` and full width on the root: the carousel sizes slides by that attribute. Clicks still fire `onProductCardClick`.
+
+```jsx
+componentOverrides={{
+  carousel: {
+    item: {
+      reactNode: ({ item }) => (
+        <div data-slot='carousel-item' style={{ width: '100%' }} className='my-product-card'>
+          <img src={item?.imageUrl} alt={item?.name} />
+          <p>{item?.name}</p>
+        </div>
+      ),
+    },
+  },
+}}
+```
+
+<Canvas of={CarouselStories.CustomItem} />
+
+Parts of the default card, via `carousel.item.productCard`. Slots: `image` (`wishlistButton`, `badge`), `content` (`title`, `description`, `rating`, `price`), `footer` (`addToCartButton`, `tags`). Each receives `ProductCardProps`.
+
+```jsx
+componentOverrides={{
+  carousel: {
+    item: {
+      productCard: {
+        content: {
+          title: { reactNode: ({ product }) => <p className='my-title'>{product?.name}</p> },
+        },
+        footer: {
+          addToCartButton: {
+            reactNode: ({ product, onAddToCart }) => (
+              <button onClick={(e) => onAddToCart?.(e, product)}>Add to bag</button>
+            ),
+          },
+        },
+      },
+    },
+  },
+}}
+```
+
+<Canvas of={CarouselStories.CustomProductCardSubComponents} />
+
+Navigation:
+
+```jsx
+componentOverrides={{
+  carousel: {
+    previous: { reactNode: () => <button className='my-prev'>←</button> },
+    next: { reactNode: () => <button className='my-next'>→</button> },
+  },
+}}
+```
+
+<Canvas of={CarouselStories.CustomNavigation} />
+
+### Everything
+
+The top-level `reactNode` replaces the whole widget. It receives `{ items, isLoading, error, currentAnswer, currentQuestion, displayedQuestions, handleSubmitQuestion, conversationHistory }`.
+
+<Canvas of={OverridesStories.FullCustomLayout} />
+
+### Errors
+
+When a request fails, the `error` render prop is an `AgentRequestError`: an `Error` with an HTTP `status`, `name` `'AgentRequestError'` and message `'Request failed with status <status>'`. A network failure is a plain `Error` with no `status`, so check with `instanceof` first.
+
+```jsx
+import { AgentRequestError } from '@constructor-io/constructorio-ui-pia';
+
+reactNode: ({ error, items }) => {
+  if (error instanceof AgentRequestError) {
+    if (error.status === 422) return <p>Try asking something else.</p>;
+    if (error.status === 429 || error.status >= 500) return <p>Please try again shortly.</p>;
+  }
+  return <MyResults items={items} />;
+};
+```

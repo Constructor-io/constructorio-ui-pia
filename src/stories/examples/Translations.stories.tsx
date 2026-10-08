@@ -1,0 +1,60 @@
+import type { Meta, StoryObj } from '@storybook/react';
+import CioPia from '../../components/CioPia/CioPia';
+import { DEMO_API_KEY, DEMO_ITEM_ID, DEMO_ITEM_NAME, DISCLAIMER_TEXT } from '../../constants';
+import { functionArgTypes } from '../utils';
+
+const meta = {
+  title: 'Examples/Translations',
+  component: CioPia,
+  parameters: {
+    a11y: { test: 'error' },
+    layout: 'centered',
+  },
+  argTypes: functionArgTypes,
+  tags: ['!dev'],
+} satisfies Meta<typeof CioPia>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const CustomTitle: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: DEMO_ITEM_ID,
+    itemName: DEMO_ITEM_NAME,
+    translations: {
+      'Any questions about this product?': 'Got a question? Ask our AI assistant!',
+    },
+  },
+};
+
+export const AllCustomText: Story = {
+  args: {
+    apiKey: DEMO_API_KEY,
+    itemId: DEMO_ITEM_ID,
+    itemName: DEMO_ITEM_NAME,
+    displayConfigs: {
+      showFeedback: true,
+      learnMoreUrl: 'https://constructor.io/learn-more',
+    },
+    translations: {
+      'Any questions about this product?': '¿Alguna pregunta sobre este producto?',
+      'Ask anything': 'Pregunta lo que quieras',
+      'Your question': 'Tu pregunta',
+      Send: 'Enviar',
+      [DISCLAIMER_TEXT]: 'Las respuestas de IA pueden no ser siempre precisas.',
+      'Is this answer useful?': '¿Es útil esta respuesta?',
+      'Learn More.': 'Más información.',
+      'Ask about this product': 'Pregunta sobre este producto',
+      'Add to Cart': 'Añadir al carrito',
+      'Unexpected error': 'Error inesperado',
+      'thumbs up': 'Pulgar arriba',
+      'thumbs down': 'Pulgar abajo',
+      Close: 'Cerrar',
+      Retry: 'Reintentar',
+      'Conversation history': 'Historial de conversación',
+      'Loading answer': 'Cargando respuesta',
+      'Answer ready': 'Respuesta lista',
+    },
+  },
+};

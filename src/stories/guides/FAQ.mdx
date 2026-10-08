@@ -1,0 +1,25 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title='Guides/FAQ' />
+
+# FAQ
+
+## What happens when a request fails?
+
+An error message with a Retry button replaces the answer. Retry re-submits the last question. To render your own, read the `error` render prop. See [Customization](?path=/docs/guides-customization--docs#errors).
+
+## What shows while waiting for an answer?
+
+A loading skeleton. Replace it with `componentOverrides.loading`.
+
+## "Module parse failed: Unexpected token"
+
+The ESM build targets ESNext. For older toolchains, import the CommonJS build, which targets ES2015:
+
+```js
+import CioPia from '@constructor-io/constructorio-ui-pia/cjs';
+```
+
+## ESLint: "Unable to resolve path to module '…/styles.css'"
+
+`eslint-plugin-import` can't resolve package `exports` ([#1868](https://github.com/import-js/eslint-plugin-import/issues/1868), [#1810](https://github.com/import-js/eslint-plugin-import/issues/1810)). Add `// eslint-disable-line` on the import.

@@ -1,0 +1,63 @@
+import { Meta, Canvas, Markdown } from '@storybook/blocks';
+import * as DisplayConfigsStories from '../examples/DisplayConfigs.stories';
+
+<Meta title='Guides/Display Modes' />
+
+# Display Modes
+
+Set with `displayConfigs`.
+
+<Markdown>
+  {`
+| Option | Type | Default | |
+|---|---|---|---|
+| \`mode\` | \`'default' \\| 'conversation' \\| 'recommendations'\` | \`'default'\` | \`'recommendations'\` is not yet available and renders nothing |
+| \`type\` | \`'inline' \\| 'modal'\` | \`'inline'\` | |
+| \`showFeedback\` | \`boolean\` | \`false\` | Thumbs up/down under each answer |
+| \`showPreviousItems\` | \`boolean\` | \`true\` | Keep product carousels on earlier turns |
+| \`learnMoreUrl\` | \`string\` | | Adds a "Learn More" link to the disclaimer |
+| \`disclaimerPosition\` | \`'top' \\| 'bottom'\` | \`'bottom'\` | |
+`}
+</Markdown>
+
+## Default
+
+One question, one answer. A new question replaces the previous answer.
+
+<Canvas of={DisplayConfigsStories.Default} />
+
+## Conversation
+
+Multi-turn chat with history and follow-up questions.
+
+```jsx
+<CioPia apiKey='YOUR_API_KEY' itemId={itemId} itemName={itemName} displayConfigs={{ mode: 'conversation' }} />
+```
+
+<Canvas of={DisplayConfigsStories.ConversationMode} />
+
+To keep a conversation across page loads, see [Conversations](?path=/docs/guides-conversations--docs).
+
+## Modal
+
+An inline preview that opens a dialog when a question is asked. Always runs in conversation mode.
+
+```jsx
+<CioPia apiKey='YOUR_API_KEY' itemId={itemId} itemName={itemName} displayConfigs={{ type: 'modal' }} />
+```
+
+<Canvas of={DisplayConfigsStories.ModalType} />
+
+## Feedback, Learn More, disclaimer
+
+<Canvas of={DisplayConfigsStories.WithFeedback} />
+<Canvas of={DisplayConfigsStories.WithLearnMore} />
+<Canvas of={DisplayConfigsStories.DisclaimerPositionTop} />
+
+## Number of suggested questions
+
+```jsx
+<CioPia suggestedQuestionsParameters={{ numResults: 2 }} … />
+```
+
+<Canvas of={DisplayConfigsStories.WithLimitedQuestions} />

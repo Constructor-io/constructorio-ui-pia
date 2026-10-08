@@ -1,0 +1,79 @@
+import { Meta, Canvas } from '@storybook/blocks';
+import * as DisplayConfigsStories from '../examples/DisplayConfigs.stories';
+
+<Meta title='Guides/Integration Guide' />
+
+# Integration Guide
+
+Steps 1–2 are all you need. Everything after is optional, and each step links to its own guide.
+
+## 1. Install
+
+```bash
+npm install @constructor-io/constructorio-ui-pia
+```
+
+Requires Node.js >= 20, and React and React DOM >= 16.12.0.
+
+## 2. Render on the product page
+
+`apiKey`, `itemId` and `itemName` are required.
+
+```jsx
+import { CioPia } from '@constructor-io/constructorio-ui-pia';
+import '@constructor-io/constructorio-ui-pia/styles.css';
+
+export default function ProductPage({ itemId, itemName }) {
+  return <CioPia apiKey='YOUR_API_KEY' itemId={itemId} itemName={itemName} />;
+}
+```
+
+<Canvas of={DisplayConfigsStories.Default} />
+
+Not using React? Use the bundle. It takes every `CioPia` prop, plus `selector` and `includeCSS` (default `true`):
+
+```js
+import CioPia from '@constructor-io/constructorio-ui-pia/constructorio-ui-pia-bundled';
+
+CioPia({ selector: '#pia-container', apiKey: 'YOUR_API_KEY', itemId: 'PRODUCT_ITEM_ID', itemName: 'Product name' });
+```
+
+## 3. Choose a display mode
+
+Inline single answer (default), multi-turn conversation, or modal.
+
+→ [Display Modes](?path=/docs/guides-display-modes--docs)
+
+## 4. Connect your analytics
+
+Constructor tracking is automatic. Add `callbacks` to send events to your own analytics, and to own product-card clicks.
+
+→ [Callbacks & Tracking](?path=/docs/guides-callbacks-tracking--docs)
+
+## 5. Set up product results
+
+Add to cart, image URLs and currency for the product carousel.
+
+→ [Product Results](?path=/docs/guides-product-results--docs)
+
+## 6. Match your site
+
+Restyle, translate, or replace any part.
+
+→ [Customization](?path=/docs/guides-customization--docs)
+
+## 7. Keep conversations across page loads
+
+→ [Conversations](?path=/docs/guides-conversations--docs)
+
+## 8. Run an A/B test
+
+→ [AB Testing](?path=/docs/guides-ab-testing--docs)
+
+## 9. Add checkout buttons
+
+→ [Checkout](?path=/docs/guides-checkout--docs)
+
+## 10. Check it works
+
+In the network tab, filter on `cnstrc`: a `product_insights_agent_view` event fires when the widget is in view. For problems, see the [FAQ](?path=/docs/guides-faq--docs). For every prop, see [CioPia]((?path=/docs/components-utilities-ciopia--docs).
