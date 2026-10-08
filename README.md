@@ -81,7 +81,7 @@ Dispatch the [Deploy Storybook](https://github.com/Constructor-io/constructorio-
 1. Fork the repo and create a new branch.
 2. Run `npm ci` to install dependencies.
 3. Make your changes.
-4. Run `npm run lint` and `npm run test` to verify.
+4. Run `npm run lint` and `npm run test` to verify. For docs changes, follow [`.claude/docs.md`](.claude/docs.md).
 5. Submit a PR for review.
 
 ## License
