@@ -4,6 +4,11 @@ Embeddable React widget: an AI question-and-answer experience for a product page
 It is published to npm and runs inside a customer's site, so it is a guest on a
 page it does not own.
 
+## Documentation
+
+**Read `.claude/docs.md` before adding or changing any MDX, story, or README
+content.** It says where each kind of content lives and what ships publicly.
+
 ## Accessibility
 
 **Read `.claude/a11y.md` before reviewing or writing any JSX/TSX or CSS**, whether

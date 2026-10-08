@@ -1,0 +1,110 @@
+import { Meta, Canvas, Markdown } from '@storybook/blocks';
+import * as DisplayConfigsStories from '../examples/DisplayConfigs.stories';
+
+<Meta title='Guides/Conversations' />
+
+# Conversations
+
+A conversation lives in memory and is gone on the next page load. Keep it either way:
+
+- **`persistConversation`**: the widget stores it in the browser.
+- **`initialConversationHistory`**: you store it, and pass it back.
+
+Both apply to `mode: 'conversation'` and `type: 'modal'` only. `mode: 'default'` shows only the latest answer and stores nothing.
+
+## Persist in the browser
+
+```jsx
+<CioPia
+  apiKey='YOUR_API_KEY'
+  itemId={itemId}
+  itemName={itemName}
+  displayConfigs={{ mode: 'conversation' }}
+  persistConversation={{ enabled: true }}
+  userId={user?.id ?? null}
+/>
+```
+
+`enabled` can be a feature flag. `userId` is the signed-in shopper's id, or `null` for a guest. Use the same stable, non-personal id you give Constructor for personalization, never an email: it becomes part of a storage key any script on the page can read. Leaving it out is treated as a guest and logs a warning.
+
+Without your own `cioClient`, `userId` is also set on the client the widget creates. With your own client, set it there too.
+
+Each `itemId` keeps its own conversation and agent thread.
+
+<Markdown>
+  {`
+| | Guest (\`userId: null\`) | Signed-in |
+|---|---|---|
+| Stored in | \`sessionStorage\` | \`localStorage\` |
+| Survives | reloads in the same tab | reloads, closing the browser, other tabs |
+| Ends | when the tab closes | 7 days after the product's conversation was last updated |
+| Visible to | that tab only | the same \`userId\` on that browser |
+`}
+</Markdown>
+
+### Login and logout
+
+Change `userId`; the rest follows.
+
+- **Login** moves every guest conversation into the shopper's history, and the one on screen continues on the same thread. If the guest hadn't asked about this product, the shopper's stored conversation for it is shown instead.
+- **A login that reloads the page** does not carry guest conversations over. Carry-over needs `userId` to change on a mounted widget.
+- **Logout**, or a different id, switches to that history on a new thread. A conversation stored under another id is never shown.
+
+Nothing is deleted on logout. The history stays on the device for 7 days, as plain data in `localStorage`. To delete it:
+
+```js
+import { clearPersistedConversations } from '@constructor-io/constructorio-ui-pia';
+
+clearPersistedConversations({ apiKey: 'YOUR_API_KEY', userId: user.id });
+```
+
+Without `userId`, this clears the current tab's guest history. A widget already showing a deleted conversation keeps it until its `itemId` or `userId` changes.
+
+### Details
+
+- **Saved** as each answer lands. A question still waiting for its answer when the page is left is not restored.
+- **Keys:** `cio-pia:chat:v1:<apiKey>` (guest) and `cio-pia:chat:v1:<apiKey>:<userId>`. One key holds every product. Each product stores its thread id and answered turns.
+- **Modal:** closing keeps the stored conversation, and reopening shows it again.
+- **Storage full:** other products are dropped oldest first, then the oldest turns. A conversation that can't fit even one turn is not stored.
+- **Storage blocked or data malformed:** behaves as if persistence were off.
+- **Tabs** don't sync live. Another tab shows the latest turns the next time it loads that product.
+- **Devices:** storage never leaves the browser.
+- **With `initialConversationHistory`:** your history is shown instead of the stored one. New answers are still stored.
+- **With an explicit `threadId`:** only a conversation stored on that thread is restored.
+
+## Manage it yourself
+
+`onAnswer` receives the whole history after every answer. Save it per product with the thread id, and pass both back:
+
+```jsx
+function ProductQuestions({ itemId, itemName }) {
+  const { isLoading, saved } = useSavedConversation(itemId); // your own loader
+  if (isLoading) return null;
+
+  return (
+    <CioPia
+      key={itemId}
+      apiKey='YOUR_API_KEY'
+      itemId={itemId}
+      itemName={itemName}
+      threadId={saved?.threadId}
+      initialConversationHistory={saved?.history ?? []}
+      displayConfigs={{ mode: 'conversation' }}
+      callbacks={{
+        onAnswer: (history, context) =>
+          saveConversation(context.itemId, { threadId: context.threadId, history }),
+      }}
+    />
+  );
+}
+```
+
+<Canvas of={DisplayConfigsStories.RestoredConversation} />
+
+- **Pass `[]`, not nothing,** when nothing is saved. Passing the prop at all means you own the history.
+- **Read once, on mount.** Render after it has loaded. Changing `itemId` clears it, so remount with `key={itemId}`.
+- **Pass the matching `threadId`.** The agent's memory is server-side, so history shown under another thread is a transcript it doesn't remember.
+- **Modal:** the entries appear when the dialog opens. Closing it clears them.
+- **Suggested questions** show the product's own questions, not the last answer's follow-ups.
+- **Invalid entries** (no string `question` and `answer`) are skipped with a warning. Each `id` is renumbered.
+- **Ignored** for the A/B control group.

@@ -1,0 +1,21 @@
+import type { Meta, StoryObj } from '@storybook/react';
+import Answer from '../../../components/Answer/Answer';
+
+const meta = {
+  title: 'Internal/Answer',
+  component: Answer,
+  parameters: {
+    a11y: { test: 'error' },
+    layout: 'centered',
+  },
+  tags: ['!dev'],
+} satisfies Meta<typeof Answer>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+  args: {
+    text: 'This is an answer text that should be displayed in the Answer component.',
+  },
+};

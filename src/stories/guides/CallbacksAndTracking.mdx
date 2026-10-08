@@ -1,0 +1,68 @@
+import { Meta, Canvas, Markdown } from '@storybook/blocks';
+import * as CarouselStories from '../examples/Carousel.stories';
+
+<Meta title='Guides/Callbacks & Tracking' />
+
+# Callbacks & Tracking
+
+## Built-in tracking
+
+Constructor events (views, questions, clicks) are sent automatically and appear in your Constructor dashboard. Callbacks do not affect them.
+
+## Callbacks
+
+For your own analytics or behaviour. `context` is `{ itemId, threadId }`.
+
+<Markdown>
+  {`
+| Callback | Signature | Fires when |
+|---|---|---|
+| \`onQuestionSubmit\` | \`(question, context, source) => void\` | A question is submitted. \`source\` is \`'user'\` or \`'suggestion'\` |
+| \`onAnswer\` | \`(history, context) => void\` | An answer arrives. Receives the full conversation |
+| \`onProductCardClick\` | \`(item) => void\` | A product card is clicked |
+| \`onAddToCart\` | \`(item, event) => void\` | "Add to Cart" is clicked. Passing it is what renders the button |
+| \`onFeedback\` | \`(type: 'up' \\| 'down') => void\` | Feedback is given (needs \`showFeedback: true\`) |
+| \`onFocus\` | \`(context) => void\` | The input is focused |
+| \`onView\` | \`(context) => void\` | The widget enters the viewport |
+| \`onOutOfView\` | \`(context) => void\` | The widget leaves the viewport |
+`}
+</Markdown>
+
+Define `callbacks` outside the component, or memoize it, to avoid re-renders.
+
+### Product clicks
+
+Without `onProductCardClick`, a click opens `item.url` in a new tab. With it, navigation is yours.
+
+### Add to cart
+
+The button renders only when `onAddToCart` is passed. Clicking it does not fire `onProductCardClick`. Rename it with the `'Add to Cart'` translation, or restyle it with `componentOverrides.carousel.item.productCard.footer.addToCartButton`.
+
+<Canvas of={CarouselStories.WithAddToCart} />
+
+## Example: GA4
+
+```jsx
+const callbacks = {
+  onQuestionSubmit: (question) => gtag('event', 'pia_question_submit', { question_text: question }),
+  onProductCardClick: (item) => {
+    gtag('event', 'select_item', { items: [{ item_id: item.id, item_name: item.name }] });
+    if (item.url) window.open(item.url, '_blank', 'noopener,noreferrer');
+  },
+  onAddToCart: (item) => {
+    addItemToCart({ id: item.id, variationId: item.variationId, quantity: 1 });
+    gtag('event', 'add_to_cart', { items: [{ item_id: item.id, quantity: 1 }] });
+  },
+  onFeedback: (type) => gtag('event', 'pia_feedback', { feedback_type: type }),
+};
+
+<CioPia apiKey='YOUR_API_KEY' itemId={itemId} itemName={itemName} callbacks={callbacks} />;
+```
+
+## View threshold
+
+`product_insights_agent.view` fires once 50% of the widget is visible. Lower it for tall placements, or for impression parity in A/B tests:
+
+```jsx
+<CioPia trackingConfigs={{ viewThreshold: 0.01 }} … />
+```

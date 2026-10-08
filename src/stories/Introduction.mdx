@@ -1,108 +1,70 @@
 import { Meta } from '@storybook/blocks';
-import Code from './assets/code-brackets.svg';
-import Colors from './assets/colors.svg';
-import Comments from './assets/comments.svg';
-import Direction from './assets/direction.svg';
-import Plugin from './assets/plugin.svg';
-import Repo from './assets/repo.svg';
-import StackAlt from './assets/stackalt.svg';
 import Flow from './assets/flow.svg';
 import Conversation from './assets/conversation.svg';
-import Modal from './assets/modal.svg';
+import Direction from './assets/direction.svg';
+import Repo from './assets/repo.svg';
+import Colors from './assets/colors.svg';
+import Comments from './assets/comments.svg';
 import './assets/storybook-styles.css';
 
-<Meta title='General/Introduction' />
+<Meta title='Introduction' />
 
-# Welcome to Constructor's AI Product Insights Agent UI
+# Constructor AI Product Insights Agent UI
 
-Integration with Constructor's APIs has never been easier with **comprehensive components** that take care of both the tracking and results retrieval,
-allowing you to focus on developing your own unique site experience.
+A React widget that answers shoppers' questions on a product page. It handles the requests, the rendering and the tracking.
+
+```bash
+npm install @constructor-io/constructorio-ui-pia
+```
+
+## How these docs are organised
+
+- **Guides** show how to do something. Start with the [Integration Guide](./?path=/docs/guides-integration-guide--docs).
+- **Components & Utilities** is the reference for everything the package exports: every `CioPia` prop, and the helper functions.
 
 <div className='link-list'>
-  <a className='link-item' href='./?path=/docs/general-integration-guide-pia-guide--docs'>
-    <img src={Flow} alt='integration-guide' />
+  <a className='link-item' href='./?path=/docs/guides-integration-guide--docs'>
+    <img src={Flow} alt='' />
     <span>
       <strong>Integration Guide</strong>
-      Step-by-step setup: installation, rendering, product results, and tracking
+      Step by step, start here
     </span>
   </a>
-  <a className='link-item' href='./?path=/docs/general-faq--docs'>
-    <img src={Comments} alt='faq' />
+  <a className='link-item' href='./?path=/docs/guides-display-modes--docs'>
+    <img src={Conversation} alt='' />
+    <span>
+      <strong>Display Modes</strong>
+      Inline, conversation, modal
+    </span>
+  </a>
+  <a className='link-item' href='./?path=/docs/guides-callbacks-tracking--docs'>
+    <img src={Direction} alt='' />
+    <span>
+      <strong>Callbacks & Tracking</strong>
+      Hook into your analytics
+    </span>
+  </a>
+  <a className='link-item' href='./?path=/docs/guides-customization--docs'>
+    <img src={Colors} alt='' />
+    <span>
+      <strong>Customization</strong>
+      Styles, translations, overrides
+    </span>
+  </a>
+  <a className='link-item' href='./?path=/docs/components-utilities-ciopia--docs'>
+    <img src={Repo} alt='' />
+    <span>
+      <strong>Components & Utilities</strong>
+      Every prop and export
+    </span>
+  </a>
+  <a className='link-item' href='./?path=/docs/guides-faq--docs'>
+    <img src={Comments} alt='' />
     <span>
       <strong>FAQ</strong>
-      Common questions: error handling, styling, and more
+      Errors and troubleshooting
     </span>
   </a>
 </div>
 
-<div className='subheading'>Components</div>
-
-<div className='link-list'>
-  <a className='link-item' href='./?path=/docs/components-ciopia--docs'>
-    <img src={Repo} alt='cio-pia' />
-    <span>
-      <strong>CioPia</strong>
-      An all-in-one component that renders the input, answer and suggested questions components
-    </span>
-  </a>
-  <a className='link-item' href='./?path=/docs/components-piaconversation--docs'>
-    <img src={Conversation} alt='pia-conversation' />
-    <span>
-      <strong>Conversation</strong>A conversation component that enables continuous multi-turn chat
-      interactions on items
-    </span>
-  </a>
-  <a className='link-item' href='./?path=/docs/components-piamodal--docs'>
-    <img src={Modal} alt='pia-modal' />
-    <span>
-      <strong>Modal</strong>A modal dialog component that expands into a full overlay for multi-turn
-      chat interactions on items
-    </span>
-  </a>
-  <a className='link-item' href='./?path=/docs/components-answer--docs'>
-    <img src={StackAlt} alt='answer' />
-    <span>
-      <strong>Answer</strong>
-      Renders the answer to the provided question
-    </span>
-  </a>
-  <a className='link-item' href='./?path=/docs/components-errorblock--docs'>
-    <img src={Code} alt='error-block' />
-    <span>
-      <strong>Error Block</strong>
-      Renders the error state, along with a retry button
-    </span>
-  </a>
-  <a className='link-item' href='./?path=/docs/components-feedback--docs'>
-    <img src={Direction} alt='feedback' />
-    <span>
-      <strong>Feedback</strong>
-      Allows you to provide feedback for the given answer
-    </span>
-  </a>
-  <a className='link-item' href='./?path=/docs/components-input--docs'>
-    <img src={Comments} alt='input' />
-    <span>
-      <strong>Input</strong>
-      Renders the input field where you can enter your question, also includes the submit button
-    </span>
-  </a>
-  <a className='link-item' href='./?path=/docs/components-suggestedquestion--docs'>
-    <img src={Colors} alt='suggested-question' />
-    <span>
-      <strong>Suggested Question</strong>
-      Renders a suggested question by Constructor
-    </span>
-  </a>
-  <a className='link-item' href='./?path=/docs/components-suggestedquestionscontainer--docs'>
-    <img src={Plugin} alt='suggested-questions-container' />
-    <span>
-      <strong>Suggested Questions Container</strong>A responsive layout for suggested questions
-    </span>
-  </a>
-</div>
-
-<div className='badge-wrapper tip-wrapper'>
-  <span className='badge tip'>Tip</span>Having trouble with a unique use case? Contact your friendly
-  Integration Engineers for support!
-</div>
+Stuck on a use case? Contact your Constructor Integration Engineer.
