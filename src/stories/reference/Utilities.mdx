@@ -107,12 +107,12 @@ const html = renderMarkdown(text, {
 
 Only use narrow, anchored patterns for known application-controlled values. A broad pattern like `/^javascript:/` re-enables XSS via `javascript:` URIs.
 
-You can also customize the sanitization config to allow or forbid specific tags:
+By default only the tags markdown produces are kept (paragraphs, emphasis, links, lists, quotes, code, tables and headings). You can also customize the sanitization config to allow more tags:
 
 ```tsx
 renderMarkdown(text, {
   sanitize: (purifier, html, { config }) => {
-    return purifier.sanitize(html, { ...config, FORBID_TAGS: ['style', 'iframe'] });
+    return purifier.sanitize(html, { ...config, ALLOWED_TAGS: [...(config.ALLOWED_TAGS ?? []), 'span'] });
   },
 });
 ```

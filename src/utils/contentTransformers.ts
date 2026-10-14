@@ -6,11 +6,15 @@ const purifyConfig: Config = {
   FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed', 'form'],
 };
 
-// For the answer, which an LLM writes from text a shopper can steer. Images would load with no
-// click, so a crafted URL could leak data; `style` could cover the page with a fake form.
+// For the answer, which an LLM writes from text a shopper can steer, so only the tags `marked`
+// outputs are kept. Images, media and SVG would load a URL with no click and could leak data;
+// form controls and `style` could fake a form.
 const markdownPurifyConfig: Config = {
-  FORBID_TAGS: [...(purifyConfig.FORBID_TAGS ?? []), 'img'],
-  FORBID_ATTR: ['style'],
+  ALLOWED_TAGS:
+    'p br strong em del a ul ol li blockquote hr code pre table thead tbody tr th td h1 h2 h3 h4 h5 h6'.split(
+      ' ',
+    ),
+  ALLOWED_ATTR: ['href', 'align', 'start'],
 };
 
 // Text the agent reads (catalog, knowledge base, reviews) could plant a phishing link, so only
@@ -74,7 +78,7 @@ export function sanitizeHtml(html: string): string {
 }
 
 /**
- * Turns the answer's markdown into sanitized HTML. Images and `style` attributes are removed, and
+ * Turns the answer's markdown into sanitized HTML. Only the tags markdown produces are kept, and
  * only links to this site, its subdomains, `mailto:` and `tel:` stay clickable. A custom `sanitize`
  * can keep other schemes, but web links to other sites always become plain text. Browser only:
  * without a DOM to sanitize with (server rendering) it returns `''`, so render the plain text.
@@ -87,8 +91,8 @@ export function renderMarkdown(content: string, options?: RenderMarkdownOptions)
     const purifier = DOMPurify(window);
     const config = {
       ...markdownPurifyConfig,
-      FORBID_TAGS: [...(markdownPurifyConfig.FORBID_TAGS ?? [])],
-      FORBID_ATTR: [...(markdownPurifyConfig.FORBID_ATTR ?? [])],
+      ALLOWED_TAGS: [...(markdownPurifyConfig.ALLOWED_TAGS ?? [])],
+      ALLOWED_ATTR: [...(markdownPurifyConfig.ALLOWED_ATTR ?? [])],
     };
     return unlinkOffSiteLinks(options.sanitize(purifier, html, { config }), {
       keepOtherSchemes: true,
