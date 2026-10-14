@@ -24,10 +24,10 @@ describe('Answer Component', () => {
   });
 
   it('renders inline HTML in answers', () => {
-    const text = 'Visit <a href="https://example.com">our site</a> for more info';
+    const text = 'Visit <a href="/care">our site</a> for more info';
     const { getByTestId } = render(<Answer text={text} />);
     const link = getByTestId('answer-text').querySelector('a');
-    expect(link).toHaveAttribute('href', 'https://example.com');
+    expect(link).toHaveAttribute('href', '/care');
     expect(link).toHaveTextContent('our site');
   });
 

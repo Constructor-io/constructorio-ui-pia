@@ -16,13 +16,21 @@ function Answer({ text, componentOverride }: AnswerProps) {
     return null;
   }
 
+  const html = renderMarkdown(text);
+
   return (
     <RenderPropsWrapper props={{ text }} override={componentOverride?.reactNode}>
-      <div
-        className='cio-pia-answer'
-        data-testid='answer-text'
-        dangerouslySetInnerHTML={{ __html: renderMarkdown(text) }}
-      />
+      {html ? (
+        <div
+          className='cio-pia-answer'
+          data-testid='answer-text'
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+      ) : (
+        <div className='cio-pia-answer' data-testid='answer-text'>
+          {text}
+        </div>
+      )}
     </RenderPropsWrapper>
   );
 }
