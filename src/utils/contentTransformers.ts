@@ -1,9 +1,42 @@
 import DOMPurify, { type Config } from 'dompurify';
 import { marked } from 'marked';
 
+// For catalog HTML (product descriptions).
 const purifyConfig: Config = {
   FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed', 'form'],
 };
+
+// For the answer, which an LLM writes from text a shopper can steer. Images would load with no
+// click, so a crafted URL could leak data; `style` could cover the page with a fake form.
+const markdownPurifyConfig: Config = {
+  FORBID_TAGS: [...(purifyConfig.FORBID_TAGS ?? []), 'img'],
+  FORBID_ATTR: ['style'],
+};
+
+// Text the agent reads (catalog, knowledge base, reviews) could plant a phishing link, so only
+// links to this site, its subdomains, email and phone stay clickable. A link a custom `sanitize`
+// deliberately keeps (e.g. `sms:`) stays too, but web links to other sites never do.
+function isOnThisSite(href: string, { keepOtherSchemes = false } = {}): boolean {
+  try {
+    const url = new URL(href, window.location.href);
+    if (url.protocol === 'mailto:' || url.protocol === 'tel:') return true;
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return keepOtherSchemes;
+    const site = window.location.hostname.replace(/^www\./, '');
+    return url.hostname === site || url.hostname.endsWith(`.${site}`);
+  } catch {
+    return false;
+  }
+}
+
+function unlinkOffSiteLinks(html: string, options?: { keepOtherSchemes?: boolean }): string {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  doc.querySelectorAll('a[href]').forEach((link) => {
+    if (!isOnThisSite(link.getAttribute('href')!, options)) {
+      link.replaceWith(...Array.from(link.childNodes));
+    }
+  });
+  return doc.body.innerHTML;
+}
 
 export interface SanitizeOptions {
   config: Config;
@@ -31,20 +64,36 @@ export interface RenderMarkdownOptions {
   sanitize?: (purifier: typeof DOMPurify, html: string, options: SanitizeOptions) => string;
 }
 
+/**
+ * Sanitizes catalog HTML such as a product description. Browser only: without a DOM to sanitize
+ * with (server rendering) it returns `''`.
+ */
 export function sanitizeHtml(html: string): string {
-  if (!html) return '';
+  if (!html || !DOMPurify.isSupported) return '';
   return DOMPurify.sanitize(html, purifyConfig);
 }
 
+/**
+ * Turns the answer's markdown into sanitized HTML. Images and `style` attributes are removed, and
+ * only links to this site, its subdomains, `mailto:` and `tel:` stay clickable. A custom `sanitize`
+ * can keep other schemes, but web links to other sites always become plain text. Browser only:
+ * without a DOM to sanitize with (server rendering) it returns `''`, so render the plain text.
+ */
 export function renderMarkdown(content: string, options?: RenderMarkdownOptions): string {
-  if (!content) return '';
+  if (!content || !DOMPurify.isSupported) return '';
   const html = marked.parse(content, { async: false, breaks: true });
 
   if (options?.sanitize) {
     const purifier = DOMPurify(window);
-    const config = { ...purifyConfig, FORBID_TAGS: [...(purifyConfig.FORBID_TAGS ?? [])] };
-    return options.sanitize(purifier, html, { config });
+    const config = {
+      ...markdownPurifyConfig,
+      FORBID_TAGS: [...(markdownPurifyConfig.FORBID_TAGS ?? [])],
+      FORBID_ATTR: [...(markdownPurifyConfig.FORBID_ATTR ?? [])],
+    };
+    return unlinkOffSiteLinks(options.sanitize(purifier, html, { config }), {
+      keepOtherSchemes: true,
+    });
   }
 
-  return DOMPurify.sanitize(html, purifyConfig);
+  return unlinkOffSiteLinks(DOMPurify.sanitize(html, markdownPurifyConfig));
 }

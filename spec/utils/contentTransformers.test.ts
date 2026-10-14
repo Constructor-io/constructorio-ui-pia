@@ -58,8 +58,43 @@ describe('renderMarkdown', () => {
   });
 
   it('converts markdown links to anchor tags', () => {
-    const result = renderMarkdown('[link](https://example.com)');
-    expect(result).toBe('<p><a href="https://example.com">link</a></p>\n');
+    const result = renderMarkdown('[link](/care)');
+    expect(result).toBe('<p><a href="/care">link</a></p>\n');
+  });
+
+  it('keeps links to this site, its subdomains, email and phone', () => {
+    // jsdom serves the tests from http://localhost/
+    const result = renderMarkdown(
+      '[a](/care) [b](http://localhost/x) [c](https://shop.localhost/y) [d](mailto:help@shop.com) [e](tel:123)',
+    );
+    expect(result.match(/<a /g)).toHaveLength(5);
+  });
+
+  it('turns links with other schemes into plain text by default', () => {
+    const result = renderMarkdown('[Text us](sms:+15551234567)');
+    expect(result).not.toContain('<a');
+    expect(result).toContain('Text us');
+  });
+
+  it('turns web links to other sites into plain text', () => {
+    const result = renderMarkdown('Verify your order at [our portal](https://evil.example/login) now.');
+    expect(result).not.toContain('<a');
+    expect(result).not.toContain('evil.example');
+    expect(result).toContain('Verify your order at our portal now.');
+  });
+
+  it('strips images, so a crafted image URL cannot leak data', () => {
+    const result = renderMarkdown(
+      'Hi ![x](https://evil.example/p.png?q=secret) <img src="https://evil.example/a.png">',
+    );
+    expect(result).not.toContain('<img');
+    expect(result).toContain('Hi');
+  });
+
+  it('strips style attributes', () => {
+    const result = renderMarkdown('<div style="position:fixed;inset:0">Log in</div>');
+    expect(result).not.toContain('style=');
+    expect(result).toContain('Log in');
   });
 
   it('converts markdown lists to HTML', () => {
@@ -71,9 +106,9 @@ describe('renderMarkdown', () => {
   });
 
   it('passes through inline HTML safely', () => {
-    const input = 'Text with <a href="https://example.com">a link</a> inside';
+    const input = 'Text with <a href="/care">a link</a> inside';
     const result = renderMarkdown(input);
-    expect(result).toContain('<a href="https://example.com">a link</a>');
+    expect(result).toContain('<a href="/care">a link</a>');
   });
 
   it('strips script tags from markdown content', () => {
@@ -156,12 +191,21 @@ describe('renderMarkdown', () => {
       expect(result).toContain('href="sms:+15551234567"');
     });
 
-    it('does not affect normal https links', () => {
-      const input = '<a href="https://example.com">Link</a>';
+    it('does not affect links to this site', () => {
+      const input = '<a href="https://localhost/care">Link</a>';
       const result = renderMarkdown(input, {
         sanitize: allowHrefPattern(/^javascript:window\.openChat\(\)$/),
       });
-      expect(result).toContain('href="https://example.com"');
+      expect(result).toContain('href="https://localhost/care"');
+    });
+
+    it('still turns web links to other sites into plain text', () => {
+      const input = '<a href="https://evil.example/login">Link</a>';
+      const result = renderMarkdown(input, {
+        sanitize: allowHrefPattern(/^javascript:window\.openChat\(\)$/),
+      });
+      expect(result).not.toContain('evil.example');
+      expect(result).toContain('Link');
     });
 
     it('still strips data: href values when hook does not match', () => {
