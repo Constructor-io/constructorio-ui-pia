@@ -24,7 +24,7 @@ import type { CioClient } from '../../hooks/usePiaClient';
 /**
  * A single checkout entry point rendered inside the PIA `default` mode.
  * The merchant owns the checkout flow itself (typically the `@constructor-io/constructorio-ui-checkout`
- * `CheckoutFlowProvider`); PIA only surfaces the button(s) that start it.
+ * `CioCheckoutProvider`); PIA only surfaces the button(s) that start it.
  */
 export interface CheckoutTrigger {
   /** Stable identifier for the trigger — used as React key and forwarded to `renderButton`. */
