@@ -24,34 +24,37 @@ npm install @constructor-io/constructorio-ui-checkout
 ```tsx
 import { CioPia } from '@constructor-io/constructorio-ui-pia';
 import {
-  CheckoutFlowProvider,
-  useCheckoutFlow,
-  CheckoutStripeStep,
-  CheckoutFulfillmentStep,
+  CioCheckoutProvider,
+  CioCheckoutStep,
+  CioStripePaymentStep,
+  CioFulfillmentStep,
+  PAYMENT_STEP,
+  useCioCheckout,
 } from '@constructor-io/constructorio-ui-checkout';
 
 // 1. Mount the provider once at your app root.
 export default function App() {
   return (
-    <CheckoutFlowProvider
-      steps={[{ id: 'payment' }, { id: 'complete' }]}
-      onCreateSession={async ({ cart }) => {
+    <CioCheckoutProvider
+      provider='stripe'
+      steps={[{ id: PAYMENT_STEP }, { id: 'complete' }]}
+      onCreateSession={async (state) => {
         const res = await fetch('/api/checkout-session', {
           method: 'POST',
-          body: JSON.stringify({ items: cart }),
+          body: JSON.stringify({ items: state.cartSnapshot }),
           headers: { 'Content-Type': 'application/json' },
         });
         return res.json(); // { clientSecret, publishableKey }
       }}>
       <ProductPage />
       <CheckoutModal />
-    </CheckoutFlowProvider>
+    </CioCheckoutProvider>
   );
 }
 
 // 2. Start the flow from a trigger.
 function ProductPage() {
-  const flow = useCheckoutFlow();
+  const flow = useCioCheckout();
 
   return (
     <CioPia
@@ -63,7 +66,9 @@ function ProductPage() {
           id: 'buy-one',
           label: 'Buy Now — $129',
           onTrigger: () => {
-            flow.setCart([{ id: 'prod_123', quantity: 1, amount: 12900 }]);
+            flow.setCart([
+              { id: 'prod_123', name: 'Wireless Headphones', unitAmount: 12900, quantity: 1 },
+            ]);
             flow.start();
           },
         },
@@ -74,12 +79,18 @@ function ProductPage() {
 
 // 3. Render the active checkout — modal, inline, or a route.
 function CheckoutModal() {
-  const flow = useCheckoutFlow();
-  if (flow.state.status !== 'active') return null;
+  const flow = useCioCheckout();
+  if (flow.state.currentStepId === null) return null;
   return (
-    <Modal onClose={flow.reset}>
-      <CheckoutStripeStep id='payment' />
-      <CheckoutFulfillmentStep id='complete' />
+    <Modal onClose={() => flow.clearState()}>
+      <CioCheckoutStep id={PAYMENT_STEP}>
+        <CioStripePaymentStep />
+      </CioCheckoutStep>
+      <CioCheckoutStep id='complete'>
+        <CioFulfillmentStep
+          onFulfill={() => fetch('/api/verify-order').then((res) => res.json())}
+        />
+      </CioCheckoutStep>
     </Modal>
   );
 }
@@ -134,6 +145,6 @@ renderButton: ({ onClick, label, disabled }) => (
 );
 ```
 
-PIA does not reset your checkout flow — call `flow.reset()` from your own close handler.
+PIA does not reset your checkout flow — call `flow.clearState()` from your own close handler.
 
 For the full checkout API, see the [Constructor.io Checkout Library](https://github.com/Constructor-io/constructorio-ui-checkout).
