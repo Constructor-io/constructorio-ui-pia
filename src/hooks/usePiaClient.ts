@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import ConstructorIOClient from '@constructor-io/constructorio-client-javascript';
 import type { ConstructorClientOptions } from '@constructor-io/constructorio-client-javascript/lib/types';
-import version from '../version';
+import { LIBRARY_TAG } from '../utils/libraryTag';
 
 export type CioClient = InstanceType<typeof ConstructorIOClient>;
 
@@ -36,7 +36,7 @@ export default function usePiaClient({
     return new ConstructorIOClient({
       apiKey,
       sendTrackingEvents: true,
-      version: `cio-ui-pia-${version}`,
+      version: LIBRARY_TAG,
       ...(testCells && { testCells }),
     });
     // testCells is compared by serializedTestCells so an inline object does not rebuild the client
