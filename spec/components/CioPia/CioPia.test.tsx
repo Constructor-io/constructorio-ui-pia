@@ -813,6 +813,31 @@ describe('CioPia Component', () => {
       expect(mockGetAnswer).toHaveBeenCalledWith('Custom question');
     });
 
+    it('passes handleInputFocus to render props, which tracks focus and calls onFocus', () => {
+      const cioClient = createMockCioClient();
+      const defaultImplementation = mockUseCioPiaHook.getMockImplementation()!;
+      mockUseCioPiaHook.mockImplementation((args) => ({
+        ...defaultImplementation(args),
+        cioClient,
+      }));
+      const onFocus = jest.fn();
+
+      render(
+        <CioPia {...mockProps} callbacks={{ onFocus }}>
+          {({ handleInputFocus }) => (
+            <input aria-label='Custom question' onFocus={handleInputFocus} />
+          )}
+        </CioPia>,
+      );
+
+      fireEvent.focus(screen.getByRole('textbox', { name: 'Custom question' }));
+
+      expect(cioClient.tracker.trackProductInsightsAgentFocus).toHaveBeenCalledWith(
+        expect.objectContaining({ itemId: mockProps.itemId }),
+      );
+      expect(onFocus).toHaveBeenCalledTimes(1);
+    });
+
     it('passes displayedQuestions to render props function', () => {
       render(
         <CioPia {...mockProps}>
