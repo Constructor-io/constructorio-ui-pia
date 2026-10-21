@@ -15,6 +15,7 @@ import {
   Callbacks,
   CioPiaComponentOverrides,
   DisclaimerPosition,
+  ScrollAnchor,
 } from '../../types';
 
 export interface ConversationHistoryProps {
@@ -42,6 +43,7 @@ export interface ConversationHistoryProps {
   showPreviousItems?: boolean;
   learnMoreUrl?: string;
   disclaimerPosition?: DisclaimerPosition;
+  scrollAnchor?: ScrollAnchor;
   translations?: Translations;
   callbacks?: Callbacks;
   componentOverrides?: CioPiaComponentOverrides;
@@ -61,6 +63,7 @@ export default function ConversationHistory({
   showPreviousItems = true,
   learnMoreUrl,
   disclaimerPosition = 'bottom',
+  scrollAnchor = 'bottom',
   translations,
   callbacks,
   componentOverrides,
@@ -76,11 +79,18 @@ export default function ConversationHistory({
     if (!container) return undefined;
 
     const frameId = requestAnimationFrame(() => {
-      container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+      const latestEntry = container.lastElementChild;
+      const top =
+        scrollAnchor === 'latestQuestion' && latestEntry
+          ? container.scrollTop +
+            latestEntry.getBoundingClientRect().top -
+            container.getBoundingClientRect().top
+          : container.scrollHeight;
+      container.scrollTo({ top, behavior: 'smooth' });
     });
 
     return () => cancelAnimationFrame(frameId);
-  }, [conversationHistory, isLoading]);
+  }, [conversationHistory, isLoading, scrollAnchor]);
 
   const lastEntry = conversationHistory[conversationHistory.length - 1];
   // An entry answered before mount (a restored conversation) was not just answered: announcing

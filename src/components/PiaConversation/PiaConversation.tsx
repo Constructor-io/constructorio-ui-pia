@@ -31,6 +31,7 @@ export default function PiaConversation({
   showPreviousItems,
   learnMoreUrl,
   disclaimerPosition,
+  scrollAnchor,
   translations,
   callbacks,
   componentOverrides,
@@ -93,6 +94,7 @@ export default function PiaConversation({
         showPreviousItems={showPreviousItems}
         learnMoreUrl={learnMoreUrl}
         disclaimerPosition={disclaimerPosition}
+        scrollAnchor={scrollAnchor}
         translations={translations}
         callbacks={callbacks}
         componentOverrides={componentOverrides}

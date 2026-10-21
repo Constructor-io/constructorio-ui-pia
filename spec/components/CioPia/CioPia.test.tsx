@@ -1,6 +1,6 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent, within, act } from '@testing-library/react';
+import { render, screen, fireEvent, within, act, waitFor } from '@testing-library/react';
 import { CIO_EVENTS } from '@constructor-io/constructorio-ui-components';
 import CioPia from '../../../src/components/CioPia/CioPia';
 import type { CioPiaProps } from '../../../src/components/CioPia/types';
@@ -944,6 +944,28 @@ describe('CioPia Component', () => {
       );
 
       expect(container.querySelector('.cio-pia-conversation')).toBeInTheDocument();
+    });
+
+    it('scrolls the latest question to the top when scrollAnchor is latestQuestion', async () => {
+      const { container } = render(
+        <CioPia
+          {...mockProps}
+          displayConfigs={{ mode: 'conversation', scrollAnchor: 'latestQuestion' }}
+        />,
+      );
+
+      const input = screen.getByRole('textbox');
+      fireEvent.change(input, { target: { value: 'What color is this?' } });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+      const entries = container.querySelector<HTMLElement>('.cio-pia-conversation-entries')!;
+      Object.defineProperty(entries, 'scrollHeight', { configurable: true, value: 900 });
+      entries.getBoundingClientRect = () => ({ top: 100 }) as DOMRect;
+      entries.lastElementChild!.getBoundingClientRect = () => ({ top: 350 }) as DOMRect;
+
+      await waitFor(() =>
+        expect(entries.scrollTo).toHaveBeenCalledWith({ top: 250, behavior: 'smooth' }),
+      );
     });
 
     it('shows title when there is no conversation history', () => {
