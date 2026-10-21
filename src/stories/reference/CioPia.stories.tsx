@@ -42,6 +42,8 @@ const meta = {
         '`learnMoreUrl: string` — URL for the "Learn More" disclaimer link.',
         '',
         '`disclaimerPosition: "top" | "bottom"` — Position of the disclaimer. Defaults to `"bottom"`.',
+        '',
+        '`scrollAnchor: "bottom" | "latestQuestion"` — Where the conversation history scrolls after each question and answer. `"latestQuestion"` puts the latest question at the top so the answer reads from its start. Defaults to `"bottom"`.',
       ].join('\n'),
       table: { type: { summary: 'CioPiaDisplayConfigs' } },
     },

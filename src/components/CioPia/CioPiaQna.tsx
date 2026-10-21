@@ -55,6 +55,7 @@ export default function CioPiaQna(props: CioPiaProps) {
     type = 'inline',
     showPreviousItems,
     disclaimerPosition = 'bottom',
+    scrollAnchor,
   } = displayConfigs || {};
   const isConversation = mode === 'conversation' || type === 'modal';
 
@@ -189,6 +190,7 @@ export default function CioPiaQna(props: CioPiaProps) {
     showPreviousItems,
     learnMoreUrl,
     disclaimerPosition,
+    scrollAnchor,
     translations,
     callbacks,
     componentOverrides,
