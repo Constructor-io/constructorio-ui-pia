@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react';
 // Tracker is only named-exported from the constructorio submodule, not the package root
 import { Tracker } from '@constructor-io/constructorio-client-javascript/lib/types/constructorio';
 import { FeedbackType, Item, Question, GetAnswerResultsResponse } from '../types';
+import { withLibraryTag } from '../utils/libraryTag';
 
 export interface TimeSpan {
   start: string;
@@ -44,7 +45,9 @@ export default function useTracking({
   variationId,
   threadId,
 }: UseTrackingProps): UseTrackingReturn {
-  const tracker = cioClient?.tracker;
+  // Tagged even on a host-supplied client, so our events are attributed to the library.
+  const hostTracker = cioClient?.tracker;
+  const tracker = useMemo(() => hostTracker && withLibraryTag(hostTracker), [hostTracker]);
 
   const baseParams = useMemo(
     () => ({

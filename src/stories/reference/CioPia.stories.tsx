@@ -23,7 +23,7 @@ const meta = {
         '',
         '`segments?: string[]` — User segments for targeting (sent as `us` query param).',
         '',
-        '`version?: string` — Client version (sent as `c` query param, defaults to `cio-ui-pia-<packageVersion>`).',
+        "`version?: string` — Client version (sent as `c` query param). The widget's tracking events always send `cio-ui-pia-<packageVersion>`, even on your own client.",
       ].join('\n'),
       table: { type: { summary: 'CioClient' } },
     },
