@@ -85,6 +85,7 @@ export default function CioPiaRecs(props: CioPiaProps) {
     // A caller's own root gets the free-text behavior: whatever it submits is the shopper's, so a
     // rejection belongs under their input.
     handleSubmitQuestion: refineFromInput,
+    handleInputFocus,
     conversationHistory: [],
   };
 

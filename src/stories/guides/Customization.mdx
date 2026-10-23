@@ -244,7 +244,13 @@ componentOverrides={{
 
 ### Everything
 
-The top-level `reactNode` replaces the whole widget. It receives `{ items, isLoading, error, currentAnswer, currentQuestion, displayedQuestions, handleSubmitQuestion, conversationHistory }`.
+The top-level `reactNode` replaces the whole widget. It receives `{ items, isLoading, error, currentAnswer, currentQuestion, displayedQuestions, handleSubmitQuestion, handleInputFocus, conversationHistory }`.
+
+Pass `handleInputFocus` to your question field's `onFocus`, or focus is neither tracked nor reported to `callbacks.onFocus`:
+
+```jsx
+<input onFocus={handleInputFocus} />
+```
 
 <Canvas of={OverridesStories.FullCustomLayout} />
 

@@ -3,7 +3,7 @@ import ConstructorIOClient, {
   ConstructorClientOptions,
   Nullable,
 } from '@constructor-io/constructorio-client-javascript';
-import version from '../version';
+import { LIBRARY_TAG } from '../utils/libraryTag';
 
 export type UseCioClientProps = {
   apiKey?: string;
@@ -25,7 +25,7 @@ const useCioClient: UseCioClient = ({ apiKey, cioClient, options } = {}) => {
       return new ConstructorIOClient({
         apiKey,
         sendTrackingEvents: true,
-        version: `cio-ui-pia-${version}`,
+        version: LIBRARY_TAG,
         ...options,
       });
     }

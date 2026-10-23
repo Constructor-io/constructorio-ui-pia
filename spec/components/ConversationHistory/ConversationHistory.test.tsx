@@ -1,6 +1,6 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import ConversationHistory from '../../../src/components/ConversationHistory/ConversationHistory';
 import { DISCLAIMER_TEXT } from '../../../src/constants';
 
@@ -556,6 +556,48 @@ describe('ConversationHistory Component', () => {
       const disclaimerIndex = children.findIndex((el) => el.matches('.cio-pia-disclaimer'));
       const entriesIndex = children.findIndex((el) => el.matches('.cio-pia-conversation-entries'));
       expect(disclaimerIndex).toBeGreaterThan(entriesIndex);
+    });
+  });
+
+  describe('scrollAnchor', () => {
+    const conversationHistory = [
+      { id: 1, question: 'First question', answer: 'First answer' },
+      { id: 2, question: 'Second question', answer: 'Second answer' },
+    ];
+
+    function layOut(container: HTMLElement) {
+      const entries = container.querySelector<HTMLElement>('.cio-pia-conversation-entries')!;
+      Object.defineProperty(entries, 'scrollHeight', { configurable: true, value: 900 });
+      entries.scrollTop = 200;
+      entries.getBoundingClientRect = () => ({ top: 100 }) as DOMRect;
+      entries.lastElementChild!.getBoundingClientRect = () => ({ top: 350 }) as DOMRect;
+      return entries;
+    }
+
+    it('scrolls to the bottom by default', async () => {
+      const { container } = render(
+        <ConversationHistory {...baseProps} conversationHistory={conversationHistory} />,
+      );
+      const entries = layOut(container);
+
+      await waitFor(() =>
+        expect(entries.scrollTo).toHaveBeenCalledWith({ top: 900, behavior: 'smooth' }),
+      );
+    });
+
+    it('scrolls the latest question to the top when scrollAnchor is latestQuestion', async () => {
+      const { container } = render(
+        <ConversationHistory
+          {...baseProps}
+          conversationHistory={conversationHistory}
+          scrollAnchor='latestQuestion'
+        />,
+      );
+      const entries = layOut(container);
+
+      await waitFor(() =>
+        expect(entries.scrollTo).toHaveBeenCalledWith({ top: 450, behavior: 'smooth' }),
+      );
     });
   });
 

@@ -48,6 +48,8 @@ export type CioPiaType = 'inline' | 'modal';
 
 export type DisclaimerPosition = 'top' | 'bottom';
 
+export type ScrollAnchor = 'bottom' | 'latestQuestion';
+
 export type CioPiaTrackingConfigs = {
   /**
    * Fraction of the container (0–1) that must be visible before the
@@ -103,6 +105,17 @@ export type CioPiaDisplayConfigs = {
    * @default 'bottom'
    */
   disclaimerPosition?: DisclaimerPosition;
+  /**
+   * Where the conversation history scrolls after a question is asked or an answer loads.
+   * - `'bottom'` — scrolls to the end of the latest answer.
+   * - `'latestQuestion'` — scrolls the latest question to the top of the history, so a long
+   *   answer is read from its start.
+   *
+   * Applies to conversation mode and the modal.
+   *
+   * @default 'bottom'
+   */
+  scrollAnchor?: ScrollAnchor;
 };
 
 /**
@@ -305,6 +318,12 @@ export interface CioPiaRenderProps {
   currentQuestion: string;
   displayedQuestions: Question[];
   handleSubmitQuestion: (question: string) => void;
+  /**
+   * Pass to your own question field's `onFocus` when you replace the widget, so focus is handled
+   * as the built-in input handles it: `callbacks.onFocus` is called and, outside
+   * `mode: 'recommendations'`, the focus event is tracked.
+   */
+  handleInputFocus: () => void;
   conversationHistory: ConversationEntry[];
 }
 
