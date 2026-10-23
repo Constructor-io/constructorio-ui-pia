@@ -57,7 +57,7 @@ jobs:
         with:
           # The fixture pulls vite via vitest, which needs
           # node ^20.19.0 || >=22.12.0. Pinned to match volta in package.json.
-          node-version: "22.18.x"
+          node-version: "24"
           cache: "npm"
       - name: Upgrade npm
         # Node 22.18 ships npm 10.9, whose arborist crashes with
