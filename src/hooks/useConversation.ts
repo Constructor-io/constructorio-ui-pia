@@ -32,6 +32,11 @@ export interface UseConversationReturn {
   currentItems: Item[] | null;
   isLoading: boolean;
   error: Error | null;
+  /**
+   * The answer request's error alone. A failed suggested-questions request only leaves the
+   * question row empty: the shopper never asked anything, so there is nothing to report.
+   */
+  answerError: Error | null;
   context: PiaCallbackContext;
   handleSubmitQuestion: (question: string) => void;
   handleQuestionClick: (question: string) => void;
@@ -288,6 +293,7 @@ export default function useConversation({
     currentItems,
     isLoading,
     error,
+    answerError: answers.error,
     context,
     handleSubmitQuestion,
     handleQuestionClick,

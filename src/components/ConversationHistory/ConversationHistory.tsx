@@ -27,6 +27,7 @@ export interface ConversationHistoryProps {
    * announce "Loading answer" while only the questions are loading. Defaults to `isLoading`.
    */
   isAnswerLoading?: boolean;
+  /** The answer request's error. Its message is never shown: the block has its own text. */
   error: Error | null;
   /**
    * Items for the latest conversation entry's carousel.
@@ -133,15 +134,10 @@ export default function ConversationHistory({
               )}
 
               {/* The surrounding `role='log'` announces inserted text, so the block must not
-                  be an alert as well. Remount when the message changes so the log sees a new
-                  insertion. */}
-              {isLast && !isLoading && error && (
-                <ErrorBlock
-                  key={error.message || translate('Unexpected error', translations)}
-                  message={error.message}
-                  translations={translations}
-                  announce={false}
-                />
+                  be an alert as well. Remount when the error changes so the log sees a new
+                  insertion. A turn that has its answer did not fail. */}
+              {isLast && !isLoading && error && !entry.answer && (
+                <ErrorBlock key={error.message} translations={translations} announce={false} />
               )}
 
               {entry.answer && (

@@ -331,12 +331,26 @@ describe('CioPia Component', () => {
       mockSuggestedQuestions.forEach((q) => expect(queryByText(q.value)).not.toBeInTheDocument());
     });
 
-    it('displays error message when there is an error', () => {
-      mockUseCioPiaHook.mockReturnValue(mockErrorResponse);
+    it('displays the translated error, not the request error, when the answer fails', () => {
+      mockUseCioPia({ answerError: new TypeError('Failed to fetch') });
 
       const { getByTestId } = render(<CioPia {...mockProps} />);
 
-      expect(getByTestId('error-block')).toBeInTheDocument();
+      expect(getByTestId('error-block')).toHaveTextContent('Unexpected error');
+      expect(getByTestId('error-block')).not.toHaveTextContent('Failed to fetch');
+    });
+
+    it('shows the answer and no error when only the suggested questions fail', () => {
+      mockUseCioPia({
+        questionsData: [],
+        answerData: mockAnswerData,
+        questionsError: new TypeError('Failed to fetch'),
+      });
+
+      const { getByText, queryByTestId } = render(<CioPia {...mockProps} />);
+
+      expect(getByText(mockAnswerData.value)).toBeInTheDocument();
+      expect(queryByTestId('error-block')).not.toBeInTheDocument();
     });
 
     it('updates current question when a question is submitted', () => {
@@ -944,6 +958,24 @@ describe('CioPia Component', () => {
       );
 
       expect(container.querySelector('.cio-pia-conversation')).toBeInTheDocument();
+    });
+
+    it('answers with no error block when only the suggested questions failed', () => {
+      const questionsError = new TypeError('Failed to fetch');
+      mockUseCioPia({ questionsData: [], questionsError });
+      const { rerender } = render(
+        <CioPia {...mockProps} displayConfigs={{ mode: 'conversation' }} />,
+      );
+
+      const input = screen.getByRole('textbox');
+      fireEvent.change(input, { target: { value: 'is this the newest model' } });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+      mockUseCioPia({ questionsData: [], questionsError, answerData: mockAnswerData });
+      rerender(<CioPia {...mockProps} displayConfigs={{ mode: 'conversation' }} />);
+
+      expect(screen.getByText(mockAnswerData.value)).toBeInTheDocument();
+      expect(screen.queryByTestId('error-block')).not.toBeInTheDocument();
     });
 
     it('scrolls the latest question to the top when scrollAnchor is latestQuestion', async () => {

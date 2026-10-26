@@ -99,6 +99,7 @@ export default function CioPiaQna(props: CioPiaProps) {
     currentItems,
     isLoading,
     error,
+    answerError,
     context,
     handleSubmitQuestion,
     handleQuestionClick,
@@ -182,7 +183,7 @@ export default function CioPiaQna(props: CioPiaProps) {
     conversationHistory,
     isLoading,
     isAnswerLoading,
-    error,
+    error: answerError,
     checkoutElement,
     // Until a live answer arrives, a seeded last entry shows its own items. `null` would hide them.
     currentItems: pia.answers.data ? currentItems : undefined,
@@ -243,16 +244,12 @@ export default function CioPiaQna(props: CioPiaProps) {
 
         {isAnswerLoading && <LoadingSkeleton componentOverride={componentOverrides?.loading} />}
 
-        {/* `role='alert'` announces on insertion: remount when the rendered message changes. */}
-        {!isAnswerLoading && error && (
-          <ErrorBlock
-            key={error.message || translate('Unexpected error', translations)}
-            message={error.message}
-            translations={translations}
-          />
+        {/* `role='alert'` announces on insertion: remount when the error changes. */}
+        {!isAnswerLoading && answerError && (
+          <ErrorBlock key={answerError.message} translations={translations} />
         )}
 
-        {!isAnswerLoading && !error && currentAnswer && (
+        {!isAnswerLoading && !answerError && currentAnswer && (
           <PiaInlineAnswer
             currentAnswer={currentAnswer}
             currentItems={currentItems}
@@ -274,7 +271,7 @@ export default function CioPiaQna(props: CioPiaProps) {
             error empties it, as does an answer that came back with no follow-ups. */}
         {isLoading && <SuggestedQuestionsSkeleton />}
 
-        {!isLoading && !error && (
+        {!isLoading && !answerError && (
           <SuggestedQuestionsContainer
             questions={displayedQuestions}
             onQuestionClick={handleInlineQuestionClick}

@@ -336,7 +336,7 @@ describe('Testing Hook: useConversation', () => {
     expect(result2.current.isLoading).toBe(true);
   });
 
-  it('derives error from answers or suggestedQuestions error', () => {
+  it('derives error from answers or suggestedQuestions error, answerError from answers only', () => {
     const answersError = new Error('Answer error');
     const piaAnswersError = createMockPia({
       answers: { error: answersError },
@@ -351,6 +351,7 @@ describe('Testing Hook: useConversation', () => {
       }),
     );
     expect(result1.current.error).toBe(answersError);
+    expect(result1.current.answerError).toBe(answersError);
 
     const suggestionsError = new Error('Suggestions error');
     const piaSuggestionsError = createMockPia({
@@ -366,6 +367,7 @@ describe('Testing Hook: useConversation', () => {
       }),
     );
     expect(result2.current.error).toBe(suggestionsError);
+    expect(result2.current.answerError).toBeNull();
   });
 
   it('prioritizes answers.error over suggestedQuestions.error', () => {

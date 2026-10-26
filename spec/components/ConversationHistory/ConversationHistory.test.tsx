@@ -140,8 +140,35 @@ describe('ConversationHistory Component', () => {
 
       const errorBlock = screen.getByTestId('error-block');
       expect(screen.getByRole('log')).toContainElement(errorBlock);
-      expect(errorBlock).toHaveTextContent('First failure');
       expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
+
+    it("shows the translated message, never the request error's own", () => {
+      render(
+        <ConversationHistory
+          {...baseProps}
+          conversationHistory={[entry]}
+          error={new TypeError('Failed to fetch')}
+          translations={{ 'Unexpected error': 'Error inesperado' }}
+        />,
+      );
+
+      const errorBlock = screen.getByTestId('error-block');
+      expect(errorBlock).toHaveTextContent('Error inesperado');
+      expect(errorBlock).not.toHaveTextContent('Failed to fetch');
+    });
+
+    it('is not shown on a turn that has its answer', () => {
+      render(
+        <ConversationHistory
+          {...baseProps}
+          conversationHistory={[{ ...entry, answer: 'It is a trimmer.' }]}
+          error={new TypeError('Failed to fetch')}
+        />,
+      );
+
+      expect(screen.getByText('It is a trimmer.')).toBeInTheDocument();
+      expect(screen.queryByTestId('error-block')).not.toBeInTheDocument();
     });
 
     it('remounts the error block when a second failure has a different message', () => {
@@ -165,7 +192,6 @@ describe('ConversationHistory Component', () => {
 
       // The log announces insertions, so the node has to be a new one.
       const secondBlock = screen.getByTestId('error-block');
-      expect(secondBlock).toHaveTextContent('Second failure');
       expect(secondBlock).not.toBe(firstBlock);
     });
   });

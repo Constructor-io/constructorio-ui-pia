@@ -3,7 +3,11 @@ import { Translations } from '../../types';
 import { translate } from '../../utils/translate';
 
 interface ErrorBlockProps {
-  message: string;
+  /**
+   * Text shown in place of the translated 'Unexpected error'. Never pass a request error's own
+   * message: it is written for developers, such as the browser's "Failed to fetch".
+   */
+  message?: string;
   onRetry?: () => void;
   translations?: Translations;
   /**
