@@ -111,7 +111,8 @@ function Input({
             value={value}
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={handleSubmitOnEnter}
-            onFocus={onFocus}
+            // A click, not focus: autofocus and the widget's own focus moves raise focus events too.
+            onClick={onFocus}
             placeholder={resolvedPlaceholder}
             aria-label={accessibleName}
             disabled={disabled}

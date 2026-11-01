@@ -1,5 +1,5 @@
 import React from 'react';
-import { renderHook, act, fireEvent } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import useConversation from '../../../src/hooks/useConversation';
 import { UseCioPiaReturn } from '../../../src/hooks/useCioPia';
 import { ConversationEntry, GetAnswerResultsResponse } from '../../../src/types';
@@ -1019,56 +1019,22 @@ describe('Testing Hook: useConversation', () => {
       expect(mockTracking.trackQuestionClick).toHaveBeenCalledWith('Suggested question?');
     });
 
-    describe('handleInputFocus', () => {
-      let input: HTMLInputElement;
+    it('calls tracking.trackFocus when handleInputFocus is called', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({
+          pia,
+          itemId: 'test-item',
+          isConversation: false,
+          tracking: mockTracking,
+        }),
+      );
 
-      beforeEach(() => {
-        input = document.createElement('input');
-        document.body.appendChild(input);
+      act(() => {
+        result.current.handleInputFocus();
       });
 
-      afterEach(() => {
-        input.remove();
-      });
-
-      const renderConversation = (onFocus = jest.fn()) => {
-        const pia = createMockPia();
-        const callbacks = { onFocus };
-        return renderHook(() =>
-          useConversation({
-            pia,
-            itemId: 'test-item',
-            isConversation: false,
-            tracking: mockTracking,
-            callbacks,
-          }),
-        );
-      };
-
-      it('tracks focus the shopper caused by pressing the input', () => {
-        const { result } = renderConversation();
-        fireEvent.pointerDown(input);
-        input.focus();
-
-        act(() => {
-          result.current.handleInputFocus();
-        });
-
-        expect(mockTracking.trackFocus).toHaveBeenCalledTimes(1);
-      });
-
-      it('does not track focus moved in code, but still calls onFocus', () => {
-        const onFocus = jest.fn();
-        const { result } = renderConversation(onFocus);
-        input.focus();
-
-        act(() => {
-          result.current.handleInputFocus();
-        });
-
-        expect(mockTracking.trackFocus).not.toHaveBeenCalled();
-        expect(onFocus).toHaveBeenCalledTimes(1);
-      });
+      expect(mockTracking.trackFocus).toHaveBeenCalledTimes(1);
     });
 
     it('calls tracking.trackAnswerFeedback when handleFeedback is called', () => {

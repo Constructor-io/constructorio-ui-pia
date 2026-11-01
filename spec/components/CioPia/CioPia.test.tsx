@@ -243,36 +243,6 @@ describe('CioPia Component', () => {
       expect(screen.getByRole('textbox')).toHaveFocus();
     });
 
-    it('does not track the focus it returns to the input once an answer loads', () => {
-      const cioClient = createMockCioClient();
-      const withClient = () => {
-        const implementation = mockUseCioPiaHook.getMockImplementation()!;
-        mockUseCioPiaHook.mockImplementation((args) => ({ ...implementation(args), cioClient }));
-      };
-      withClient();
-      const { rerender } = render(<CioPia {...mockProps} />);
-      const input = screen.getByRole('textbox');
-      fireEvent.pointerDown(input);
-      input.focus();
-      fireEvent.change(input, { target: { value: 'Is it gluten free?' } });
-      fireEvent.keyDown(input, { key: 'Enter' });
-
-      // jsdom does not drop focus from a control when it becomes disabled the way browsers do.
-      input.blur();
-      mockUseCioPia({ answerIsLoading: true });
-      withClient();
-      rerender(<CioPia {...mockProps} />);
-      const answerArrivesAt = performance.now() + 5000;
-      const now = jest.spyOn(performance, 'now').mockReturnValue(answerArrivesAt);
-      mockUseCioPiaWithAnswerData();
-      withClient();
-      rerender(<CioPia {...mockProps} />);
-
-      expect(input).toHaveFocus();
-      expect(cioClient.tracker.trackProductInsightsAgentFocus).toHaveBeenCalledTimes(1);
-      now.mockRestore();
-    });
-
     it('disables the input while an answer loads', () => {
       mockUseCioPia({ answerIsLoading: true });
 
@@ -855,14 +825,12 @@ describe('CioPia Component', () => {
       render(
         <CioPia {...mockProps} callbacks={{ onFocus }}>
           {({ handleInputFocus }) => (
-            <input aria-label='Custom question' onFocus={handleInputFocus} />
+            <input aria-label='Custom question' onClick={handleInputFocus} />
           )}
         </CioPia>,
       );
 
-      const input = screen.getByRole('textbox', { name: 'Custom question' });
-      fireEvent.pointerDown(input);
-      input.focus();
+      fireEvent.click(screen.getByRole('textbox', { name: 'Custom question' }));
 
       expect(cioClient.tracker.trackProductInsightsAgentFocus).toHaveBeenCalledWith(
         expect.objectContaining({ itemId: mockProps.itemId }),

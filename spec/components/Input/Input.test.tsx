@@ -292,6 +292,26 @@ describe('Input Component', () => {
     });
   });
 
+  describe('onFocus', () => {
+    it('is called when the input is clicked', () => {
+      const mockFocus = jest.fn();
+      const { getByRole } = render(<Input onSubmit={mockSubmit} onFocus={mockFocus} />);
+
+      fireEvent.click(getByRole('textbox'));
+
+      expect(mockFocus).toHaveBeenCalledTimes(1);
+    });
+
+    it('is not called when focus is moved in code', () => {
+      const mockFocus = jest.fn();
+      const { getByRole } = render(<Input onSubmit={mockSubmit} onFocus={mockFocus} />);
+
+      getByRole('textbox').focus();
+
+      expect(mockFocus).not.toHaveBeenCalled();
+    });
+  });
+
   describe('componentOverride', () => {
     it('renders the override and passes render props', () => {
       const override = jest.fn(() => <div data-testid='custom-input'>Custom</div>);
