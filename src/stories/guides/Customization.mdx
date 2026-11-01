@@ -244,12 +244,20 @@ componentOverrides={{
 
 ### Everything
 
-The top-level `reactNode` replaces the whole widget. It receives `{ items, isLoading, error, currentAnswer, currentQuestion, displayedQuestions, handleSubmitQuestion, handleInputFocus, conversationHistory }`.
+The top-level `reactNode` replaces the whole widget. It receives `{ items, isLoading, error, currentAnswer, currentQuestion, displayedQuestions, handleSubmitQuestion, handleQuestionClick, handleInputFocus, conversationHistory }`.
 
 Pass `handleInputFocus` to your question field's `onFocus`, or focus is neither tracked nor reported to `callbacks.onFocus`:
 
 ```jsx
 <input onFocus={handleInputFocus} />
+```
+
+Send a picked suggestion through `handleQuestionClick`, so it is tracked as a question click rather than a typed question:
+
+```jsx
+{displayedQuestions.map(({ value }) => (
+  <button key={value} onClick={() => handleQuestionClick(value)}>{value}</button>
+))}
 ```
 
 <Canvas of={OverridesStories.FullCustomLayout} />

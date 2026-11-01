@@ -813,6 +813,40 @@ describe('CioPia Component', () => {
       expect(mockGetAnswer).toHaveBeenCalledWith('Custom question');
     });
 
+    it('passes handleQuestionClick to render props, which tracks a question click, not a submit', () => {
+      const cioClient = createMockCioClient();
+      const defaultImplementation = mockUseCioPiaHook.getMockImplementation()!;
+      mockUseCioPiaHook.mockImplementation((args) => ({
+        ...defaultImplementation(args),
+        cioClient,
+      }));
+      const onQuestionSubmit = jest.fn();
+
+      render(
+        <CioPia {...mockProps} callbacks={{ onQuestionSubmit }}>
+          {({ displayedQuestions, handleQuestionClick }) => (
+            <>
+              {displayedQuestions.map(({ value }) => (
+                <button type='button' key={value} onClick={() => handleQuestionClick(value)}>
+                  {value}
+                </button>
+              ))}
+            </>
+          )}
+        </CioPia>,
+      );
+
+      const question = mockSuggestedQuestions[0].value;
+      fireEvent.click(screen.getByRole('button', { name: question }));
+
+      expect(mockGetAnswer).toHaveBeenCalledWith(question);
+      expect(cioClient.tracker.trackProductInsightsAgentQuestionClick).toHaveBeenCalledWith(
+        expect.objectContaining({ question }),
+      );
+      expect(cioClient.tracker.trackProductInsightsAgentQuestionSubmit).not.toHaveBeenCalled();
+      expect(onQuestionSubmit).toHaveBeenCalledWith(question, expect.anything(), 'suggestion');
+    });
+
     it('passes handleInputFocus to render props, which tracks focus and calls onFocus', () => {
       const cioClient = createMockCioClient();
       const defaultImplementation = mockUseCioPiaHook.getMockImplementation()!;
