@@ -506,12 +506,12 @@ describe('CioPiaRecs Component', () => {
   });
 
   describe('Callbacks and overrides', () => {
-    it('calls onFocus when the shopper clicks the input', async () => {
+    it('calls onFocus when the shopper focuses the input', async () => {
       const onFocus = jest.fn();
 
       await renderSettled({ callbacks: { onFocus } });
 
-      fireEvent.click(screen.getByRole('textbox'));
+      fireEvent.focus(screen.getByRole('textbox'));
 
       expect(onFocus).toHaveBeenCalledWith({
         itemId: 'test-item-id',

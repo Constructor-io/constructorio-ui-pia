@@ -1019,7 +1019,25 @@ describe('Testing Hook: useConversation', () => {
       expect(mockTracking.trackQuestionClick).toHaveBeenCalledWith('Suggested question?');
     });
 
-    it('calls tracking.trackFocus when handleInputFocus is called', () => {
+    it('calls tracking.trackFocus when handleInputClick is called', () => {
+      const pia = createMockPia();
+      const { result } = renderHook(() =>
+        useConversation({
+          pia,
+          itemId: 'test-item',
+          isConversation: false,
+          tracking: mockTracking,
+        }),
+      );
+
+      act(() => {
+        result.current.handleInputClick();
+      });
+
+      expect(mockTracking.trackFocus).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not track focus when handleInputFocus is called', () => {
       const pia = createMockPia();
       const { result } = renderHook(() =>
         useConversation({
@@ -1034,7 +1052,7 @@ describe('Testing Hook: useConversation', () => {
         result.current.handleInputFocus();
       });
 
-      expect(mockTracking.trackFocus).toHaveBeenCalledTimes(1);
+      expect(mockTracking.trackFocus).not.toHaveBeenCalled();
     });
 
     it('calls tracking.trackAnswerFeedback when handleFeedback is called', () => {

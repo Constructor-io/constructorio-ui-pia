@@ -103,6 +103,7 @@ export default function CioPiaQna(props: CioPiaProps) {
     handleSubmitQuestion,
     handleQuestionClick,
     handleInputFocus,
+    handleInputClick,
     handleFeedback,
     resetState,
   } = useConversation({
@@ -166,6 +167,7 @@ export default function CioPiaQna(props: CioPiaProps) {
     displayedQuestions,
     handleSubmitQuestion,
     handleInputFocus,
+    handleInputClick,
     conversationHistory,
   };
 
@@ -202,6 +204,7 @@ export default function CioPiaQna(props: CioPiaProps) {
     qnaResultId,
     containerRef,
     onInputFocus: handleInputFocus,
+    onInputClick: handleInputClick,
     priceCurrency,
   };
 
@@ -216,6 +219,7 @@ export default function CioPiaQna(props: CioPiaProps) {
         componentOverrides={componentOverrides}
         translations={translations}
         onInputFocus={handleInputFocus}
+        onInputClick={handleInputClick}
         onClose={resetState}>
         <PiaConversation {...conversationHistoryProps} />
       </PiaModal>
@@ -234,6 +238,7 @@ export default function CioPiaQna(props: CioPiaProps) {
         <Input
           onSubmit={handleInlineSubmit}
           onFocus={handleInputFocus}
+          onClick={handleInputClick}
           inputRef={inputRef}
           disabled={isLoading}
           value={currentQuestion}

@@ -26,6 +26,7 @@ interface InputProps {
   placeholder?: string;
   onSubmit: (value: string) => void;
   onFocus?: () => void;
+  onClick?: () => void;
   translations?: Translations;
   componentOverride?: ComponentOverrideProps<InputRenderProps>;
   error?: string;
@@ -45,6 +46,7 @@ function Input({
   disabled = false,
   onSubmit,
   onFocus,
+  onClick,
   translations,
   componentOverride,
   error,
@@ -98,6 +100,7 @@ function Input({
         placeholder: resolvedPlaceholder,
         onSubmit: handleSubmit,
         onFocus,
+        onClick,
         translations,
         error,
         inputRef,
@@ -111,8 +114,8 @@ function Input({
             value={value}
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={handleSubmitOnEnter}
-            // A click, not focus: autofocus and the widget's own focus moves raise focus events too.
-            onClick={onFocus}
+            onFocus={onFocus}
+            onClick={onClick}
             placeholder={resolvedPlaceholder}
             aria-label={accessibleName}
             disabled={disabled}

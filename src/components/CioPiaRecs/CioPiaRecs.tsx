@@ -10,6 +10,8 @@ import { CioPiaRenderProps } from '../../types';
 import { cx } from '../../utils/classNames';
 import type { CioPiaProps } from '../CioPia/types';
 
+const noop = () => {};
+
 /**
  * A pod of AI-curated product suggestions: a personalized title, a row of products, and short
  * options for narrowing them down. It asks no questions and makes no Q&A requests, so a retailer
@@ -86,6 +88,8 @@ export default function CioPiaRecs(props: CioPiaProps) {
     // rejection belongs under their input.
     handleSubmitQuestion: refineFromInput,
     handleInputFocus,
+    // Recommendations do not send the focus event, so only `handleInputFocus` does anything here.
+    handleInputClick: noop,
     conversationHistory: [],
   };
 

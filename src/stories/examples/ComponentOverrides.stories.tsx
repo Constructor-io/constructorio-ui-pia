@@ -276,6 +276,7 @@ function GrowingTextarea({
   placeholder,
   disabled,
   onFocus,
+  onClick,
   translations,
   inputRef,
 }: InputRenderProps) {
@@ -316,7 +317,8 @@ function GrowingTextarea({
             handleSubmit();
           }
         }}
-        onClick={onFocus}
+        onFocus={onFocus}
+        onClick={onClick}
         placeholder={placeholder}
         // A consumer can blank the placeholder to hide it, so the name needs its own key.
         aria-label={placeholder || translate('Your question', translations)}

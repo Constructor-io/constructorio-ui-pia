@@ -45,6 +45,7 @@ interface PiaModalProps {
   componentOverrides?: CioPiaComponentOverrides;
   translations?: Translations;
   onInputFocus?: () => void;
+  onInputClick?: () => void;
   onClose?: () => void;
 }
 
@@ -57,6 +58,7 @@ export default function PiaModal({
   componentOverrides,
   translations,
   onInputFocus,
+  onInputClick,
   onClose,
   children,
 }: PropsWithChildren<PiaModalProps>) {
@@ -182,6 +184,7 @@ export default function PiaModal({
         <Input
           onSubmit={handleQuestion}
           onFocus={onInputFocus}
+          onClick={onInputClick}
           disabled={isLoading || isOpen}
           translations={translations}
           componentOverride={componentOverrides?.input}
