@@ -321,7 +321,7 @@ export interface CioPiaRenderProps {
   /**
    * Pass to your own question field's `onFocus` when you replace the widget, so focus is handled
    * as the built-in input handles it: `callbacks.onFocus` is called and, outside
-   * `mode: 'recommendations'`, the focus event is tracked.
+   * `mode: 'recommendations'`, the focus event is tracked when the shopper caused the focus.
    */
   handleInputFocus: () => void;
   conversationHistory: ConversationEntry[];

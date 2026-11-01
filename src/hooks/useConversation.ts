@@ -12,6 +12,7 @@ import { UseCioPiaReturn } from './useCioPia';
 import { UseTrackingReturn } from './useTracking';
 import { PersistedConversationState } from './usePersistedConversation';
 import { isRestorableEntry } from '../utils/conversationStorage';
+import useUserInitiatedFocus from './useUserInitiatedFocus';
 
 export interface UseConversationProps {
   pia: UseCioPiaReturn;
@@ -167,10 +168,12 @@ export default function useConversation({
     [submitQuestion],
   );
 
+  const isUserInitiatedFocus = useUserInitiatedFocus();
+
   const handleInputFocus = useCallback(() => {
-    trackingRef.current?.trackFocus();
+    if (isUserInitiatedFocus()) trackingRef.current?.trackFocus();
     callbacksRef.current?.onFocus?.(contextRef.current);
-  }, []);
+  }, [isUserInitiatedFocus]);
 
   const handleFeedback = useCallback((type: FeedbackType) => {
     // A seeded last entry has no live response behind it; its own id is the answer rated.

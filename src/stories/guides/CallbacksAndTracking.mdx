@@ -9,6 +9,8 @@ import * as CarouselStories from '../examples/Carousel.stories';
 
 Constructor events (views, questions, clicks) are sent automatically and appear in your Constructor dashboard. Callbacks do not affect them.
 
+`product_insights_agent.focus` is sent only when the shopper focuses the input by clicking, tapping or tabbing to it. Focus moved in code (`autofocus`, a `focus()` call, or the widget returning focus after an answer) is not tracked, but still calls `onFocus`.
+
 ## Callbacks
 
 For your own analytics or behaviour. `context` is `{ itemId, threadId }`.
