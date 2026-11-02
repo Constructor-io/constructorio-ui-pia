@@ -330,11 +330,10 @@ export interface CioPiaRenderProps {
    */
   handleInputFocus: () => void;
   /**
-   * Pass to your own question field's `onClick` when you replace the widget. Outside
-   * `mode: 'recommendations'`, a click on the field sends the focus event, as it does for the
-   * built-in input; focus moved in code does not.
+   * Pass to your own question field's `onClick` when you replace the widget. A click on the field
+   * sends the focus event, as it does for the built-in input; focus moved in code does not.
    */
-  handleInputClick: () => void;
+  handleInputClick?: () => void;
   conversationHistory: ConversationEntry[];
 }
 
