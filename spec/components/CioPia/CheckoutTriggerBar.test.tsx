@@ -13,6 +13,7 @@ const mockState: CioPiaRenderProps = {
   currentQuestion: '',
   displayedQuestions: [],
   handleSubmitQuestion: jest.fn(),
+  handleQuestionClick: jest.fn(),
   handleInputFocus: jest.fn(),
   handleInputClick: jest.fn(),
   conversationHistory: [],

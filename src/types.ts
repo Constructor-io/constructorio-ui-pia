@@ -319,6 +319,12 @@ export interface CioPiaRenderProps {
   displayedQuestions: Question[];
   handleSubmitQuestion: (question: string) => void;
   /**
+   * Call when the shopper picks one of `displayedQuestions`, so it is tracked as a suggested
+   * question click rather than a typed submission. In `mode: 'recommendations'` it picks a
+   * refinement option.
+   */
+  handleQuestionClick: (question: string) => void;
+  /**
    * Pass to your own question field's `onFocus` when you replace the widget, so
    * `callbacks.onFocus` is called as it is for the built-in input.
    */

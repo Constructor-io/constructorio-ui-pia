@@ -543,6 +543,31 @@ describe('CioPiaRecs Component', () => {
       expect(view.getByTestId('custom-loading')).toHaveTextContent('false');
     });
 
+    it('passes handleQuestionClick to render props, which refines with the picked option', async () => {
+      render(
+        <CioPiaRecs {...getProps()}>
+          {({ displayedQuestions, handleQuestionClick }) => (
+            <>
+              {displayedQuestions.map(({ value }) => (
+                <button type='button' key={value} onClick={() => handleQuestionClick(value)}>
+                  {value}
+                </button>
+              ))}
+            </>
+          )}
+        </CioPiaRecs>,
+      );
+      await settle();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Slim fit' }));
+      });
+
+      expect(mockClient.agent.getRecs).toHaveBeenLastCalledWith(
+        expect.objectContaining({ shopperInput: 'Slim fit' }),
+      );
+    });
+
     // The heading is ours, but its level is a page-outline decision, so a retailer has to be able
     // to supply its own. `componentOverrides.answer` is that seam, shared with question-and-answer.
     it('renders a custom title from componentOverrides.answer', async () => {

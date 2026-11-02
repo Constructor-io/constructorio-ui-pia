@@ -166,6 +166,7 @@ export default function CioPiaQna(props: CioPiaProps) {
     currentQuestion,
     displayedQuestions,
     handleSubmitQuestion,
+    handleQuestionClick,
     handleInputFocus,
     handleInputClick,
     conversationHistory,
