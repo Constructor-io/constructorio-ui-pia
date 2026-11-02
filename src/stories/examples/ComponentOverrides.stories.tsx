@@ -372,13 +372,7 @@ export const FullCustomLayout: Story = {
     apiKey: DEMO_API_KEY,
     itemId: DEMO_ITEM_ID,
     componentOverrides: {
-      reactNode: ({
-        currentAnswer,
-        displayedQuestions,
-        handleSubmitQuestion,
-        isLoading,
-        items,
-      }) => (
+      reactNode: ({ currentAnswer, displayedQuestions, handleQuestionClick, isLoading, items }) => (
         <div
           style={{
             padding: '24px',
@@ -401,7 +395,7 @@ export const FullCustomLayout: Story = {
                 <button
                   type='button'
                   key={q.value}
-                  onClick={() => handleSubmitQuestion(q.value)}
+                  onClick={() => handleQuestionClick(q.value)}
                   style={{
                     padding: '10px 14px',
                     border: '1px solid #d1d5db',
