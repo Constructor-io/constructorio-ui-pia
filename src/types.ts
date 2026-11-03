@@ -325,15 +325,11 @@ export interface CioPiaRenderProps {
    */
   handleQuestionClick: (question: string) => void;
   /**
-   * Pass to your own question field's `onFocus` when you replace the widget, so
-   * `callbacks.onFocus` is called as it is for the built-in input.
+   * Pass to your own question field's `onFocus` when you replace the widget, so focus is handled
+   * as the built-in input handles it: `callbacks.onFocus` is called and, outside
+   * `mode: 'recommendations'`, the focus event is tracked.
    */
   handleInputFocus: () => void;
-  /**
-   * Pass to your own question field's `onClick` when you replace the widget. A click on the field
-   * sends the focus event, as it does for the built-in input; focus moved in code does not.
-   */
-  handleInputClick?: () => void;
   conversationHistory: ConversationEntry[];
 }
 
@@ -368,8 +364,6 @@ export interface InputRenderProps {
   placeholder: string;
   onSubmit: (value: string) => void;
   onFocus?: () => void;
-  /** Attach to your text field's `onClick`: a click on the field is what sends the focus event. */
-  onClick?: () => void;
   translations?: Translations;
   /** Validation message for the value that was just submitted, when there is one. */
   error?: string;

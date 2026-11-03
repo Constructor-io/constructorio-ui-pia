@@ -292,34 +292,14 @@ describe('Input Component', () => {
     });
   });
 
-  describe('onFocus and onClick', () => {
-    it('calls onFocus on focus and onClick on a click', () => {
-      const mockFocus = jest.fn();
-      const mockClick = jest.fn();
-      const { getByRole } = render(
-        <Input onSubmit={mockSubmit} onFocus={mockFocus} onClick={mockClick} />,
-      );
-      const input = getByRole('textbox');
-
-      input.focus();
-      expect(mockFocus).toHaveBeenCalledTimes(1);
-      expect(mockClick).not.toHaveBeenCalled();
-
-      fireEvent.click(input);
-      expect(mockClick).toHaveBeenCalledTimes(1);
-    });
-  });
-
   describe('componentOverride', () => {
     it('renders the override and passes render props', () => {
       const override = jest.fn(() => <div data-testid='custom-input'>Custom</div>);
       const mockFocus = jest.fn();
-      const mockClick = jest.fn();
       const { getByTestId, queryByRole } = render(
         <Input
           onSubmit={mockSubmit}
           onFocus={mockFocus}
-          onClick={mockClick}
           disabled
           translations={{ 'Ask anything': 'Type here' }}
           componentOverride={{ reactNode: override }}
@@ -334,7 +314,6 @@ describe('Input Component', () => {
           placeholder: 'Type here',
           onSubmit: expect.any(Function),
           onFocus: mockFocus,
-          onClick: mockClick,
           translations: { 'Ask anything': 'Type here' },
         }),
       );

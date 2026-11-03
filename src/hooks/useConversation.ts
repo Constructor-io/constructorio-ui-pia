@@ -12,6 +12,7 @@ import { UseCioPiaReturn } from './useCioPia';
 import { UseTrackingReturn } from './useTracking';
 import { PersistedConversationState } from './usePersistedConversation';
 import { isRestorableEntry } from '../utils/conversationStorage';
+import { isFocusWithoutTracking } from '../utils/programmaticFocus';
 
 export interface UseConversationProps {
   pia: UseCioPiaReturn;
@@ -36,7 +37,6 @@ export interface UseConversationReturn {
   handleSubmitQuestion: (question: string) => void;
   handleQuestionClick: (question: string) => void;
   handleInputFocus: () => void;
-  handleInputClick: () => void;
   handleFeedback: (type: FeedbackType) => void;
   resetState: () => void;
 }
@@ -169,12 +169,8 @@ export default function useConversation({
   );
 
   const handleInputFocus = useCallback(() => {
+    if (!isFocusWithoutTracking()) trackingRef.current?.trackFocus();
     callbacksRef.current?.onFocus?.(contextRef.current);
-  }, []);
-
-  // A click, not focus: autofocus and the widget's own focus moves raise focus events too.
-  const handleInputClick = useCallback(() => {
-    trackingRef.current?.trackFocus();
   }, []);
 
   const handleFeedback = useCallback((type: FeedbackType) => {
@@ -297,7 +293,6 @@ export default function useConversation({
     handleSubmitQuestion,
     handleQuestionClick,
     handleInputFocus,
-    handleInputClick,
     handleFeedback,
     resetState,
   };

@@ -19,7 +19,6 @@ export interface PiaConversationProps extends ConversationHistoryProps {
   onResultClick?: (item: Item, position: number, question: string, qnaResultId?: string) => void;
   qnaResultId?: string;
   onInputFocus?: () => void;
-  onInputClick?: () => void;
   checkoutElement?: ReactNode;
 }
 
@@ -44,7 +43,6 @@ export default function PiaConversation({
   onResultClick,
   qnaResultId,
   onInputFocus,
-  onInputClick,
   priceCurrency,
   checkoutElement,
 }: PiaConversationProps) {
@@ -120,7 +118,6 @@ export default function PiaConversation({
         <Input
           onSubmit={submitQuestion}
           onFocus={onInputFocus}
-          onClick={onInputClick}
           inputRef={attachInput}
           disabled={isLoading}
           translations={translations}

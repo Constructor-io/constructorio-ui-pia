@@ -26,7 +26,6 @@ interface InputProps {
   placeholder?: string;
   onSubmit: (value: string) => void;
   onFocus?: () => void;
-  onClick?: () => void;
   translations?: Translations;
   componentOverride?: ComponentOverrideProps<InputRenderProps>;
   error?: string;
@@ -46,7 +45,6 @@ function Input({
   disabled = false,
   onSubmit,
   onFocus,
-  onClick,
   translations,
   componentOverride,
   error,
@@ -100,7 +98,6 @@ function Input({
         placeholder: resolvedPlaceholder,
         onSubmit: handleSubmit,
         onFocus,
-        onClick,
         translations,
         error,
         inputRef,
@@ -115,7 +112,6 @@ function Input({
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={handleSubmitOnEnter}
             onFocus={onFocus}
-            onClick={onClick}
             placeholder={resolvedPlaceholder}
             aria-label={accessibleName}
             disabled={disabled}

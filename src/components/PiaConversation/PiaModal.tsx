@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import Input from '../Input/Input';
 import { translate } from '../../utils/translate';
+import { focusWithoutTracking } from '../../utils/programmaticFocus';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import { Translations, Question, CioPiaComponentOverrides } from '../../types';
 
@@ -45,7 +46,6 @@ interface PiaModalProps {
   componentOverrides?: CioPiaComponentOverrides;
   translations?: Translations;
   onInputFocus?: () => void;
-  onInputClick?: () => void;
   onClose?: () => void;
 }
 
@@ -58,7 +58,6 @@ export default function PiaModal({
   componentOverrides,
   translations,
   onInputFocus,
-  onInputClick,
   onClose,
   children,
 }: PropsWithChildren<PiaModalProps>) {
@@ -114,7 +113,7 @@ export default function PiaModal({
     const active = document.activeElement;
     if (active !== placed && active !== document.body) return;
 
-    inputNodeRef.current?.focus();
+    if (inputNodeRef.current) focusWithoutTracking(inputNodeRef.current);
   }, [isOpen, isLoading]);
 
   // Restore focus to the trigger. Re-runs on `isLoading`: the input trigger is
@@ -126,7 +125,7 @@ export default function PiaModal({
     if (!trigger || !trigger.isConnected) return;
     if ((trigger as HTMLInputElement).disabled) return;
 
-    trigger.focus();
+    focusWithoutTracking(trigger);
     triggerRef.current = null;
   }, [isOpen, isLoading]);
 
@@ -184,7 +183,6 @@ export default function PiaModal({
         <Input
           onSubmit={handleQuestion}
           onFocus={onInputFocus}
-          onClick={onInputClick}
           disabled={isLoading || isOpen}
           translations={translations}
           componentOverride={componentOverrides?.input}

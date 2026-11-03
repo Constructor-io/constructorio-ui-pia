@@ -243,34 +243,30 @@ describe('CioPia Component', () => {
       expect(screen.getByRole('textbox')).toHaveFocus();
     });
 
-    it('sends the focus event when the shopper clicks the input', () => {
+    it('tracks the shopper focusing the input, but not the focus it returns after an answer', () => {
       const cioClient = createMockCioClient();
-      const defaultImplementation = mockUseCioPiaHook.getMockImplementation()!;
-      mockUseCioPiaHook.mockImplementation((args) => ({
-        ...defaultImplementation(args),
-        cioClient,
-      }));
+      const withClient = () => {
+        const implementation = mockUseCioPiaHook.getMockImplementation()!;
+        mockUseCioPiaHook.mockImplementation((args) => ({ ...implementation(args), cioClient }));
+      };
+      withClient();
+      const { rerender } = render(<CioPia {...mockProps} />);
+      const input = screen.getByRole('textbox');
+      input.focus();
+      fireEvent.change(input, { target: { value: 'Is it gluten free?' } });
+      fireEvent.keyDown(input, { key: 'Enter' });
 
-      render(<CioPia {...mockProps} />);
-      fireEvent.click(screen.getByRole('textbox'));
+      // jsdom does not drop focus from a control when it becomes disabled the way browsers do.
+      input.blur();
+      mockUseCioPia({ answerIsLoading: true });
+      withClient();
+      rerender(<CioPia {...mockProps} />);
+      mockUseCioPiaWithAnswerData();
+      withClient();
+      rerender(<CioPia {...mockProps} />);
 
+      expect(input).toHaveFocus();
       expect(cioClient.tracker.trackProductInsightsAgentFocus).toHaveBeenCalledTimes(1);
-    });
-
-    it('calls onFocus but sends no focus event when the input is focused in code', () => {
-      const cioClient = createMockCioClient();
-      const defaultImplementation = mockUseCioPiaHook.getMockImplementation()!;
-      mockUseCioPiaHook.mockImplementation((args) => ({
-        ...defaultImplementation(args),
-        cioClient,
-      }));
-      const onFocus = jest.fn();
-
-      render(<CioPia {...mockProps} callbacks={{ onFocus }} />);
-      screen.getByRole('textbox').focus();
-
-      expect(onFocus).toHaveBeenCalledTimes(1);
-      expect(cioClient.tracker.trackProductInsightsAgentFocus).not.toHaveBeenCalled();
     });
 
     it('disables the input while an answer loads', () => {
@@ -877,7 +873,7 @@ describe('CioPia Component', () => {
       expect(onQuestionSubmit).toHaveBeenCalledWith(question, expect.anything(), 'suggestion');
     });
 
-    it('passes handleInputFocus and handleInputClick to render props', () => {
+    it('passes handleInputFocus to render props, which tracks focus and calls onFocus', () => {
       const cioClient = createMockCioClient();
       const defaultImplementation = mockUseCioPiaHook.getMockImplementation()!;
       mockUseCioPiaHook.mockImplementation((args) => ({
@@ -888,27 +884,18 @@ describe('CioPia Component', () => {
 
       render(
         <CioPia {...mockProps} callbacks={{ onFocus }}>
-          {({ handleInputFocus, handleInputClick }) => (
-            <input
-              aria-label='Custom question'
-              onFocus={handleInputFocus}
-              onClick={handleInputClick}
-            />
+          {({ handleInputFocus }) => (
+            <input aria-label='Custom question' onFocus={handleInputFocus} />
           )}
         </CioPia>,
       );
 
-      const input = screen.getByRole('textbox', { name: 'Custom question' });
-      fireEvent.focus(input);
-
-      expect(onFocus).toHaveBeenCalledTimes(1);
-      expect(cioClient.tracker.trackProductInsightsAgentFocus).not.toHaveBeenCalled();
-
-      fireEvent.click(input);
+      fireEvent.focus(screen.getByRole('textbox', { name: 'Custom question' }));
 
       expect(cioClient.tracker.trackProductInsightsAgentFocus).toHaveBeenCalledWith(
         expect.objectContaining({ itemId: mockProps.itemId }),
       );
+      expect(onFocus).toHaveBeenCalledTimes(1);
     });
 
     it('passes displayedQuestions to render props function', () => {

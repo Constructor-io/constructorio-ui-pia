@@ -5,6 +5,7 @@ import { UseCioPiaReturn } from '../../../src/hooks/useCioPia';
 import { ConversationEntry, GetAnswerResultsResponse } from '../../../src/types';
 import { FeedbackType } from '../../../src/types';
 import createMockTracking from '../../__mocks__/createMockTracking';
+import { focusWithoutTracking } from '../../../src/utils/programmaticFocus';
 
 interface MockPiaOverrides {
   threadId?: string;
@@ -1019,25 +1020,7 @@ describe('Testing Hook: useConversation', () => {
       expect(mockTracking.trackQuestionClick).toHaveBeenCalledWith('Suggested question?');
     });
 
-    it('calls tracking.trackFocus when handleInputClick is called', () => {
-      const pia = createMockPia();
-      const { result } = renderHook(() =>
-        useConversation({
-          pia,
-          itemId: 'test-item',
-          isConversation: false,
-          tracking: mockTracking,
-        }),
-      );
-
-      act(() => {
-        result.current.handleInputClick();
-      });
-
-      expect(mockTracking.trackFocus).toHaveBeenCalledTimes(1);
-    });
-
-    it('does not track focus when handleInputFocus is called', () => {
+    it('calls tracking.trackFocus when handleInputFocus is called', () => {
       const pia = createMockPia();
       const { result } = renderHook(() =>
         useConversation({
@@ -1052,7 +1035,33 @@ describe('Testing Hook: useConversation', () => {
         result.current.handleInputFocus();
       });
 
+      expect(mockTracking.trackFocus).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not track focus the widget moves itself, but still calls onFocus', () => {
+      const onFocus = jest.fn();
+      const pia = createMockPia();
+      const callbacks = { onFocus };
+      const { result } = renderHook(() =>
+        useConversation({
+          pia,
+          itemId: 'test-item',
+          isConversation: false,
+          tracking: mockTracking,
+          callbacks,
+        }),
+      );
+      const input = document.createElement('input');
+      document.body.appendChild(input);
+      input.addEventListener('focus', () => result.current.handleInputFocus());
+
+      act(() => {
+        focusWithoutTracking(input);
+      });
+      input.remove();
+
       expect(mockTracking.trackFocus).not.toHaveBeenCalled();
+      expect(onFocus).toHaveBeenCalledTimes(1);
     });
 
     it('calls tracking.trackAnswerFeedback when handleFeedback is called', () => {
