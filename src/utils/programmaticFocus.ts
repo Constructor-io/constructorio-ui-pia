@@ -1,20 +1,25 @@
 let isFocusingInCode = false;
 
 /**
- * Moves focus for the widget's own reasons, such as returning it to the input after an answer.
- * `focus()` raises the focus event synchronously, so the flag covers exactly that event and the
- * shopper's own focus is still tracked.
+ * Runs `move` while the widget moves focus for its own reasons, so the focus events it raises are
+ * not tracked as the shopper's. Focus moves raise their events synchronously, so the flag covers
+ * exactly those events and the shopper's own focus is still tracked.
  */
-export function focusWithoutTracking(element: HTMLElement): void {
+export function withoutFocusTracking(move: () => void): void {
   isFocusingInCode = true;
   try {
-    element.focus();
+    move();
   } finally {
     isFocusingInCode = false;
   }
 }
 
-/** True while `focusWithoutTracking` is moving focus. */
+/** Focuses `element` without tracking it, such as returning focus to the input after an answer. */
+export function focusWithoutTracking(element: HTMLElement): void {
+  withoutFocusTracking(() => element.focus());
+}
+
+/** True while the widget is moving focus in `withoutFocusTracking`. */
 export function isFocusWithoutTracking(): boolean {
   return isFocusingInCode;
 }

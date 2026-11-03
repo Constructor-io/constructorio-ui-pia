@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import Input from '../Input/Input';
 import { translate } from '../../utils/translate';
-import { focusWithoutTracking } from '../../utils/programmaticFocus';
+import { focusWithoutTracking, withoutFocusTracking } from '../../utils/programmaticFocus';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import { Translations, Question, CioPiaComponentOverrides } from '../../types';
 
@@ -94,7 +94,8 @@ export default function PiaModal({
       initialFocusRef.current = document.activeElement;
       document.body.classList.add(OVERFLOW_HIDDEN_CLASS);
     } else {
-      if (dialog.open) dialog.close();
+      // Firefox and Safari return focus to the trigger inside close(), before the effect below.
+      if (dialog.open) withoutFocusTracking(() => dialog.close());
       document.body.classList.remove(OVERFLOW_HIDDEN_CLASS);
     }
 

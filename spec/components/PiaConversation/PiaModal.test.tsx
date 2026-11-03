@@ -4,6 +4,7 @@ import { act, render, fireEvent, screen, within } from '@testing-library/react';
 import PiaModal from '../../../src/components/PiaConversation/PiaModal';
 import PiaConversation from '../../../src/components/PiaConversation/PiaConversation';
 import { InputRenderProps } from '../../../src/types';
+import { isFocusWithoutTracking } from '../../../src/utils/programmaticFocus';
 
 const BASE_INPUT = '.cio-pia-container .cio-pia-conversation-footer .cio-pia-input-container input';
 const BASE_QUESTIONS =
@@ -205,6 +206,28 @@ describe('PiaModal Component', () => {
 
       expect(baseInput.disabled).toBe(false);
       expect(document.activeElement).toBe(baseInput);
+    });
+
+    it('does not track the focus the browser returns to the input inside close()', () => {
+      const trackedFocus: boolean[] = [];
+      const onInputFocus = () => trackedFocus.push(!isFocusWithoutTracking());
+      const { container } = render(<PiaModal {...defaultProps} onInputFocus={onInputFocus} />);
+      const baseInput = container.querySelector(BASE_INPUT)! as HTMLInputElement;
+      fireEvent.change(baseInput, { target: { value: 'What is this product?' } });
+      fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
+
+      // Like Firefox and Safari, return focus to the element that had it before showModal().
+      (HTMLDialogElement.prototype.close as jest.Mock).mockImplementationOnce(function mock(
+        this: HTMLDialogElement,
+      ) {
+        this.removeAttribute('open');
+        baseInput.focus();
+      });
+      const dialog = container.querySelector('dialog')!;
+      fireEvent.click(within(dialog).getByRole('button', { name: 'Close', hidden: true }));
+
+      expect(document.activeElement).toBe(baseInput);
+      expect(trackedFocus).toEqual([false]);
     });
 
     it('returns focus to the suggested question that opened the modal when it closes', () => {

@@ -1,4 +1,8 @@
-import { focusWithoutTracking, isFocusWithoutTracking } from '../../src/utils/programmaticFocus';
+import {
+  focusWithoutTracking,
+  isFocusWithoutTracking,
+  withoutFocusTracking,
+} from '../../src/utils/programmaticFocus';
 
 describe('programmaticFocus', () => {
   let input: HTMLInputElement;
@@ -21,6 +25,16 @@ describe('programmaticFocus', () => {
     input.focus();
 
     expect(seen).toEqual([true, false]);
+    expect(isFocusWithoutTracking()).toBe(false);
+  });
+
+  it('flags focus moved by any code it runs, such as closing a dialog', () => {
+    const seen: boolean[] = [];
+    input.addEventListener('focus', () => seen.push(isFocusWithoutTracking()));
+
+    withoutFocusTracking(() => input.focus());
+
+    expect(seen).toEqual([true]);
     expect(isFocusWithoutTracking()).toBe(false);
   });
 
