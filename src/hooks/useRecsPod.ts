@@ -13,7 +13,6 @@ import {
 import { AgentRequestError } from '../errors';
 import { translate } from '../utils/translate';
 import { RECS_FALLBACK_TITLE, RECS_LOADING_TITLE, RECS_UNSUPPORTED_REQUEST } from '../constants';
-import { withLibraryRequests } from '../utils/libraryTag';
 
 /**
  * What the shopper did to ask for this refinement.
@@ -136,7 +135,7 @@ export default function useRecsPod({
       setHasUnsupportedInput(false);
 
       getRecs
-        .call(withLibraryRequests(client.agent), {
+        .call(client.agent, {
           itemId,
           variationId,
           threadId,
