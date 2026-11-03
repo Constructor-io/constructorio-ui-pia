@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import Input from '../Input/Input';
 import { translate } from '../../utils/translate';
-import { focusWithoutTracking, withoutFocusTracking } from '../../utils/programmaticFocus';
+import { focusWithoutTracking } from '../../utils/programmaticFocus';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import { Translations, Question, CioPiaComponentOverrides } from '../../types';
 
@@ -77,6 +77,9 @@ export default function PiaModal({
       !!active && active !== document.body && active !== document.documentElement;
 
     triggerRef.current = isRealTrigger ? active : null;
+    // Firefox and Safari put focus back on whatever had it at showModal() when the dialog closes,
+    // which would be tracked. With nothing focused there is nothing to put back; we return it ourselves.
+    active?.blur();
     setIsOpen(true);
   }, []);
 
@@ -94,8 +97,7 @@ export default function PiaModal({
       initialFocusRef.current = document.activeElement;
       document.body.classList.add(OVERFLOW_HIDDEN_CLASS);
     } else {
-      // Firefox and Safari return focus to the trigger inside close(), before the effect below.
-      if (dialog.open) withoutFocusTracking(() => dialog.close());
+      if (dialog.open) dialog.close();
       document.body.classList.remove(OVERFLOW_HIDDEN_CLASS);
     }
 

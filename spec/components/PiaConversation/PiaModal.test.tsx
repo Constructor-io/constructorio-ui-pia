@@ -208,24 +208,34 @@ describe('PiaModal Component', () => {
       expect(document.activeElement).toBe(baseInput);
     });
 
-    it('does not track the focus the browser returns to the input inside close()', () => {
-      const trackedFocus: boolean[] = [];
-      const onInputFocus = () => trackedFocus.push(!isFocusWithoutTracking());
-      const { container } = render(<PiaModal {...defaultProps} onInputFocus={onInputFocus} />);
-      const baseInput = container.querySelector(BASE_INPUT)! as HTMLInputElement;
-      fireEvent.change(baseInput, { target: { value: 'What is this product?' } });
-      fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
-
-      // Like Firefox and Safari, return focus to the element that had it before showModal().
+    it('leaves the browser nothing to refocus when the dialog closes, so that focus is not tracked', () => {
+      // Like Firefox and Safari: remember what had focus at showModal() and put it back in close().
+      let focusedAtOpen: Element | null = null;
+      (HTMLDialogElement.prototype.showModal as jest.Mock).mockImplementationOnce(function mock(
+        this: HTMLDialogElement,
+      ) {
+        this.setAttribute('open', '');
+        focusedAtOpen = document.activeElement;
+      });
       (HTMLDialogElement.prototype.close as jest.Mock).mockImplementationOnce(function mock(
         this: HTMLDialogElement,
       ) {
         this.removeAttribute('open');
-        baseInput.focus();
+        if (focusedAtOpen instanceof HTMLElement) focusedAtOpen.focus();
       });
+      const trackedFocus: boolean[] = [];
+      const onInputFocus = () => trackedFocus.push(!isFocusWithoutTracking());
+      const { container } = render(<PiaModal {...defaultProps} onInputFocus={onInputFocus} />);
+      const baseInput = container.querySelector(BASE_INPUT)! as HTMLInputElement;
+      baseInput.focus();
+      trackedFocus.length = 0;
+
+      fireEvent.change(baseInput, { target: { value: 'What is this product?' } });
+      fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
       const dialog = container.querySelector('dialog')!;
       fireEvent.click(within(dialog).getByRole('button', { name: 'Close', hidden: true }));
 
+      expect(focusedAtOpen).not.toBe(baseInput);
       expect(document.activeElement).toBe(baseInput);
       expect(trackedFocus).toEqual([false]);
     });
