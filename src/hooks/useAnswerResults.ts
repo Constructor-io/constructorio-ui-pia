@@ -3,6 +3,7 @@ import { Nullable } from '@constructor-io/constructorio-client-javascript';
 import { AnswerRequestParameters, Formatters, Item, GetAnswerResultsResponse } from '../types';
 import { extractAndTransformItems } from '../utils/transformers';
 import type { CioClient } from './usePiaClient';
+import { withLibraryRequests } from '../utils/libraryTag';
 
 export interface UseAnswerResultsProps {
   itemId: string;
@@ -63,7 +64,7 @@ export default function useAnswerResults({
       setError(null);
       setAnswerResults(null);
 
-      client.agent.pia
+      withLibraryRequests(client.agent.pia)
         .getAnswerResults(itemId, question, { threadId, variationId, ...parameters })
         .then((response) => {
           if (!isCurrent()) return;
