@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import Input from '../Input/Input';
 import { translate } from '../../utils/translate';
+import { focusWithoutTracking } from '../../utils/programmaticFocus';
 import SuggestedQuestionsContainer from '../SuggestedQuestionsContainer/SuggestedQuestionsContainer';
 import { Translations, Question, CioPiaComponentOverrides } from '../../types';
 
@@ -76,6 +77,9 @@ export default function PiaModal({
       !!active && active !== document.body && active !== document.documentElement;
 
     triggerRef.current = isRealTrigger ? active : null;
+    // Firefox and Safari put focus back on whatever had it at showModal() when the dialog closes,
+    // which would be tracked. With nothing focused there is nothing to put back; we return it ourselves.
+    active?.blur();
     setIsOpen(true);
   }, []);
 
@@ -112,7 +116,7 @@ export default function PiaModal({
     const active = document.activeElement;
     if (active !== placed && active !== document.body) return;
 
-    inputNodeRef.current?.focus();
+    if (inputNodeRef.current) focusWithoutTracking(inputNodeRef.current);
   }, [isOpen, isLoading]);
 
   // Restore focus to the trigger. Re-runs on `isLoading`: the input trigger is
@@ -124,7 +128,7 @@ export default function PiaModal({
     if (!trigger || !trigger.isConnected) return;
     if ((trigger as HTMLInputElement).disabled) return;
 
-    trigger.focus();
+    focusWithoutTracking(trigger);
     triggerRef.current = null;
   }, [isOpen, isLoading]);
 

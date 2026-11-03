@@ -5,6 +5,7 @@ import { UseCioPiaReturn } from '../../../src/hooks/useCioPia';
 import { ConversationEntry, GetAnswerResultsResponse } from '../../../src/types';
 import { FeedbackType } from '../../../src/types';
 import createMockTracking from '../../__mocks__/createMockTracking';
+import { focusWithoutTracking } from '../../../src/utils/programmaticFocus';
 
 interface MockPiaOverrides {
   threadId?: string;
@@ -1035,6 +1036,32 @@ describe('Testing Hook: useConversation', () => {
       });
 
       expect(mockTracking.trackFocus).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not track focus the widget moves itself, but still calls onFocus', () => {
+      const onFocus = jest.fn();
+      const pia = createMockPia();
+      const callbacks = { onFocus };
+      const { result } = renderHook(() =>
+        useConversation({
+          pia,
+          itemId: 'test-item',
+          isConversation: false,
+          tracking: mockTracking,
+          callbacks,
+        }),
+      );
+      const input = document.createElement('input');
+      document.body.appendChild(input);
+      input.addEventListener('focus', () => result.current.handleInputFocus());
+
+      act(() => {
+        focusWithoutTracking(input);
+      });
+      input.remove();
+
+      expect(mockTracking.trackFocus).not.toHaveBeenCalled();
+      expect(onFocus).toHaveBeenCalledTimes(1);
     });
 
     it('calls tracking.trackAnswerFeedback when handleFeedback is called', () => {

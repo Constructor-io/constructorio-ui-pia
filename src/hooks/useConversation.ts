@@ -12,6 +12,7 @@ import { UseCioPiaReturn } from './useCioPia';
 import { UseTrackingReturn } from './useTracking';
 import { PersistedConversationState } from './usePersistedConversation';
 import { isRestorableEntry } from '../utils/conversationStorage';
+import { isFocusWithoutTracking } from '../utils/programmaticFocus';
 
 export interface UseConversationProps {
   pia: UseCioPiaReturn;
@@ -168,7 +169,7 @@ export default function useConversation({
   );
 
   const handleInputFocus = useCallback(() => {
-    trackingRef.current?.trackFocus();
+    if (!isFocusWithoutTracking()) trackingRef.current?.trackFocus();
     callbacksRef.current?.onFocus?.(contextRef.current);
   }, []);
 

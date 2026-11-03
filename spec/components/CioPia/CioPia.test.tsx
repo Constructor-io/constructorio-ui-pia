@@ -243,6 +243,32 @@ describe('CioPia Component', () => {
       expect(screen.getByRole('textbox')).toHaveFocus();
     });
 
+    it('tracks the shopper focusing the input, but not the focus it returns after an answer', () => {
+      const cioClient = createMockCioClient();
+      const withClient = () => {
+        const implementation = mockUseCioPiaHook.getMockImplementation()!;
+        mockUseCioPiaHook.mockImplementation((args) => ({ ...implementation(args), cioClient }));
+      };
+      withClient();
+      const { rerender } = render(<CioPia {...mockProps} />);
+      const input = screen.getByRole('textbox');
+      input.focus();
+      fireEvent.change(input, { target: { value: 'Is it gluten free?' } });
+      fireEvent.keyDown(input, { key: 'Enter' });
+
+      // jsdom does not drop focus from a control when it becomes disabled the way browsers do.
+      input.blur();
+      mockUseCioPia({ answerIsLoading: true });
+      withClient();
+      rerender(<CioPia {...mockProps} />);
+      mockUseCioPiaWithAnswerData();
+      withClient();
+      rerender(<CioPia {...mockProps} />);
+
+      expect(input).toHaveFocus();
+      expect(cioClient.tracker.trackProductInsightsAgentFocus).toHaveBeenCalledTimes(1);
+    });
+
     it('disables the input while an answer loads', () => {
       mockUseCioPia({ answerIsLoading: true });
 

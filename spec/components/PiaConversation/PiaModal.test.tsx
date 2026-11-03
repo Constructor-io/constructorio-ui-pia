@@ -4,6 +4,7 @@ import { act, render, fireEvent, screen, within } from '@testing-library/react';
 import PiaModal from '../../../src/components/PiaConversation/PiaModal';
 import PiaConversation from '../../../src/components/PiaConversation/PiaConversation';
 import { InputRenderProps } from '../../../src/types';
+import { isFocusWithoutTracking } from '../../../src/utils/programmaticFocus';
 
 const BASE_INPUT = '.cio-pia-container .cio-pia-conversation-footer .cio-pia-input-container input';
 const BASE_QUESTIONS =
@@ -205,6 +206,38 @@ describe('PiaModal Component', () => {
 
       expect(baseInput.disabled).toBe(false);
       expect(document.activeElement).toBe(baseInput);
+    });
+
+    it('leaves the browser nothing to refocus when the dialog closes, so that focus is not tracked', () => {
+      // Like Firefox and Safari: remember what had focus at showModal() and put it back in close().
+      let focusedAtOpen: Element | null = null;
+      (HTMLDialogElement.prototype.showModal as jest.Mock).mockImplementationOnce(function mock(
+        this: HTMLDialogElement,
+      ) {
+        this.setAttribute('open', '');
+        focusedAtOpen = document.activeElement;
+      });
+      (HTMLDialogElement.prototype.close as jest.Mock).mockImplementationOnce(function mock(
+        this: HTMLDialogElement,
+      ) {
+        this.removeAttribute('open');
+        if (focusedAtOpen instanceof HTMLElement) focusedAtOpen.focus();
+      });
+      const trackedFocus: boolean[] = [];
+      const onInputFocus = () => trackedFocus.push(!isFocusWithoutTracking());
+      const { container } = render(<PiaModal {...defaultProps} onInputFocus={onInputFocus} />);
+      const baseInput = container.querySelector(BASE_INPUT)! as HTMLInputElement;
+      baseInput.focus();
+      trackedFocus.length = 0;
+
+      fireEvent.change(baseInput, { target: { value: 'What is this product?' } });
+      fireEvent.keyDown(baseInput, { key: 'Enter', code: 'Enter' });
+      const dialog = container.querySelector('dialog')!;
+      fireEvent.click(within(dialog).getByRole('button', { name: 'Close', hidden: true }));
+
+      expect(focusedAtOpen).not.toBe(baseInput);
+      expect(document.activeElement).toBe(baseInput);
+      expect(trackedFocus).toEqual([false]);
     });
 
     it('returns focus to the suggested question that opened the modal when it closes', () => {

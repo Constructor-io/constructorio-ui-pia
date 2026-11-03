@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
+import { focusWithoutTracking } from '../utils/programmaticFocus';
 
 export interface UseReturnFocusToInputReturn {
   inputRef: (node: HTMLElement | null) => void;
@@ -19,7 +20,7 @@ export default function useReturnFocusToInput(isLoading: boolean): UseReturnFocu
 
     const active = document.activeElement;
     const focusWasDropped = !active || active === document.body;
-    if (inputNodeRef.current && focusWasDropped) inputNodeRef.current.focus();
+    if (inputNodeRef.current && focusWasDropped) focusWithoutTracking(inputNodeRef.current);
   }, [isLoading]);
 
   const inputRef = useCallback((node: HTMLElement | null) => {
