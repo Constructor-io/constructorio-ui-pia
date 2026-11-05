@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Question, SuggestedQuestionsParameters } from '../types';
 import type { CioClient } from './usePiaClient';
+import { withLibraryRequests } from '../utils/libraryTag';
 
 export interface UseSuggestedQuestionsProps {
   itemId: string;
@@ -45,7 +46,7 @@ export default function useSuggestedQuestions({
     setIsLoading(true);
     setError(null);
 
-    client.agent.pia
+    withLibraryRequests(client.agent.pia)
       .getSuggestedQuestions(itemId, {
         threadId,
         variationId,

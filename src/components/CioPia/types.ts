@@ -98,8 +98,8 @@ export interface CioPiaProps
   variationId?: string;
   /**
    * Optional Constructor.io client instance. If not provided, one will be created internally. The
-   * widget's tracking events sent through it carry `cio-ui-pia-<packageVersion>` as their client
-   * tag (`c`); your own calls on it keep its `version`.
+   * widget's tracking events and API requests sent through it carry `cio-ui-pia-<packageVersion>`
+   * as their client tag (`c`); your own calls on it keep its `version`.
    */
   cioClient?: CioClient;
   /** Display configuration options (mode, type, showFeedback, etc.). */

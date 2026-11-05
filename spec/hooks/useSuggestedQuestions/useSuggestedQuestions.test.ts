@@ -1,6 +1,10 @@
 import { renderHook, act } from '@testing-library/react';
 import useSuggestedQuestions from '../../../src/hooks/useSuggestedQuestions';
+import ConstructorIOClient from '@constructor-io/constructorio-client-javascript';
+import type { ConstructorClientOptions } from '@constructor-io/constructorio-client-javascript/lib/types';
 import { createMockCioClient } from '../../helpers/mockCioClient';
+import { LIBRARY_TAG } from '../../../src/utils/libraryTag';
+import { DEMO_API_KEY } from '../../../src/constants';
 
 const testItemId = 'test-item-id';
 const newTestItemId = 'new-test-item-id';
@@ -403,5 +407,27 @@ describe('Testing Hook: useSuggestedQuestions', () => {
       threadId: undefined,
       variationId: undefined,
     });
+  });
+
+  it("sends its requests with the library tag on the host's own client", async () => {
+    const fetch = jest.fn(async () => ({
+      ok: true,
+      json: async () => ({ questions: testQuestions }),
+    }));
+    const hostClient = new ConstructorIOClient({
+      apiKey: DEMO_API_KEY,
+      version: 'ciojs-client-host',
+      fetch,
+    } as ConstructorClientOptions);
+
+    renderHook(() => useSuggestedQuestions({ itemId: testItemId, cioClient: hostClient }));
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    const url = new URL(fetch.mock.calls[0][0] as unknown as string);
+    expect(url.searchParams.get('c')).toBe(LIBRARY_TAG);
   });
 });

@@ -1,6 +1,6 @@
 import ConstructorIOClient from '@constructor-io/constructorio-client-javascript';
 import type { ConstructorClientOptions } from '@constructor-io/constructorio-client-javascript/lib/types';
-import { LIBRARY_TAG, withLibraryTag } from '../../src/utils/libraryTag';
+import { LIBRARY_TAG, withLibraryRequests, withLibraryTag } from '../../src/utils/libraryTag';
 import { DEMO_API_KEY, DEMO_ITEM_ID, DEMO_ITEM_NAME } from '../../src/constants';
 
 type QueueArgs = [url: string, method: string, body?: Record<string, unknown>];
@@ -116,5 +116,48 @@ describe('withLibraryTag', () => {
     const own = new ConstructorIOClient({ apiKey: DEMO_API_KEY, version: LIBRARY_TAG });
 
     expect(withLibraryTag(own.tracker)).toBe(own.tracker);
+  });
+});
+
+describe('withLibraryRequests', () => {
+  let client: InstanceType<typeof ConstructorIOClient>;
+  let fetch: jest.Mock;
+
+  // A host's own client, with its own tag and identity.
+  beforeEach(() => {
+    fetch = jest.fn(async () => ({
+      ok: true,
+      json: async () => ({ questions: [] }),
+    }));
+    client = new ConstructorIOClient({
+      apiKey: DEMO_API_KEY,
+      version: 'ciojs-client-host',
+      clientId: 'host-client-id',
+      sessionId: 7,
+      fetch,
+    } as ConstructorClientOptions);
+  });
+
+  const lastQuery = () => new URL(fetch.mock.calls.at(-1)[0] as string).searchParams;
+
+  it('sends API requests with the library tag, keeping the host identity', async () => {
+    await withLibraryRequests(client.agent.pia).getSuggestedQuestions(DEMO_ITEM_ID);
+
+    const query = lastQuery();
+    expect(query.get('c')).toBe(LIBRARY_TAG);
+    expect(query.get('key')).toBe(DEMO_API_KEY);
+    expect(query.get('i')).toBe('host-client-id');
+    expect(query.get('s')).toBe('7');
+  });
+
+  it("leaves the host's own requests with the host's tag", async () => {
+    withLibraryRequests(client.agent.pia);
+    await client.agent.pia.getSuggestedQuestions(DEMO_ITEM_ID);
+
+    expect(lastQuery().get('c')).toBe('ciojs-client-host');
+  });
+
+  it('returns one wrapper per module', () => {
+    expect(withLibraryRequests(client.agent.pia)).toBe(withLibraryRequests(client.agent.pia));
   });
 });
