@@ -1,5 +1,10 @@
 import { Tracker } from '@constructor-io/constructorio-client-javascript/lib/types/constructorio';
-import { AnswerRequestParameters, Formatters, SuggestedQuestionsParameters } from '../types';
+import {
+  AnswerRequestParameters,
+  CioClientOptions,
+  Formatters,
+  SuggestedQuestionsParameters,
+} from '../types';
 import useAnswerResults, { UseAnswerResultsReturn } from './useAnswerResults';
 import usePiaClient, { CioClient } from './usePiaClient';
 import useSuggestedQuestions, { UseSuggestedQuestionsReturn } from './useSuggestedQuestions';
@@ -47,6 +52,8 @@ export interface UseCioPiaProps {
   variationId?: string;
   threadId?: string;
   cioClient?: CioClient;
+  /** Options for the client the hook creates. Ignored when `cioClient` is supplied. */
+  cioClientOptions?: CioClientOptions;
   suggestedQuestionsParameters?: SuggestedQuestionsParameters;
   answerParameters?: AnswerRequestParameters;
   /**
@@ -89,6 +96,7 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     variationId,
     threadId: providedThreadId,
     cioClient: providedClient,
+    cioClientOptions,
     suggestedQuestionsParameters,
     answerParameters,
     parameters,
@@ -101,6 +109,7 @@ export default function useCioPia(props: UseCioPiaProps): UseCioPiaReturn {
     apiKey,
     threadId: providedThreadId,
     cioClient: providedClient,
+    cioClientOptions,
     testCells,
     userId,
   });

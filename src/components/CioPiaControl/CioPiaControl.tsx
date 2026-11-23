@@ -13,13 +13,23 @@ const NO_QUESTIONS: [] = [];
  * None of the question or answer hooks mount here, so the control arm cannot issue a request.
  */
 export default function CioPiaControl(props: CioPiaProps) {
-  const { apiKey, itemId, itemName, threadId, variationId, cioClient, abTest, trackingConfigs } =
-    props;
+  const {
+    apiKey,
+    itemId,
+    itemName,
+    threadId,
+    variationId,
+    cioClient,
+    cioClientOptions,
+    abTest,
+    trackingConfigs,
+  } = props;
 
   const { cioClient: client, threadId: resolvedThreadId } = usePiaClient({
     apiKey,
     threadId,
     cioClient,
+    cioClientOptions,
     testCells: abTest?.testCells,
   });
 

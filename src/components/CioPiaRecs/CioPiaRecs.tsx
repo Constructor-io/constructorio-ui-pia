@@ -28,6 +28,7 @@ export default function CioPiaRecs(props: CioPiaProps) {
     threadId,
     variationId,
     cioClient,
+    cioClientOptions,
     componentOverrides,
     callbacks,
     formatters,
@@ -50,6 +51,7 @@ export default function CioPiaRecs(props: CioPiaProps) {
     apiKey,
     threadId,
     cioClient,
+    cioClientOptions,
     testCells: abTest?.testCells,
   });
 
