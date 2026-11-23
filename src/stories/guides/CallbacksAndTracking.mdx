@@ -9,6 +9,18 @@ import * as CarouselStories from '../examples/Carousel.stories';
 
 Constructor events (views, questions, clicks) are sent automatically and appear in your Constructor dashboard. Callbacks do not affect them.
 
+### Session number
+
+Without your own `cioClient`, the widget uses the session number of your site's Constructor beacon, read from its `ConstructorioID_session` cookie. Widget events then join the add-to-cart and purchase events of the same visit. The widget only reads the cookie; it never writes its own copy.
+
+To choose the client's id storage yourself, pass `cioClientOptions.idOptions`. The widget then skips the cookie:
+
+```jsx
+<CioPia cioClientOptions={{ idOptions: { session_id_storage_location: 'cookie', cookie_domain: '.example.com' } }} … />
+```
+
+`cioClientOptions` takes any option of the Constructor JS client except `apiKey` and `sendTrackingEvents`. It is applied last, so it wins over `abTest.testCells`. With your own `cioClient` it is ignored.
+
 ## Callbacks
 
 For your own analytics or behaviour. `context` is `{ itemId, threadId }`.

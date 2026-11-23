@@ -18,6 +18,7 @@ import {
   ConversationEntry,
   PersistConversationOptions,
   ProductCardDisplayProps,
+  CioClientOptions,
 } from '../../types';
 import type { CioClient } from '../../hooks/usePiaClient';
 
@@ -102,6 +103,12 @@ export interface CioPiaProps
    * as their client tag (`c`); your own calls on it keep its `version`.
    */
   cioClient?: CioClient;
+  /**
+   * Options for the client the widget creates, applied last so they win. Ignored when `cioClient`
+   * is supplied. Without `idOptions`, the widget reads the site beacon's `ConstructorioID_session`
+   * cookie, when there is one, so its events carry the beacon's session number.
+   */
+  cioClientOptions?: CioClientOptions;
   /** Display configuration options (mode, type, showFeedback, etc.). */
   displayConfigs?: CioPiaDisplayConfigs;
   /** Tracking configuration options (viewThreshold, etc.). */
